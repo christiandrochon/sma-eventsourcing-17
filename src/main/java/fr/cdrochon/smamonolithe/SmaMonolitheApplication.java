@@ -1,11 +1,12 @@
 package fr.cdrochon.smamonolithe;
 
+import fr.cdrochon.smamonolithe.client.entity.AdresseClient;
 import fr.cdrochon.smamonolithe.client.entity.Client;
 import fr.cdrochon.smamonolithe.client.repository.ClientRepository;
 import fr.cdrochon.smamonolithe.document.entity.Document;
 import fr.cdrochon.smamonolithe.document.entity.TypeDocument;
 import fr.cdrochon.smamonolithe.document.repository.DocumentRepository;
-import fr.cdrochon.smamonolithe.garage.entity.Adresse;
+import fr.cdrochon.smamonolithe.garage.entity.AdresseGarage;
 import fr.cdrochon.smamonolithe.garage.entity.Garage;
 import fr.cdrochon.smamonolithe.garage.repository.GarageRepository;
 import fr.cdrochon.smamonolithe.vehicule.entity.MarqueVehicule;
@@ -36,36 +37,45 @@ public class SmaMonolitheApplication {
                                         DocumentRepository documentRepository) {
         return args -> {
             
-            Adresse adresse1 = Adresse.builder()
-                                      .rue("rue du truc")
-                                      .numeroDeRue("17")
-                                      .cp("33300")
-                                      .ville("St Jean")
+            AdresseGarage adresse3 = AdresseGarage.builder()
+                                      .rue("chemin de st jacques")
+                                      .numeroDeRue("498")
+                                      .cp("12500")
+                                      .ville("Conques")
                                       .build();
-            Adresse adresse2 = Adresse.builder()
-                                      .rue("avenue du jo")
-                                      .cp("59140")
-                                      .numeroDeRue("51")
-                                      .ville(
-                                              "Cloerwak")
-                                      .build();
+            AdresseGarage adresse4 = AdresseGarage.builder().rue("avenue du general brun").cp("48170").numeroDeRue("5").ville(
+                    "le malzieu").build();
             
             List<Garage> garageList = List.of(
                     Garage.builder()
                           .nomGarage("Garage du Cres")
                           .emailContactGarage("garageDuCres@gmail.com")
-                          .adresseGarage(adresse1)
+                          .adresseGarage(adresse3)
                           .build(),
                     Garage.builder()
                           .nomGarage("Garage du louga")
                           .emailContactGarage("garageLouge@toto.net")
-                          .adresseGarage(adresse2)
+                          .adresseGarage(adresse4)
                           .build()
                                              );
             garageRepository.saveAll(garageList);
             
             
-            //            List<Client> customerList = List.of(
+            
+            AdresseClient adresse1 = AdresseClient.builder()
+                                                  .rue("rue du truc")
+                                                  .numeroDeRue("17")
+                                                  .cp("33300")
+                                                  .ville("St Jean")
+                                                  .build();
+            AdresseClient adresse2 = AdresseClient.builder()
+                                                  .rue("avenue du jo")
+                                                  .cp("59140")
+                                                  .numeroDeRue("51")
+                                                  .ville(
+                                              "Cloerwak")
+                                                  .build();
+
             Client client1 = Client.builder()
                                    .id(1L)
                                    .nomClient("Dubourg")
@@ -90,11 +100,10 @@ public class SmaMonolitheApplication {
                                    .telClient("8888888888")
                                    .adresseClient(adresse2)
                                    .build();
-            //            );
-            //            clientRepository.saveAll(customerList);
             clientRepository.save(client1);
             clientRepository.save(client2);
             clientRepository.save(client3);
+            
             
             
             Vehicule vehicule1 = Vehicule.builder()
