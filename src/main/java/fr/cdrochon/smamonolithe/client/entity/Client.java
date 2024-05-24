@@ -1,6 +1,5 @@
 package fr.cdrochon.smamonolithe.client.entity;
 
-import fr.cdrochon.smamonolithe.garage.entity.Adresse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +23,5 @@ public class Client {
     private String telClient;
     
     @Embedded
-    private Adresse adresseClient;
+    private AdresseClient adresseClient;
 }
