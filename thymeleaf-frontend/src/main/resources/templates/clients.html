@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Clients</title>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="ps-3">
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Prenom</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>numero</th>
+                        <th>rue</th>
+                        <th>CP</th>
+                        <th>Ville</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="c:${clients}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.nomClient}"></td>
+                        <td th:text="${c.prenomClient}"></td>
+                        <td th:text="${c.mailClient}"></td>
+                        <td th:text="${c.telClient}"></td>
+                        <td th:text="${c.adresseClient.numeroDeRue}"></td>
+                        <td th:text="${c.adresseClient.rue}"></td>
+                        <td th:text="${c.adresseClient.cp}"></td>
+                        <td th:text="${c.adresseClient.ville}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

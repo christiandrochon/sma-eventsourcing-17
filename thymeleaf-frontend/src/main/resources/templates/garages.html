@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Garages</title>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="ps-3">
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>numero</th>
+                        <th>rue</th>
+                        <th>CP</th>
+                        <th>Ville</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="g:${garages}">
+                        <td th:text="${g.id}"></td>
+                        <td th:text="${g.nomGarage}"></td>
+                        <td th:text="${g.emailContactGarage}"></td>
+                        <td th:text="${g.adresseGarage.numeroDeRue}"></td>
+                        <td th:text="${g.adresseGarage.rue}"></td>
+                        <td th:text="${g.adresseGarage.cp}"></td>
+                        <td th:text="${g.adresseGarage.ville}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

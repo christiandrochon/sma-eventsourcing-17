@@ -1,0 +1,125 @@
+services:
+
+#  sma-garage-service:
+#    #build: ./garage-service
+#    build: ./../../sma-monolithe
+#    container_name: sma-garage-service
+#    ports:
+#      - '8081:8081'
+#    expose:
+#      - '8081'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://sma-garage-service:8081/actuator/health" ]
+#      interval: 10s
+#      retries: 5
+#    environment:
+#      DB_GARAGE_URL: jdbc:postgresql://postgres-garage:50001/garage
+#      POSTGRES_DB: garage
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/sma-realm
+#      KEYCLOAK_JWT_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
+#    depends_on:
+#      postgres-keycloak:
+#        condition: service_healthy
+#      postgres-garage:
+#        condition: service_healthy
+#  postgres-garage:
+#    image: postgres
+#    restart: always
+#    volumes:
+#      - pg_data_garage:/var/lib/postgresql/data
+##      - ./../script/initbd.sh:/docker-entrypoint-initdb.d/initdb.sh
+##      - ./initbd.sh:/docker-entrypoint-initdb.d/initdb.sh
+#    environment:
+#      POSTGRES_DB: garage
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#    healthcheck:
+#      test: "exit 0"
+#    expose:
+#      - '50001'
+#    ports:
+#      - '50001:50001'
+#    command: -p 50001
+
+
+#  thymeleaf-frontend:
+##    build: thymeleaf-frontend
+#    build: ./../../sma-monolithe/thymeleaf-frontend
+#    container_name: thymeleaf-frontend
+#    ports:
+#      - '8091:8091'
+#    expose:
+#      - '8091'
+#    environment:
+#      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/sma-realm
+#      KEYCLOAK_JWT_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
+##      depends_on:
+##        sma-configuration-service:
+##          condition: service_healthy
+
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_PORT: 50006
+      KC_DB_URL_HOST: postgres-keycloak
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+    command:
+      - start-dev
+      - --import-realm
+    volumes:
+      - /home/christiandrochon/Documents/sma-realm-export.json:/opt/keycloak/data/import/sma-realm.json
+    restart: always
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+  postgres-keycloak:
+    image: postgres
+    restart: always
+    container_name: postgres-keycloak
+    volumes:
+      - pg_data_keycloak:/var/lib/postgresql/data
+#      - ./initdb_f.sh:/docker-entrypoint-initdb.d/initdb_f.sh
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: "exit 0"
+    expose:
+      - '50006'
+    ports:
+      - '50006:50006'
+    command: -p 50006
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "6002:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pg@popo.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  pg_data_keycloak:
+  pgadmin_data:
+  pg_data_garage:
+
+
+
+

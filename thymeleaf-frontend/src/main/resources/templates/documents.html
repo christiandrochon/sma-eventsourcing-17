@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+  <meta charset="UTF-8">
+  <title>Documents</title>
+  <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="ps-3">
+    <div class="card">
+      <div class="card-body">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom du document</th>
+            <th>Titre</th>
+            <th>Type</th>
+            <th>Emmeteur</th>
+            <th>Date de création</th>
+            <th>Date de modification</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="d:${documents}">
+            <td th:text="${d.id}"></td>
+            <td th:text="${d.nomDocument}"></td>
+            <td th:text="${d.titreDocument}"></td>
+            <td th:text="${d.typeDocument}"></td>
+            <td th:text="${d.emetteurDuDocument}"></td>
+            <td th:text="${d.dateCreationDocument}"></td>
+            <td th:text="${d.dateModificationDocument}"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

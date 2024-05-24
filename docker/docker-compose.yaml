@@ -1,0 +1,314 @@
+services:
+#  sma-discovery-service:
+#    build: ./discovery-client
+#    container_name: sma-discovery-service
+#    ports:
+#      - '8761:8761'
+#    expose:
+#      - '8761'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://sma-discovery-service:8761/actuator/health" ]
+#      interval: 10s
+#      retries: 5
+#  sma-configuration-service:
+#    build: ./configuration-service
+#    container_name: sma-configuration-service
+#    ports:
+#      - '9999:9999'
+#    expose:
+#      - '9999'
+#    environment:
+#      DISCOVERY_SERVICE_URL: http://sma-discovery-service:8761/eureka
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://sma-configuration-service:9999/actuator/health" ]
+#      interval: 10s
+#      retries: 5
+#    depends_on:
+#      sma-discovery-service:
+#        condition: service_healthy
+#
+#  sma-garage-service:
+#    build: ./garage-service
+#    container_name: sma-garage-service
+#    ports:
+#      - '8081:8081'
+#    expose:
+#      - '8081'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://sma-garage-service:8081/actuator/health" ]
+#      interval: 10s
+#      retries: 5
+#    environment:
+#      DB_GARAGE_URL: jdbc:postgresql://postgres-garage:50001/garage
+#      POSTGRES_DB: garage
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#      DISCOVERY_SERVICE_URL: http://sma-discovery-service:8761/eureka
+#      CONFIG_SERVICE_URL: http://sma-configuration-service:9999/application/default
+#      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/sma-realm
+#      KEYCLOAK_JWT_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
+#    depends_on:
+#      postgres-keycloak:
+#        condition: service_healthy
+#      postgres-garage:
+#        condition: service_healthy
+#      sma-configuration-service:
+#        condition: service_healthy
+#  postgres-garage:
+#    image: postgres
+#    restart: always
+#    volumes:
+#      - pg_data_garage:/var/lib/postgresql/data
+#      - ./initbd.sh:/docker-entrypoint-initdb.d/initdb.sh
+#    environment:
+#      POSTGRES_DB: garage
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#    healthcheck:
+#      test: "exit 0"
+#    expose:
+#      - '50001'
+#    ports:
+#      - '50001:50001'
+#    command: -p 50001
+
+
+#  sma-client-service:
+#    build: ./client-service
+#    container_name: sma-client-service
+#    ports:
+#      - '8082:8082'
+#    expose:
+#      - '8082'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://sma-client-service:8082/actuator/health" ]
+#      interval: 10s
+#      retries: 5
+#    environment:
+#      DB_CLIENT_URL: jdbc:postgresql://postgres-client:50002/client
+#      POSTGRES_DB: client
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#      DISCOVERY_SERVICE_URL: http://sma-discovery-service:8761/eureka
+#      CONFIG_SERVICE_URL: http://sma-configuration-service:9999/application/default
+#    depends_on:
+#      sma-configuration-service:
+#        condition: service_healthy
+#      postgres-keycloak:
+#        condition: service_healthy
+#      postgres-client:
+#        condition: service_healthy
+#  postgres-client:
+#    image: postgres
+#    restart: always
+#    volumes:
+#      - pg_data_client:/var/lib/postgresql/data
+##      - ./initbd.sh:/docker-entrypoint-initdb.d/initdb.sh
+#    environment:
+#      POSTGRES_DB: client
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#    healthcheck:
+#      test: "exit 0"
+#    expose:
+#      - '50002'
+#    ports:
+#      - '50002:50002'
+#    command: -p 50002
+
+#  sma-vehicule-service:
+#    build: ./vehicule-service
+#    container_name: sma-vehicule-service
+#    ports:
+#      - '8083:8083'
+#    expose:
+#      - '8083'
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://sma-vehicule-service:8083/actuator/health" ]
+#      interval: 10s
+#      retries: 5
+#    environment:
+#      DB_CLIENT_URL: jdbc:postgresql://postgres-vehicule:50003/vehicule
+#      POSTGRES_DB: vehicule
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#      DISCOVERY_SERVICE_URL: http://sma-discovery-service:8761/eureka
+#      CONFIG_SERVICE_URL: http://sma-configuration-service:9999/application/default
+#    depends_on:
+##      sma-configuration-service:
+##        condition: service_healthy
+#      postgres-vehicule:
+#        condition: service_healthy
+#      sma-client-service:
+#        condition: service_healthy
+#  postgres-vehicule:
+#    image: postgres
+#    restart: always
+#    volumes:
+#      - pg_data_client:/var/lib/postgresql/data
+#    #      - ./initbd.sh:/docker-entrypoint-initdb.d/initdb.sh
+#    environment:
+#      POSTGRES_DB: vehicule
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#    healthcheck:
+#      test: "exit 0"
+#    expose:
+#      - '50003'
+#    ports:
+#      - '50003:50003'
+#    command: -p 50003
+
+
+#  sma-document-service:
+#    build: ./document-service
+#    container_name: sma-document-service
+#    ports:
+#      - '8084:8084'
+#    expose:
+#      - '8084'
+#    environment:
+#      DB_CLIENT_URL: jdbc:postgresql://postgres-document:50004/document
+#      POSTGRES_DB: document
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#      DISCOVERY_SERVICE_URL: http://sma-discovery-service:8761/eureka
+#      CONFIG_SERVICE_URL: http://sma-configuration-service:9999
+#    depends_on:
+#      sma-vehicule-service:
+#        condition: service_healthy
+#      postgres-document:
+#        condition: service_healthy
+#  postgres-document:
+#    image: postgres
+#    restart: always
+#    volumes:
+#      - pg_data_client:/var/lib/postgresql/data
+#    #      - ./initbd.sh:/docker-entrypoint-initdb.d/initdb.sh
+#    environment:
+#      POSTGRES_DB: document
+#      POSTGRES_USER: keycloak
+#      POSTGRES_PASSWORD: password
+#    healthcheck:
+#      test: "exit 0"
+#    expose:
+#      - '50004'
+#    ports:
+#      - '50004:50004'
+#    command: -p 50004
+
+
+
+#  sma-gateway-service:
+#    build: ./gateway-service
+#    container_name: sma-gateway-service
+#    ports:
+#      - '8888:8888'
+#    expose:
+#      - '8888'
+#    environment:
+#      DISCOVERY_SERVICE_URL: http://sma-discovery-service:8761/eureka
+#      CONFIG_SERVICE_URL: http://sma-configuration-service:9999
+#    depends_on:
+#      sma-configuration-service:
+#        condition: service_healthy
+
+#  angular-module-frontend:
+#    build: angular-module-frontend
+#    container_name: angular-module-frontend
+#    ports:
+#      - '80:80'
+#    expose:
+#      - '80'
+#    environment:
+#      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/sma-realm
+#      KEYCLOAK_JWT_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
+##      spring.security.oauth2.resourceserver.jwt.issuer-uri: ${KEYCLOAK_ISSUER_URL:http://localhost:8080/realms/sma-realm}
+##      spring.security.oauth2.resourceserver.jwt.jwk-set-uri: ${KEYCLOAK_JWT_URL:http://localhost:8080/realms/sma-realm/protocol/openid-connect/certs}
+#    depends_on:
+#      sma-configuration-service:
+#        condition: service_healthy
+
+#  thymeleaf-frontend:
+#    build: thymeleaf-frontend
+#    container_name: thymeleaf-frontend
+#    ports:
+#      - '8091:8091'
+#    expose:
+#      - '8091'
+#    environment:
+#      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/sma-realm
+#      KEYCLOAK_JWT_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
+#    depends_on:
+#      sma-configuration-service:
+#        condition: service_healthy
+
+
+
+
+
+  postgres-keycloak:
+    image: postgres
+    restart: always
+    container_name: postgres-keycloak
+    volumes:
+      - pg_data_keycloak:/var/lib/postgresql/data
+      - ./initdb_f.sh:/docker-entrypoint-initdb.d/initdb_f.sh
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: "exit 0"
+    expose:
+      - '50006'
+    ports:
+      - '50006:50006'
+    command: -p 50006
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_PORT: 50006
+      KC_DB_URL_HOST: postgres-keycloak
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+    command:
+      - start-dev
+      - --import-realm
+    volumes:
+      - /home/christiandrochon/Documents/sma-realm-export.json:/opt/keycloak/data/import/sma-realm.json
+    restart: always
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "6002:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pg@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+#  mysql_data:
+  pg_data_keycloak:
+#  pg_data_garage:
+#  pg_data_client:
+  pgadmin_data:
+
+
+
