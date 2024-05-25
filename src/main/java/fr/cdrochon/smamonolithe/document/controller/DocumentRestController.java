@@ -3,24 +3,30 @@ package fr.cdrochon.smamonolithe.document.controller;
 
 import fr.cdrochon.smamonolithe.document.repository.DocumentRepository;
 import fr.cdrochon.smamonolithe.document.entity.Document;
-import fr.cdrochon.smamonolithe.document.model.*;
+import fr.cdrochon.smamonolithe.vehicule.entity.MarqueVehicule;
+import fr.cdrochon.smamonolithe.vehicule.entity.TypeVehicule;
+import fr.cdrochon.smamonolithe.vehicule.entity.Vehicule;
+import fr.cdrochon.smamonolithe.vehicule.repository.VehiculeRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @RestController
 public class DocumentRestController {
     
     private final DocumentRepository documentRepository;
-    private final VehiculeRestFeign vehiculeRestFeign;
+    private final VehiculeRepository vehiculeRepository;
     
     public DocumentRestController(DocumentRepository documentRepository,
-                                  VehiculeRestFeign vehiculeRestFeign) {
+                                  VehiculeRepository vehiculeRepository) {
         this.documentRepository = documentRepository;
-        this.vehiculeRestFeign = vehiculeRestFeign;
+        this.vehiculeRepository = vehiculeRepository;
     }
     
     /**
@@ -33,9 +39,14 @@ public class DocumentRestController {
     @PreAuthorize("hasAuthority('USER')")
     public Document getDocumentById(@PathVariable Long id) {
         Document document = documentRepository.findById(id).get();
+        if(document.getVehiculeId() != null) {
+            Vehicule vehicule = vehiculeRepository.findById(document.getVehiculeId()).get();
+            document.setVehicule(vehicule);
+        }
+        else {
+            document.setVehicule(getDefaultVehicule(new Exception("Vehicule inexistant")));
+        }
         
-        Vehicule vehicule = vehiculeRestFeign.findVehiculeById(document.getId());
-        document.setVehicule(vehicule);
         return document;
     }
     
@@ -50,8 +61,34 @@ public class DocumentRestController {
         List<Document> documents = documentRepository.findAll();
         
         documents.forEach(doc -> {
-            doc.setVehicule(vehiculeRestFeign.findVehiculeById(doc.getVehiculeId()));
+            if(doc.getVehiculeId() != null) {
+                doc.setVehicule(vehiculeRepository.findById(doc.getVehiculeId()).get());
+            }
+            else {
+                doc.setVehicule(getDefaultVehicule(new Exception("Vehicule inexistant")));
+            }
         });
         return documents;
     }
+    
+    /**
+     * Comportement par defaut lorsque le microservice vehicule ne repond pas.
+     *
+     * @param exception type exception
+     * @return objet vehicule vide
+     */
+    private Vehicule getDefaultVehicule(Exception exception) {
+        
+        Vehicule vehicule = new Vehicule();
+        vehicule.setId(new Random().nextLong());
+        vehicule.setImmatriculationVehicule("Non disponible");
+        vehicule.setDateMiseEnCirculationVehicule(LocalDate.of(2000, 1, 1));
+        vehicule.setTypeVehicule(TypeVehicule.NON_DISPONIBLE);
+        vehicule.setMarqueVehicule(MarqueVehicule.NON_DISPONIBLE);
+        vehicule.setClimatisationVehicule(false);
+        System.err.println("Exception default getDefaultVehicule : " + exception.getMessage());
+        return vehicule;
+    }
+    
 }
+

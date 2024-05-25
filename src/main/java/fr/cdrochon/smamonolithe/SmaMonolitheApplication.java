@@ -16,14 +16,13 @@ import fr.cdrochon.smamonolithe.vehicule.repository.VehiculeRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootApplication
-@EnableFeignClients
+//@EnableFeignClients
 public class SmaMonolitheApplication {
     
     public static void main(String[] args) {
@@ -112,8 +111,7 @@ public class SmaMonolitheApplication {
                                          .climatisationVehicule(true)
                                          .typeVehicule(TypeVehicule.VOITURE)
                                          .marqueVehicule(MarqueVehicule.BMW)
-                                         //.clientId(1L)
-                                         .clientId(client2.getId())
+//                                         .clientId(client2.getId())
                                          .build();
             Vehicule vehicule2 = Vehicule.builder()
                                          .immatriculationVehicule("OS-184-PS")
@@ -121,7 +119,6 @@ public class SmaMonolitheApplication {
                                          .climatisationVehicule(false)
                                          .typeVehicule(TypeVehicule.MOTO)
                                          .marqueVehicule(MarqueVehicule.HARLEY_DAVIDSON)
-                                         //.clientId(2L)
                                          .clientId(client3.getId())
                                          .build();
             Vehicule vehicule3 = Vehicule.builder()
@@ -130,7 +127,6 @@ public class SmaMonolitheApplication {
                                          .climatisationVehicule(true)
                                          .typeVehicule(TypeVehicule.VOITURE)
                                          .marqueVehicule(MarqueVehicule.AUDI)
-                                         //.clientId(3L)
                                          .clientId(client1.getId())
                                          .build();
             vehiculeRepository.save(vehicule1);
@@ -155,7 +151,7 @@ public class SmaMonolitheApplication {
                                   .typeDocument(TypeDocument.FACTURE)
                                   .dateCreationDocument(LocalDate.now())
                                   .dateModificationDocument(LocalDate.now())
-                                  .vehiculeId(vehicule2.getId())
+//                                  .vehiculeId(vehicule2.getId())
                                   .build();
             Document d3 = Document.builder()
                                   .nomDocument("devis sans titre")

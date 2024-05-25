@@ -21,8 +21,7 @@ public class ClientRestController {
     @GetMapping("/client/{id}")
     @PreAuthorize("hasAuthority('USER')")
     public Client getClientById(@PathVariable Long id) {
-        return clientRepository.findById(id)
-                               .get();
+        return clientRepository.findById(id).get();
     }
     
     @GetMapping("/clients")
