@@ -75,7 +75,8 @@ services:
       - start-dev
       - --import-realm
     volumes:
-      - /home/christiandrochon/Documents/sma-realm-export.json:/opt/keycloak/data/import/sma-realm.json
+      - ./realm-export.json:/opt/keycloak/data/import/sma-realm.json
+#      - /home/christiandrochon/Documents/sma-realm-export.json:/opt/keycloak/data/import/sma-realm.json
     restart: always
     ports:
       - '8080:8080'
