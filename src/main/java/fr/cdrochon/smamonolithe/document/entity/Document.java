@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.document.entity;
 
-import fr.cdrochon.smamonolithe.document.model.Vehicule;
+import fr.cdrochon.smamonolithe.vehicule.entity.Vehicule;
 import jakarta.persistence.*;
 import lombok.*;
 
