@@ -38,8 +38,10 @@ public class SecurityConfig {
                 .csrf(Customizer.withDefaults())
                 .cors(Customizer.withDefaults())
                 .headers(h -> h.frameOptions(fo -> fo.disable()))
-//                .csrf(csrf->csrf.ignoringRequestMatchers("/h2-console/**"))
+                .csrf(csrf->csrf.ignoringRequestMatchers("/h2-console/**"))
+                .authorizeHttpRequests(ar->ar.requestMatchers("/h2-console/**").permitAll())
                 .authorizeHttpRequests(ar -> ar.anyRequest().authenticated())
+                
 //                .authorizeHttpRequests(ar->ar.requestMatchers("/garages").permitAll())
 //                .oauth2Login(Customizer.withDefaults())
                 .oauth2ResourceServer(o2->o2.jwt(token->token.jwtAuthenticationConverter(jwtAuthConverter)))
