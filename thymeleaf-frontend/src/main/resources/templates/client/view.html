@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+    <th:block th:replace="layout :: common-head">
+        <title>Client</title>
+    </th:block>
+</head>
+
+<body>
+
+<!--<main class="container">-->
+<!--    <h2 class="title is-2">[[#{product.title}]] [[${product.name}]]</h2>-->
+<!--    <div class="block section">[[${product.description}]]</div>-->
+<!--    <h3 class="title is-3">[[#{items.included}]] [[${product.name}]]</h3>-->
+<div layout:fragment="content">
+    <article class="media block">
+<!--        <figure class="media-left">-->
+<!--            <p class="image is-128x128">-->
+<!--                <img src="#" th:src="@{/img/{path}(path=${item.imagePath})}">-->
+<!--            </p>-->
+<!--        </figure>-->
+        <div class="media-content">
+            <div class="content">
+                <p>
+                    <strong>[[${client.nomCLient}]]</strong>
+                </p>
+                <p>
+                    [[#{client.prenomClient}]] [[${client.prenomClient}]]
+                </p>
+            </div>
+        </div>
+    </article>
+</div>
+<!--</main>-->
+<th:block th:replace="layout :: footer-and-js">
+
+</th:block>
+</body>
+
+</html>

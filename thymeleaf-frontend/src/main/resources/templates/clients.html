@@ -28,8 +28,13 @@
                     </thead>
                     <tbody>
                     <tr th:each="c:${clients}">
-                        <td th:text="${c.id}"></td>
-                        <td th:text="${c.nomClient}"></td>
+
+                        <td th:text="${c.id}">
+                            <a href="#" th:href="@{/vehicule/view.html(id=${c.id})}"></a>
+                        </td>
+<!--                        <td th:text="${c.nomClient}">-->
+                           <td> <a th:text="${c.nomClient}" href="#" th:href="@{/vehicule/view.html(clientId=${c.id})}"></a>
+                            </td>
                         <td th:text="${c.prenomClient}"></td>
                         <td th:text="${c.mailClient}"></td>
                         <td th:text="${c.telClient}"></td>
