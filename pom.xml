@@ -117,12 +117,12 @@
             <groupId>org.axonframework</groupId>
             <artifactId>axon-spring-boot-starter</artifactId>
             <version>4.9.3</version>
-            <!--            <exclusions>-->
-            <!--                <exclusion>-->
-            <!--                    <groupId>org.axonframework</groupId>-->
-            <!--                    <artifactId>axon-server-connector</artifactId>-->
-            <!--                </exclusion>-->
-            <!--            </exclusions>-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.axonframework</groupId>
+                    <artifactId>axon-server-connector</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.axonframework</groupId>
@@ -139,11 +139,11 @@
         <!--            <scope>import</scope>-->
         <!--        </dependency>-->
         <!--somewhere in the POM file-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.axonframework</groupId>-->
-        <!--            <artifactId>axon-server-connector</artifactId>-->
-        <!--            <version>4.9.0</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.axonframework</groupId>-->
+<!--            <artifactId>axon-server-connector</artifactId>-->
+<!--            <version>4.9.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.axonframework</groupId>
             <artifactId>axon-configuration</artifactId>
