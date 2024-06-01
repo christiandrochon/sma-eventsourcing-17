@@ -1,0 +1,20 @@
+#version: '3'
+services:
+
+  mysql-database:
+    image: mysql
+    container_name: mysql
+    restart: always
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: monolithe
+      MYSQL_USER: kiki
+      MYSQL_PASSWORD: kiki
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - '3306:3306'
+
+volumes:
+  dbdata:
+
