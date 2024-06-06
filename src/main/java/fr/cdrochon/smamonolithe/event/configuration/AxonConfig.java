@@ -2,6 +2,8 @@ package fr.cdrochon.smamonolithe.event.configuration;
 
 
 import com.thoughtworks.xstream.XStream;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.validation.constraints.NotNull;
 import org.axonframework.common.caching.Cache;
 import org.axonframework.common.caching.WeakReferenceCache;
@@ -23,17 +25,20 @@ import org.axonframework.messaging.interceptors.LoggingInterceptor;
 import org.axonframework.micrometer.GlobalMetricRegistry;
 import org.axonframework.serialization.Serializer;
 import org.axonframework.serialization.json.JacksonSerializer;
+import org.axonframework.spring.config.AxonConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
 @Configuration
 public class AxonConfig {
-
+    
     @Bean
     public LoggingInterceptor<Message<?>> loggingInterceptor() {
         return new LoggingInterceptor<>();
@@ -49,12 +54,7 @@ public class AxonConfig {
     public Cache garageQueryCache() {
         return new WeakReferenceCache();
     }
-
-//    @Qualifier("eventSerializer")
-//    @Bean
-//    public Serializer eventSerializer() {
-//        return JacksonSerializer.builder().build();
-//    }
+    
 
     /**
      * An example {@link ConfigurerModule} implementation to attach configuration to Axon's configuration life cycle.
