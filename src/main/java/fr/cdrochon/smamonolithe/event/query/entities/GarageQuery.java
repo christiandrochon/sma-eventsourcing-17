@@ -29,10 +29,10 @@ public class GarageQuery {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String idQuery;
-    private Instant dateQuery;
     private String nomGarage;
     private String mailResponsable;
     private GarageStatus garageStatus;
+    private Instant dateQuery;
 
 
 }

@@ -10,6 +10,7 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.context.annotation.Profile;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
@@ -28,6 +29,7 @@ public class GarageQueryAggregate {
     private String nomGarage;
     private String mailResponsable;
     private GarageStatus status;
+    private Instant date;
     
     /**
      * oBLIGATOIRE , requis par AXON
@@ -49,19 +51,19 @@ public class GarageQueryAggregate {
     @CommandHandler
     public GarageQueryAggregate(GarageQueryCreateCommand createGarageCommand) {
         //ici => fonction de decision = verifie regle metier
-//        if(createGarageCommand.nomClient() == null) {
-//            throw new CreatedClientException("Client non complet ! ");
-//        }
+        //        if(createGarageCommand.nomClient() == null) {
+        //            throw new CreatedClientException("Client non complet ! ");
+        //        }
         //publication de l'event
         System.out.println("**************************");
         System.out.println("Publication de l'evenement = commandHandler dans aggregate");
-        UUID agregateUUID = UUID.randomUUID();
+        
         AggregateLifecycle.apply(new GarageQueryCreatedEvent(createGarageCommand.getId(), createGarageCommand.getNomClient(),
                                                              createGarageCommand.getMailResponsable(),
-                                                             GarageStatus.CREATED));
-//        apply(new GarageQueryCreatedEvent(createGarageCommand.id(), createGarageCommand.nomClient(),
-//                                                             createGarageCommand.mailResp(),
-//                                                             GarageStatus.CREATED));
+                                                             GarageStatus.CREATED, createGarageCommand.getDateQuery()));
+        //        apply(new GarageQueryCreatedEvent(createGarageCommand.id(), createGarageCommand.nomClient(),
+        //                                                             createGarageCommand.mailResp(),
+        //                                                             GarageStatus.CREATED));
     }
     
     /**
@@ -71,14 +73,17 @@ public class GarageQueryAggregate {
      */
     @EventSourcingHandler
     public void on(GarageQueryCreatedEvent event) {
-//        id = event.id();
-//        nomGarage = event.nomClient();
-//        mailResponsable = event.mailResp();
-//        status = event.garageStatus();
+        //        id = event.id();
+        //        nomGarage = event.nomClient();
+        //        mailResponsable = event.mailResp();
+        //        status = event.garageStatus();
+        
+        
         this.id = event.getId();
         this.nomGarage = event.getNomGarage();
         this.mailResponsable = event.getMailResponsable();
         this.status = event.getClientStatus();
+        this.date = event.getDateQuery();
     }
     
     

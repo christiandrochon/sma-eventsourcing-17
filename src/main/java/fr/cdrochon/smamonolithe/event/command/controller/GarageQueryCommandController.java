@@ -2,7 +2,9 @@ package fr.cdrochon.smamonolithe.event.command.controller;
 
 import fr.cdrochon.smamonolithe.event.commonapi.command.GarageQueryCreateCommand;
 import fr.cdrochon.smamonolithe.event.commonapi.dto.CreateGarageQueryRequestDTO;
+import fr.cdrochon.smamonolithe.event.query.entities.GarageQuery;
 import fr.cdrochon.smamonolithe.event.query.services.GarageQueryEventHandlerService;
+import lombok.RequiredArgsConstructor;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.commandhandling.GenericCommandMessage;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -14,6 +16,7 @@ import org.axonframework.messaging.Message;
 import org.axonframework.messaging.responsetypes.ResponseType;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
+import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -61,28 +65,53 @@ public class GarageQueryCommandController {
      */
     @PostMapping("/create")
     public CompletableFuture<Object> createClient(@RequestBody CreateGarageQueryRequestDTO creatClientRequestDTO) {
-//        CommandMessage<Object> commandMessage = GenericCommandMessage.asCommandMessage(creatClientRequestDTO);
-        //TrackingToken trackingToken = createToken(eventStore.readEvents.asStream().map(DomainEventMessage::getSequenceNumber).toList());
-        
-        byte[] array = new byte[7]; // length is bounded by 7
-        new Random().nextBytes(array);
-        String generatedString = new String(array, Charset.forName("UTF-8"));
-
-        return commandGateway.send(new GarageQueryCreateCommand(UUID.randomUUID().toString(), creatClientRequestDTO.getNomClient(),
-                                                                creatClientRequestDTO.getMailResponsable()));
+        return commandGateway.send(new GarageQueryCreateCommand(UUID.randomUUID().toString(),
+                                                                creatClientRequestDTO.getNomClient(),
+                                                                creatClientRequestDTO.getMailResponsable(),
+                                                                creatClientRequestDTO.getGarageStatus(),
+                                                                creatClientRequestDTO.getDateQuery()));
     }
-//    @PostMapping("/create")
-//    public Mono<Object> createClient(@RequestBody CreateGarageQueryRequestDTO creatClientRequestDTO) {
-//        CommandMessage<Object> commandMessage = GenericCommandMessage.asCommandMessage(creatClientRequestDTO);
-//        //TrackingToken trackingToken = createToken(eventStore.readEvents.asStream().map(DomainEventMessage::getSequenceNumber).toList());
-//
-//
-////        return Mono.fromFuture(commandGateway.send(new GarageQueryCreateCommand(new Random().nextLong(0, 10000000000000000L), creatClientRequestDTO.getNomClient(),
-////                                                                creatClientRequestDTO.getMailResponsable())));
-//        return Mono.fromFuture(commandGateway.send(new GarageQueryCreateCommand(UUID.randomUUID().toString(), creatClientRequestDTO.getNomClient(),
-//                                                                                creatClientRequestDTO.getMailResponsable())));
-//
-//    }
+    
+    //    @PostMapping("/create")
+    //    public Mono<String> createClient(@RequestBody CreateGarageQueryRequestDTO creatClientRequestDTO) {
+    //
+    //        return Mono.fromFuture(commandGateway.send(new GarageQueryCreateCommand(UUID.randomUUID().toString(), creatClientRequestDTO.getNomClient(),
+    //                                                                                creatClientRequestDTO.getMailResponsable(),
+    //                                                                                creatClientRequestDTO.getGarageStatus(), creatClientRequestDTO
+    //                                                                                .getDateQuery())));
+    //
+    //    }
+    
+    //    @PostMapping("/create")
+    //    public Mono<String> createClient(@RequestBody CreateGarageQueryRequestDTO creatClientRequestDTO) {
+    //
+    //        /* We are wrapping command into GenericCommandMessage, so we can get its identifier (correlation id) */
+    //        CommandMessage<Object> command = GenericCommandMessage.asCommandMessage(new GarageQueryCreateCommand(creatClientRequestDTO.getId()));
+    //
+    //        /* With command identifier we can now subscribe for updates that this command produced */
+    //        GarageQueryEventHandlerService query = new GarageQueryEventHandlerService(command.getIdentifier());
+    //
+    //        /* since we don't care about initial result, we mark it as Void.class */
+    //        SubscriptionQueryResult<Void, GarageQuery> response = queryGateway.subscriptionQuery(query,
+    //                                                                                             Void.class,
+    //                                                                                             GarageQuery.class);
+    //        return sendAndReturnUpdate(command, response)
+    //                .map(GarageQuery::getIdQuery);
+    //
+    //    }
+    //    public <U> Mono<U> sendAndReturnUpdate(Object command, SubscriptionQueryResult<?, U> result) {
+    //        /* The trick here is to subscribe to initial results first, even it does not return any result
+    //         Subscribing to initialResult creates a buffer for updates, even that we didn't subscribe for updates yet
+    //         they will wait for us in buffer, after this we can safely send command, and then subscribe to updates */
+    //        return Mono.when(result.initialResult())
+    //                   .then(Mono.fromCompletionStage(() -> commandGateway.send(command)))
+    //                   .thenMany(result.updates())
+    //                   .timeout(Duration.ofSeconds(5))
+    //                   .next()
+    //                   .doFinally(unused -> result.cancel());
+    //        /* dont forget to close subscription query on the end and add a timeout */
+    //    }
+    
     
     /**
      * Tester les events du store. On utilise l'id de l'agregat pour consulter l'etat de l'eventstore (json avec tous les events enregistrés)
@@ -94,13 +123,13 @@ public class GarageQueryCommandController {
     public Stream readEventStore(@PathVariable String id) {
         String idd = String.valueOf(id);
         System.out.println(idd);
-
+        
         
         return eventStore.readEvents(id).asStream();
     }
     
-//    @GetMapping("readGarage/{id}")
-//    public CompletableFuture<Object> readGarage(@PathVariable("id") String id){
-//        return queryGateway.query(new GarageQueryCreateCommand(id), ResponseTypes.instanceOf(Object.class));
-//    }
+    //    @GetMapping("readGarage/{id}")
+    //    public CompletableFuture<Object> readGarage(@PathVariable("id") String id){
+    //        return queryGateway.query(new GarageQueryCreateCommand(id), ResponseTypes.instanceOf(Object.class));
+    //    }
 }
