@@ -3,45 +3,54 @@ services:
   axonserver:
     image: axoniq/axonserver
     hostname: axonserver
-#    volumes:
-#      - axonserver-data:/data
-#      - axonserver-events:/eventdata
-#      - axonserver-config:/config:ro
     ports:
       - '8024:8024'
       - '8124:8124'
-    networks:
-      - axon-server-plugin-data-protection
+    environment:
+      axoniq_axonserver_hostname: axon-server
+      axoniq_axonserver_autocluster_first: axon-server
+      axoniq_axonserver_autocluster_contexts: _admin,default
 
-#  vault:
-#    image: vault:latest
-#    hostname: vault
-#    ports:
-#      - '8200:8200'
-#    environment:
-#      - VAULT_DEV_ROOT_TOKEN_ID=localVaultToken
-#    networks:
-#      - axon-server-plugin-data-protection
+    volumes:
+      - data:/axonserver/data
+      - events:/axonserver/events
+  db:
+    image: postgres
+    restart: always
+    container_name: postgres-axonserver
+    environment:
+      POSTGRES_DB: monolithe
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    expose:
+      - '50006'
+    ports:
+      - '50006:50006'
+    command: -p 50006
+    volumes:
+      - db:/var/lib/postgresql/data
 
-#volumes:
-#  axonserver-data:
-#    driver: local
-#    driver_opts:
-#      o: bind
-#      type: none
-#      device: ${PWD}/axonserverse/data
-#  axonserver-events:
-#    driver: local
-#    driver_opts:
-#      o: bind
-#      type: none
-#      device: ${PWD}/axonserverse/events
-#  axonserver-config:
-#    driver: local
-#    driver_opts:
-#      o: bind
-#      type: none
-#      device: ${PWD}/axonserverse/config
 
-networks:
-  axon-server-plugin-data-protection:
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "6002:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pg@pg.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin_data_monolithe:/var/lib/pgadmin
+
+volumes:
+  db:
+    driver: local
+  data:
+    driver: local
+  events:
+    driver: local
+  pgadmin_data_monolithe:
+
+
