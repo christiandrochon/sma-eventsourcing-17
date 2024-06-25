@@ -23,15 +23,15 @@ public class GarageQueryCreatedEvent extends BaseEvent<String> {
     private String mailResponsable;
     @Getter
     private GarageStatus clientStatus;
-    @Getter
-    private Instant dateQuery;
+//    @Getter
+//    private Instant dateQuery;
     
     public GarageQueryCreatedEvent(String id, String nomClient, String mailResponsable, GarageStatus clientStatus, Instant dateQuery) {
         super(id);
         this.nomGarage = nomClient;
         this.mailResponsable = mailResponsable;
         this.clientStatus = clientStatus;
-        this.dateQuery = dateQuery;
+//        this.dateQuery = dateQuery;
     }
     
 //    public static GarageQueryCreateCommand createCommand(GarageQueryCreateCommand garageQueryCreateCommand){

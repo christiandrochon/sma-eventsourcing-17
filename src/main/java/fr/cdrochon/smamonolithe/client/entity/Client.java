@@ -1,7 +1,9 @@
 package fr.cdrochon.smamonolithe.client.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
+
+import javax.persistence.*;
+
 
 @Entity
 @Getter
@@ -10,11 +12,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "CLIENT_GARAGE")
+@Table
 public class Client {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
     private String nomClient;

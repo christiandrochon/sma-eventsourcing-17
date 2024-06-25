@@ -2,7 +2,6 @@ package fr.cdrochon.smamonolithe.event.commonapi.command;
 
 import fr.cdrochon.smamonolithe.event.commonapi.enums.GarageStatus;
 import lombok.Getter;
-import org.axonframework.modelling.command.TargetAggregateIdentifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,6 +35,12 @@ public class GarageQueryCreateCommand extends BaseCommand<String> {
         this.mailResponsable = mailResponsable;
         this.garageStatus = GarageStatus.CREATED;
         this.dateQuery = dateQuery;
+    }
+    
+    public GarageQueryCreateCommand(String id, String nomClient, String mailResponsable) {
+        super(id);
+        this.nomClient = nomClient;
+        this.mailResponsable = mailResponsable;
     }
     
     /**

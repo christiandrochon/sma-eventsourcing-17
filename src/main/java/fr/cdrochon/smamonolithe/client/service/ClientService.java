@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ClientService {
-    
+
     @Autowired
     ClientRepository clientRepository;
-    
+
     public Client findItem(Long itemId) {
         System.out.println("itemId de client service = " + itemId.getClass());
 
-        return clientRepository.getReferenceById(itemId);
+        return clientRepository.getById(itemId);
     }
 }

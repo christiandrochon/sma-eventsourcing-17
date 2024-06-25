@@ -8,7 +8,7 @@ import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
-import org.springframework.context.annotation.Profile;
+
 
 import java.time.Instant;
 import java.util.UUID;
@@ -20,8 +20,9 @@ import static org.axonframework.modelling.command.AggregateLifecycle.apply;
  * <p>
  * Il permet de traiter une commande
  */
-@Profile("command")
-@Aggregate(cache = "garageQueryCache")
+//@Profile("command")
+//@Aggregate(cache = "garageQueryCache")
+@Aggregate
 public class GarageQueryAggregate {
     
     @AggregateIdentifier
@@ -58,9 +59,12 @@ public class GarageQueryAggregate {
         System.out.println("**************************");
         System.out.println("Publication de l'evenement = commandHandler dans aggregate");
         
-        AggregateLifecycle.apply(new GarageQueryCreatedEvent(createGarageCommand.getId(), createGarageCommand.getNomClient(),
+        AggregateLifecycle.apply(new GarageQueryCreatedEvent(createGarageCommand.getId(),
+                                                             createGarageCommand.getNomClient(),
                                                              createGarageCommand.getMailResponsable(),
-                                                             GarageStatus.CREATED, createGarageCommand.getDateQuery()));
+                                                             GarageStatus.CREATED,
+                                                             createGarageCommand.getDateQuery()
+        ));
         //        apply(new GarageQueryCreatedEvent(createGarageCommand.id(), createGarageCommand.nomClient(),
         //                                                             createGarageCommand.mailResp(),
         //                                                             GarageStatus.CREATED));
@@ -83,7 +87,11 @@ public class GarageQueryAggregate {
         this.nomGarage = event.getNomGarage();
         this.mailResponsable = event.getMailResponsable();
         this.status = event.getClientStatus();
-        this.date = event.getDateQuery();
+//        this.date = event.getDateQuery();
+        System.out.println("**********************");
+        System.out.println("Agregat Enventsourcinghandler ");
+        
+        //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }
     
     

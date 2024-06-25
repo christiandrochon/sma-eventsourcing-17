@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.event.command.controller;
 
+import fr.cdrochon.smamonolithe.event.command.services.GarageQueryCommandService;
 import fr.cdrochon.smamonolithe.event.commonapi.command.GarageQueryCreateCommand;
 import fr.cdrochon.smamonolithe.event.commonapi.dto.CreateGarageQueryRequestDTO;
 import fr.cdrochon.smamonolithe.event.query.entities.GarageQuery;
@@ -36,7 +37,7 @@ import java.util.stream.Stream;
  * La CommandGateway vient du fw Axon
  */
 @RestController
-@Profile("gui")
+//@Profile("gui")
 @RequestMapping("/command/garagequery")
 public class GarageQueryCommandController {
     
@@ -45,10 +46,15 @@ public class GarageQueryCommandController {
     private final QueryGateway queryGateway;
     private final EventStore eventStore;
     
-    public GarageQueryCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore) {
+    private final GarageQueryCommandService garageQueryCommandService;
+    
+    public GarageQueryCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore,
+                                        GarageQueryCommandService garageQueryCommandService){
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
         this.eventStore = eventStore;
+        
+        this.garageQueryCommandService = garageQueryCommandService;
     }
     
     
@@ -64,12 +70,13 @@ public class GarageQueryCommandController {
      * @return
      */
     @PostMapping("/create")
-    public CompletableFuture<Object> createClient(@RequestBody CreateGarageQueryRequestDTO creatClientRequestDTO) {
-        return commandGateway.send(new GarageQueryCreateCommand(UUID.randomUUID().toString(),
-                                                                creatClientRequestDTO.getNomClient(),
-                                                                creatClientRequestDTO.getMailResponsable(),
-                                                                creatClientRequestDTO.getGarageStatus(),
-                                                                creatClientRequestDTO.getDateQuery()));
+    public CompletableFuture<String> createGarage(@RequestBody CreateGarageQueryRequestDTO creatClientRequestDTO) {
+        //        return commandGateway.send(new GarageQueryCreateCommand(UUID.randomUUID().toString(),
+        //                                                                creatClientRequestDTO.getNomClient(),
+        //                                                                creatClientRequestDTO.getMailResponsable(),
+        //                                                                creatClientRequestDTO.getGarageStatus(),
+        //                                                                creatClientRequestDTO.getDateQuery()));
+        return garageQueryCommandService.createGarage(creatClientRequestDTO);
     }
     
     //    @PostMapping("/create")
@@ -119,14 +126,14 @@ public class GarageQueryCommandController {
      * @param id
      * @return
      */
-    @GetMapping(path = "eventStore/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Stream readEventStore(@PathVariable String id) {
-        String idd = String.valueOf(id);
-        System.out.println(idd);
-        
-        
-        return eventStore.readEvents(id).asStream();
-    }
+//    @GetMapping(path = "eventStore/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public Stream readEventStore(@PathVariable String id) {
+//        String idd = String.valueOf(id);
+//        System.out.println(idd);
+//
+//
+//        return eventStore.readEvents(id).asStream();
+//    }
     
     //    @GetMapping("readGarage/{id}")
     //    public CompletableFuture<Object> readGarage(@PathVariable("id") String id){

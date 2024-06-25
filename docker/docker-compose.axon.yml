@@ -10,10 +10,12 @@ services:
       axoniq_axonserver_hostname: axon-server
       axoniq_axonserver_autocluster_first: axon-server
       axoniq_axonserver_autocluster_contexts: _admin,default
-
     volumes:
       - data:/axonserver/data
       - events:/axonserver/events
+#      - data:/postgres-axonserver/data
+#      - events:/postgres-axonserver/events
+
   db:
     image: postgres
     restart: always

@@ -1,9 +1,13 @@
 package fr.cdrochon.smamonolithe.garage.entity;
 
-import jakarta.persistence.Embeddable;
+
 import lombok.*;
 
-@Embeddable @Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
+import javax.persistence.Embeddable;
+
+
+@Embeddable
+@Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class AdresseGarage {
     
     private String numeroDeRue;

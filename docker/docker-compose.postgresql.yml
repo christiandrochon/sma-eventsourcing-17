@@ -5,13 +5,13 @@ services:
     container_name: postgres-monolithe
     volumes:
       - pg_data_monolithe:/var/lib/postgresql/data
-    #      - ./initdb_f.sh:/docker-entrypoint-initdb.d/initdb_f.sh
+#      - ./initdb_f.sh:/docker-entrypoint-initdb.d/initdb_f.sh
     environment:
       POSTGRES_DB: monolithe
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
-#    healthcheck:
-#      test: "exit 0"
+    #    healthcheck:
+    #      test: "exit 0"
     expose:
       - '50006'
     ports:

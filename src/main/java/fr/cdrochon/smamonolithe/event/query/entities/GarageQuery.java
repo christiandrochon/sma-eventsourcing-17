@@ -4,18 +4,14 @@ package fr.cdrochon.smamonolithe.event.query.entities;
 //import jakarta.persistence.GeneratedValue;
 //import jakarta.persistence.GenerationType;
 //import jakarta.persistence.Id;
-import fr.cdrochon.smamonolithe.event.commonapi.enums.GarageStatus;
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * En lien avec les entités Garage dans l'autre package
@@ -27,14 +23,13 @@ import java.util.UUID;
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class GarageQuery {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String idQuery;
     private String nomGarage;
     private String mailResponsable;
-    private GarageStatus garageStatus;
-    private Instant dateQuery;
+//    private GarageStatus garageStatus;
+//    private Instant dateQuery;
 
 
 }
-//public record GarageQuery(Long id, Instant dateQuery, String nomGarage, String mailResp, GarageStatus garageStatus) {
-//}
+

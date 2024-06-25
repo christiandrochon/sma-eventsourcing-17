@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.garage.entity;
 
-import jakarta.persistence.Embeddable;
+
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class ResponsableGarage {
