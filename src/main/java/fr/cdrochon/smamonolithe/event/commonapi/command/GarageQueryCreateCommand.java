@@ -9,15 +9,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.time.Instant;
 
 /**
- * Classe immutable. Un event est immutable = une fois qu'iul est créé, on ne peut plus le modifier
+ * Classe immutable. Un event est immutable = une fois qu'il est créé, on ne peut plus le modifier
  * <p>
  * Implemente la creation d'un client (regle metier)
+ * Chaque command possede un id
  */
 //public record GarageQueryCreateCommand(@TargetAggregateIdentifier String id, String nomClient, String mailResp) {
 public class GarageQueryCreateCommand extends BaseCommand<String> {
     
     @Getter
-    private String nomClient;
+    private String nomGarage;
     @Getter
     private String mailResponsable;
     @Getter
@@ -31,7 +32,7 @@ public class GarageQueryCreateCommand extends BaseCommand<String> {
     
     public GarageQueryCreateCommand(String id, String nomClient, String mailResponsable, GarageStatus garageStatus, Instant dateQuery) {
         super(id);
-        this.nomClient = nomClient;
+        this.nomGarage = nomClient;
         this.mailResponsable = mailResponsable;
         this.garageStatus = GarageStatus.CREATED;
         this.dateQuery = dateQuery;
@@ -39,12 +40,12 @@ public class GarageQueryCreateCommand extends BaseCommand<String> {
     
     public GarageQueryCreateCommand(String id, String nomClient, String mailResponsable) {
         super(id);
-        this.nomClient = nomClient;
+        this.nomGarage = nomClient;
         this.mailResponsable = mailResponsable;
     }
     
     /**
-     * Capture n'importe quelle exception en interne
+     * Capture n'importe quelle exception en interne et affiche son message
      *
      * @param exception
      * @return
