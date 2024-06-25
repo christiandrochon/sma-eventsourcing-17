@@ -41,8 +41,7 @@ import java.util.stream.Stream;
  * La CommandGateway vient du fw Axon
  */
 @RestController
-//@Profile("gui")
-@RequestMapping("/command/garagequery")
+@RequestMapping("/commands")
 public class GarageQueryCommandController {
     
     // injection de la command de Axon
@@ -131,24 +130,11 @@ public class GarageQueryCommandController {
      * @param id
      * @return
      */
-    @GetMapping(path = "controlDataInEventStore/{id}") //consumes = MediaType.TEXT_EVENT_STREAM_VALUE
+    @GetMapping(path = "/eventStore/{id}") //consumes = MediaType.TEXT_EVENT_STREAM_VALUE
     public Stream readEventStore(@PathVariable String id) {
-        String idd = String.valueOf(id);
-        System.out.println("Valeur du segment : " + idd);
-        
         return eventStore.readEvents(id).asStream();
     }
     
-    /**
-     * Lie un event via son id.
-     *
-     * @param id
-     * @return
-     */
-    @GetMapping("readGarage/{id}")
-    public CompletableFuture<Object> readGarage(@PathVariable("id") String id) {
-        return queryGateway.query(new GarageQueryCreateCommand(id), ResponseTypes.instanceOf(Object.class));
-    }
     
     /**
      * Pour recuperer les messages d'erreur lorsqu'une requete s'est mal passée

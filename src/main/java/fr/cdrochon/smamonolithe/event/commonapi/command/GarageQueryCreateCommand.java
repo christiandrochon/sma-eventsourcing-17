@@ -14,35 +14,31 @@ import java.time.Instant;
  * Implemente la creation d'un client (regle metier)
  * Chaque command possede un id
  */
-//public record GarageQueryCreateCommand(@TargetAggregateIdentifier String id, String nomClient, String mailResp) {
+@Getter
 public class GarageQueryCreateCommand extends BaseCommand<String> {
     
-    @Getter
     private String nomGarage;
-    @Getter
     private String mailResponsable;
-    @Getter
     private GarageStatus garageStatus;
-    @Getter
     private Instant dateQuery;
     
     public GarageQueryCreateCommand(String id) {
         super(id);
     }
     
-    public GarageQueryCreateCommand(String id, String nomClient, String mailResponsable, GarageStatus garageStatus, Instant dateQuery) {
+    public GarageQueryCreateCommand(String id, String nomGarage, String mailResponsable, Instant dateQuery) {
         super(id);
-        this.nomGarage = nomClient;
+        this.nomGarage = nomGarage;
         this.mailResponsable = mailResponsable;
-        this.garageStatus = GarageStatus.CREATED;
         this.dateQuery = dateQuery;
     }
     
-    public GarageQueryCreateCommand(String id, String nomClient, String mailResponsable) {
+    public GarageQueryCreateCommand(String id, String nomGarage, String mailResponsable) {
         super(id);
-        this.nomGarage = nomClient;
+        this.nomGarage = nomGarage;
         this.mailResponsable = mailResponsable;
     }
+    
     
     /**
      * Capture n'importe quelle exception en interne et affiche son message

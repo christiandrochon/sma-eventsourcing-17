@@ -1,7 +1,6 @@
-package fr.cdrochon.smamonolithe.event.command.controller;
+package fr.cdrochon.smamonolithe.event.query.controllers;
 
 import fr.cdrochon.smamonolithe.event.query.services.EventSourcingService;
-import org.axonframework.eventsourcing.eventstore.DomainEventStream;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,21 +10,21 @@ import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/eventSourcing")
-public class GarageEventController {
-    
+public class GarageQueryEventSourcingRestController {
     private final EventSourcingService eventSourcingService;
     
-    public GarageEventController(EventSourcingService eventSourcingService) {
+    public GarageQueryEventSourcingRestController(EventSourcingService eventSourcingService) {
         this.eventSourcingService = eventSourcingService;
     }
     
     /**
-     * Recupere un event identifié par son id
+     * Renvoi l'ensemble des events pour un garageQuery recupéré avec son id
+     *
      * @param id
      * @return
      */
-    @GetMapping("/garageEvents/{id}")
-    public DomainEventStream eventsById(@PathVariable String id){
-        return eventSourcingService.eventsByGarageId(id);
+    @GetMapping("/garageQueries/{id}")
+    public Stream eventsByAccountId(@PathVariable String id) {
+        return eventSourcingService.eventsByGarageId(id).asStream();
     }
 }

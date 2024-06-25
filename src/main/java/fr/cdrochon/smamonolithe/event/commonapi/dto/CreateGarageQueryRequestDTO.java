@@ -17,6 +17,6 @@ public class CreateGarageQueryRequestDTO {
 //    private String id;
     private String nomClient;
     private String mailResponsable;
-//    private GarageStatus garageStatus;
+    private GarageStatus garageStatus;
 //    private Instant dateQuery;
 }

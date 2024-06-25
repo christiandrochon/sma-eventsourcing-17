@@ -1,5 +1,15 @@
 package fr.cdrochon.smamonolithe.event.commonapi.enums;
 
 public enum GarageStatus {
-    CREATED, ACTIVATED, SUSPENDED, DELETED
+    CREATED, DELETED;
+    
+//    private String name;
+//
+//    GarageStatus(String name) {
+//        this.name = name;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
 }

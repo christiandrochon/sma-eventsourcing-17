@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CreateClientRequestDTO {
-    
+    private String id;
     private String nomClient;
     private String prenomClient;
 }

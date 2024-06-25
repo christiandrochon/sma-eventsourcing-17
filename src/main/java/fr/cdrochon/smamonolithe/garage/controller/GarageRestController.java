@@ -17,13 +17,13 @@ public class GarageRestController {
     public GarageRestController(GarageRepository garageRepository) {
         this.garageRepository = garageRepository;
     }
-    @GetMapping("/garage/{id}")
+//    @GetMapping("/garage/{id}")
 //    @PreAuthorize("hasAuthority('USER')")
     public Garage garageById(@PathVariable Long id){
         return garageRepository.findById(id).get();
     }
     
-    @GetMapping("/garages")
+//    @GetMapping("/garages")
 //    @PreAuthorize("hasAuthority('USER')")
     public List<Garage> garageSet(){
         return garageRepository.findAll();

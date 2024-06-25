@@ -13,8 +13,8 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GarageQueryCommandService {
-    @Autowired
-    private CommandGateway commandGateway;
+    
+    private final CommandGateway commandGateway;
     
     public GarageQueryCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
@@ -30,14 +30,13 @@ public class GarageQueryCommandService {
         
         return commandGateway.send(new GarageQueryCreateCommand(UUID.randomUUID().toString(),
                                                                 createGarageQueryRequestDTO.getNomClient(),
-                                                                createGarageQueryRequestDTO.getMailResponsable()));
-        
-        //                                                                createGarageQueryRequestDTO.getGarageStatus(),
+                                                                createGarageQueryRequestDTO.getMailResponsable()
+                                   ));
         //                                                                createGarageQueryRequestDTO.getDateQuery()));
     }
     
     public CompletableFuture<String> addClientToGarage(CreateClientRequestDTO createClientRequestDTO) {
-        return commandGateway.send(new ClientCreateCommand(createClientRequestDTO.getNomClient(),
+        return commandGateway.send(new ClientCreateCommand(createClientRequestDTO.getId(), createClientRequestDTO.getNomClient(),
                                                            createClientRequestDTO.getPrenomClient()));
     }
     

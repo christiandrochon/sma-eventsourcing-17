@@ -1,12 +1,8 @@
 package fr.cdrochon.smamonolithe.event.commonapi.events;
 
-import fr.cdrochon.smamonolithe.event.commonapi.command.BaseCommand;
-import fr.cdrochon.smamonolithe.event.commonapi.command.GarageQueryCreateCommand;
 import fr.cdrochon.smamonolithe.event.commonapi.enums.GarageStatus;
+import fr.cdrochon.smamonolithe.event.query.entities.GarageQuery;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
-
-import java.time.Instant;
 
 /**
  * Les events sont exprimés dans le passé (pour le nommage).
@@ -14,30 +10,22 @@ import java.time.Instant;
  *
  * Objet immutable
  */
-//@SuperBuilder
-//@Getter
-//public record GarageQueryCreatedEvent(String id, String nomClient, String mailResp, GarageStatus garageStatus) {
+
 public class GarageQueryCreatedEvent extends BaseEvent<String> {
     
     // je ne garde que le nom du client
-    @Getter
-    private String nomGarage;
-    @Getter
-    private String mailResponsable;
-    @Getter
-    private GarageStatus clientStatus;
+    @Getter private final String nomGarage;
+    @Getter private final String mailResponsable;
+    @Getter private final GarageStatus clientStatus;
 //    @Getter
 //    private Instant dateQuery;
     
-    public GarageQueryCreatedEvent(String id, String nomClient, String mailResponsable, GarageStatus clientStatus, Instant dateQuery) {
+    public GarageQueryCreatedEvent(String id, String nomGarage, String mailResponsable, GarageStatus garageStatus) {
         super(id);
-        this.nomGarage = nomClient;
+        this.nomGarage = nomGarage;
         this.mailResponsable = mailResponsable;
-        this.clientStatus = clientStatus;
+        this.clientStatus = garageStatus;
 //        this.dateQuery = dateQuery;
     }
-    
-//    public static GarageQueryCreateCommand createCommand(GarageQueryCreateCommand garageQueryCreateCommand){
-//        return BaseCommand.BaseCommandBuilder
-//    }
+
 }

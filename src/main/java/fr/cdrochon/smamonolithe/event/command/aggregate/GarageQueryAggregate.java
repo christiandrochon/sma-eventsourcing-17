@@ -20,8 +20,6 @@ import static org.axonframework.modelling.command.AggregateLifecycle.apply;
  * <p>
  * Il permet de traiter une commande
  */
-//@Profile("command")
-//@Aggregate(cache = "garageQueryCache")
 @Aggregate
 public class GarageQueryAggregate {
     
@@ -68,12 +66,8 @@ public class GarageQueryAggregate {
         AggregateLifecycle.apply(new GarageQueryCreatedEvent(createGarageCommand.getId(),
                                                              createGarageCommand.getNomGarage(),
                                                              createGarageCommand.getMailResponsable(),
-                                                             GarageStatus.CREATED,
-                                                             createGarageCommand.getDateQuery()
+                                                             GarageStatus.CREATED
         ));
-        //        apply(new GarageQueryCreatedEvent(createGarageCommand.id(), createGarageCommand.nomClient(),
-        //                                                             createGarageCommand.mailResp(),
-        //                                                             GarageStatus.CREATED));
     }
     
     /**

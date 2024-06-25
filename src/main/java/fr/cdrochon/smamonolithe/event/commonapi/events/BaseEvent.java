@@ -10,12 +10,10 @@ import lombok.experimental.SuperBuilder;
  * Ces events sont toujours exprimés au passé
  * @param <T>
  */
-//@Getter
-//@SuperBuilder
-//@RequiredArgsConstructor
+
+
 public class BaseEvent<T> {
-    @Getter
-    private T id;
+    @Getter private final T id;
 
     public BaseEvent(T id) {
         this.id = id;
