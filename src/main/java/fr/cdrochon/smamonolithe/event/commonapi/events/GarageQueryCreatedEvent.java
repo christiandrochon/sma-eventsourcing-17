@@ -9,7 +9,10 @@ import lombok.experimental.SuperBuilder;
 import java.time.Instant;
 
 /**
- * Les events sont exprimés dans le passé (pour le nommage)
+ * Les events sont exprimés dans le passé (pour le nommage).
+ * Chaque event possede un id.
+ *
+ * Objet immutable
  */
 //@SuperBuilder
 //@Getter

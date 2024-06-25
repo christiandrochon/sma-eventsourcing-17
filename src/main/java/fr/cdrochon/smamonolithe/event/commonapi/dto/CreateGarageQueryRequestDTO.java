@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.Instant;
 
 /**
- * permet de faire le lien entre les services de l'appli et le monde exteieur
+ * permet de faire le lien entre les services command (et query ??) de l'appli et le monde exteieur
  */
 
 @NoArgsConstructor

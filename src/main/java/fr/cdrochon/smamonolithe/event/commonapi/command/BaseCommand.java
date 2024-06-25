@@ -7,9 +7,7 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 /**
- * Classe abstraite immutable qui represente l'agregat
- *
- * Ce sont les actions basées sur les regles metier
+ * Classe abstraite immutable qui permet de donner un type generique à l'id d'une command
  * @param <T>
  */
 //@Getter
