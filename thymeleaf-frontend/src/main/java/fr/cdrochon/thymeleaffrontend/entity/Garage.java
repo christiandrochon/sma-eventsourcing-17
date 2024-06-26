@@ -13,7 +13,7 @@ import lombok.*;
 public class Garage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String nomGarage;
     @Embedded

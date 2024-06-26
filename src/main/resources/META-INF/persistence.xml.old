@@ -8,10 +8,11 @@
 
 <!--        <class>org.axonframework.eventsourcing.eventstore.jpa.DomainEventEntry</class>-->
 <!--        <class>org.axonframework.eventsourcing.eventstore.jpa.SnapshotEventEntry</class>-->
-<!--        <class>fr.cdrochon.smamonolithe.event.commonapi.command.GarageQueryCreateCommand</class>-->
-        <class>fr.cdrochon.smamonolithe.event.command.controller.GarageQueryCommandController</class>
-        <class>fr.cdrochon.smamonolithe.event.query.entities.GarageQuery</class>
-        <class>fr.cdrochon.smamonolithe.event.commonapi.events.GarageQueryCreatedEvent</class>
+<!--        <class>fr.cdrochon.smamonolithe.garage.commonapi.command.GarageCreateCommand</class>-->
+        <class>fr.cdrochon.smamonolithe.garage.command.controller.GarageCommandController</class>
+        <class>fr.cdrochon.smamonolithe.garage.query.entities.Garage</class>
+        <class>fr.cdrochon.smamonolithe.garage.commonapi.events.GarageCreatedEvent</class>
+
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" /> <!-- DB Driver -->
