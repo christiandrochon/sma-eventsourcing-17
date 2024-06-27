@@ -83,7 +83,7 @@ public class GarageEventHandlerService {
     @QueryHandler
     public GarageResponseDTO on(GetGarageDTO getGarageQueryDTO) {
         Garage garageQuery = garageQueryRepository.findById(getGarageQueryDTO.getId()).get();
-        System.out.println(garageQuery);
+        
 //        return garageQueryMapper.garageQueryToGarageQueryDTO(garageQuery);
         return garageQueryRepository.findById(getGarageQueryDTO.getId()).map(GarageMapperManuel::toGarageDTO).get();
     }

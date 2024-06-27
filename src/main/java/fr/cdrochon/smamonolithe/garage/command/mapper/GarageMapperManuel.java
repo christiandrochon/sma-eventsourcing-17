@@ -7,6 +7,9 @@ import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+/**
+ * Mapper personnalisé pour recuperer les données @Embedded des GarageDTO
+ */
 @Component
 public class GarageMapperManuel {
    
