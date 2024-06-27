@@ -1,4 +1,4 @@
-package fr.cdrochon.smamonolithe.garage.commonapi.enums;
+package fr.cdrochon.smamonolithe.garage.command.enums;
 
 public enum GarageStatus {
     CREATED, DELETED;

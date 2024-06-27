@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.garage.command.commands;
 
-import fr.cdrochon.smamonolithe.garage.commonapi.enums.GarageStatus;
+import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

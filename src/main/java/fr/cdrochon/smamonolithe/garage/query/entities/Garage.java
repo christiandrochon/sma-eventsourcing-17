@@ -5,7 +5,7 @@ package fr.cdrochon.smamonolithe.garage.query.entities;
 //import jakarta.persistence.GenerationType;
 //import jakarta.persistence.Id;
 
-import fr.cdrochon.smamonolithe.garage.commonapi.enums.GarageStatus;
+import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import lombok.*;
 
 import javax.persistence.*;

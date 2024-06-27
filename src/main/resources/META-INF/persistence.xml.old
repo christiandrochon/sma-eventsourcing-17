@@ -11,7 +11,7 @@
 <!--        <class>fr.cdrochon.smamonolithe.garage.command.commands.GarageCreateCommand</class>-->
         <class>fr.cdrochon.smamonolithe.garage.command.controller.GarageCommandController</class>
         <class>fr.cdrochon.smamonolithe.garage.query.entities.Garage</class>
-        <class>fr.cdrochon.smamonolithe.garage.commonapi.events.GarageCreatedEvent</class>
+        <class>fr.cdrochon.smamonolithe.garage.events.GarageCreatedEvent</class>
 
 
         <properties>

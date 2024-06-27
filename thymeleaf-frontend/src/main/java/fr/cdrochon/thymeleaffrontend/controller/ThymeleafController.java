@@ -45,12 +45,14 @@ public class ThymeleafController {
     }
     
     @GetMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String createGarage(Model model) {
         model.addAttribute("garageDTO", new GarageDTO());
         return "createGarageForm";
     }
     
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ModelAndView createGarage(@ModelAttribute GarageDTO garageDTO) {
         try {
             Garage garage = new Garage();
@@ -138,7 +140,7 @@ public class ThymeleafController {
     
     
     @GetMapping("/client/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
     public String clientById(@PathVariable Long id, Model model) {
         Client client = restClient.get().uri("/clients/" + id)
                                   .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
@@ -149,7 +151,7 @@ public class ThymeleafController {
     }
     
     @GetMapping("/clients")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
     public String clients(Model model) {
         List<Client> clients =
                 restClient.get()
@@ -174,7 +176,7 @@ public class ThymeleafController {
     }
     
     @GetMapping("/vehicules")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
     public String vehicules(Model model) {
         List<Vehicule> vehicules = restClient.get().uri("/vehicules")
                                              .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))

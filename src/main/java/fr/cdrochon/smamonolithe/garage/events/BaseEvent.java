@@ -1,4 +1,4 @@
-package fr.cdrochon.smamonolithe.garage.commonapi.events;
+package fr.cdrochon.smamonolithe.garage.events;
 
 import lombok.Getter;
 

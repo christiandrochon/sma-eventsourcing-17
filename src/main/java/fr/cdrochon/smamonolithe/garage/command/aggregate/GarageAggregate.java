@@ -1,8 +1,8 @@
 package fr.cdrochon.smamonolithe.garage.command.aggregate;
 
 import fr.cdrochon.smamonolithe.garage.command.commands.GarageCreateCommand;
-import fr.cdrochon.smamonolithe.garage.commonapi.enums.GarageStatus;
-import fr.cdrochon.smamonolithe.garage.commonapi.events.GarageCreatedEvent;
+import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
+import fr.cdrochon.smamonolithe.garage.events.GarageCreatedEvent;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
 import org.axonframework.commandhandling.CommandHandler;

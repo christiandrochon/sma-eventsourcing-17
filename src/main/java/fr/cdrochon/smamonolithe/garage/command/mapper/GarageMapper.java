@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface GarageQueryMapper {
+public interface GarageMapper {
     
     @Mapping(source = "idQuery", target = "id")
     @Mapping(source = "nomGarage", target = "nomGarage")

@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.garage.query.services;
 
-import fr.cdrochon.smamonolithe.garage.commonapi.events.GarageCreatedEvent;
-import fr.cdrochon.smamonolithe.garage.command.mapper.GarageQueryMapper;
+import fr.cdrochon.smamonolithe.garage.command.mapper.GarageMapper;
+import fr.cdrochon.smamonolithe.garage.events.GarageCreatedEvent;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GetGarageDTO;
 import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
@@ -26,7 +26,7 @@ public class GarageEventHandlerService {
     private final GarageRepository garageQueryRepository;
     private final GarageTransactionRepository garageQueryTransactionRepository;
     
-    private final GarageQueryMapper garageQueryMapper;
+    private final GarageMapper garageQueryMapper;
 
     private final QueryUpdateEmitter queryUpdateEmitter;
 
@@ -35,7 +35,7 @@ public class GarageEventHandlerService {
     //    private String identifier;
     
     public GarageEventHandlerService(GarageRepository garageQueryRepository, GarageTransactionRepository garageQueryTransactionRepository,
-                                     QueryUpdateEmitter queryUpdateEmitter, GarageQueryMapper garageQueryMapper) {
+                                     QueryUpdateEmitter queryUpdateEmitter, GarageMapper garageQueryMapper) {
         this.garageQueryRepository = garageQueryRepository;
         this.garageQueryTransactionRepository = garageQueryTransactionRepository;
         this.queryUpdateEmitter = queryUpdateEmitter;
