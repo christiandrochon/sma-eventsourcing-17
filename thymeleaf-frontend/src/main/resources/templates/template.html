@@ -37,23 +37,23 @@
       </ul>
 
 <!--      AUTHENTIFICATION-->
-      <ul class="navbar">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span th:text="${#authentication.getName()}"></span>
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" th:href="@{/login}">Login</a></li>
-            <li>
-              <form th:action="@{/logout}" method="post">
-                <button class="btn btn-success">Logout</button>
-              </form>
-            </li>
-<!--            <li><hr class="dropdown-divider"></li>-->
-<!--            <li><a class="dropdown-item" href="#">Profil</a></li>-->
-          </ul>
-        </li>
-      </ul>
+<!--      <ul class="navbar">-->
+<!--        <li class="nav-item dropdown">-->
+<!--          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--            <span th:text="${#authentication.getName()}"></span>-->
+<!--          </a>-->
+<!--          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">-->
+<!--            <li><a class="dropdown-item" th:href="@{/login}">Login</a></li>-->
+<!--            <li>-->
+<!--              <form th:action="@{/logout}" method="post">-->
+<!--                <button class="btn btn-success">Logout</button>-->
+<!--              </form>-->
+<!--            </li>-->
+<!--&lt;!&ndash;            <li><hr class="dropdown-divider"></li>&ndash;&gt;-->
+<!--&lt;!&ndash;            <li><a class="dropdown-item" href="#">Profil</a></li>&ndash;&gt;-->
+<!--          </ul>-->
+<!--        </li>-->
+<!--      </ul>-->
     </div>
   </div>
 </nav>
