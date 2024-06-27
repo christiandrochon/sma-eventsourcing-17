@@ -1,9 +1,8 @@
-package fr.cdrochon.thymeleaffrontend.ui.forms;
+package fr.cdrochon.thymeleaffrontend.ui.validation;
 
 
-import fr.cdrochon.thymeleaffrontend.entity.Adresse;
+import fr.cdrochon.thymeleaffrontend.entity.AdresseGarage;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -35,7 +34,7 @@ public class CreateGarageForm {
     @Size(min = 3, max = 32)
     private String mailResponsable;
 
-    private Adresse adresse;
+    private AdresseGarage adresse;
 
 
 
