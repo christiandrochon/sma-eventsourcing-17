@@ -1,4 +1,4 @@
-package fr.cdrochon.smamonolithe.garage.commonapi.command;
+package fr.cdrochon.smamonolithe.garage.command.commands;
 
 import fr.cdrochon.smamonolithe.garage.commonapi.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;

@@ -2,14 +2,10 @@ package fr.cdrochon.smamonolithe.garage.command.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cdrochon.smamonolithe.garage.command.services.GarageCommandService;
-import fr.cdrochon.smamonolithe.garage.commonapi.dto.GarageRequestDTO;
-import fr.cdrochon.smamonolithe.garage.commonapi.dto.GarageRestPostDTO;
-import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
+import fr.cdrochon.smamonolithe.garage.command.dtos.GarageRestPostDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.queryhandling.QueryGateway;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

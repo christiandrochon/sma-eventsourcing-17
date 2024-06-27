@@ -1,6 +1,5 @@
-package fr.cdrochon.smamonolithe.garage.commonapi.dto;
+package fr.cdrochon.smamonolithe.garage.command.dtos;
 
-import fr.cdrochon.smamonolithe.garage.commonapi.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
 import lombok.*;
 

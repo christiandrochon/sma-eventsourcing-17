@@ -1,4 +1,4 @@
-package fr.cdrochon.smamonolithe.garage.commonapi.exceptions;
+package fr.cdrochon.smamonolithe.garage.command.exceptions;
 
 public class CreatedGarageException extends RuntimeException {
     public CreatedGarageException(String s) {

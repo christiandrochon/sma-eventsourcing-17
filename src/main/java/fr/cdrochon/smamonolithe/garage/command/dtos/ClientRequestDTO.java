@@ -1,4 +1,4 @@
-package fr.cdrochon.smamonolithe.garage.commonapi.dto;
+package fr.cdrochon.smamonolithe.garage.command.dtos;
 
 import lombok.*;
 

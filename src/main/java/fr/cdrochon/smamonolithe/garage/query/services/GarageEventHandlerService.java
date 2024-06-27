@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.garage.query.services;
 
 import fr.cdrochon.smamonolithe.garage.commonapi.events.GarageCreatedEvent;
-import fr.cdrochon.smamonolithe.garage.mapper.GarageQueryMapper;
+import fr.cdrochon.smamonolithe.garage.command.mapper.GarageQueryMapper;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GetGarageDTO;
 import fr.cdrochon.smamonolithe.garage.query.entities.Garage;

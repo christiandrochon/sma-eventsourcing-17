@@ -1,10 +1,9 @@
 package fr.cdrochon.smamonolithe.garage.command.services;
 
-import fr.cdrochon.smamonolithe.garage.commonapi.command.ClientCreateCommand;
-import fr.cdrochon.smamonolithe.garage.commonapi.command.GarageCreateCommand;
-import fr.cdrochon.smamonolithe.garage.commonapi.dto.ClientRequestDTO;
-import fr.cdrochon.smamonolithe.garage.commonapi.dto.GarageRequestDTO;
-import fr.cdrochon.smamonolithe.garage.commonapi.dto.GarageRestPostDTO;
+import fr.cdrochon.smamonolithe.garage.command.commands.ClientCreateCommand;
+import fr.cdrochon.smamonolithe.garage.command.commands.GarageCreateCommand;
+import fr.cdrochon.smamonolithe.garage.command.dtos.ClientRequestDTO;
+import fr.cdrochon.smamonolithe.garage.command.dtos.GarageRestPostDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
