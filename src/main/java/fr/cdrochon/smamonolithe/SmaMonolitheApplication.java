@@ -2,14 +2,11 @@ package fr.cdrochon.smamonolithe;
 
 //import fr.cdrochon.smamonolithe.garagesansevent.repository.GarageRepository;
 
-import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
-import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
 @SpringBootApplication
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
