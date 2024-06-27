@@ -9,12 +9,12 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+//import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.context.SecurityContext;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+//import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.web.bind.annotation.*;
 //import org.springframework.web.client.RestClient;
 
@@ -181,7 +181,7 @@ public class GarageCommandController {
      * @return
      */
     @GetMapping(path = "/eventStore/{id}") //consumes = MediaType.TEXT_EVENT_STREAM_VALUE
-    @PreAuthorize("hasAuthority('USER')")
+//    @PreAuthorize("hasAuthority('USER')")
     public Stream readEventStore(@PathVariable String id) {
         return eventStore.readEvents(id).asStream();
     }
@@ -208,13 +208,13 @@ public class GarageCommandController {
      *
      * @return
      */
-    private String getJwtTokenValue() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication authentication = context.getAuthentication();
-        OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
-        DefaultOidcUser oidcUser = (DefaultOidcUser) oAuth2AuthenticationToken.getPrincipal();
-        String jwtTokenValue = oidcUser.getIdToken()
-                                       .getTokenValue();
-        return jwtTokenValue;
-    }
+//    private String getJwtTokenValue() {
+//        SecurityContext context = SecurityContextHolder.getContext();
+//        Authentication authentication = context.getAuthentication();
+//        OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
+//        DefaultOidcUser oidcUser = (DefaultOidcUser) oAuth2AuthenticationToken.getPrincipal();
+//        String jwtTokenValue = oidcUser.getIdToken()
+//                                       .getTokenValue();
+//        return jwtTokenValue;
+//    }
 }

@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.garage.query.services;
 
 import fr.cdrochon.smamonolithe.garage.command.mapper.GarageMapper;
+import fr.cdrochon.smamonolithe.garage.command.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.events.GarageCreatedEvent;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GetGarageDTO;
@@ -27,6 +28,7 @@ public class GarageEventHandlerService {
     private final GarageTransactionRepository garageQueryTransactionRepository;
     
     private final GarageMapper garageQueryMapper;
+    private final GarageMapperManuel garageMapperManuel;
 
     private final QueryUpdateEmitter queryUpdateEmitter;
 
@@ -35,11 +37,12 @@ public class GarageEventHandlerService {
     //    private String identifier;
     
     public GarageEventHandlerService(GarageRepository garageQueryRepository, GarageTransactionRepository garageQueryTransactionRepository,
-                                     QueryUpdateEmitter queryUpdateEmitter, GarageMapper garageQueryMapper) {
+                                     QueryUpdateEmitter queryUpdateEmitter, GarageMapper garageQueryMapper, GarageMapperManuel garageMapperManuel) {
         this.garageQueryRepository = garageQueryRepository;
         this.garageQueryTransactionRepository = garageQueryTransactionRepository;
         this.queryUpdateEmitter = queryUpdateEmitter;
         this.garageQueryMapper = garageQueryMapper;
+        this.garageMapperManuel = garageMapperManuel;
     }
     
     /**
@@ -80,7 +83,9 @@ public class GarageEventHandlerService {
     @QueryHandler
     public GarageResponseDTO on(GetGarageDTO getGarageQueryDTO) {
         Garage garageQuery = garageQueryRepository.findById(getGarageQueryDTO.getId()).get();
-        return garageQueryMapper.garageQueryToGarageQueryDTO(garageQuery);
+        System.out.println(garageQuery);
+//        return garageQueryMapper.garageQueryToGarageQueryDTO(garageQuery);
+        return garageQueryRepository.findById(getGarageQueryDTO.getId()).map(GarageMapperManuel::toGarageDTO).get();
     }
     
     /**

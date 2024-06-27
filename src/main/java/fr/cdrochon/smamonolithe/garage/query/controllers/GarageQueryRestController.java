@@ -1,11 +1,11 @@
 package fr.cdrochon.smamonolithe.garage.query.controllers;
 
-import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;
-import fr.cdrochon.smamonolithe.garage.query.dto.GetGarageDTO;
-import fr.cdrochon.smamonolithe.garage.query.dto.GetAllGarageDTO;
+import fr.cdrochon.smamonolithe.garage.query.dto.*;
+import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
+import fr.cdrochon.smamonolithe.garage.query.services.GarageEventHandlerService;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,22 +15,43 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/queries")
-@PreAuthorize("hasAuthority('USER')")
+//@PreAuthorize("hasAuthority('USER')")
 public class GarageQueryRestController {
     
     private final QueryGateway queryGateway;
+    private final GarageRepository garageRepository;
     
-    public GarageQueryRestController(QueryGateway queryGateway) {
+    public GarageQueryRestController(QueryGateway queryGateway, GarageRepository garageRepository) {
         this.queryGateway = queryGateway;
+        this.garageRepository = garageRepository;
     }
     
+    /**
+     * Renvoi les informations utiles à la partie query lors d'une recherche. Il y a moins din'ofrmations que dans l'objet renovyé pour l'affichage d'un hgarage à un concessionnaire
+     * @param id
+     * @return
+     */
     @GetMapping(path = "/garages/{id}")
-    @PreAuthorize("hasAuthority('USER')")
+//    @PreAuthorize("hasAuthority('USER')")
     public GarageResponseDTO getGarageQuery(@PathVariable String id) {
         GetGarageDTO queryDTO = new GetGarageDTO();
         queryDTO.setId(id);
+    
         return queryGateway.query(queryDTO, GarageResponseDTO.class).join();
     }
+    
+    /**
+     * Renvoi les informations pour l'affichage dd'un garage à un concessionnaire dans thymeleaf
+     * @param id
+     * @return
+     */
+//    @GetMapping(path = "/garage/{id}")
+//    //    @PreAuthorize("hasAuthority('USER')")
+//    public GarageResponseRestDTO getGarageRestQuery(@PathVariable String id) {
+//        GetGarageRestDTO queryDTO = new GetGarageRestDTO();
+//        queryDTO.setId(id);
+//        return queryGateway.query(queryDTO, GarageResponseRestDTO.class).join();
+//    }
     
     /**
      * POur trouver tous les garageQueries, on n'utilise pas l'interface Repository usuelle, mais on créé une classe destinée à ca, qui renvoi le type de DTO
@@ -39,7 +60,7 @@ public class GarageQueryRestController {
      * @return
      */
     @GetMapping(path = "/garages")
-    @PreAuthorize("hasAuthority('USER')")
+//    @PreAuthorize("hasAuthority('USER')")
     public List<GarageResponseDTO> getAll() {
         return queryGateway.query(new GetAllGarageDTO(), ResponseTypes.multipleInstancesOf(GarageResponseDTO.class)).join();
     }

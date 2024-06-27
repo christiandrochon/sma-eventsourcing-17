@@ -20,7 +20,7 @@ public class Client {
     private String prenomClient;
     private String mailClient;
     private String telClient;
-
-    @Embedded
-    private Adresse adresseClient;
+//
+//    @Embedded
+//    private AdresseGarage adresseClient;
 }

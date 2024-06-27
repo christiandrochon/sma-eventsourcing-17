@@ -22,11 +22,11 @@ public class Garage {
     @Id
     private String idQuery;
     private String nomGarage;
+    private String mailResponsable;
     @Embedded
     private AdresseGarage adresseGarage;
     //    @Embedded
     //    private ResponsableGarage responsableGarage;
-    private String mailResponsable;
     
     @Enumerated
     private GarageStatus garageStatus;

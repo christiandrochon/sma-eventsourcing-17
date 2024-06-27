@@ -21,7 +21,6 @@ public class GarageCreateCommand extends BaseCommand<String> {
     private String nomGarage;
     private String mailResponsable;
     private AdresseGarage adresseGarage;
-    private GarageStatus garageStatus;
     private Instant dateQuery;
     
     public GarageCreateCommand(String id) {
