@@ -85,7 +85,7 @@ public class GarageEventHandlerService {
         Garage garageQuery = garageQueryRepository.findById(getGarageQueryDTO.getId()).get();
         
 //        return garageQueryMapper.garageQueryToGarageQueryDTO(garageQuery);
-        return garageQueryRepository.findById(getGarageQueryDTO.getId()).map(GarageMapperManuel::toGarageDTO).get();
+        return garageQueryRepository.findById(getGarageQueryDTO.getId()).map(GarageMapperManuel::garageToGarageDTO).get();
     }
     
     /**
