@@ -11,15 +11,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class GarageMapperManuel {
    
-    public static GarageResponseDTO garageToGarageDTO(Garage garage){
+    public static GarageResponseDTO convertGarageToGarageDTO(Garage garage){
+        GarageResponseDTO dto = new GarageResponseDTO();
+        dto.setId(garage.getIdQuery());
+        dto.setNomGarage(garage.getNomGarage());
+        dto.setMailResp(garage.getMailResponsable());
         
-        GarageAdresseDTO garageAdresseDTO = new GarageAdresseDTO();
-        garageAdresseDTO.setNumeroDeRue(garage.getAdresseGarage().getNumeroDeRue());
-        garageAdresseDTO.setRue(garage.getAdresseGarage().getRue());
-        garageAdresseDTO.setCp(garage.getAdresseGarage().getCp());
-        garageAdresseDTO.setVille(garage.getAdresseGarage().getVille());
+        GarageAdresseDTO adresseDTO = new GarageAdresseDTO();
+        adresseDTO.setNumeroDeRue(garage.getAdresseGarage().getNumeroDeRue());
+        adresseDTO.setRue(garage.getAdresseGarage().getRue());
+        adresseDTO.setCp(garage.getAdresseGarage().getCp());
+        adresseDTO.setVille(garage.getAdresseGarage().getVille());
         
-        return new GarageResponseDTO(garage.getIdQuery(), garage.getNomGarage(), garage.getMailResponsable(),
-                                     garageAdresseDTO, garage.getGarageStatus());
+        dto.setAdresse(adresseDTO);
+        
+        return dto;
     }
+    
+    
+    
 }

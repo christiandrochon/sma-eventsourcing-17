@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="template">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Garages</title>
@@ -9,30 +7,27 @@
 </head>
 
 <body>
-<div layout:fragment="content">
+<div th:fragment="content">
     <main class="container">
         <h1>Un garage</h1>
-        <!--        <p th:text="'ID: ' + ${id}"></p>-->
-        <!-- Link back to Page 1 -->
         <a th:text="Retour" th:href="@{/garages}"></a>
 
-        <!--        <h1 class="title">-->
-        <h3>Informations garage</h3>
-        <p>id : [[${garage.id}]]</p>
-        <p>nom du garage : [[${garage.nomGarage}]]</p>
-        <p>mail du responsable : [[${garage.mailResp}]]</p>
-        <h4>Adresse</h4>
-        <p>N° de rue : [[${garage.adresse.numeroDeRue}]]</p>
-        <p>Nom de rue : [[${garage.adresse.rue}]]</p>
-        <p>CP : [[${garage.adresse.cp}]] </p>
-        <p>Ville : [[${garage.adresse.ville}]]</p>
-        <!--        </h1>-->
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Information garage</h3>
+                <p>id : [[${garage.id}]]</p>
+                <p>nom du garage : [[${garage.nomGarage}]]</p>
+                <p>Mail du responsable : [[${garage.mailResp}]]</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Adresse</h4>
+                <p>N° de rue : [[${garage.adresse.numeroDeRue}]]</p>
+                <p>Nom de rue : [[${garage.adresse.rue}]]</p>
+                <p>CP : [[${garage.adresse.cp}]] </p>
+                <p>Ville : [[${garage.adresse.ville}]]</p>
+            </div>
+        </div>
     </main>
 </div>
-
-<!--<th:block th:replace="layout :: footer-and-js">-->
-
-<!--</th:block>-->
 </body>
-
 </html>

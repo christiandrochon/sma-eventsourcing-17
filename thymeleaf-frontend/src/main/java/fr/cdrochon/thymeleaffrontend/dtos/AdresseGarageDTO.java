@@ -1,11 +1,13 @@
-package fr.cdrochon.smamonolithe.garage.query.dto;
+package fr.cdrochon.thymeleaffrontend.dtos;
 
 import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor @AllArgsConstructor @ToString
-public class GarageAdresseDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class AdresseGarageDTO {
     private String numeroDeRue;
     private String rue;
     private String cp;

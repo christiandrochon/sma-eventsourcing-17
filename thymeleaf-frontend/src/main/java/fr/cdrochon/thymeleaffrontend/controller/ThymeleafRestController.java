@@ -98,39 +98,39 @@ public class ThymeleafRestController {
     
 //    @GetMapping("/garages/{id}")
     
-    /**
-     * Affiche les données d'un garage
-     * @param id
-     * @param model
-     * @return
-     */
-    @GetMapping(value = "/garage/{id}")
-//    @PreAuthorize("hasAuthority('USER')")
-    public String garageById(@PathVariable String id, Model model) {
-        GaragePostDTO garage = restClient.get().uri("/queries/garages/" + id)
-//                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                  .retrieve().body(new ParameterizedTypeReference<GaragePostDTO>() {});
-//        System.out.println("resultat de la requete : " + garage.getNomGarage());
-        model.addAttribute("garage", garage);
-        return "garage/view";
-    }
-    
-    /**
-     * Requete vers le ms garage avec RestClient
-     *
-     * @param model
-     * @return
-     */
-    @GetMapping("/garages")
-//    @PreAuthorize("hasAuthority('USER')")
-    public String garages(Model model) {
-        List<Garage> garages = restClient.get().uri("/queries/garages")
-//                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                         .retrieve().body(new ParameterizedTypeReference<List<Garage>>() {
-                });
-        model.addAttribute("garages", garages);
-        return "garages";
-    }
+//    /**
+//     * Affiche les données d'un garage
+//     * @param id
+//     * @param model
+//     * @return
+//     */
+//    @GetMapping(value = "/garage/{id}")
+////    @PreAuthorize("hasAuthority('USER')")
+//    public String garageById(@PathVariable String id, Model model) {
+//        GaragePostDTO garage = restClient.get().uri("/queries/garages/" + id)
+////                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
+//                                  .retrieve().body(new ParameterizedTypeReference<GaragePostDTO>() {});
+////        System.out.println("resultat de la requete : " + garage.getNomGarage());
+//        model.addAttribute("garage", garage);
+//        return "garage/view";
+//    }
+//
+//    /**
+//     * Requete vers le ms garage avec RestClient
+//     *
+//     * @param model
+//     * @return
+//     */
+//    @GetMapping("/garages")
+////    @PreAuthorize("hasAuthority('USER')")
+//    public String garages(Model model) {
+//        List<Garage> garages = restClient.get().uri("/queries/garages")
+////                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
+//                                         .retrieve().body(new ParameterizedTypeReference<List<Garage>>() {
+//                });
+//        model.addAttribute("garages", garages);
+//        return "garages";
+//    }
     
     
     @GetMapping("/client/{id}")
@@ -138,7 +138,7 @@ public class ThymeleafRestController {
     public String clientById(@PathVariable Long id, Model model) {
         Client client = restClient.get().uri("/clients/" + id)
 //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                  .retrieve().body(new ParameterizedTypeReference<Client>() {
+                                  .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("clients", client);
         return "clients";
@@ -151,7 +151,7 @@ public class ThymeleafRestController {
                 restClient.get()
                           .uri("/clients")
 //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                          .retrieve().body(new ParameterizedTypeReference<List<Client>>() {
+                          .retrieve().body(new ParameterizedTypeReference<>() {
                           });
         model.addAttribute("clients", clients);
         return "clients";
@@ -174,7 +174,7 @@ public class ThymeleafRestController {
     public String vehicules(Model model) {
         List<Vehicule> vehicules = restClient.get().uri("/vehicules")
 //                                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                             .retrieve().body(new ParameterizedTypeReference<List<Vehicule>>() {
+                                             .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("vehicules", vehicules);
         return "vehicules";
@@ -185,7 +185,7 @@ public class ThymeleafRestController {
     public String documentById(@PathVariable Long id, Model model) {
         Document document = restClient.get().uri("/document/" + id)
 //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                      .retrieve().body(new ParameterizedTypeReference<Document>() {
+                                      .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("documents", document);
         return "documents";
@@ -196,7 +196,7 @@ public class ThymeleafRestController {
     public String documents(Model model) {
         List<Document> documents = restClient.get().uri("/documents")
 //                                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                             .retrieve().body(new ParameterizedTypeReference<List<Document>>() {
+                                             .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("documents", documents);
         return "documents";

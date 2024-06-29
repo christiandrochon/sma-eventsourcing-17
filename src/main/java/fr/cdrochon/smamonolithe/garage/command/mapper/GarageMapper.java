@@ -14,5 +14,7 @@ public interface GarageMapper {
 //    @Mapping(source = "numeroDeRue", target = "numeroDeRue")
         //    @Mapping(source = "adresse", target = "adresseGarage")
         //    @Mapping(source = "mailResponsable", target = "emailContactGarage")
-    GarageResponseDTO garageQueryToGarageQueryDTO(Garage garage);
+    GarageResponseDTO garageToGarageDTO(Garage garage);
+    
+
 }
