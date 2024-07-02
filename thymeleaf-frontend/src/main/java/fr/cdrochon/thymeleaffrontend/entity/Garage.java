@@ -14,9 +14,8 @@ public class Garage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
-
     private String nomGarage;
+    private String emailContactGarage;
     @Embedded
     private AdresseGarage adresseGarage;
-    private String emailContactGarage;
 }

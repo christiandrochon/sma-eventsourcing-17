@@ -1,4 +1,4 @@
-package fr.cdrochon.thymeleaffrontend.dtos;
+package fr.cdrochon.thymeleaffrontend.dtos.garage;
 
 import lombok.*;
 

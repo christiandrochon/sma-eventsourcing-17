@@ -1,8 +1,6 @@
-package fr.cdrochon.thymeleaffrontend.dtos;
+package fr.cdrochon.thymeleaffrontend.dtos.garage;
 
 import fr.cdrochon.thymeleaffrontend.entity.AdresseGarage;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Embedded;
 import lombok.*;
 
 import java.io.Serializable;
@@ -16,5 +14,6 @@ public class GaragePostDTO implements Serializable {
     private String id;
     private String nomGarage;
     private String mailResp;
+    //FIXME : utiliser l'adresse DTO ?
     private  AdresseGarage adresse;
 }

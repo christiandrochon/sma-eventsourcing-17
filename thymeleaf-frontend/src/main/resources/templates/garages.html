@@ -29,7 +29,9 @@
                         <tbody>
                         <tr th:each="g:${garages}">
 
-                            <td th:if="${g.id != null}"><a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.id}]]</a></td>
+                            <td th:if="${g.id != null}">
+                                <a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.id}]]</a>
+                            </td>
                             <td th:if="${g.id == null}" class="text-decoration-none">N/A</td>
                             <td><a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.nomGarage}]]</a></td>
                             <td><a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.mailResp}]]</a></td>

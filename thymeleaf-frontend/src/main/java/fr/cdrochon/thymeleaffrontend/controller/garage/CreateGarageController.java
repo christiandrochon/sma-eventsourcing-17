@@ -1,9 +1,7 @@
-package fr.cdrochon.thymeleaffrontend.controller;
+package fr.cdrochon.thymeleaffrontend.controller.garage;
 
-import fr.cdrochon.thymeleaffrontend.dtos.GaragePostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
 import fr.cdrochon.thymeleaffrontend.entity.Garage;
-import fr.cdrochon.thymeleaffrontend.ui.validation.CreateGarageForm;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller

@@ -57,7 +57,7 @@ public class GarageCommandController {
      * <p>
      * L'id ne peut pas etre negatif
      *
-     * @param creatClientRequestDTO
+     * @param garageRequestDTO
      * @return
      */
 //    @PostMapping(value = "/creategarage", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -74,54 +74,54 @@ public class GarageCommandController {
     @PostMapping(value = "/createGarage", consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
-    public CompletableFuture<String> createGarage(@RequestBody GarageRestPostDTO creatClientRequestDTO) {
-        
-        try {
-            String url = "http://localhost:8091/createGarage";
-            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-            
-            // Optional default is GET
-            httpClient.setRequestMethod("GET");
-            
-            // Add request header
-            httpClient.setRequestProperty("User-Agent", USER_AGENT);
-            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
-            
-            int responseCode = httpClient.getResponseCode();
-            System.out.println("GET Response Code :: " + responseCode);
-            
-            if(responseCode == HttpURLConnection.HTTP_OK) { // success
-                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                
-                while((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-                
-                // Print result
-                String jsonResponse = response.toString();
-                System.out.println(jsonResponse);
-                
-                // Parse JSON response to Post object
-                ObjectMapper objectMapper = new ObjectMapper();
-                creatClientRequestDTO = objectMapper.readValue(jsonResponse, GarageRestPostDTO.class);
-                
-                // Print the post object
-                System.out.println(creatClientRequestDTO);
-                
-                return garageQueryCommandService.createGarage(creatClientRequestDTO);
-                
-            }
-            else {
-                System.out.println("GET request not worked");
-            }
-            
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-        return garageQueryCommandService.createGarage(creatClientRequestDTO);
+    public CompletableFuture<String> createGarage(@RequestBody GarageRestPostDTO garageRequestDTO) {
+        //TODO: A supprimer?
+//        try {
+//            String url = "http://localhost:8091/createGarage";
+//            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+//
+//            // Optional default is GET
+//            httpClient.setRequestMethod("GET");
+//
+//            // Add request header
+//            httpClient.setRequestProperty("User-Agent", USER_AGENT);
+//            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
+//
+//            int responseCode = httpClient.getResponseCode();
+//            System.out.println("GET Response Code :: " + responseCode);
+//
+//            if(responseCode == HttpURLConnection.HTTP_OK) { // success
+//                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+//                String inputLine;
+//                StringBuilder response = new StringBuilder();
+//
+//                while((inputLine = in.readLine()) != null) {
+//                    response.append(inputLine);
+//                }
+//                in.close();
+//
+//                // Print result
+//                String jsonResponse = response.toString();
+//                System.out.println(jsonResponse);
+//
+//                // Parse JSON response to Post object
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                garageRequestDTO = objectMapper.readValue(jsonResponse, GarageRestPostDTO.class);
+//
+//                // Print the post object
+//                System.out.println(garageRequestDTO);
+//
+//                return garageQueryCommandService.createGarage(garageRequestDTO);
+//
+//            }
+//            else {
+//                System.out.println("GET request not worked");
+//            }
+//
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+        return garageQueryCommandService.createGarage(garageRequestDTO);
     }
     
 }

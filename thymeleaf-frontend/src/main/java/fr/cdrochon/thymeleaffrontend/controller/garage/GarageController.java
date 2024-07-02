@@ -1,7 +1,7 @@
-package fr.cdrochon.thymeleaffrontend.controller;
+package fr.cdrochon.thymeleaffrontend.controller.garage;
 
-import fr.cdrochon.thymeleaffrontend.dtos.GarageGetDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.GaragePostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.garage.GarageGetDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
