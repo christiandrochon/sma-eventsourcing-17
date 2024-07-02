@@ -20,7 +20,7 @@ public class ClientEventController {
     /**
      * Recupere un event identifié par son id
      * @param id
-     * @return
+     * @return DomainEventStream
      */
     @GetMapping("/clientEvents/{id}")
     //    @PreAuthorize("hasAuthority('USER')")

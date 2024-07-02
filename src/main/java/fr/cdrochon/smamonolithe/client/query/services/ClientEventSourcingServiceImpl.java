@@ -15,7 +15,6 @@ public class ClientEventSourcingServiceImpl implements ClientEventSourcingServic
     
     @Override
     public DomainEventStream eventsByClientId(String id) {
-        DomainEventStream domainEventStream = eventStore.readEvents(id);
-        return domainEventStream;
+        return eventStore.readEvents(id);
     }
 }

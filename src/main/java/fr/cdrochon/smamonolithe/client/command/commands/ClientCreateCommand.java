@@ -15,19 +15,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Getter
 public class ClientCreateCommand extends ClientBaseCommand<String> {
 
-    private String nomClient;
-    private String prenomClient;
-    private String mailClient;
-    private String telClient;
-    private AdresseClient adresseClient;
-    
-    
-    public ClientCreateCommand(String id, String mailClient, String telClient, AdresseClient adresseClient) {
-        super(id);
-        this.mailClient = mailClient;
-        this.telClient = telClient;
-        this.adresseClient = adresseClient;
-    }
+    private final String nomClient;
+    private final String prenomClient;
+    private final String mailClient;
+    private final String telClient;
+    private final AdresseClient adresseClient;
     
     public ClientCreateCommand(String id, String nomClient, String prenomClient, String mailClient, String telClient, AdresseClient adresseClient) {
         super(id);

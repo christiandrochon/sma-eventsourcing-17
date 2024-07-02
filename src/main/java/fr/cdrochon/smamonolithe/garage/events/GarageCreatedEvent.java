@@ -10,16 +10,15 @@ import lombok.Getter;
  *
  * Objet immutable
  */
-
+@Getter
 public class GarageCreatedEvent extends GarageBaseEvent<String> {
     
     // je ne garde que le nom du client
-    @Getter private final String nomGarage;
-    @Getter private final String mailResponsable;
-    @Getter private final AdresseGarage adresseGarage;
-    @Getter private final GarageStatus clientStatus;
-//    @Getter
-//    private Instant dateQuery;
+    private final String nomGarage;
+    private final String mailResponsable;
+    private final AdresseGarage adresseGarage;
+    private final GarageStatus clientStatus;
+
     
     public GarageCreatedEvent(String id, String nomGarage, String mailResponsable, AdresseGarage adresseGarage, GarageStatus garageStatus) {
         super(id);
@@ -27,7 +26,6 @@ public class GarageCreatedEvent extends GarageBaseEvent<String> {
         this.mailResponsable = mailResponsable;
         this.adresseGarage = adresseGarage;
         this.clientStatus = garageStatus;
-//        this.dateQuery = dateQuery;
     }
 
 }

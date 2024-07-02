@@ -101,7 +101,7 @@ public class ThymeleafRestController {
     public String vehiculeById(@PathVariable Long id, Model model) {
         Vehicule vehicule = restClient.get().uri("/vehicules/" + id)
 //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                      .retrieve().body(new ParameterizedTypeReference<Vehicule>() {
+                                      .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("vehicules", vehicule);
         return "vehicules";

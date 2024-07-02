@@ -74,12 +74,12 @@ public class GarageQueryRestController {
     @GetMapping(value = "/garage/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<GarageResponseDTO> watch(@PathVariable String id) {
         
-        SubscriptionQueryResult<GarageResponseDTO, GarageResponseDTO> result =
-                queryGateway.subscriptionQuery(
-                        new GetGarageDTO(id),
-                        ResponseTypes.instanceOf(GarageResponseDTO.class),
-                        ResponseTypes.instanceOf(GarageResponseDTO.class)
-                                              );
-        return result.initialResult().concatWith(result.updates());
+        try(SubscriptionQueryResult<GarageResponseDTO, GarageResponseDTO> result = queryGateway.subscriptionQuery(
+                new GetGarageDTO(id),
+                ResponseTypes.instanceOf(GarageResponseDTO.class),
+                ResponseTypes.instanceOf(GarageResponseDTO.class)
+                                                                                                                 )) {
+            return result.initialResult().concatWith(result.updates());
+        }
     }
 }

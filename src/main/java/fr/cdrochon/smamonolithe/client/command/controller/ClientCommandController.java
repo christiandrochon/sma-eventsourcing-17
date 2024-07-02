@@ -1,6 +1,5 @@
 package fr.cdrochon.smamonolithe.client.command.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientRestPostDTO;
 import fr.cdrochon.smamonolithe.client.command.services.ClientCommandService;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -17,8 +16,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
-
-import static org.springframework.http.HttpHeaders.USER_AGENT;
 
 @RestController
 @RequestMapping("/commands")
@@ -43,13 +40,13 @@ public class ClientCommandController {
      * <p>
      * L'id ne peut pas etre negatif
      *
-     * @param clientRequestDTO
+     * @param clientRestPostDTO
      * @return
      */
     @PostMapping(value = "/createClient", consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
-    public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO dto) {
+    public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRestPostDTO) {
 
     try {
 
@@ -67,7 +64,7 @@ public class ClientCommandController {
                 response.append(inputLine);
             }
             in.close();
-            System.out.println(dto.toString());
+            System.out.println(clientRestPostDTO.toString());
 
 //            // Ensure the response is not HTML or XML
 //            if(response.toString().trim().startsWith("<")) {
@@ -85,7 +82,7 @@ public class ClientCommandController {
 //            // Print the post object
 //            System.out.println(clientRequestDTO);
 
-            return clientCommandService.createClient(dto);
+            return clientCommandService.createClient(clientRestPostDTO);
         } else {
             System.out.println("GET request not worked, response code: " + responseCode);
             return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);

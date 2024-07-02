@@ -1,7 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.ui.validation;
 
 import fr.cdrochon.thymeleaffrontend.entity.AdresseClient;
-import fr.cdrochon.thymeleaffrontend.entity.AdresseGarage;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -26,15 +25,6 @@ public class CreateClientForm {
     @NotBlank(message = "champ obligatoire")
     @Email
     private Email mailClient;
-//    private String dateNaissanceClient;
-//    private String dateCreationClient;
-//    private String dateModificationClient;
-//    private String dateSuppressionClient;
-//    private String idAdresseClient;
-//    private String idAdresseFacturationClient;
-//    private String idAdresseLivraisonClient;
-//    private String idAdresseMailClient;
 
-    
     private AdresseClient adresse;
 }

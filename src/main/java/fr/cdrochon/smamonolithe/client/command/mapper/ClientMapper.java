@@ -3,9 +3,6 @@ package fr.cdrochon.smamonolithe.client.command.mapper;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
-import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
-import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;
-import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
 import org.springframework.stereotype.Component;
 
 @Component

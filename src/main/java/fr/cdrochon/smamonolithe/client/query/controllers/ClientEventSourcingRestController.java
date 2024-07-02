@@ -1,7 +1,6 @@
 package fr.cdrochon.smamonolithe.client.query.controllers;
 
 import fr.cdrochon.smamonolithe.client.query.services.ClientEventSourcingService;
-import fr.cdrochon.smamonolithe.garage.query.services.GarageEventSourcingService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

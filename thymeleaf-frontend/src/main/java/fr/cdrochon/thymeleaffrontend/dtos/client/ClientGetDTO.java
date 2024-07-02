@@ -1,6 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.client;
 
-import fr.cdrochon.thymeleaffrontend.dtos.garage.AdresseGarageDTO;
 import lombok.*;
 
 @Getter

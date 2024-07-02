@@ -1,9 +1,10 @@
 package fr.cdrochon.smamonolithe.client.command.dtos;
 
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
-import lombok.*;
-
-import javax.persistence.Embedded;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * permet de faire le lien entre les services command de l'appli et le monde exteieur

@@ -2,8 +2,6 @@ package fr.cdrochon.smamonolithe.client.command.services;
 
 import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientRestPostDTO;
-import fr.cdrochon.smamonolithe.garage.command.commands.GarageCreateCommand;
-import fr.cdrochon.smamonolithe.garage.command.dtos.GarageRestPostDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 

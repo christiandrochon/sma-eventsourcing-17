@@ -1,8 +1,6 @@
 package fr.cdrochon.smamonolithe.garage.command.services;
 
-import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
 import fr.cdrochon.smamonolithe.garage.command.commands.GarageCreateCommand;
-import fr.cdrochon.smamonolithe.client.command.dtos.ClientRequestDTO;
 import fr.cdrochon.smamonolithe.garage.command.dtos.GarageRestPostDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
@@ -22,15 +20,15 @@ public class GarageCommandService {
     /**
      * Genere un UUID aleatoirement pour la creation d'un id de garage
      *
-     * @param createGarageQueryRequestDTO
+     * @param garageRestPostDTO
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
-    public CompletableFuture<String> createGarage(GarageRestPostDTO createGarageQueryRequestDTO) {
+    public CompletableFuture<String> createGarage(GarageRestPostDTO garageRestPostDTO) {
         
         return commandGateway.send(new GarageCreateCommand(UUID.randomUUID().toString(),
-                                                           createGarageQueryRequestDTO.getNomGarage(),
-                                                           createGarageQueryRequestDTO.getEmailContactGarage(),
-                                                           createGarageQueryRequestDTO.getAdresseGarage()
+                                                           garageRestPostDTO.getNomGarage(),
+                                                           garageRestPostDTO.getEmailContactGarage(),
+                                                           garageRestPostDTO.getAdresseGarage()
                                    ));
         //                                                                createGarageQueryRequestDTO.getDateQuery()));
     }

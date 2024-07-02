@@ -1,9 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
 import fr.cdrochon.thymeleaffrontend.entity.Client;
-import fr.cdrochon.thymeleaffrontend.entity.Garage;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

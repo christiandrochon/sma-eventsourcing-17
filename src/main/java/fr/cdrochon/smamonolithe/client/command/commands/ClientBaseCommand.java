@@ -8,9 +8,10 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
  *
  * @param <T>
  */
+@Getter
 public class ClientBaseCommand<T> {
     @TargetAggregateIdentifier
-    @Getter
+
     T id;
     
     public ClientBaseCommand(T id) {

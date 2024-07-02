@@ -1,9 +1,10 @@
 package fr.cdrochon.smamonolithe.client.query.entities;
 
-import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 
 @Entity

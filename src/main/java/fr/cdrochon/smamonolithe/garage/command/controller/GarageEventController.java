@@ -21,7 +21,7 @@ public class GarageEventController {
     /**
      * Recupere un event identifié par son id
      * @param id
-     * @return
+     * @return DomainEventStream
      */
     @GetMapping("/garageEvents/{id}")
 //    @PreAuthorize("hasAuthority('USER')")
