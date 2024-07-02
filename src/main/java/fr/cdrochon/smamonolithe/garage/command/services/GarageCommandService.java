@@ -1,8 +1,8 @@
 package fr.cdrochon.smamonolithe.garage.command.services;
 
-import fr.cdrochon.smamonolithe.garage.command.commands.ClientCreateCommand;
+import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
 import fr.cdrochon.smamonolithe.garage.command.commands.GarageCreateCommand;
-import fr.cdrochon.smamonolithe.garage.command.dtos.ClientRequestDTO;
+import fr.cdrochon.smamonolithe.client.command.dtos.ClientRequestDTO;
 import fr.cdrochon.smamonolithe.garage.command.dtos.GarageRestPostDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
@@ -35,10 +35,10 @@ public class GarageCommandService {
         //                                                                createGarageQueryRequestDTO.getDateQuery()));
     }
     
-    public CompletableFuture<String> addClientToGarage(ClientRequestDTO createClientRequestDTO) {
-        return commandGateway.send(new ClientCreateCommand(createClientRequestDTO.getId(), createClientRequestDTO.getNomClient(),
-                                                           createClientRequestDTO.getPrenomClient()));
-    }
+//    public CompletableFuture<String> addClientToGarage(ClientRequestDTO createClientRequestDTO) {
+//        return commandGateway.send(new ClientCreateCommand(createClientRequestDTO.getId(), createClientRequestDTO.getNomClient(),
+//                                                           createClientRequestDTO.getPrenomClient()));
+//    }
     
     //    public CompletableFuture<String>
     

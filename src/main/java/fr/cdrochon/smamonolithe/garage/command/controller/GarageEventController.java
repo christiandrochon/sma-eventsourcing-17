@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.garage.command.controller;
 
-import fr.cdrochon.smamonolithe.garage.query.services.EventSourcingService;
+import fr.cdrochon.smamonolithe.garage.query.services.GarageEventSourcingService;
 import org.axonframework.eventsourcing.eventstore.DomainEventStream;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/eventSourcing")
 public class GarageEventController {
     
-    private final EventSourcingService eventSourcingService;
+    private final GarageEventSourcingService eventSourcingService;
     
-    public GarageEventController(EventSourcingService eventSourcingService) {
+    public GarageEventController(GarageEventSourcingService eventSourcingService) {
         this.eventSourcingService = eventSourcingService;
     }
     

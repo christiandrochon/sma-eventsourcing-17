@@ -11,7 +11,7 @@ import lombok.Getter;
  * Objet immutable
  */
 
-public class GarageCreatedEvent extends BaseEvent<String> {
+public class GarageCreatedEvent extends GarageBaseEvent<String> {
     
     // je ne garde que le nom du client
     @Getter private final String nomGarage;

@@ -17,7 +17,7 @@ import java.time.Instant;
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
 /**
- * UN agregat correspond à l'etat stable courant de l'appli
+ * Un agregat correspond à l'etat stable courant de l'appli
  * <p>
  * Il permet de traiter une commande
  */
@@ -89,6 +89,7 @@ public class GarageAggregate {
         this.nomGarage = event.getNomGarage();
         this.mailResponsable = event.getMailResponsable();
         this.status = event.getClientStatus();
+        this.adresseGarage = event.getAdresseGarage();
         //        this.date = event.getDateQuery();
         //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }

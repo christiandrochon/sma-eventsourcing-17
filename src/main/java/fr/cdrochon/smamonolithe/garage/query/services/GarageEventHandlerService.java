@@ -76,7 +76,6 @@ public class GarageEventHandlerService {
     /**
      * Recupere tous les garages
      *
-     * @param getAllGarageQueries
      * @return List<GarageResponseDTO>
      */
     @QueryHandler

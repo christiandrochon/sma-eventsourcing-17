@@ -71,7 +71,7 @@ public class GarageQueryRestController {
      * @param id id du garage
      * @return Flux de GarageResponseDTO
      */
-    @GetMapping(value = "/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/garage/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<GarageResponseDTO> watch(@PathVariable String id) {
         
         SubscriptionQueryResult<GarageResponseDTO, GarageResponseDTO> result =

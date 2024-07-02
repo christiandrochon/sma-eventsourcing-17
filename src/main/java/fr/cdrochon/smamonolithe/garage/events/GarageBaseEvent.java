@@ -10,10 +10,10 @@ import lombok.Getter;
  */
 
 
-public class BaseEvent<T> {
+public class GarageBaseEvent<T> {
     @Getter private final T id;
 
-    public BaseEvent(T id) {
+    public GarageBaseEvent(T id) {
         this.id = id;
     }
 }

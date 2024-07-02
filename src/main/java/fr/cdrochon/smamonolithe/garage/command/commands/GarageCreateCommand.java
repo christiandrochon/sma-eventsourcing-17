@@ -1,6 +1,5 @@
 package fr.cdrochon.smamonolithe.garage.command.commands;
 
-import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -16,7 +15,7 @@ import java.time.Instant;
  * Chaque command possede un id
  */
 @Getter
-public class GarageCreateCommand extends BaseCommand<String> {
+public class GarageCreateCommand extends GarageBaseCommand<String> {
     
     private String nomGarage;
     private String mailResponsable;
