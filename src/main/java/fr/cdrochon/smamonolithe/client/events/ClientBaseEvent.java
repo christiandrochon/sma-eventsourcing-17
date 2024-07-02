@@ -2,11 +2,11 @@ package fr.cdrochon.smamonolithe.client.events;
 
 import lombok.Getter;
 
-public class BaseEvent<T> {
+public class ClientBaseEvent<T> {
     @Getter
     private final T id;
     
-    public BaseEvent(T id) {
+    public ClientBaseEvent(T id) {
         this.id = id;
     }
 }

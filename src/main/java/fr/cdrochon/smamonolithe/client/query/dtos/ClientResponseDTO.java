@@ -12,8 +12,10 @@ import lombok.*;
 @ToString
 public class ClientResponseDTO {
     private String id;
-    private String nomGarage;
-    private String mailResp;
+    private String nomClient;
+    private String prenomClient;
+    private String mailClient;
+    private String telClient;
     private ClientAdresseDTO adresse;
     private GarageStatus garageStatus;
 }

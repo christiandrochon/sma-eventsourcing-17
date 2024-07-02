@@ -4,16 +4,24 @@ import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import lombok.Getter;
 
-public class ClientCreatedEvent {
+public class ClientCreatedEvent extends ClientBaseEvent<String> {
     
-    @Getter private final String nomClient;
-    @Getter private final String prenomClient;
-    @Getter private final String mailClient;
-    @Getter private final String telClient;
-    @Getter private final AdresseClient adresseClient;
-    @Getter private final ClientStatus clientStatus;
+    @Getter
+    private final String nomClient;
+    @Getter
+    private final String prenomClient;
+    @Getter
+    private final String mailClient;
+    @Getter
+    private final String telClient;
+    @Getter
+    private final AdresseClient adresseClient;
+    @Getter
+    private final ClientStatus clientStatus;
     
-    public ClientCreatedEvent(String nomClient, String prenomClient, String mailClient, String telClient, AdresseClient adresseClient, ClientStatus clientStatus) {
+    public ClientCreatedEvent(String id, String nomClient, String prenomClient, String mailClient, String telClient, AdresseClient adresseClient,
+                              ClientStatus clientStatus) {
+        super(id);
         this.nomClient = nomClient;
         this.prenomClient = prenomClient;
         this.mailClient = mailClient;

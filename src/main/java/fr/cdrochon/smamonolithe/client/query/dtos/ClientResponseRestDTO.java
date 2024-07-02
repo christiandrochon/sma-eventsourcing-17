@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 public class ClientResponseRestDTO {
     
     private String id;
-    private String nomGarage;
-    private String mailResp;
+    private String nomClient;
+    private String prenomClient;
+    private String mailClient;
+    private String telClient;
     private AdresseClient adresse;
     private GarageStatus garageStatus;
 }
