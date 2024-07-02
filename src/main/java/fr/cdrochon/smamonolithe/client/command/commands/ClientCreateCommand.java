@@ -34,7 +34,7 @@ public class ClientCreateCommand extends ClientBaseCommand<String> {
      * Capture n'importe quelle exception en interne et affiche son message
      *
      * @param exception
-     * @return
+     * @return ResponseEntity<String>
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> exceptionHandler(Exception exception) {

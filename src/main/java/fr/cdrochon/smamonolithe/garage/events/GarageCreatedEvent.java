@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * Les events sont exprimés dans le passé (pour le nommage).
  * Chaque event possede un id.
- *
+ * <p>
  * Objet immutable
  */
 @Getter
@@ -18,7 +18,7 @@ public class GarageCreatedEvent extends GarageBaseEvent<String> {
     private final String mailResponsable;
     private final AdresseGarage adresseGarage;
     private final GarageStatus clientStatus;
-
+    
     
     public GarageCreatedEvent(String id, String nomGarage, String mailResponsable, AdresseGarage adresseGarage, GarageStatus garageStatus) {
         super(id);
@@ -27,5 +27,5 @@ public class GarageCreatedEvent extends GarageBaseEvent<String> {
         this.adresseGarage = adresseGarage;
         this.clientStatus = garageStatus;
     }
-
+    
 }

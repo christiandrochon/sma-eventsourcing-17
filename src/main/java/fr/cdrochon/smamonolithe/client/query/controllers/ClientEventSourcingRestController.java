@@ -21,8 +21,8 @@ public class ClientEventSourcingRestController {
     /**
      * Renvoi l'ensemble des events pour un clientQuery recupéré avec son id
      *
-     * @param id
-     * @return
+     * @param id id du clientQuery
+     * @return Stream
      */
     @GetMapping("/clientQueries/{id}")
     //    @PreAuthorize("hasAuthority('USER')")

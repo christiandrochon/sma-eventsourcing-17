@@ -19,7 +19,7 @@ public class ClientEventController {
     
     /**
      * Recupere un event identifié par son id
-     * @param id
+     * @param id id du client
      * @return DomainEventStream
      */
     @GetMapping("/clientEvents/{id}")

@@ -90,6 +90,4 @@ public class GarageAggregate {
         //        this.date = event.getDateQuery();
         //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }
-    
-    
 }

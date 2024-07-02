@@ -1,6 +1,5 @@
 package fr.cdrochon.smamonolithe.garage.command.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cdrochon.smamonolithe.garage.command.dtos.GarageRestPostDTO;
 import fr.cdrochon.smamonolithe.garage.command.services.GarageCommandService;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -9,20 +8,13 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.concurrent.CompletableFuture;
-
-import static org.springframework.http.HttpHeaders.USER_AGENT;
 
 @RestController
 @RequestMapping("/commands")

@@ -20,7 +20,7 @@ public class GarageEventController {
     
     /**
      * Recupere un event identifié par son id
-     * @param id
+     * @param id id du garage
      * @return DomainEventStream
      */
     @GetMapping("/garageEvents/{id}")

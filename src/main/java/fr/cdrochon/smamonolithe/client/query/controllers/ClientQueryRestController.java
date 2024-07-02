@@ -42,7 +42,6 @@ public class ClientQueryRestController {
     public ClientResponseDTO getGarageQuery(@PathVariable String id) {
         GetClientDTO clientDTO = new GetClientDTO();
         clientDTO.setId(id);
-        ClientResponseDTO clientResponseDTO = queryGateway.query(clientDTO, ClientResponseDTO.class).join();
         return queryGateway.query(clientDTO, ClientResponseDTO.class).join();
     }
     
@@ -76,12 +75,12 @@ public class ClientQueryRestController {
     @GetMapping(value = "/client/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ClientResponseDTO> watch(@PathVariable String id) {
         
-        SubscriptionQueryResult<ClientResponseDTO, ClientResponseDTO> result =
-                queryGateway.subscriptionQuery(
-                        new GetClientDTO(id),
-                        ResponseTypes.instanceOf(ClientResponseDTO.class),
-                        ResponseTypes.instanceOf(ClientResponseDTO.class)
-                                              );
-        return result.initialResult().concatWith(result.updates());
+        try(SubscriptionQueryResult<ClientResponseDTO, ClientResponseDTO> result = queryGateway.subscriptionQuery(
+                new GetClientDTO(id),
+                ResponseTypes.instanceOf(ClientResponseDTO.class),
+                ResponseTypes.instanceOf(ClientResponseDTO.class)
+                                                                                                                 )) {
+            return result.initialResult().concatWith(result.updates());
+        }
     }
 }

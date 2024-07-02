@@ -1,9 +1,9 @@
 package fr.cdrochon.smamonolithe.garage.command.enums;
 
 public enum GarageStatus {
-    CREATED, DELETED;
+    CREATED, DELETED
     
-//    private String name;
+    //    private String name;
 //
 //    GarageStatus(String name) {
 //        this.name = name;

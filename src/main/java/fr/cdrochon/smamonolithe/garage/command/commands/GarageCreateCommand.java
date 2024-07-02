@@ -40,9 +40,6 @@ public class GarageCreateCommand extends GarageBaseCommand<String> {
         this.adresseGarage = adresseGarage;
     }
     
-
-    
-    
     /**
      * Capture n'importe quelle exception en interne et affiche son message
      *

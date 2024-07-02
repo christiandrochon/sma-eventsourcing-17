@@ -41,7 +41,7 @@ public class ClientCommandController {
      * L'id ne peut pas etre negatif
      *
      * @param clientRestPostDTO
-     * @return
+     * @return CompletableFuture<String>
      */
     @PostMapping(value = "/createClient", consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
@@ -146,8 +146,8 @@ public class ClientCommandController {
      * Tester les events du store. On utilise l'id de l'agregat pour consulter l'etat de l'eventstore (json avec tous les events enregistrés)
      * Le format renvoyé est du json dans swagger
      *
-     * @param id
-     * @return
+     * @param id id de l'agregat
+     * @return Stream
      */
     @GetMapping(path = "/eventStoreClient/{id}") //consumes = MediaType.TEXT_EVENT_STREAM_VALUE
     //    @PreAuthorize("hasAuthority('USER')")

@@ -10,11 +10,10 @@ import lombok.Getter;
  * @param <T> le type de l'identifiant de l'entité
  */
 
-
+@Getter
 public class GarageBaseEvent<T> {
-    @Getter
-    private final T id;
     
+    private final T id;
     public GarageBaseEvent(T id) {
         this.id = id;
     }
