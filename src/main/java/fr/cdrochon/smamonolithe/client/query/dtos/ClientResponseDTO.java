@@ -14,6 +14,6 @@ public class ClientResponseDTO {
     private String id;
     private String nomGarage;
     private String mailResp;
-    private GarageAdresseDTO adresse;
+    private ClientAdresseDTO adresse;
     private GarageStatus garageStatus;
 }
