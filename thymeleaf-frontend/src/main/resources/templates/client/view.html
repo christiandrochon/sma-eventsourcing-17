@@ -1,46 +1,41 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="template">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
-    <th:block th:replace="layout :: common-head">
-        <title>Client</title>
-    </th:block>
+    <title th:text="Client"></title>
 </head>
 
 <body>
 
-<!--<main class="container">-->
-<!--    <h2 class="title is-2">[[#{product.title}]] [[${product.name}]]</h2>-->
-<!--    <div class="block section">[[${product.description}]]</div>-->
-<!--    <h3 class="title is-3">[[#{items.included}]] [[${product.name}]]</h3>-->
-<div layout:fragment="content">
+<div th:fragment="content">
     <article class="media block">
-<!--        <figure class="media-left">-->
-<!--            <p class="image is-128x128">-->
-<!--                <img src="#" th:src="@{/img/{path}(path=${item.imagePath})}">-->
-<!--            </p>-->
-<!--        </figure>-->
-        <div class="media-content">
-            <div class="content">
-                <p>
-                    <strong>[[${client.nomCLient}]]</strong>
-                </p>
-                <p>
-                    [[#{client.prenomClient}]] [[${client.prenomClient}]]
-                </p>
+
+        <h1>Un garage</h1>
+        <a th:text="Retour" th:href="@{/clients}"></a>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Information client</h3>
+                <p>id : [[${client.id}]]</p>
+                <p>nom du client : [[${client.nomClient}]]</p>
+                <p>prenom du client : [[${client.prenomClient}]]</p>
+                <p>Mail du client : [[${client.mailClient}]]</p>
+                <p>Tel du client : [[${client.telClient}]]</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Adresse du client</h4>
+                <p>N° de rue : [[${client.adresse.numeroDeRue}]]</p>
+                <p>Nom de rue : [[${client.adresse.rue}]]</p>
+                <p>CP : [[${client.adresse.cp}]] </p>
+                <p>Ville : [[${client.adresse.ville}]]</p>
             </div>
         </div>
     </article>
 </div>
-<!--</main>-->
-<th:block th:replace="layout :: footer-and-js">
-
-</th:block>
 </body>
 
 </html>

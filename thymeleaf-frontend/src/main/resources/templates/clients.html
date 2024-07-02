@@ -29,19 +29,25 @@
                     <tbody>
                     <tr th:each="c:${clients}">
 
-                        <td th:text="${c.id}">
-                            <a href="#" th:href="@{/vehicule/view.html(id=${c.id})}"></a>
+                        <td th:if="${c.id != null}" >
+                            <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.id}]]</a>
                         </td>
-<!--                        <td th:text="${c.nomClient}">-->
-                           <td> <a th:text="${c.nomClient}" href="#" th:href="@{/vehicule/view.html(clientId=${c.id})}"></a>
-                            </td>
-                        <td th:text="${c.prenomClient}"></td>
-                        <td th:text="${c.mailClient}"></td>
-                        <td th:text="${c.telClient}"></td>
-                        <td th:text="${c.adresseClient.numeroDeRue}"></td>
-                        <td th:text="${c.adresseClient.rue}"></td>
-                        <td th:text="${c.adresseClient.cp}"></td>
-                        <td th:text="${c.adresseClient.ville}"></td>
+                        <td th:if="${c.id == null}" class="text-decoration-none">N/A</td>
+                        <td th:if="${c.nomClient != null}" >
+                            <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.nomClient}]]</a></td>
+                        <td th:if="${c.prenomClient != null}" ><a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.prenomClient}]]</a></td>
+                        <td th:if="${c.mailClient != null}"><a href="#" class="text-decoration-none">[[${c.mailClient}]]</a></td>
+                        <td th:if="${c.telClient != null}"><a  href="#" class="text-decoration-none">[[${c.telClient}]]</a></td>
+
+                        <td th:if="${c.adresse != null}" th:text="${c.adresse.numeroDeRue}"  class="ps-2"></td>
+                        <td th:if="${c.adresse == null}" class="ps-2">N/A</td>
+                        <td th:if="${c.adresse != null}" th:text="${c.adresse.rue}"  class="ps-2"></td>
+                        <td th:if="${c.adresse == null}" class="ps-2">N/A</td>
+                        <td th:if="${c.adresse != null}" th:text="${c.adresse.cp}"  class="ps-2"></td>
+                        <td th:if="${c.adresse == null}" class="ps-2">N/A</td>
+                        <td th:if="${c.adresse != null}"  th:text="${c.adresse.ville}"  class="ps-2"></td>
+                        <td th:if="${c.adresse == null}" class="ps-2">N/A</td>
+
                     </tr>
                     </tbody>
                 </table>

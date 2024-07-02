@@ -14,13 +14,11 @@ public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private String id;
     private String nomClient;
     private String prenomClient;
     private String mailClient;
     private String telClient;
-//
-//    @Embedded
-//    private AdresseGarage adresseClient;
+    @Embedded
+    private AdresseClient adresse;
 }

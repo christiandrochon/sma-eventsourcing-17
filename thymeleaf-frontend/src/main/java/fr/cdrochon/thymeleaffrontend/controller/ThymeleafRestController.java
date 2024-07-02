@@ -1,12 +1,8 @@
 package fr.cdrochon.thymeleaffrontend.controller;
 
-import fr.cdrochon.thymeleaffrontend.dtos.GaragePostDTO;
-import fr.cdrochon.thymeleaffrontend.entity.Client;
 import fr.cdrochon.thymeleaffrontend.entity.Document;
-import fr.cdrochon.thymeleaffrontend.entity.Garage;
 import fr.cdrochon.thymeleaffrontend.entity.Vehicule;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
 //import org.springframework.security.access.prepost.PreAuthorize;
 //import org.springframework.security.core.Authentication;
 //import org.springframework.security.core.context.SecurityContext;
@@ -19,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -33,40 +28,6 @@ public class ThymeleafRestController {
 //        this.clientRegistrationRepository = clientRegistrationRepository;
 //    }
     
-    @GetMapping("/create")
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    public String createGarage(Model model) {
-        model.addAttribute("garageDTO", new GaragePostDTO());
-        return "createGarageForm";
-    }
-    
-    @PostMapping("/create")
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    public ModelAndView createGarage(@ModelAttribute GaragePostDTO garageDTO) {
-        try {
-            Garage garage = new Garage();
-//            garage.setId(garageDTO.getId());
-            garage.setNomGarage(garageDTO.getNomGarage());
-            garage.setEmailContactGarage(garageDTO.getMailResp());
-            garage.setAdresseGarage(garageDTO.getAdresse());
-            
-//            MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(garage);
-            //            mappingJacksonValue.setSerializationView(gara);
-            
-//           ResponseEntity<Void> responseEntity =
-                   restClient.post().uri("/commands/create")
-//                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-//                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                   .contentType(MediaType.APPLICATION_JSON)
-                      .body(garage).retrieve().toBodilessEntity();
-                   
-//            System.out.println(responseEntity);
-            return new ModelAndView("redirect:/garages");
-        } catch(Exception e) {
-            System.out.println("ERRRRRRRRRRRRRRRRROOR : " + e.getMessage());
-            return new ModelAndView("createGarageForm");
-        }
-    }
     
     //    @PostMapping("/create")
     //    public ModelAndView createGarage(@Valid @ModelAttribute("createGarageForm") CreateGarageForm garageForm,
@@ -132,30 +93,7 @@ public class ThymeleafRestController {
 //        return "garages";
 //    }
     
-    
-    @GetMapping("/client/{id}")
-//    @PreAuthorize("hasAuthority('USER')")
-    public String clientById(@PathVariable Long id, Model model) {
-        Client client = restClient.get().uri("/clients/" + id)
-//                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                  .retrieve().body(new ParameterizedTypeReference<>() {
-                });
-        model.addAttribute("clients", client);
-        return "clients";
-    }
-    
-    @GetMapping("/clients")
-//    @PreAuthorize("hasAuthority('USER')")
-    public String clients(Model model) {
-        List<Client> clients =
-                restClient.get()
-                          .uri("/clients")
-//                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                          .retrieve().body(new ParameterizedTypeReference<>() {
-                          });
-        model.addAttribute("clients", clients);
-        return "clients";
-    }
+
     
     
     @GetMapping("/vehicule/{id}")
