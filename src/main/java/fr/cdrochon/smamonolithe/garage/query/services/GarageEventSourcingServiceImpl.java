@@ -5,11 +5,11 @@ import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventSourcingServiceImpl implements EventSourcingService{
+public class GarageEventSourcingServiceImpl implements GarageEventSourcingService {
     
     private final EventStore eventStore;
     
-    public EventSourcingServiceImpl(EventStore eventStore) {
+    public GarageEventSourcingServiceImpl(EventStore eventStore) {
         this.eventStore = eventStore;
     }
     
