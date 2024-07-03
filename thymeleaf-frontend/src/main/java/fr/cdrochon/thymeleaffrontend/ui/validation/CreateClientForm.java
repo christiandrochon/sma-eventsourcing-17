@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.ui.validation;
 
-import fr.cdrochon.thymeleaffrontend.entity.AdresseClient;
+import fr.cdrochon.thymeleaffrontend.entity.client.AdresseClient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

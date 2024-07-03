@@ -1,7 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.ui.validation;
 
 
-import fr.cdrochon.thymeleaffrontend.entity.AdresseGarage;
+import fr.cdrochon.thymeleaffrontend.entity.garage.AdresseGarage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;

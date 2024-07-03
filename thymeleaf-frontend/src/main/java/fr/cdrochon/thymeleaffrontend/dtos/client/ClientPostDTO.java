@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.dtos.client;
 
-import fr.cdrochon.thymeleaffrontend.entity.AdresseClient;
+import fr.cdrochon.thymeleaffrontend.entity.client.AdresseClient;
 import lombok.*;
 
 @Getter

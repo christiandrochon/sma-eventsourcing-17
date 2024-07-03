@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.dtos.garage;
 
-import fr.cdrochon.thymeleaffrontend.entity.AdresseGarage;
+import fr.cdrochon.thymeleaffrontend.entity.garage.AdresseGarage;
 import lombok.*;
 
 import java.io.Serializable;

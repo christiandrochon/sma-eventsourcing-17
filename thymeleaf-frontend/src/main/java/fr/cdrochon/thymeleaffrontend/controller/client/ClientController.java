@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
-import fr.cdrochon.thymeleaffrontend.entity.Client;
+import fr.cdrochon.thymeleaffrontend.entity.client.Client;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
