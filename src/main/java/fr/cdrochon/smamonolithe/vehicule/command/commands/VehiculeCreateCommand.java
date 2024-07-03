@@ -55,6 +55,12 @@ public class VehiculeCreateCommand extends VehiculeBaseCommand<String> {
         this.vehiculeStatus = vehiculeStatus;
     }
     
+    public VehiculeCreateCommand(String id, String immatriculationVehicule, Instant dateMiseEnCirculationVehicule) {
+        super(id);
+        this.immatriculationVehicule = immatriculationVehicule;
+        this.dateMiseEnCirculationVehicule = dateMiseEnCirculationVehicule;
+    }
+    
     /**
      * Capture n'importe quelle exception en interne et affiche son message
      *
