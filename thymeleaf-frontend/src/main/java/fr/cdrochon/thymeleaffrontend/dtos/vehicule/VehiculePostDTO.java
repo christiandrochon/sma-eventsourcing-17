@@ -1,8 +1,13 @@
 package fr.cdrochon.thymeleaffrontend.dtos.vehicule;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @Builder
@@ -12,7 +17,9 @@ public class VehiculePostDTO {
     
     private String idVehicule;
     private String immatriculationVehicule;
-    private Instant dateMiseEnCirculationVehicule;
+    @NotNull(message = "champ obligatoire, n'est ce pas ?")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private String dateMiseEnCirculationVehicule;
     //    private Instant dateDeValiditeControleTechnique;
     //    private Instant dateValiditeControleTechniqueComplementaire;
     //    private String urlCertificatImmatriculation;
@@ -38,4 +45,5 @@ public class VehiculePostDTO {
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
     
+
 }
