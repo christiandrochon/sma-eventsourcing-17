@@ -36,10 +36,7 @@ public class VehiculeCreatedEvent extends VehiculeBaseEvent<String>{
     //    private boolean climatisationVehicule;
     
     private VehiculeStatus vehiculeStatus;
-    
-    public VehiculeCreatedEvent(String id) {
-        super(id);
-    }
+
     
     public VehiculeCreatedEvent(String id, String immatriculationVehicule, Instant dateMiseEnCirculationVehicule, VehiculeStatus vehiculeStatus) {
         super(id);

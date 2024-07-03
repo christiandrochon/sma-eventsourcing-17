@@ -20,7 +20,7 @@ public class VehiculeCommandService {
     /**
      * Genere un UUID aleatoirement pour la creation d'un id de vehicule
      *
-     * @param vehiculeRestPostDTO
+     * @param vehiculeRestPostDTO DTO contenant les informations du vehicule a creer
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
     public CompletableFuture<String> createVehicule(VehiculeRestPostDTO vehiculeRestPostDTO) {

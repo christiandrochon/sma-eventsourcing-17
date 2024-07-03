@@ -40,7 +40,7 @@ public class ClientCommandController {
      * <p>
      * L'id ne peut pas etre negatif
      *
-     * @param clientRestPostDTO
+     * @param clientRestPostDTO DTO contenant les informations du client a creer
      * @return CompletableFuture<String>
      */
     @PostMapping(value = "/createClient", consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -49,8 +49,8 @@ public class GarageCommandController {
      * <p>
      * L'id ne peut pas etre negatif
      *
-     * @param garageRequestDTO
-     * @return
+     * @param garageRequestDTO DTO contenant les informations du garage a creer
+     * @return CompletableFuture<String>
      */
 //    @GetMapping(value = "/createGarage", consumes = MediaType.APPLICATION_JSON_VALUE)
 //    public CompletableFuture<CompletableFuture<String>> createGarage(@RequestBody GarageRestPostDTO creatClientRequestDTO) {

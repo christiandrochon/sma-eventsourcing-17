@@ -3,10 +3,8 @@ package fr.cdrochon.smamonolithe.vehicule.query.entities;
 import lombok.*;
 
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Stream;
 
 //TODO 140 marques à saisir
 @Embeddable

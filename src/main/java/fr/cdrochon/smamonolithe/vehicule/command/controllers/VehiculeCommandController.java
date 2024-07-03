@@ -48,7 +48,7 @@ public class VehiculeCommandController {
      * <p>
      * L'id ne peut pas etre negatif
      *
-     * @param vehiculeRequestDTO
+     * @param vehiculeRequestDTO DTO contenant les informations du vehicule a creer
      * @return CompletableFuture<String>
      */
     @GetMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -72,7 +72,7 @@ public class VehiculeCommandController {
      * <p>
      * L'id ne peut pas etre negatif
      *
-     * @param vehiculeRestPostDTO
+     * @param vehiculeRestPostDTO DTO contenant les informations du vehicule a creer
      * @return CompletableFuture<String>
      */
     @PostMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)

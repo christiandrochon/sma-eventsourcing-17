@@ -16,11 +16,4 @@ public class TypeVehicule {
     
     Collection<String> typeVehicule = Arrays.asList("VOITURE", "CAMIONNETTE", "MOTO", "TRICYCLE", "CAMPING_CAR", "NON_DISPONIBLE");
     
-    public Collection<String> getTypeVehicule() {
-        return typeVehicule;
-    }
-    
-    public void setTypeVehicule(Collection<String> typeVehicule) {
-        this.typeVehicule = typeVehicule;
-    }
 }

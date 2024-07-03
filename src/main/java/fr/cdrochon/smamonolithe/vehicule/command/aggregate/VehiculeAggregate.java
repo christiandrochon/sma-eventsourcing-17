@@ -1,8 +1,5 @@
 package fr.cdrochon.smamonolithe.vehicule.command.aggregate;
 
-import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
-import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
-import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
 import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
 import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
@@ -20,9 +17,6 @@ public class VehiculeAggregate {
     
     @AggregateIdentifier
     private String id;
-    
-    private VehiculeStatus vehiculeStatus;
-    
     private String immatriculationVehicule;
     private Instant dateMiseEnCirculationVehicule;
     //    private Instant dateDeValiditeControleTechnique;
@@ -50,6 +44,8 @@ public class VehiculeAggregate {
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
     
+    private VehiculeStatus vehiculeStatus;
+    
     
     public VehiculeAggregate() {
         //requis par Axon
@@ -57,7 +53,7 @@ public class VehiculeAggregate {
     
     /**
      * FONCTION DE DECISION (regle metier)
-     *
+     * <p>
      * Publiation d'un event via AggregateLifeCycle.apply(). Normalement, cet event devrait etre enregistré dans l'event store
      * <p>
      * Instancie un nouvel agregat à chaque requete recue
@@ -72,7 +68,7 @@ public class VehiculeAggregate {
         if(createVehiculeCommand.getId() == null) {
             throw new CreatedGarageException("Le vehicule doit exister ! ");
         }
-  
+        
         System.out.println("**************************");
         System.out.println("Publication de l'evenement = commandHandler dans aggregate");
         AggregateLifecycle.apply(new VehiculeCreatedEvent(createVehiculeCommand.getId(),
@@ -84,7 +80,7 @@ public class VehiculeAggregate {
     
     /**
      * FONCTION D'EVOLUTION (muter l'etat de l'agregat)
-     *
+     * <p>
      * Pour chaque event de type VehiculeCreatedEvent qui arrive dans l'eventstore, on va muter l'etat de l'application
      *
      * @param event
