@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Creation Vehicule</title>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div class="container">
+        <!--        <h2>CREATION</h2>-->
+
+        <form action='#' th:action="@{/createVehicule}" method='post' class="box" th:object="${vehiculeDTO}">
+
+            <div class="field">
+                <label class="label">Immatricuation</label>
+                <div class="control">
+                    <input class="input" type="text" th:field="*{immatriculationVehicule}">
+                </div>
+                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">-->
+            </div>
+            <div class="field">
+                <label class="label">prenom client</label>
+                <div class="control">
+                    <input class="input" type="text" th:field="*{prenomClient}">
+                </div>
+                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">-->
+            </div>
+
+            <div class="field">
+                <label class="label">N° de rue</label>
+                <div class="control">
+                    <input class="input" type="datetime-local" th:field="*{dateMiseEnCirculationVehicule}">
+                </div>
+                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">-->
+            </div>
+<!--            <div class="field">-->
+<!--                <label class="label">Nom de rue</label>-->
+<!--                <div class="control">-->
+<!--                    <input class="input" type="text" th:field="*{adresse.rue}">-->
+<!--                </div>-->
+<!--                &lt;!&ndash;				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">&ndash;&gt;-->
+<!--            </div>-->
+<!--            <div class="field">-->
+<!--                <label class="label">CP</label>-->
+<!--                <div class="control">-->
+<!--                    <input class="input" type="text" th:field="*{adresse.cp}">-->
+<!--                </div>-->
+<!--                &lt;!&ndash;				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">&ndash;&gt;-->
+<!--            </div>-->
+<!--            <div class="field">-->
+<!--                <label class="label">Ville</label>-->
+<!--                <div class="control">-->
+<!--                    <input class="input" type="text" th:field="*{adresse.ville}">-->
+<!--                </div>-->
+<!--                &lt;!&ndash;				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">&ndash;&gt;-->
+<!--            </div>-->
+
+<!--            <div class="field is-grouped">-->
+<!--                <div class="control">-->
+<!--                    <button class="button is-link">Submit</button>-->
+<!--                </div>-->
+<!--            </div>-->
+
+        </form>
+    </div>
+</div>
+</body>
+
+
+</html>
+
