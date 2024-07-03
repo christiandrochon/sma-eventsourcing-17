@@ -1,14 +1,10 @@
 package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
-import fr.cdrochon.smamonolithe.client.command.mapper.ClientMapper;
-import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
-import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
-import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
-import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import fr.cdrochon.smamonolithe.vehicule.command.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
-import fr.cdrochon.smamonolithe.vehicule.query.entities.VehiculeResponseDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,12 +42,12 @@ public class VehiculeRestController {
     @GetMapping("/vehicules/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
-    public VehiculeResponseDTO getVehicule(@PathVariable String id) {
+    public Vehicule getVehicule(@PathVariable String id) {
         
-        VehiculeResponseDTO vehiculeResponseDTO = vehiculeRepository.findById(id).get();
+        Vehicule vehiculeResponseDTO = vehiculeRepository.findById(id).get();
         GetVehiculeDTO vehiculeDTO = new GetVehiculeDTO();
         vehiculeDTO.setId(id);
-        vehiculeResponseDTO = queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
+        vehiculeResponseDTO = queryGateway.query(vehiculeDTO, Vehicule.class).join();
         return vehiculeResponseDTO;
     }
     
@@ -65,12 +60,12 @@ public class VehiculeRestController {
      */
     @GetMapping("/vehicules")
     //    @PreAuthorize("hasAuthority('USER')")
-    public List<VehiculeResponseDTO> getAllVehicules() {
-        List<VehiculeResponseDTO> vehicules = vehiculeRepository.findAll();
+    public List<Vehicule> getAllVehicules() {
+        List<Vehicule> vehicules = vehiculeRepository.findAll();
         
-        List<VehiculeResponseDTO> vehiculeResponseDTOS = vehicules.stream()
-                                                                  .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
-                                                                  .collect(Collectors.toList());
+        List<Vehicule> vehiculeResponseDTOS = vehicules.stream()
+                                                       .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
+                                                       .collect(Collectors.toList());
         return vehicules.stream()
                         .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
                         .collect(Collectors.toList());
@@ -82,14 +77,14 @@ public class VehiculeRestController {
      * @param id id du vehicule
      * @return Flux de VehiculeResponseDTO
      */
-    @GetMapping(value = "/client/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/vehicule/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<VehiculeResponseDTO> watch(@PathVariable String id) {
         
         try(SubscriptionQueryResult<VehiculeResponseDTO, VehiculeResponseDTO> result = queryGateway.subscriptionQuery(
                 new GetVehiculeDTO(id),
                 ResponseTypes.instanceOf(VehiculeResponseDTO.class),
                 ResponseTypes.instanceOf(VehiculeResponseDTO.class)
-                                                                                                                     )) {
+                                                                                                          )) {
             return result.initialResult().concatWith(result.updates());
         }
     }
