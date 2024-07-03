@@ -52,7 +52,7 @@ public class GarageCommandController {
      * @param garageRequestDTO
      * @return
      */
-//    @PostMapping(value = "/creategarage", consumes = MediaType.APPLICATION_JSON_VALUE)
+//    @GetMapping(value = "/createGarage", consumes = MediaType.APPLICATION_JSON_VALUE)
 //    public CompletableFuture<CompletableFuture<String>> createGarage(@RequestBody GarageRestPostDTO creatClientRequestDTO) {
 //        return CompletableFuture.supplyAsync(() -> {
 //            ResponseEntity<GarageRestPostDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/creategarage",
