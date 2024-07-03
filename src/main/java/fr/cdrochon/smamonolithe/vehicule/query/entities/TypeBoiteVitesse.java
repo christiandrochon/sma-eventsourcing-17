@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.Embeddable;
 import java.util.Arrays;
 import java.util.Collection;
+
 @Embeddable
 @Builder
 @Getter
@@ -12,8 +13,8 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class TypeDirectionAssistee {
+public class TypeBoiteVitesse {
     
-    Collection<String> directionAssistee = Arrays.asList("HYDRAULIQUE", "ELECTRIQUE", "SANS_DIRECTION_ASSISTEE");
+    Collection<String> typeBoiteVitesse = Arrays.asList("MANUELLE", "AUTOMATIQUE", "ROBOTISEE");
     
 }
