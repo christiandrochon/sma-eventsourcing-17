@@ -1,7 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.controller;
 
-import fr.cdrochon.thymeleaffrontend.entity.Document;
-import fr.cdrochon.thymeleaffrontend.entity.Vehicule;
+import fr.cdrochon.thymeleaffrontend.entity.document.Document;
+import fr.cdrochon.thymeleaffrontend.entity.vehicule.Vehicule;
 import org.springframework.core.ParameterizedTypeReference;
 //import org.springframework.security.access.prepost.PreAuthorize;
 //import org.springframework.security.core.Authentication;
@@ -96,27 +96,7 @@ public class ThymeleafRestController {
 
     
     
-    @GetMapping("/vehicule/{id}")
-//    @PreAuthorize("hasAuthority('USER')")
-    public String vehiculeById(@PathVariable Long id, Model model) {
-        Vehicule vehicule = restClient.get().uri("/vehicules/" + id)
-//                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                      .retrieve().body(new ParameterizedTypeReference<>() {
-                });
-        model.addAttribute("vehicules", vehicule);
-        return "vehicules";
-    }
-    
-    @GetMapping("/vehicules")
-//    @PreAuthorize("hasAuthority('USER')")
-    public String vehicules(Model model) {
-        List<Vehicule> vehicules = restClient.get().uri("/vehicules")
-//                                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                             .retrieve().body(new ParameterizedTypeReference<>() {
-                });
-        model.addAttribute("vehicules", vehicules);
-        return "vehicules";
-    }
+
     
     @GetMapping("/document/{id}")
 //    @PreAuthorize("hasAuthority('USER')")
