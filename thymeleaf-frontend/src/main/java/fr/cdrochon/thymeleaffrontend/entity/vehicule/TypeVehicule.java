@@ -1,8 +1,8 @@
 package fr.cdrochon.thymeleaffrontend.entity.vehicule;
 
+import jakarta.persistence.Embeddable;
 import lombok.*;
 
-import javax.persistence.Embeddable;
 import java.util.Arrays;
 import java.util.Collection;
 @Embeddable
