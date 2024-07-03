@@ -1,0 +1,103 @@
+package fr.cdrochon.smamonolithe.vehicule.command.aggregate;
+
+import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
+import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
+import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
+import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
+import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
+import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
+import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
+import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.eventsourcing.EventSourcingHandler;
+import org.axonframework.modelling.command.AggregateIdentifier;
+import org.axonframework.modelling.command.AggregateLifecycle;
+import org.axonframework.spring.stereotype.Aggregate;
+
+import java.time.Instant;
+
+@Aggregate
+public class VehiculeAggregate {
+    
+    @AggregateIdentifier
+    private String id;
+    
+    private VehiculeStatus vehiculeStatus;
+    
+    private String immatriculationVehicule;
+    private Instant dateMiseEnCirculationVehicule;
+    //    private Instant dateDeValiditeControleTechnique;
+    //    private Instant dateValiditeControleTechniqueComplementaire;
+    //    private String urlCertificatImmatriculation;
+    //    private String modeleVehicule;
+    //    private String versionVehicule;
+    //    @Embedded private MarqueVehicule marqueVehicule;
+    //    @Embedded private MotorisationVehicule motorisationVehicule;
+    //    @Embedded private TypeCarburant typeCarburant;
+    //    @Embedded private TypeBoiteVitesse typeBoiteVitesse;
+    //    @Embedded private TypeDirectionAssistee typeDirectionAssistee;
+    //    @Embedded private TypeFreinage typeFreinage;
+    //    @Embedded private TypePropulsion typePropulsion;
+    //    @Embedded private TypeSuspension typeSuspension;
+    //    @Embedded private TypeVehicule typeVehicule;
+    //    private String finitionMotorisationVehicule;
+    //    private int puissanceFiscaleVehicule;
+    //    private int puissanceVehicule;
+    //    private int nombrePortesVehicule;
+    //    private int nombrePlacesVehicule;
+    //    private int kilometrageVehicule;
+    //    private int anneeVehicule;
+    //    private String couleurVehicule;
+    //    private String urlPhotoVehicule;
+    //    private boolean climatisationVehicule;
+    
+    
+    public VehiculeAggregate() {
+        //requis par Axon
+    }
+    
+    /**
+     * FONCTION DE DECISION (regle metier)
+     *
+     * Publiation d'un event via AggregateLifeCycle.apply(). Normalement, cet event devrait etre enregistré dans l'event store
+     * <p>
+     * Instancie un nouvel agregat à chaque requete recue
+     * ici => fonction de decision = verifie regle metier
+     *
+     * @param createVehiculeCommand
+     */
+    @CommandHandler
+    public VehiculeAggregate(VehiculeCreateCommand createVehiculeCommand) {
+        
+        //ici => fonction de decision = verifie regle metier
+        if(createVehiculeCommand.getId() == null) {
+            throw new CreatedGarageException("Le vehicule doit exister ! ");
+        }
+  
+        System.out.println("**************************");
+        System.out.println("Publication de l'evenement = commandHandler dans aggregate");
+        AggregateLifecycle.apply(new VehiculeCreatedEvent(createVehiculeCommand.getId(),
+                                                          createVehiculeCommand.getImmatriculationVehicule(),
+                                                          createVehiculeCommand.getDateMiseEnCirculationVehicule(),
+                                                          VehiculeStatus.EN_CIRCULATION
+        ));
+    }
+    
+    /**
+     * FONCTION D'EVOLUTION (muter l'etat de l'agregat)
+     *
+     * Pour chaque event de type VehiculeCreatedEvent qui arrive dans l'eventstore, on va muter l'etat de l'application
+     *
+     * @param event
+     */
+    @EventSourcingHandler
+    public void on(VehiculeCreatedEvent event) {
+        
+        System.out.println("**********************");
+        System.out.println("Agregat Enventsourcinghandler ");
+        this.id = event.getId();
+        this.immatriculationVehicule = event.getImmatriculationVehicule();
+        this.dateMiseEnCirculationVehicule = event.getDateMiseEnCirculationVehicule();
+        this.vehiculeStatus = event.getVehiculeStatus();
+        //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
+    }
+}
