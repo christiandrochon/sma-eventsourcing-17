@@ -1,4 +1,4 @@
-package fr.cdrochon.thymeleaffrontend.entity;
+package fr.cdrochon.thymeleaffrontend.entity.client;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
@@ -10,8 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class AdresseGarage {
-
+public class AdresseClient {
     private String numeroDeRue;
     private String rue;
     private String cp;
