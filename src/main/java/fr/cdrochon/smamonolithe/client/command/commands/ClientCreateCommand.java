@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
  * Classe abstraite immutable qui effectue une command
- * Implemente l'ajout d'un client dans un garage (regles metier)
+ * Implemente l'ajout d'un client via un event sur le CommandBus
  * <p>
  * Chaque command possede un id
  */
