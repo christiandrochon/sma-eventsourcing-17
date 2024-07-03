@@ -92,6 +92,8 @@ public class ClientCommandController {
         return CompletableFuture.completedFuture("Error: " + e.getMessage());
     }
 }
+
+
 //    public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRequestDTO) {
 //
 //        try {
