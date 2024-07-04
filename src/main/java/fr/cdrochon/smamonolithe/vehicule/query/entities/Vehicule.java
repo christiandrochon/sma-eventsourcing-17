@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.vehicule.query.entities;
 
 
+import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import lombok.*;
 
 
@@ -16,11 +17,10 @@ import java.time.Instant;
 @Builder
 public class Vehicule {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String idVehicule;
 
-    //FIXME : GOD CLASS
     private String immatriculationVehicule;
+    @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant dateMiseEnCirculationVehicule;
 //    private Instant dateDeValiditeControleTechnique;
 //    private Instant dateValiditeControleTechniqueComplementaire;
@@ -46,6 +46,8 @@ public class Vehicule {
 //    private String couleurVehicule;
 //    private String urlPhotoVehicule;
 //    private boolean climatisationVehicule;
+    @Enumerated(EnumType.STRING)
+    private VehiculeStatus vehiculeStatus;
 
     // communication inter ms
 //    @Transient
