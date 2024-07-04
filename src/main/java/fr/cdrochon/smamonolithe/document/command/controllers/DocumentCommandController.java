@@ -66,7 +66,7 @@ public class DocumentCommandController {
                     response.append(inputLine);
                 }
                 in.close();
-                System.out.println(documentDTO.toString());
+                System.out.println(documentDTO);
                 
                 //            // Ensure the response is not HTML or XML
                 //            if(response.toString().trim().startsWith("<")) {

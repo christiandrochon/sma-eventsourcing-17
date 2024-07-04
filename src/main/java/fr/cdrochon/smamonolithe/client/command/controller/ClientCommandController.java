@@ -64,7 +64,7 @@ public class ClientCommandController {
                     response.append(inputLine);
                 }
                 in.close();
-                System.out.println(clientRestPostDTO.toString());
+                System.out.println(clientRestPostDTO);
                 
                 //            // Ensure the response is not HTML or XML
                 //            if(response.toString().trim().startsWith("<")) {
