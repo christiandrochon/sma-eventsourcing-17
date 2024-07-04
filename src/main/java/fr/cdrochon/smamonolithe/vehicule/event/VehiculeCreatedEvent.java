@@ -35,7 +35,7 @@ public class VehiculeCreatedEvent extends VehiculeBaseEvent<String>{
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
     
-    private VehiculeStatus vehiculeStatus;
+    private final VehiculeStatus vehiculeStatus;
 
     
     public VehiculeCreatedEvent(String id, String immatriculationVehicule, Instant dateMiseEnCirculationVehicule, VehiculeStatus vehiculeStatus) {

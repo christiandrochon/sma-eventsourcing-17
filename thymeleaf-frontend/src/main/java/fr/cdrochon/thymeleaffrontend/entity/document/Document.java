@@ -1,6 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.entity.document;
 
-import fr.cdrochon.thymeleaffrontend.entity.vehicule.Vehicule;
 import jakarta.persistence.*;
 import lombok.*;
 

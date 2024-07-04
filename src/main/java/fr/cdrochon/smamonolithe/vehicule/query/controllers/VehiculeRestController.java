@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,12 +26,10 @@ public class VehiculeRestController {
     
     private final QueryGateway queryGateway;
     private final VehiculeRepository vehiculeRepository;
-    private final ClientRepository clientRepository;
     
-    public VehiculeRestController(QueryGateway queryGateway, VehiculeRepository vehiculeRepository, ClientRepository clientRepository) {
+    public VehiculeRestController(QueryGateway queryGateway, VehiculeRepository vehiculeRepository) {
         this.queryGateway = queryGateway;
         this.vehiculeRepository = vehiculeRepository;
-        this.clientRepository = clientRepository;
     }
     
     /**
@@ -42,13 +41,12 @@ public class VehiculeRestController {
     @GetMapping("/vehicules/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
-    public Vehicule getVehicule(@PathVariable String id) {
+    public VehiculeResponseDTO getVehicule(@PathVariable String id) {
         
-        Vehicule vehiculeResponseDTO = vehiculeRepository.findById(id).get();
         GetVehiculeDTO vehiculeDTO = new GetVehiculeDTO();
         vehiculeDTO.setId(id);
-        vehiculeResponseDTO = queryGateway.query(vehiculeDTO, Vehicule.class).join();
-        return vehiculeResponseDTO;
+//       VehiculeResponseDTO vehiculex = queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
+        return queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
     }
     
     
@@ -60,10 +58,10 @@ public class VehiculeRestController {
      */
     @GetMapping("/vehicules")
     //    @PreAuthorize("hasAuthority('USER')")
-    public List<Vehicule> getAllVehicules() {
+    public List<VehiculeResponseDTO> getAllVehicules() {
         List<Vehicule> vehicules = vehiculeRepository.findAll();
         
-        List<Vehicule> vehiculeResponseDTOS = vehicules.stream()
+        List<VehiculeResponseDTO> vehiculeResponseDTOS = vehicules.stream()
                                                        .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
                                                        .collect(Collectors.toList());
         return vehicules.stream()

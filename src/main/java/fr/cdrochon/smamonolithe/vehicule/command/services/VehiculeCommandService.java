@@ -29,6 +29,8 @@ public class VehiculeCommandService {
                                                              vehiculeRestPostDTO.getImmatriculationVehicule(),
                                                              vehiculeRestPostDTO.getDateMiseEnCirculationVehicule()
                                                              
+                                                             
+                                                             
         ));
        
     }

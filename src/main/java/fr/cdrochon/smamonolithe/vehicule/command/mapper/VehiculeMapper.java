@@ -1,7 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.command.mapper;
 
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
-import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseRestDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import org.springframework.stereotype.Component;
 

@@ -136,7 +136,7 @@ public class ThymeleafRestController {
     /**
      * Par defaut, l'appli s'ouvre sans path. Lorsque c'est le cas, on renseigne le path à une page index.html
      *
-     * @return
+     * @return page index.html
      */
     @GetMapping("/")
     public String index() {
