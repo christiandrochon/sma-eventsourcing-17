@@ -55,8 +55,7 @@ public class ClientEventHandlerService {
             client.setMailClient(event.getMailClient());
             client.setTelClient(event.getTelClient());
             client.setAdresseClient(event.getAdresseClient());
-            //TODO  : client.setClientStatus(event.getClientStatus());
-//            client.setClientStatus(event.getClientStatus());
+            client.setClientStatus(event.getClientStatus());
             
             clientRepository.save(client);
         } catch(Exception e) {

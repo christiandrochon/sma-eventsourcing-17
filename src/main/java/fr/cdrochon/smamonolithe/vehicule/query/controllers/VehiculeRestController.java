@@ -1,7 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
-import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
-import fr.cdrochon.smamonolithe.vehicule.command.mapper.VehiculeMapper;
+import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -45,8 +43,6 @@ public class VehiculeRestController {
         
         GetVehiculeDTO vehiculeDTO = new GetVehiculeDTO();
         vehiculeDTO.setId(id);
-        //FIXME: 2021-08-31 16:00:00 PB CONCURRENCE ?
-       VehiculeResponseDTO vehiculex = queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
         return queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
     }
     
@@ -61,10 +57,6 @@ public class VehiculeRestController {
     //    @PreAuthorize("hasAuthority('USER')")
     public List<VehiculeResponseDTO> getAllVehicules() {
         List<Vehicule> vehicules = vehiculeRepository.findAll();
-        
-        List<VehiculeResponseDTO> vehiculeResponseDTOS = vehicules.stream()
-                                                       .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
-                                                       .collect(Collectors.toList());
         return vehicules.stream()
                         .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
                         .collect(Collectors.toList());
@@ -83,7 +75,7 @@ public class VehiculeRestController {
                 new GetVehiculeDTO(id),
                 ResponseTypes.instanceOf(VehiculeResponseDTO.class),
                 ResponseTypes.instanceOf(VehiculeResponseDTO.class)
-                                                                                                          )) {
+                                                                                                                     )) {
             return result.initialResult().concatWith(result.updates());
         }
     }

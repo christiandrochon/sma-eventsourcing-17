@@ -1,6 +1,5 @@
 package fr.cdrochon.smamonolithe.document.command.dtos;
 
-import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

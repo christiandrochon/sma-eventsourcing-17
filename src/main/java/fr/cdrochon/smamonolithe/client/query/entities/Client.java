@@ -1,9 +1,11 @@
 package fr.cdrochon.smamonolithe.client.query.entities;
 
+import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
 import lombok.*;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 
@@ -21,6 +23,6 @@ public class Client {
     
     @Embedded
     private AdresseClient adresseClient;
-//    @Enumerated
-//    private ClientStatus clientStatus;
+    @Enumerated
+    private ClientStatus clientStatus;
 }

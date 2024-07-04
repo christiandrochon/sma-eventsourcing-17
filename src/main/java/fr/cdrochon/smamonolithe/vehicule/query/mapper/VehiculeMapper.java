@@ -1,4 +1,4 @@
-package fr.cdrochon.smamonolithe.vehicule.command.mapper;
+package fr.cdrochon.smamonolithe.vehicule.query.mapper;
 
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;

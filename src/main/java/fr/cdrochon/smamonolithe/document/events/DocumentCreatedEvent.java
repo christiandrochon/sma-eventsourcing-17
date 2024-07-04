@@ -4,10 +4,7 @@ import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import lombok.Getter;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.time.Instant;
-import java.time.LocalDate;
 
 /**
  * Les events sont exprimés dans le passé (pour le nommage).

@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.vehicule.query.services;
 
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
-import fr.cdrochon.smamonolithe.vehicule.command.mapper.VehiculeMapper;
+import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetAllVehiculesDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
@@ -25,12 +25,10 @@ import java.util.stream.Collectors;
 public class VehiculeEventHandlerService {
     
     private final VehiculeRepository vehiculeRepository;
-    private final VehiculeMapper vehiculeMapper;
     private final QueryUpdateEmitter queryUpdateEmitter;
     
-    public VehiculeEventHandlerService(VehiculeRepository vehiculeRepository, VehiculeMapper vehiculeMapper, QueryUpdateEmitter queryUpdateEmitter) {
+    public VehiculeEventHandlerService(VehiculeRepository vehiculeRepository, QueryUpdateEmitter queryUpdateEmitter) {
         this.vehiculeRepository = vehiculeRepository;
-        this.vehiculeMapper = vehiculeMapper;
         this.queryUpdateEmitter = queryUpdateEmitter;
     }
     

@@ -1,7 +1,5 @@
 package fr.cdrochon.smamonolithe.document.command.services;
 
-import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
-import fr.cdrochon.smamonolithe.client.command.dtos.ClientRestPostDTO;
 import fr.cdrochon.smamonolithe.document.command.commands.DocumentCreateCommand;
 import fr.cdrochon.smamonolithe.document.command.dtos.DocumentRestDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;

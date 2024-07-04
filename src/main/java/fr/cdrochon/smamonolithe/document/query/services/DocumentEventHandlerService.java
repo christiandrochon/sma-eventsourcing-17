@@ -24,12 +24,10 @@ import java.util.stream.Collectors;
 public class DocumentEventHandlerService {
     
     private final DocumentRepository documentRepository;
-    private final DocumentMapper documentMapper;
     private final QueryUpdateEmitter queryUpdateEmitter;
     
-    public DocumentEventHandlerService(DocumentRepository documentRepository, DocumentMapper documentMapper, QueryUpdateEmitter queryUpdateEmitter) {
+    public DocumentEventHandlerService(DocumentRepository documentRepository, QueryUpdateEmitter queryUpdateEmitter) {
         this.documentRepository = documentRepository;
-        this.documentMapper = documentMapper;
         this.queryUpdateEmitter = queryUpdateEmitter;
     }
     
@@ -66,7 +64,7 @@ public class DocumentEventHandlerService {
     /**
      * Recupere et renvoi un document avec son id
      *
-     * @param
+     * @param getDocumentDTO contenant l'id du document
      * @return DocumentResponseDTO contenant les informations du document
      */
     @QueryHandler

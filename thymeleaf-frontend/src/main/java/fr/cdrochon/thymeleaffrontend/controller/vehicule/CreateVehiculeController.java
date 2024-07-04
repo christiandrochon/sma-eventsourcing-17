@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
@@ -50,7 +48,7 @@ public class CreateVehiculeController {
             vehicule.setImmatriculationVehicule(vehiculePostDTO.getImmatriculationVehicule());
             
             //Transformation du String en Instant
-            String dateMiseEnCirculationVehicule = vehiculePostDTO.getDateMiseEnCirculationVehicule().toString();
+            String dateMiseEnCirculationVehicule = vehiculePostDTO.getDateMiseEnCirculationVehicule();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localDate = LocalDate.parse(dateMiseEnCirculationVehicule, formatter);
             Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);

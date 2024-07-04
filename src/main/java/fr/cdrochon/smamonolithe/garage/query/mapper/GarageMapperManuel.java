@@ -1,4 +1,4 @@
-package fr.cdrochon.smamonolithe.garage.command.mapper;
+package fr.cdrochon.smamonolithe.garage.query.mapper;
 
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;

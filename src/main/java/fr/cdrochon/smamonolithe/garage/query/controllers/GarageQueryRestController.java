@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.garage.query.controllers;
 
-import fr.cdrochon.smamonolithe.garage.command.mapper.GarageMapperManuel;
+import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GetGarageDTO;
 import fr.cdrochon.smamonolithe.garage.query.entities.Garage;

@@ -17,12 +17,12 @@ import java.time.Instant;
 @Getter
 public class DocumentCreateCommand extends DocumentBaseCommand<String> {
     
-    private String nomDocument;
-    private String titreDocument;
-    private String emetteurDuDocument;
-    private TypeDocument typeDocument;
-    private Instant dateCreationDocument;
-    private Instant dateModificationDocument;
+    private final String nomDocument;
+    private final String titreDocument;
+    private final String emetteurDuDocument;
+    private final TypeDocument typeDocument;
+    private final Instant dateCreationDocument;
+    private final Instant dateModificationDocument;
     
     public DocumentCreateCommand(String id, String nomDocument, String titreDocument, String emetteurDuDocument, TypeDocument typeDocument,
                                  Instant dateCreationDocument, Instant dateModificationDocument) {
@@ -38,7 +38,7 @@ public class DocumentCreateCommand extends DocumentBaseCommand<String> {
     /**
      * Capture n'importe quelle exception en interne et affiche son message
      *
-     * @param exception
+     * @param exception exception
      * @return ResponseEntity<String>
      */
     @ExceptionHandler(Exception.class)

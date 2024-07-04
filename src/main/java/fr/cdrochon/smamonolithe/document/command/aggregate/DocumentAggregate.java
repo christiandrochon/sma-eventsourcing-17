@@ -5,9 +5,6 @@ import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
 import fr.cdrochon.smamonolithe.document.events.DocumentCreatedEvent;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
-import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
-import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
-import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -65,7 +62,7 @@ public class DocumentAggregate {
      * <p>
      * Pour chaque event de type DocumentCreatedEvent qui arrive dans l'eventstore, on va muter l'etat de l'application
      *
-     * @param event
+     * @param event DocumentCreatedEvent
      */
     @EventSourcingHandler
     public void on(DocumentCreatedEvent event) {

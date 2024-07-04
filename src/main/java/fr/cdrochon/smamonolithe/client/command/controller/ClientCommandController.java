@@ -162,7 +162,7 @@ public class ClientCommandController {
     /**
      * Pour recuperer les messages d'erreur lorsqu'une requete s'est mal passée
      *
-     * @param exception
+     * @param exception exception
      * @return message d'erreur
      */
     @ExceptionHandler(Exception.class)
