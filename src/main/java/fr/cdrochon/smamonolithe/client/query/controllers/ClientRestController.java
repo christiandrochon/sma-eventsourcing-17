@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/queries")
-public class ClientQueryRestController {
+public class ClientRestController {
     
     private final QueryGateway queryGateway;
     private final ClientRepository clientRepository;
     
-    public ClientQueryRestController(QueryGateway queryGateway, ClientRepository clientRepository) {
+    public ClientRestController(QueryGateway queryGateway, ClientRepository clientRepository) {
         this.queryGateway = queryGateway;
         this.clientRepository = clientRepository;
     }
