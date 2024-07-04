@@ -47,102 +47,103 @@ public class ClientCommandController {
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
     public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRestPostDTO) {
-
-    try {
-
-        String url = "http://localhost:8091/createClient";
-        HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-        int responseCode = httpClient.getResponseCode();
-        System.out.println("GET Response Code :: " + responseCode);
-
-        if(responseCode == HttpURLConnection.HTTP_OK) { // success
-            BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-            String inputLine;
-            StringBuilder response = new StringBuilder();
-
-            while((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
+        
+        try {
+            
+            String url = "http://localhost:8091/createClient";
+            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+            int responseCode = httpClient.getResponseCode();
+            System.out.println("GET Response Code :: " + responseCode);
+            
+            if(responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                
+                while((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+                System.out.println(clientRestPostDTO.toString());
+                
+                //            // Ensure the response is not HTML or XML
+                //            if(response.toString().trim().startsWith("<")) {
+                //                throw new IllegalArgumentException("Expected JSON response but received HTML/XML.");
+                //            }
+                //
+                //            // Print result
+                //            String jsonResponse = response.toString();
+                //            System.out.println(jsonResponse);
+                //
+                //            // Parse JSON response to Post object
+                //            ObjectMapper objectMapper = new ObjectMapper();
+                //            ClientRestPostDTO  clientRequestDTO = objectMapper.readValue(jsonResponse, ClientRestPostDTO.class);
+                //
+                //            // Print the post object
+                //            System.out.println(clientRequestDTO);
+                
+                return clientCommandService.createClient(clientRestPostDTO);
             }
-            in.close();
-            System.out.println(clientRestPostDTO.toString());
-
-//            // Ensure the response is not HTML or XML
-//            if(response.toString().trim().startsWith("<")) {
-//                throw new IllegalArgumentException("Expected JSON response but received HTML/XML.");
-//            }
-//
-//            // Print result
-//            String jsonResponse = response.toString();
-//            System.out.println(jsonResponse);
-//
-//            // Parse JSON response to Post object
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            ClientRestPostDTO  clientRequestDTO = objectMapper.readValue(jsonResponse, ClientRestPostDTO.class);
-//
-//            // Print the post object
-//            System.out.println(clientRequestDTO);
-
-            return clientCommandService.createClient(clientRestPostDTO);
-        } else {
-            System.out.println("GET request not worked, response code: " + responseCode);
-            return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
+            else {
+                System.out.println("GET request not worked, response code: " + responseCode);
+                return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return CompletableFuture.completedFuture("Error: " + e.getMessage());
         }
-    } catch(Exception e) {
-        e.printStackTrace();
-        return CompletableFuture.completedFuture("Error: " + e.getMessage());
     }
-}
-
-
-//    public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRequestDTO) {
-//
-//        try {
-//            String url = "http://localhost:8091/createClient";
-//            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-//
-//            // Optional default is GET
-//            httpClient.setRequestMethod("GET");
-//
-//            // Add request header
-//            httpClient.setRequestProperty("User-Agent", USER_AGENT);
-//            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
-//
-//            int responseCode = httpClient.getResponseCode();
-//            System.out.println("GET Response Code :: " + responseCode);
-//
-//            if(responseCode == HttpURLConnection.HTTP_OK) { // success
-//                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-//                String inputLine;
-//                StringBuilder response = new StringBuilder();
-//
-//                while((inputLine = in.readLine()) != null) {
-//                    response.append(inputLine);
-//                }
-//                in.close();
-//
-//                // Print result
-//                String jsonResponse = response.toString();
-//                System.out.println(jsonResponse);
-//
-//                // Parse JSON response to Post object
-//                ObjectMapper objectMapper = new ObjectMapper();
-//                clientRequestDTO = objectMapper.readValue(jsonResponse, ClientRestPostDTO.class);
-//
-//                // Print the post object
-//                System.out.println(clientRequestDTO);
-//
-//                return clientCommandService.createClient(clientRequestDTO);
-//
-//            }
-//            else {
-//                System.out.println("GET request not worked");
-//            }
-//
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+    
+    
+    //    public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRequestDTO) {
+    //
+    //        try {
+    //            String url = "http://localhost:8091/createClient";
+    //            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+    //
+    //            // Optional default is GET
+    //            httpClient.setRequestMethod("GET");
+    //
+    //            // Add request header
+    //            httpClient.setRequestProperty("User-Agent", USER_AGENT);
+    //            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
+    //
+    //            int responseCode = httpClient.getResponseCode();
+    //            System.out.println("GET Response Code :: " + responseCode);
+    //
+    //            if(responseCode == HttpURLConnection.HTTP_OK) { // success
+    //                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+    //                String inputLine;
+    //                StringBuilder response = new StringBuilder();
+    //
+    //                while((inputLine = in.readLine()) != null) {
+    //                    response.append(inputLine);
+    //                }
+    //                in.close();
+    //
+    //                // Print result
+    //                String jsonResponse = response.toString();
+    //                System.out.println(jsonResponse);
+    //
+    //                // Parse JSON response to Post object
+    //                ObjectMapper objectMapper = new ObjectMapper();
+    //                clientRequestDTO = objectMapper.readValue(jsonResponse, ClientRestPostDTO.class);
+    //
+    //                // Print the post object
+    //                System.out.println(clientRequestDTO);
+    //
+    //                return clientCommandService.createClient(clientRequestDTO);
+    //
+    //            }
+    //            else {
+    //                System.out.println("GET request not worked");
+    //            }
+    //
+    //        } catch(Exception e) {
+    //            e.printStackTrace();
+    //        }
+    //        return null;
+    //    }
     
     /**
      * Tester les events du store. On utilise l'id de l'agregat pour consulter l'etat de l'eventstore (json avec tous les events enregistrés)
