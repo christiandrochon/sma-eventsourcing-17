@@ -1,4 +1,4 @@
-package fr.cdrochon.smamonolithe.client.command.mapper;
+package fr.cdrochon.smamonolithe.client.query.mapper;
 
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
