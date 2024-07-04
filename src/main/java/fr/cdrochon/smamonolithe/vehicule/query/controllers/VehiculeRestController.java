@@ -52,7 +52,7 @@ public class VehiculeRestController {
     
     
     /**
-     * Renvoi tous les vehicule.
+     * Renvoi tous les vehicules.
      * On n'utilise pas l'interface Repository usuelle, mais on créé une classe destinée à ca, qui renvoi le type de DTO sous forme de multiples instances
      *
      * @return List<VehiculeResponseDTO> comprenant l'adresse sous forme de DTO
