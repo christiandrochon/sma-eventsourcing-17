@@ -11,38 +11,46 @@
 <div layout:fragment="content">
 
     <div class="container">
-        <!--        <h2>CREATION</h2>-->
+        <h4><a th:href="@{client/clients}"> Retour à la liste des clients</a></h4>
 
         <form action='#' th:action="@{/createClient}" method='post' class="box" th:object="${clientDTO}">
 
             <div class="field">
                 <label class="label">nom client</label>
                 <div class="control">
-                    <input class="input" type="text" th:field="*{nomClient}">
+                    <input id="nomClient" class="input" type="text" th:field="*{nomClient}">
+                    <div class="bg-danger-subtle" th:if="${#fields.hasErrors('nomClient')}" th:errors="*{nomClient}">Erreur
+                        de nom
+                    </div>
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">-->
             </div>
             <div class="field">
                 <label class="label">prenom client</label>
                 <div class="control">
-                    <input class="input" type="text" th:field="*{prenomClient}">
+                    <input id="prenomClient" class="input" type="text" th:field="*{prenomClient}">
+                    <div class="bg-danger-subtle" th:if="${#fields.hasErrors('prenomClient')}" th:errors="*{prenomClient}">Erreur
+                        de prenom
+                    </div>
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">-->
             </div>
 
             <div class="field">
                 <label class="label">mail</label>
                 <div class="control">
-                    <input class="input" type="email" th:field="*{mailClient}">
+                    <input id="mailClient" class="input" type="email" th:field="*{mailClient}">
+                    <div class="bg-danger-subtle" th:if="${#fields.hasErrors('mailClient')}" th:errors="*{mailClient}">Erreur
+                        de mail
+                    </div>
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">-->
             </div>
             <div class="field">
                 <label class="label">telephone</label>
                 <div class="control">
-                    <input class="input" type="tel" th:field="*{telClient}">
+                    <input id="telClient" class="input" type="tel" th:field="*{telClient}">
+                    <div class="bg-danger-subtle" th:if="${#fields.hasErrors('telClient')}" th:errors="*{telClient}">Erreur
+                        de numéro de téléphone
+                    </div>
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">-->
             </div>
             <div class="field">
                 <label class="label">N° de rue</label>

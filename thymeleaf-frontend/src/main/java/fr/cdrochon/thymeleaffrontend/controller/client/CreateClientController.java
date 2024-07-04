@@ -29,10 +29,9 @@ public class CreateClientController {
     
     @PostMapping(value = "/createClient")
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String createGarage(@Valid @ModelAttribute ClientPostDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String createGarage(@Valid @ModelAttribute("clientDTO") ClientPostDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {
             model.addAttribute("clientDTO", clientDTO);
-            //            return new ModelAndView("createGarageForm");
             return "createClientForm";
         }
         try {
@@ -45,11 +44,7 @@ public class CreateClientController {
             client.setTelClient(clientDTO.getTelClient());
             //FIXME : utiliser l'adresse DTO ?
             client.setAdresse(clientDTO.getAdresse());
-            
-            //            MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(garage);
-            //            mappingJacksonValue.setSerializationView(gara);
-            
-            //           ResponseEntity<Void> responseEntity =
+
             restClient.post().uri("/commands/createClient")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                       //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
