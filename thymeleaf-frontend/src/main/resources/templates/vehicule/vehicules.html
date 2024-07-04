@@ -18,6 +18,7 @@
                         <th>ID</th>
                         <th>Immat</th>
                         <th>Date de mise en circulation</th>
+                        <th>Status du vehicule</th>
 <!--                        <th>Type</th>-->
 <!--                        <th>Marque</th>-->
 <!--                        <th>Climatisation</th>-->
@@ -33,6 +34,7 @@
                         <td th:if="${v.immatriculationVehicule != null}" >
                             <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.immatriculationVehicule}]]</a></td>
                         <td th:if="${v.dateMiseEnCirculationVehicule != null}" ><a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.dateMiseEnCirculationVehicule}]]</a></td>
+                        <td th:if="${v.vehiculeStatus != null}" ><a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.vehiculeStatus}]]</a></td>
 
 
 
