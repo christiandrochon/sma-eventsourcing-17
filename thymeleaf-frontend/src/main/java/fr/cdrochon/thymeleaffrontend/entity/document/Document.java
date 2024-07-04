@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -19,6 +18,8 @@ public class Document {
     private String nomDocument;
     private String titreDocument;
     private String emetteurDuDocument;
+//    @ManyToOne
+//    @JoinColumn(name = "typeDocument_id")
     @Embedded
     private TypeDocument typeDocument;
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")

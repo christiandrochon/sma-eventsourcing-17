@@ -9,7 +9,7 @@ public class DocumentMapper {
     
     public static DocumentResponseDTO convertDocumentToDocumentDTO(Document document){
         DocumentResponseDTO dto = new DocumentResponseDTO();
-        dto.setIdDocument(document.getId());
+        dto.setId(document.getId());
         dto.setNomDocument(document.getNomDocument());
         dto.setTitreDocument(document.getTitreDocument());
         dto.setEmetteurDuDocument(document.getEmetteurDuDocument());

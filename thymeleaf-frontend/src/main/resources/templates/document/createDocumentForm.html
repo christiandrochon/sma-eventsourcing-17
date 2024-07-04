@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Creation Document</title>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div class="container">
+        <h2>Création d'un document</h2>
+        <h4><a th:href="@{/documents}"> Retour à la liste des documents</a></h4>
+
+        <form action='#' th:action="@{/createDocument}" method='post' class="box" th:object="${documentDTO}">
+
+            <div class="field">
+                <div class="bg-danger-subtle" th:if="${#fields.hasErrors('nomDocument')}" th:errors="*{nomDocument}">Erreur
+                    dans le nom du document
+                </div>
+                <label>Nom du document</label>
+                <div class="control">
+                    <input type="text" id="nomDocument" th:field="*{nomDocument}"/>
+                </div>
+            </div>
+            <div class="field">
+                <div class="bg-danger-subtle border-danger" th:if="${#fields.hasErrors('titreDocument')}"
+                     th:errors="*{titreDocument}">Erreur de titre du document
+                </div>
+                <label class="label">Titre du document</label>
+                <div class="control">
+                    <input id="titreDocument" class="input" type="text" th:field="*{titreDocument}">
+                </div>
+            </div>
+            <div class="field">
+                <div class="bg-danger-subtle" th:if="${#fields.hasErrors('emetteurDuDocument')}" th:errors="*{emetteurDuDocument}">Erreur
+                    dans l'emetteur du document
+                </div>
+                <label>Emetteur du document</label>
+                <div class="control">
+                    <input type="text" id="emetteurDuDocument" th:field="*{emetteurDuDocument}"/>
+                </div>
+            </div>
+            <div class="field">
+                <div class="bg-danger-subtle border-danger" th:if="${#fields.hasErrors('typeDocument')}"
+                     th:errors="*{typeDocument}">Erreur de type du document
+                </div>
+                <label for="typeDocument">Type de Document:</label>
+                <select id="typeDocument" th:field="*{typeDocument}">
+                    <option th:each="typeDocument : ${typeDocuments}" th:value="${typeDocument.nomTypeDocument}" th:text="${typeDocument.nomTypeDocument}">Type</option>
+                </select>
+            </div>
+            <div class="field">
+                <div class="bg-danger-subtle" th:if="${#fields.hasErrors('dateCreationDocument')}" th:errors="*{dateCreationDocument}">Erreur
+                    de date de création du document
+                </div>
+                <label>Date de création du document</label>
+                <div class="control">
+                    <input type="date" id="dateCreationDocument" th:field="*{dateCreationDocument}"/>
+                </div>
+            </div>
+            <div class="field">
+                <div class="bg-danger-subtle border-danger" th:if="${#fields.hasErrors('dateModificationDocument')}"
+                     th:errors="*{dateModificationDocument}">Erreur de date de modification du document
+                </div>
+                <label class="label">Date de modification du document</label>
+                <div class="control">
+                    <input id="dateMiseEnCirculationVehicule" class="input" type="date" th:field="*{dateModificationDocument}">
+                </div>
+            </div>
+            <div class="field">
+                <div class="bg-danger-subtle" th:if="${#fields.hasErrors('documentStatus')}" th:errors="*{documentStatus}">Erreur
+                    du status du document
+                </div>
+                <label for="status">Status:</label>
+                <select id="status" th:field="*{documentStatus}">
+                    <option th:each="status : ${documentStatuses}" th:value="${status}" th:text="${status}">Status</option>
+                </select>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link">Submit</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+</body>
+
+
+</html>
+

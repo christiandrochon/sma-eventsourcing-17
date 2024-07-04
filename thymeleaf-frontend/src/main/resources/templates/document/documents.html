@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Documents</title>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="ps-3">
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+<!--                    <th:block th:if="${#lists.isEmpty(documents)}">-->
+<!--                        <tr>-->
+<!--                            <td colspan="8" class="text-center">Aucun document trouvé</td>-->
+<!--                        </tr>-->
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom du document</th>
+                        <th>Titre</th>
+                        <th>Emetteur</th>
+                        <th>Type</th>
+                        <th>Date de création</th>
+                        <th>Date de modification</th>
+                        <th>Status du document</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+
+                        <tr th:each="d:${documents}">
+
+                            <td th:if="${d.id != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.id}]]</a>
+                            </td>
+                            <td th:if="${d.id == null}" class="text-decoration-none">N/A</td>
+                            <td th:if="${d.nomDocument != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.nomDocument}]]</a>
+                            </td>
+                            <td th:if="${d.titreDocument != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.titreDocument}]]</a>
+                            </td>
+                            <td th:if="${d.emetteurDuDocument != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.emetteurDuDocument}]]</a>
+                            </td>
+                            <td th:if="${d.typeDocument != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.typeDocument.nomTypeDocument}]]</a>
+                            </td>
+                            <td th:if="${d.dateCreationDocument != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.dateCreationDocument}]]</a>
+                            </td>
+                            <td th:if="${d.dateModificationDocument != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.dateModificationDocument}]]</a>
+                            </td>
+                            <td th:if="${d.documentStatus != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.documentStatus}]]</a>
+                            </td>
+                        </tr>
+<!--                    </th:block>-->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

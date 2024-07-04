@@ -12,7 +12,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class DocumentResponseRestDTO {
     
-    private String idDocument;
+    private String id;
     private String nomDocument;
     private String titreDocument;
     private String emetteurDuDocument;
