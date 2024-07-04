@@ -15,7 +15,7 @@ public class DocumentController {
     RestClient restClient = RestClient.create("http://localhost:8092");
     @GetMapping("/document/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
-    public String clientById(@PathVariable String id, Model model) {
+    public String getDocById(@PathVariable String id, Model model) {
         Document document = restClient.get().uri("/queries/documents/" + id)
                                     //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                     .retrieve().body(new ParameterizedTypeReference<>() {
@@ -26,7 +26,7 @@ public class DocumentController {
     
     @GetMapping("/documents")
     //    @PreAuthorize("hasAuthority('USER')")
-    public String clients(Model model) {
+    public String getAllDocuments(Model model) {
         List<Document> documents =
                 restClient.get()
                           .uri("/queries/documents")
