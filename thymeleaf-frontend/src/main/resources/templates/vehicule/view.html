@@ -13,34 +13,29 @@
 </head>
 
 <body>
+<div th:fragment="content">
+    <main class="container">
+        <h1>Un garage</h1>
+        <a th:text="Retour" th:href="@{/vehicules}"></a>
 
-<!--<main class="container">-->
-<!--    <h2 class="title is-2">[[#{product.title}]] [[${product.name}]]</h2>-->
-<!--    <div class="block section">[[${product.description}]]</div>-->
-<!--    <h3 class="title is-3">[[#{items.included}]] [[${product.name}]]</h3>-->
-<div layout:fragment="content">
-    <article class="media block">
-<!--        <figure class="media-left">-->
-<!--            <p class="image is-128x128">-->
-<!--                <img src="#" th:src="@{/img/{path}(path=${item.imagePath})}">-->
-<!--            </p>-->
-<!--        </figure>-->
-        <div class="media-content">
-            <div class="content">
-                <p>
-                    <strong>[[${vehicule.immatriculationVehicule}]]</strong>
-                </p>
-                <p>
-                    [[#{vehicule.typeVehicule}]] [[${vehicule.typeVehicule}]]
-                </p>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Information vehicule</h3>
+                <p>id : [[${vehicule.idVehicule}]]</p>
+                <p>Immatriculation : [[${vehicule.immatriculationVehicule}]]</p>
+                <p>Date de mise en circulation : [[${vehicule.dateMiseEnCirculationVehicule}]]</p>
             </div>
+<!--            <div class="col-md-6">-->
+<!--                <h4>Adresse</h4>-->
+<!--                <p>N° de rue : [[${garage.adresse.numeroDeRue}]]</p>-->
+<!--                <p>Nom de rue : [[${garage.adresse.rue}]]</p>-->
+<!--                <p>CP : [[${garage.adresse.cp}]] </p>-->
+<!--                <p>Ville : [[${garage.adresse.ville}]]</p>-->
+<!--            </div>-->
         </div>
-    </article>
+    </main>
 </div>
-<!--</main>-->
-<th:block th:replace="layout :: footer-and-js">
 
-</th:block>
 </body>
 
 </html>

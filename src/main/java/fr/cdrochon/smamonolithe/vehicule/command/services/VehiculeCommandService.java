@@ -28,6 +28,8 @@ public class VehiculeCommandService {
         return commandGateway.send(new VehiculeCreateCommand(UUID.randomUUID().toString(),
                                                              vehiculeRestPostDTO.getImmatriculationVehicule(),
                                                              vehiculeRestPostDTO.getDateMiseEnCirculationVehicule()
+                                                             
         ));
+       
     }
 }

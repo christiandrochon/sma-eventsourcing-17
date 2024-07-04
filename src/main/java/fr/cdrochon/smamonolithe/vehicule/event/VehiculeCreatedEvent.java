@@ -8,8 +8,8 @@ import java.time.Instant;
 @Getter
 public class VehiculeCreatedEvent extends VehiculeBaseEvent<String>{
     
-    private String immatriculationVehicule;
-    private Instant dateMiseEnCirculationVehicule;
+    private final String immatriculationVehicule;
+    private final Instant dateMiseEnCirculationVehicule;
     //    private Instant dateDeValiditeControleTechnique;
     //    private Instant dateValiditeControleTechniqueComplementaire;
     //    private String urlCertificatImmatriculation;

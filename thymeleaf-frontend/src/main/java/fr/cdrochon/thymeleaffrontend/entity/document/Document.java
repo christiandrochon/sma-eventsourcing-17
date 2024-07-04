@@ -16,7 +16,7 @@ import java.time.LocalDate;
 public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String nomDocument;
     private String titreDocument;
     @Enumerated(EnumType.STRING)
@@ -25,7 +25,7 @@ public class Document {
     private LocalDate dateCreationDocument;
     private LocalDate dateModificationDocument;
     //communication inter ms
-    @Transient
-    private Vehicule vehicule;
-    private Long vehiculeId;
+//    @Transient
+//    private Vehicule vehicule;
+//    private Long vehiculeId;
 }

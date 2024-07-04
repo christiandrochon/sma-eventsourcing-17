@@ -53,6 +53,7 @@ public class VehiculeCommandController {
      */
     @GetMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<CompletableFuture<String>> createGarage(@RequestBody VehiculeRestPostDTO vehiculeRequestDTO) {
+        System.out.println(vehiculeRequestDTO.toString());
         return CompletableFuture.supplyAsync(() -> {
             ResponseEntity<VehiculeRestPostDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createVehicule",
                                                                                             vehiculeRequestDTO,
@@ -79,7 +80,7 @@ public class VehiculeCommandController {
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
     public CompletableFuture<String> createVehicule(@RequestBody VehiculeRestPostDTO vehiculeRestPostDTO) {
-        
+        System.out.println( "createVehicule");
         try {
             String url = "http://localhost:8091/createVehicule";
             HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();

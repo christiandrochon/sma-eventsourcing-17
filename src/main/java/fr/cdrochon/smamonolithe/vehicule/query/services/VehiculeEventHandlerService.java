@@ -10,10 +10,9 @@ import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+//@Transactional
 @Slf4j
 public class VehiculeEventHandlerService {
     
@@ -48,7 +47,7 @@ public class VehiculeEventHandlerService {
             vehicule.setDateMiseEnCirculationVehicule(event.getDateMiseEnCirculationVehicule());
             vehiculeRepository.save(vehicule);
         } catch(Exception e) {
-            System.out.println("VEHICULE ERRRRRRRRRRRRRRRRRRRROOR : " + e.getMessage());
+            System.out.println("EXTRACTTTTTTTTTTTTTTTTTTTTTT VEHICULE ERRRRRRRRRRRRRRRRRRRROOR : " + e.getMessage());
         }
     }
 }

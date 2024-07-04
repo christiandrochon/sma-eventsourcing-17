@@ -45,9 +45,11 @@ public class CreateVehiculeController {
             vehicule.setImmatriculationVehicule(vehiculePostDTO.getImmatriculationVehicule());
             //Transformation du String en Instant
             String dateMiseEnCirculationVehicule = vehiculePostDTO.getDateMiseEnCirculationVehicule().toString();
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localDate = LocalDate.parse(dateMiseEnCirculationVehicule, formatter);
-            Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+            Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
+//            Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
             vehicule.setDateMiseEnCirculationVehicule(instant);
             
             restClient.post().uri("/commands/createVehicule")

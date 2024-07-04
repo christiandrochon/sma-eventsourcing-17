@@ -12,7 +12,7 @@ import java.time.Instant;
 public class GarageTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private Instant instant;
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;

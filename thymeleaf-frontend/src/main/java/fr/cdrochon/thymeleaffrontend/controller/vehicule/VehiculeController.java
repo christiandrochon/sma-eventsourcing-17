@@ -16,7 +16,7 @@ public class VehiculeController {
     RestClient restClient = RestClient.create("http://localhost:8092");
     @GetMapping("/vehicule/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
-    public String vehiculeById(@PathVariable Long id, Model model) {
+    public String vehiculeById(@PathVariable String id, Model model) {
         Vehicule vehicule = restClient.get().uri("/queries/vehicules/" + id)
                                       //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                       .retrieve().body(new ParameterizedTypeReference<>() {

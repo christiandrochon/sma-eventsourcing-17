@@ -100,7 +100,7 @@ public class ThymeleafRestController {
     
     @GetMapping("/document/{id}")
 //    @PreAuthorize("hasAuthority('USER')")
-    public String documentById(@PathVariable Long id, Model model) {
+    public String documentById(@PathVariable String id, Model model) {
         Document document = restClient.get().uri("/document/" + id)
 //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                       .retrieve().body(new ParameterizedTypeReference<>() {

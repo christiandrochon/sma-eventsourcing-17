@@ -65,7 +65,7 @@ public class VehiculeAggregate {
     public VehiculeAggregate(VehiculeCreateCommand createVehiculeCommand) {
         
         //ici => fonction de decision = verifie regle metier
-        if(createVehiculeCommand.getId() == null) {
+        if(createVehiculeCommand.getImmatriculationVehicule() == null) {
             throw new CreatedGarageException("Le vehicule doit exister ! ");
         }
         
@@ -76,6 +76,7 @@ public class VehiculeAggregate {
                                                           createVehiculeCommand.getDateMiseEnCirculationVehicule(),
                                                           VehiculeStatus.EN_CIRCULATION
         ));
+        System.out.println("**************************");
     }
     
     /**
