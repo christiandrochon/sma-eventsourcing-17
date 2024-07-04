@@ -11,52 +11,51 @@
 <div layout:fragment="content">
 
     <div class="container">
-<!--        <h2>CREATION</h2>-->
+        <h4><a th:href="@{garages}"> Retour à la liste des garages</a></h4>
 
         <form action='#' th:action="@{/createGarage}" method='post' class="box" th:object="${garageDTO}">
 
             <div class="field">
                 <label class="label">nom garage</label>
                 <div class="control">
-                    <input class="input" type="text" th:field="*{nomGarage}">
+                    <input id="nomGarage" class="input" type="text" th:field="*{nomGarage}">
+                    <div class="bg-danger-subtle" th:if="${#fields.hasErrors('nomGarage')}" th:errors="*{nomGarage}">Erreur
+                        de nom
+                    </div>
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">-->
             </div>
-
             <div class="field">
                 <label class="label">mail</label>
                 <div class="control">
-                    <input class="input" type="email" th:field="*{mailResp}">
+                    <input id="mailResp" class="input" type="email" th:field="*{mailResp}">
+                    <div class="bg-danger-subtle" th:if="${#fields.hasErrors('mailResp')}" th:errors="*{mailResp}">Erreur
+                        de nom
+                    </div>
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">-->
             </div>
             <div class="field">
                 <label class="label">N° de rue</label>
                 <div class="control">
                     <input class="input" type="text" th:field="*{adresse.numeroDeRue}">
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">-->
             </div>
             <div class="field">
                 <label class="label">Nom de rue</label>
                 <div class="control">
                     <input class="input" type="text" th:field="*{adresse.rue}">
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">-->
             </div>
             <div class="field">
                 <label class="label">CP</label>
                 <div class="control">
                     <input class="input" type="text" th:field="*{adresse.cp}">
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">-->
             </div>
             <div class="field">
                 <label class="label">Ville</label>
                 <div class="control">
                     <input class="input" type="text" th:field="*{adresse.ville}">
                 </div>
-                <!--				<div class="message is-danger" th:if="${#fields.hasErrors('password1')}" th:errors="*{password1}">-->
             </div>
 
             <div class="field is-grouped">

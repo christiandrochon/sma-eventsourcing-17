@@ -2,6 +2,7 @@ package fr.cdrochon.thymeleaffrontend.controller.garage;
 
 import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
 import fr.cdrochon.thymeleaffrontend.entity.garage.Garage;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,7 +54,7 @@ public class CreateGarageController {
     
     @PostMapping("/createGarage")
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String createGarage(@ModelAttribute GaragePostDTO garageDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String createGarage(@Valid @ModelAttribute("garageDTO") GaragePostDTO garageDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {
             model.addAttribute("garageDTO", garageDTO);
 //            return new ModelAndView("createGarageForm");
