@@ -1,15 +1,11 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="template">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
-    <th:block th:replace="layout :: common-head">
-        <title>Vehicule</title>
-    </th:block>
 </head>
 
 <body>
@@ -24,14 +20,8 @@
                 <p>id : [[${vehicule.idVehicule}]]</p>
                 <p>Immatriculation : [[${vehicule.immatriculationVehicule}]]</p>
                 <p>Date de mise en circulation : [[${vehicule.dateMiseEnCirculationVehicule}]]</p>
+                <p>Status du vehicule : [[${vehicule.vehiculeStatus}]]</p>
             </div>
-<!--            <div class="col-md-6">-->
-<!--                <h4>Adresse</h4>-->
-<!--                <p>N° de rue : [[${garage.adresse.numeroDeRue}]]</p>-->
-<!--                <p>Nom de rue : [[${garage.adresse.rue}]]</p>-->
-<!--                <p>CP : [[${garage.adresse.cp}]] </p>-->
-<!--                <p>Ville : [[${garage.adresse.ville}]]</p>-->
-<!--            </div>-->
         </div>
     </main>
 </div>
