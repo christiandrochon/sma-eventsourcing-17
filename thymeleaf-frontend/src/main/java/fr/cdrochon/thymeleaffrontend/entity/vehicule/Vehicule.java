@@ -1,10 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.entity.vehicule;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
@@ -48,6 +45,8 @@ public class Vehicule {
 //    private String couleurVehicule;
 //    private String urlPhotoVehicule;
 //    private boolean climatisationVehicule;
+@Enumerated(EnumType.STRING)
+private VehiculeStatus vehiculeStatus;
 
     // communication inter ms
 //    @Transient
