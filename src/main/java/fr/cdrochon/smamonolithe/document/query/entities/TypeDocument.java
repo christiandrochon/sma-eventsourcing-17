@@ -2,11 +2,13 @@ package fr.cdrochon.smamonolithe.document.query.entities;
 
 import lombok.*;
 
-import javax.persistence.Embeddable;
+import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-@Embeddable
+@Entity
 @Builder
 @Getter
 @Setter
@@ -14,6 +16,13 @@ import java.util.Collection;
 @AllArgsConstructor
 @ToString
 public class TypeDocument {
-    Collection<String> typeDocument = Arrays.asList("DEVIS", "FACTURE");
-//    DEVIS, FACTURE
+    @Id
+    private String id;
+    private String nomTypeDocument;
+    
+    public static final TypeDocument DEVIS = new TypeDocument("DEVIS", "DEVIS");
+    public static final TypeDocument FACTURE = new TypeDocument("FACTURE", "FACTURE");
+    
+    // Liste des valeurs prédéfinies
+    public static final Collection<TypeDocument> PREDEFINED_VALUES = Collections.unmodifiableList(Arrays.asList(DEVIS, FACTURE));
 }

@@ -6,6 +6,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,7 +22,8 @@ public class Document {
     private String nomDocument;
     private String titreDocument;
     private String emetteurDuDocument;
-    @Embedded
+    @ManyToOne
+    @JoinColumn(name = "typeDocument_id")
     private TypeDocument typeDocument;
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant dateCreationDocument;
