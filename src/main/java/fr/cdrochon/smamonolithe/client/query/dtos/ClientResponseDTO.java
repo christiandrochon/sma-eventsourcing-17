@@ -1,5 +1,7 @@
 package fr.cdrochon.smamonolithe.client.query.dtos;
 
+import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
+import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import lombok.*;
 
@@ -15,6 +17,7 @@ public class ClientResponseDTO {
     private String prenomClient;
     private String mailClient;
     private String telClient;
+//    private AdresseClient adresse;
     private ClientAdresseDTO adresse;
-    private GarageStatus garageStatus;
+    private ClientStatusDTO clientStatus;
 }
