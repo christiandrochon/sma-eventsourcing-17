@@ -24,7 +24,7 @@ public class CreateClientController {
         if (!model.containsAttribute("clientDTO")) {
             model.addAttribute("clientDTO", new ClientPostDTO());
         }
-        return "createClientForm";
+        return "client/createClientForm";
     }
     
     @PostMapping(value = "/createClient")
@@ -32,7 +32,7 @@ public class CreateClientController {
     public String createGarage(@Valid @ModelAttribute("clientDTO") ClientPostDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {
             model.addAttribute("clientDTO", clientDTO);
-            return "createClientForm";
+            return "client/createClientForm";
         }
         try {
             Client client = new Client();

@@ -24,7 +24,7 @@ public class CreateGarageController {
         if (!model.containsAttribute("garageDTO")) {
             model.addAttribute("garageDTO", new GaragePostDTO());
         }
-        return "createGarageForm";
+        return "garage/createGarageForm";
     }
     
     
@@ -58,7 +58,7 @@ public class CreateGarageController {
         if(result.hasErrors()) {
             model.addAttribute("garageDTO", garageDTO);
 //            return new ModelAndView("createGarageForm");
-            return "createGarageForm";
+            return "garage/createGarageForm";
         }
         try {
             Garage garage = new Garage();
@@ -67,18 +67,11 @@ public class CreateGarageController {
             garage.setEmailContactGarage(garageDTO.getMailResp());
             garage.setAdresseGarage(garageDTO.getAdresse());
 
-            //            MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(garage);
-            //            mappingJacksonValue.setSerializationView(gara);
-
-            //           ResponseEntity<Void> responseEntity =
             restClient.post().uri("/commands/createGarage")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                       //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                       .contentType(MediaType.APPLICATION_JSON)
                       .body(garage).retrieve().toBodilessEntity();
-
-            //            System.out.println(responseEntity);
-//            return new ModelAndView("redirect:/garages");
             return "redirect:/garages";
         } catch(Exception e) {
             System.out.println("ERRRRRRRRRRRRRRRRROOR : " + e.getMessage());
