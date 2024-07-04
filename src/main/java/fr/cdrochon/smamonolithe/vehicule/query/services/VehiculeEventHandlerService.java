@@ -46,6 +46,7 @@ public class VehiculeEventHandlerService {
             vehicule.setIdVehicule(event.getId());
             vehicule.setImmatriculationVehicule(event.getImmatriculationVehicule());
             vehicule.setDateMiseEnCirculationVehicule(event.getDateMiseEnCirculationVehicule());
+            vehicule.setVehiculeStatus(event.getVehiculeStatus());
             vehiculeRepository.save(vehicule);
         } catch(Exception e) {
             System.out.println("EXTRACTTTTTTTTTTTTTTTTTTTTTT VEHICULE ERRRRRRRRRRRRRRRRRRRROOR : " + e.getMessage());

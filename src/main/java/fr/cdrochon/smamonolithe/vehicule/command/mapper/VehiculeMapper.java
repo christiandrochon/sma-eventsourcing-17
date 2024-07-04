@@ -12,6 +12,7 @@ public class VehiculeMapper {
         dto.setIdVehicule(vehicule.getIdVehicule());
         dto.setImmatriculationVehicule(vehicule.getImmatriculationVehicule());
         dto.setDateMiseEnCirculationVehicule(vehicule.getDateMiseEnCirculationVehicule());
+        dto.setVehiculeStatus(vehicule.getVehiculeStatus());
         
         return dto;
     }

@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.query.dtos;
 
+import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,4 +39,6 @@ public class VehiculeResponseDTO {
     //    private String couleurVehicule;
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
+    
+    private VehiculeStatus vehiculeStatus;
 }
