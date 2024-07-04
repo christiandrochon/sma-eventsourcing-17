@@ -3,6 +3,7 @@ package fr.cdrochon.thymeleaffrontend.entity.document;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
@@ -14,15 +15,18 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Document {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
     private String nomDocument;
     private String titreDocument;
-    @Enumerated(EnumType.STRING)
-    private TypeDocument typeDocument;
     private String emetteurDuDocument;
-    private LocalDate dateCreationDocument;
-    private LocalDate dateModificationDocument;
+    @Embedded
+    private TypeDocument typeDocument;
+    @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant dateCreationDocument;
+    @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant dateModificationDocument;
+    @Enumerated
+    private DocumentStatus documentStatus;
     //communication inter ms
 //    @Transient
 //    private Vehicule vehicule;
