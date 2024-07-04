@@ -50,7 +50,7 @@ public class GarageController {
                                                .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("garages", garages);
-        return "garages";
+        return "garage/garages";
     }
     
 }

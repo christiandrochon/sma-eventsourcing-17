@@ -35,6 +35,6 @@ public class ClientController {
                           .retrieve().body(new ParameterizedTypeReference<>() {
                           });
         model.addAttribute("clients", clients);
-        return "clients";
+        return "client/clients";
     }
 }
