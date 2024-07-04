@@ -21,4 +21,6 @@ public class Client {
     private String telClient;
     @Embedded
     private AdresseClient adresse;
+    @Enumerated(EnumType.STRING)
+    private ClientStatus clientStatus;
 }

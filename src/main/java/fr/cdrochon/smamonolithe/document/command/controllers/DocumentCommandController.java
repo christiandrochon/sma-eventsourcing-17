@@ -51,7 +51,7 @@ public class DocumentCommandController {
     public CompletableFuture<String> createClient(@RequestBody DocumentRestDTO documentDTO) {
         
         try {
-            
+            System.out.println(documentDTO.toString());
             String url = "http://localhost:8091/createDocument";
             HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
             int responseCode = httpClient.getResponseCode();

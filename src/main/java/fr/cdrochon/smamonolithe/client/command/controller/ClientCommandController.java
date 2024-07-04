@@ -43,13 +43,13 @@ public class ClientCommandController {
      * @param clientRestPostDTO DTO contenant les informations du client a creer
      * @return CompletableFuture<String>
      */
-    @PostMapping(value = "/createClient", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/createClient")
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
     public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRestPostDTO) {
         
         try {
-            
+            System.out.println(clientRestPostDTO.toString());
             String url = "http://localhost:8091/createClient";
             HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
             int responseCode = httpClient.getResponseCode();

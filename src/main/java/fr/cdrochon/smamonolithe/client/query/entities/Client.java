@@ -22,7 +22,7 @@ public class Client {
     private String telClient;
     
     @Embedded
-    private AdresseClient adresseClient;
+    private AdresseClient adresse;
     @Enumerated
     private ClientStatus clientStatus;
 }

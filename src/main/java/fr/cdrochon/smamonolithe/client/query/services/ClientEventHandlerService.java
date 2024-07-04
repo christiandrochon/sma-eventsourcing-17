@@ -54,7 +54,7 @@ public class ClientEventHandlerService {
             client.setPrenomClient(event.getPrenomClient());
             client.setMailClient(event.getMailClient());
             client.setTelClient(event.getTelClient());
-            client.setAdresseClient(event.getAdresseClient());
+            client.setAdresse(event.getAdresseClient());
             client.setClientStatus(event.getClientStatus());
             
             clientRepository.save(client);
@@ -81,8 +81,9 @@ public class ClientEventHandlerService {
      * @return List<ClientResponseDTO>
      */
     @QueryHandler
-    public List<ClientResponseDTO> on(GetAllClientsDTO getAllClientsDTO) {
+    public List<ClientResponseDTO> on() {
         List<Client> clients = clientRepository.findAll();
+        List<ClientResponseDTO> clientResponseDTOS = clients.stream().map(ClientMapper::convertClientToClientDTO).collect(Collectors.toList());
         return clients.stream().map(ClientMapper::convertClientToClientDTO).collect(Collectors.toList());
     }
 }

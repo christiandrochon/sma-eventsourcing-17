@@ -35,21 +35,22 @@ public class CreateClientController {
             return "client/createClientForm";
         }
         try {
-            Client client = new Client();
-            //            garage.setId(garageDTO.getId());
-            client.setNomClient(clientDTO.getNomClient());
-            
-            client.setPrenomClient(clientDTO.getPrenomClient());
-            client.setMailClient(clientDTO.getMailClient());
-            client.setTelClient(clientDTO.getTelClient());
-            //FIXME : utiliser l'adresse DTO ?
-            client.setAdresse(clientDTO.getAdresse());
+//            Client client = new Client();
+//            //            garage.setId(garageDTO.getId());
+//            client.setNomClient(clientDTO.getNomClient());
+//
+//            client.setPrenomClient(clientDTO.getPrenomClient());
+//            client.setMailClient(clientDTO.getMailClient());
+//            client.setTelClient(clientDTO.getTelClient());
+//            //FIXME : utiliser l'adresse DTO ?
+//            client.setAdresse(clientDTO.getAdresse());
+//            client.setClientStatus(clientDTO.getClientStatus());
 
             restClient.post().uri("/commands/createClient")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                       //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                       .contentType(MediaType.APPLICATION_JSON)
-                      .body(client).retrieve().toBodilessEntity();
+                      .body(clientDTO).retrieve().toBodilessEntity();
             
             //            System.out.println(responseEntity);
             //            return new ModelAndView("redirect:/garages");
