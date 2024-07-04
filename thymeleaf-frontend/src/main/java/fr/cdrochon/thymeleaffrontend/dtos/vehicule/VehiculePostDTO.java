@@ -2,6 +2,8 @@ package fr.cdrochon.thymeleaffrontend.dtos.vehicule;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -16,9 +18,12 @@ import java.time.LocalDate;
 public class VehiculePostDTO {
     
     private String idVehicule;
+    @NotBlank(message = "champ obligatoire")
+//    @Size(min = 1, max = 10, message = "l'immatriculation doit contenir entre 1 et 10 caractères")
     private String immatriculationVehicule;
-    @NotNull(message = "champ obligatoire, n'est ce pas ?")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotBlank(message = "champ obligatoire")
+//    @DateTimeFormat(pattern = "yyyy-MM-dd")
+//    @PastOrPresent(message = "la date de mise en circulation doit être passée ou présente")
     private String dateMiseEnCirculationVehicule;
     //    private Instant dateDeValiditeControleTechnique;
     //    private Instant dateValiditeControleTechniqueComplementaire;

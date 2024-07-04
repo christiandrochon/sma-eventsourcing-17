@@ -2,6 +2,7 @@ package fr.cdrochon.thymeleaffrontend.controller.client;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
 import fr.cdrochon.thymeleaffrontend.entity.client.Client;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +29,7 @@ public class CreateClientController {
     
     @PostMapping(value = "/createClient")
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String createGarage(@ModelAttribute ClientPostDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String createGarage(@Valid @ModelAttribute ClientPostDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {
             model.addAttribute("clientDTO", clientDTO);
             //            return new ModelAndView("createGarageForm");

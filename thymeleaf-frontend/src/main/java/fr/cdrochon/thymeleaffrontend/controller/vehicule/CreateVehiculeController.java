@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,12 +36,14 @@ public class CreateVehiculeController {
     
     @PostMapping(value = "/createVehicule")
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String createGarage(@Valid @ModelAttribute VehiculePostDTO vehiculePostDTO, BindingResult result, RedirectAttributes redirectAttributes,
+    public String createVehicule(@Valid @ModelAttribute("vehiculePostDTO") VehiculePostDTO vehiculePostDTO, BindingResult result,
+                               RedirectAttributes redirectAttributes,
                                Model model) {
         if(result.hasErrors()) {
+            
+            result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
             model.addAttribute("vehiculePostDTO", vehiculePostDTO);
-            //            return new ModelAndView("createGarageForm");
-            return "/vehicule/createVehiculeForm";
+            return "vehicule/createVehiculeForm";
         }
         try {
             Vehicule vehicule = new Vehicule();
@@ -51,7 +54,7 @@ public class CreateVehiculeController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localDate = LocalDate.parse(dateMiseEnCirculationVehicule, formatter);
             Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-//            Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+            //            Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
             vehicule.setDateMiseEnCirculationVehicule(instant);
             
             restClient.post().uri("/commands/createVehicule")
@@ -63,10 +66,8 @@ public class CreateVehiculeController {
             return "redirect:/vehicules";
         } catch(Exception e) {
             System.out.println("VEHICULE THYMELEAF ERRRRRRRRRRRRRRRRROOR : " + e.getMessage());
-            //            return new ModelAndView("createGarageForm");
             redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + e.getMessage());
-            redirectAttributes.addFlashAttribute("vehiculePostDTO", vehiculePostDTO); // Re-add garageDTO to the model if there's an error
-            //            return new ModelAndView("redirect:/createGarage");
+            redirectAttributes.addFlashAttribute("vehiculePostDTO", vehiculePostDTO); // Re-add vehiculeDTO to the model if there's an error
             return "redirect:/createVehicule";
         }
     }
