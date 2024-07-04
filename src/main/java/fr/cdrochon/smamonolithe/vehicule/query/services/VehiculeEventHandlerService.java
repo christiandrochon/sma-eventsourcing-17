@@ -1,11 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.query.services;
 
-import fr.cdrochon.smamonolithe.client.command.mapper.ClientMapper;
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
-import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
-import fr.cdrochon.smamonolithe.client.query.dtos.GetAllClientsDTO;
-import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
-import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.vehicule.command.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetAllVehiculesDTO;
