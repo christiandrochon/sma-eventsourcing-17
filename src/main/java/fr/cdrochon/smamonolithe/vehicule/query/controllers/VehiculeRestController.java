@@ -45,7 +45,8 @@ public class VehiculeRestController {
         
         GetVehiculeDTO vehiculeDTO = new GetVehiculeDTO();
         vehiculeDTO.setId(id);
-//       VehiculeResponseDTO vehiculex = queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
+        //FIXME: 2021-08-31 16:00:00 PB CONCURRENCE ?
+       VehiculeResponseDTO vehiculex = queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
         return queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
     }
     

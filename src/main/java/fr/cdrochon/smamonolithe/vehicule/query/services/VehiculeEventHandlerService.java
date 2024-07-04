@@ -1,16 +1,28 @@
 package fr.cdrochon.smamonolithe.vehicule.query.services;
 
+import fr.cdrochon.smamonolithe.client.command.mapper.ClientMapper;
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
+import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
+import fr.cdrochon.smamonolithe.client.query.dtos.GetAllClientsDTO;
+import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
+import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.vehicule.command.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetAllVehiculesDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.EventMessage;
+import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -51,5 +63,27 @@ public class VehiculeEventHandlerService {
         } catch(Exception e) {
             System.out.println("EXTRACTTTTTTTTTTTTTTTTTTTTTT VEHICULE ERRRRRRRRRRRRRRRRRRRROOR : " + e.getMessage());
         }
+    }
+    
+    /**
+     * Recupere et renvoi un vehicule avec son id
+     *
+     * @param getVehiculeDTO id du vehicule
+     * @return VehiculeResponseDTO contenant les informations du vehicule
+     */
+    @QueryHandler
+    public VehiculeResponseDTO on(GetVehiculeDTO getVehiculeDTO) {
+        return vehiculeRepository.findById(getVehiculeDTO.getId()).map(VehiculeMapper::convertVehiculeToVehiculeDTO).get();
+    }
+    
+    /**
+     * Recupere et renvoi tous les vehicules
+     *
+     * @return List<VehiculeResponseDTO> contenant les informations de tous les vehicules
+     */
+    @QueryHandler
+    public List<VehiculeResponseDTO> on(GetAllVehiculesDTO getAllVehiculesDTO) {
+        List<Vehicule> vehicules = vehiculeRepository.findAll();
+        return vehicules.stream().map(VehiculeMapper::convertVehiculeToVehiculeDTO).collect(Collectors.toList());
     }
 }
