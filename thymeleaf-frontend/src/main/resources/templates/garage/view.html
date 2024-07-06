@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
 <head>
+    <script src="../assets/js/color-modes.js"></script>
     <meta charset="UTF-8">
     <title>Garages</title>
-    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+<!--    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">-->
 </head>
 
 <body>
-<div th:fragment="content">
+<div layout:fragment="content">
     <main class="container">
         <h2>Détails d'un garage</h2>
         <a th:text="Retour" th:href="@{/garages}"></a>
