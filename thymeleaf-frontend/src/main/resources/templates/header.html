@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<!--    <link href="static/css/headers.css" rel="stylesheet">-->
+    <link href="static/css/headers.css" rel="stylesheet">
 </head>
+
 <body>
 <div th:fragment="headerFragment">
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -41,10 +42,20 @@
                 </a>
 
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Inventory</a></li>
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Customers</a></li>
-                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Products</a></li>
+                    <li><a class="nav-link px-2 link-secondary" href="#">Accueil</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/garages}">Garages</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/clients}">Clients</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/vehicules}">Vehicules</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/documents}">Documents</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createGarage}">Creation Garage</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createClient}">Creation Client</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createVehicule}">Creation Vehicule</a></li>
+                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createDocument}">Creation Document</a></li>
+
+<!--                    <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Inventory</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Customers</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis">Products</a></li>-->
                 </ul>
 
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
@@ -66,6 +77,31 @@
             </div>
         </div>
     </header>
+
+<!--    <nav class="navbar navbar-expand-lg">-->
+<!--        <div class="container-fluid">-->
+<!--            <a class="navbar-brand" href="#">Navbar</a>-->
+<!--            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"-->
+<!--                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">-->
+<!--                <span class="navbar-toggler-icon"></span>-->
+<!--            </button>-->
+<!--            <div class="collapse navbar-collapse" id="navbarSupportedContent">-->
+<!--                <ul class="navbar-nav me-auto mb-2 mb-lg-0">-->
+<!--                   -->
+<!--                    <li><a class="nav-link active" href="#">Accueil</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/garages}">Garages</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/clients}">Clients</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/vehicules}">Vehicules</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/documents}">Documents</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createGarage}">Creation Garage</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createClient}">Creation Client</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createVehicule}">Creation Vehicule</a></li>-->
+<!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createDocument}">Creation Document</a></li>-->
+<!--                    -->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </nav>-->
 
 <!--<header>-->
 <!--    <div class="px-3 py-2 text-bg-dark border-bottom">-->

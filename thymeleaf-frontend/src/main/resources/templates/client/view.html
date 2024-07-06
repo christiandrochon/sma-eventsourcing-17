@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
 
 <head>
     <meta charset="UTF-8">
@@ -10,10 +11,9 @@
 </head>
 
 <body>
-
-<div th:fragment="content">
-    <article class="media block">
-        <h2>Détails d'un client</h2>
+<div layout:fragment="content">
+    <main class="container">
+        <h3>Liste des véhicules</h3>
         <a th:text="Retour" th:href="@{/clients}"></a>
 
         <div class="row">
@@ -33,7 +33,7 @@
                 <p>Ville : [[${client.adresse.ville}]]</p>
             </div>
         </div>
-    </article>
+    </main>
 </div>
 </body>
 

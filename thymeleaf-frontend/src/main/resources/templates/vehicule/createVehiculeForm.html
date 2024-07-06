@@ -9,9 +9,8 @@
 </head>
 <body>
 <div layout:fragment="content">
-
-    <div class="container">
-                <h2>Création d'un véhicule</h2>
+    <main class="container">
+        <h2>Création d'un véhicule</h2>
         <h4><a th:href="@{vehicules}"> Retour à la liste des véhicules</a></h4>
 
         <form action='#' th:action="@{/createVehicule}" method='post' class="box" th:object="${vehiculePostDTO}">
@@ -63,7 +62,7 @@
                 </div>
             </div>
         </form>
-    </div>
+</div>
 </div>
 </body>
 
