@@ -28,6 +28,12 @@
             <artifactId>thymeleaf-layout-dialect</artifactId>
             <version>3.2.1</version>
         </dependency>
+<!--        REQUETE HTTP SYNCHRONET ET ASYNCHRONE -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <version>5.3.13</version>
+        </dependency>
 
 
         <!--THYMELEAF-->
