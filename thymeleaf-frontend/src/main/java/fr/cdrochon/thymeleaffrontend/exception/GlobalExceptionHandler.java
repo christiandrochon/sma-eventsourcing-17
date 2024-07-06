@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
         // Log the error, send a notification, etc.
         
         // Create a custom response body or use the exception's message
-        String responseBody = "An error occurred on the server. Please try again later.";
+        String responseBody = "LOG ERREUR  - An error occurred on the server. Please try again later." + e.getMessage();
         
         // Return a ResponseEntity
         return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
