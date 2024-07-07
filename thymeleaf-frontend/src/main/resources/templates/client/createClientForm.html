@@ -12,7 +12,7 @@
 <div layout:fragment="content">
     <main class="container">
         <h3>Création d'un client</h3>
-        <h4><a th:href="@{clients}"> Retour à la liste des clients</a></h4>
+        <h4><a th:href="@{/clients}"> Retour à la liste des clients</a></h4>
 
         <form action='#' th:action="@{/createClient}" method='post' class="box" th:object="${clientDTO}">
 
@@ -89,9 +89,7 @@
             </div>
 
         </form>
-</div>
+    </main>
 </div>
 </body>
-
-
 </html>
