@@ -1,5 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
+import fr.cdrochon.thymeleaffrontend.dtos.client.AdresseClientDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
 import fr.cdrochon.thymeleaffrontend.entity.client.Client;
 import jakarta.validation.Valid;
@@ -21,7 +22,10 @@ public class CreateClientController {
     @GetMapping("/createClient")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createGarage(Model model) {
-        if (!model.containsAttribute("clientDTO")) {
+        ClientPostDTO clientDTO = new ClientPostDTO();
+        clientDTO.setAdresse(new AdresseClientDTO());
+        
+        if(!model.containsAttribute("clientDTO")) {
             model.addAttribute("clientDTO", new ClientPostDTO());
         }
         return "client/createClientForm";
@@ -29,31 +33,35 @@ public class CreateClientController {
     
     @PostMapping(value = "/createClient")
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String createGarage(@Valid @ModelAttribute("clientDTO") ClientPostDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String createGarage(@Valid @ModelAttribute("clientDTO") ClientPostDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes,
+                               Model model) {
         if(result.hasErrors()) {
             model.addAttribute("clientDTO", clientDTO);
             return "client/createClientForm";
         }
         try {
-//            Client client = new Client();
-//            //            garage.setId(garageDTO.getId());
-//            client.setNomClient(clientDTO.getNomClient());
+            clientDTO.setAdresse(clientDTO.getAdresse());
+            
+//                        Client client = new Client();
+//                        //            garage.setId(garageDTO.getId());
+//                        client.setNomClient(clientDTO.getNomClient());
 //
-//            client.setPrenomClient(clientDTO.getPrenomClient());
-//            client.setMailClient(clientDTO.getMailClient());
-//            client.setTelClient(clientDTO.getTelClient());
-//            //FIXME : utiliser l'adresse DTO ?
-//            client.setAdresse(clientDTO.getAdresse());
-//            client.setClientStatus(clientDTO.getClientStatus());
+//                        client.setPrenomClient(clientDTO.getPrenomClient());
+//                        client.setMailClient(clientDTO.getMailClient());
+//                        client.setTelClient(clientDTO.getTelClient());
+//                        //FIXME : utiliser l'adresse DTO ?
+//                        client.setAdresse(clientDTO.getAdresse());
+//                        client.setClientStatus(clientDTO.getClientStatus());
 
+            
             restClient.post().uri("/commands/createClient")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                       //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                       .contentType(MediaType.APPLICATION_JSON)
                       .body(clientDTO).retrieve().toBodilessEntity();
             
-            //            System.out.println(responseEntity);
-            //            return new ModelAndView("redirect:/garages");
+            //rafraichissement
+            redirectAttributes.addFlashAttribute("successMessage", "Client created successfully");
             return "redirect:/clients";
         } catch(Exception e) {
             System.out.println("ERRRRRRRRRRRRRRRRROOR : " + e.getMessage());

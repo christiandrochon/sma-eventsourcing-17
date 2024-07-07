@@ -2,6 +2,7 @@ package fr.cdrochon.thymeleaffrontend.dtos.client;
 
 import fr.cdrochon.thymeleaffrontend.entity.client.AdresseClient;
 import fr.cdrochon.thymeleaffrontend.entity.client.ClientStatus;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -27,7 +28,7 @@ public class ClientPostDTO {
     @NotBlank(message = "champ obligatoire")
     @Size(min = 10, max = 10)
     private String telClient;
-    //FIXME : utiliser l'adresse DTO ?
-    private AdresseClient adresse;
+    @Valid
+    private AdresseClientDTO adresse;
     private ClientStatus clientStatus;
 }
