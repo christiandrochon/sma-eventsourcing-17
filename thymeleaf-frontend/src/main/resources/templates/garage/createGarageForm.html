@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="template" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+      layout:decorate="template">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -229,7 +229,7 @@
 
 
         <!--    <div class="container">-->
-        <h4><a th:href="@{garages}"> Retour à la liste des garages</a></h4>
+        <h4><a th:href="@{/garages}"> Retour à la liste des garages</a></h4>
 
         <form action='#' th:action="@{/createGarage}" method='post' class="box" th:object="${garageDTO}">
 
