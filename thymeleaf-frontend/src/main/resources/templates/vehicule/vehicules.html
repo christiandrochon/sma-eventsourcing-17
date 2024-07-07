@@ -14,10 +14,14 @@
             <div class="card">
                 <div class="card-body">
                     <table class="table">
-                        <th:block th:if="${#lists.isEmpty(documents)}">
-                            <tr>
-                                <td colspan="8" class="text-center">Aucun véhicule trouvé</td>
-                            </tr>
+                        <div th:if="${#lists.isEmpty(vehicules)}" class=" text-center alert alert-warning" role="alert">
+                            Aucun véhicule trouvé
+                        </div>
+                        <th:block th:unless="${#lists.isEmpty(vehicules)}">
+<!--                        <th:block th:if="${#lists.isEmpty(documents)}">-->
+<!--                            <tr>-->
+<!--                                <td colspan="8" class="text-center">Aucun véhicule trouvé</td>-->
+<!--                            </tr>-->
                         <thead>
                         <tr>
                             <th>ID</th>

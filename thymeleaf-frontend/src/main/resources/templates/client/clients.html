@@ -15,10 +15,10 @@
             <div class="card">
                 <div class="card-body">
                     <table class="table">
-                        <th:block th:if="${#lists.isEmpty(documents)}">
-                        <tr>
-                            <td colspan="8" class="text-center">Aucun clients trouvé</td>
-                        </tr>
+                        <div th:if="${#lists.isEmpty(clients)}" class=" text-center alert alert-warning" role="alert">
+                            Aucun client trouvé
+                        </div>
+                        <th:block th:unless="${#lists.isEmpty(clients)}">
 
                         <thead>
                         <tr>

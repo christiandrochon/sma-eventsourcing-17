@@ -13,23 +13,23 @@
         <div class="card">
             <div class="card-body">
                 <table class="table">
-                    <th:block th:if="${#lists.isEmpty(documents)}">
+                    <div th:if="${#lists.isEmpty(documents)}" class="text-center alert alert-warning" role="alert">
+                        Aucun document trouvé
+                    </div>
+                    <th:block th:unless="${#lists.isEmpty(documents)}">
+                        <thead>
                         <tr>
-                            <td colspan="8" class="text-center">Aucun document trouvé</td>
+                            <th>ID</th>
+                            <th>Nom du document</th>
+                            <th>Titre</th>
+                            <th>Emetteur</th>
+                            <th>Type</th>
+                            <th>Date de création</th>
+                            <th>Date de modification</th>
+                            <th>Status du document</th>
                         </tr>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nom du document</th>
-                        <th>Titre</th>
-                        <th>Emetteur</th>
-                        <th>Type</th>
-                        <th>Date de création</th>
-                        <th>Date de modification</th>
-                        <th>Status du document</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
 
 
                         <tr th:each="d:${documents}">
@@ -65,7 +65,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    </main>
 </div>
 </body>
 </html>
