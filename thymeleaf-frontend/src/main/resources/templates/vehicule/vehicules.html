@@ -5,6 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Véhicules</title>
+    <style>
+        .table-reposnive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -13,7 +20,7 @@
         <div class="ps-3">
             <div class="card">
                 <div class="card-body">
-                    <table class="table">
+                    <table class="table-reposnive">
                         <div th:if="${#lists.isEmpty(vehicules)}" class=" text-center alert alert-warning" role="alert">
                             Aucun véhicule trouvé
                         </div>
@@ -24,7 +31,7 @@
 <!--                            </tr>-->
                         <thead>
                         <tr>
-                            <th>ID</th>
+<!--                            <th>ID</th>-->
                             <th>Immat</th>
                             <th>Date de mise en circulation</th>
                             <th>Status du vehicule</th>
@@ -36,17 +43,18 @@
                         <tbody>
                         <tr th:each="v:${vehicules}">
 
-                            <td th:if="${v.idVehicule != null}">
-                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.idVehicule}]]</a>
-                            </td>
+<!--                            <td th:if="${v.idVehicule != null}">-->
+<!--                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.idVehicule}]]</a>-->
+<!--                            </td>-->
                             <td th:if="${v.idVehicule == null}" class="text-decoration-none">N/A</td>
                             <td th:if="${v.immatriculationVehicule != null}">
                                 <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.immatriculationVehicule}]]</a>
                             </td>
-                            <td th:if="${v.dateMiseEnCirculationVehicule != null}"><a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}"
-                                                                                      class="text-decoration-none">[[${v.dateMiseEnCirculationVehicule}]]</a>
+                            <td th:if="${v.dateMiseEnCirculationVehicule != null}">
+                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.dateMiseEnCirculationVehicule}]]</a>
                             </td>
-                            <td th:if="${v.vehiculeStatus != null}"><a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.vehiculeStatus}]]</a>
+                            <td th:if="${v.vehiculeStatus != null}">
+                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.vehiculeStatus}]]</a>
                             </td>
 
 

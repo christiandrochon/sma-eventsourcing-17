@@ -5,6 +5,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Clients</title>
+
+<!--    Formattage du numero de telephone-->
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('.telClient').forEach(function(node) {
+                let formattedNumber = node.textContent.replace(/(\d{2})(?=(\d{2})+(?!\d))/g, "$1 ");
+                node.textContent = formattedNumber;
+            });
+        });
+    </script>
+
 </head>
 
 <body>
@@ -14,7 +25,7 @@
         <div class="ps-3">
             <div class="card">
                 <div class="card-body">
-                    <table class="table">
+                    <table class="table w-100">
                         <div th:if="${#lists.isEmpty(clients)}" class=" text-center alert alert-warning" role="alert">
                             Aucun client trouvé
                         </div>
@@ -22,39 +33,45 @@
 
                         <thead>
                         <tr>
-                            <th>ID</th>
+<!--                            <th>ID</th>-->
                             <th>Nom</th>
                             <th>Prenom</th>
                             <th>Email</th>
                             <th>Téléphone</th>
-                            <th>numero</th>
-                            <th>rue</th>
-                            <th>CP</th>
-                            <th>Ville</th>
+<!--                            <th>numero</th>-->
+<!--                            <th>rue</th>-->
+<!--                            <th>CP</th>-->
+<!--                            <th>Ville</th>-->
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="c:${clients}">
 
-                            <td th:if="${c.id != null}">
-                                <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.id}]]</a>
-                            </td>
+<!--                            <td th:if="${c.id != null}">-->
+<!--                                <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.id}]]</a>-->
+<!--                            </td>-->
                             <td th:if="${c.id == null}" class="text-decoration-none">N/A</td>
                             <td th:if="${c.nomClient != null}">
-                                <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.nomClient}]]</a></td>
-                            <td th:if="${c.prenomClient != null}"><a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.prenomClient}]]</a>
+                                <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.nomClient}]]</a>
                             </td>
-                            <td th:if="${c.mailClient != null}"><a href="#" class="text-decoration-none">[[${c.mailClient}]]</a></td>
-                            <td th:if="${c.telClient != null}"><a href="#" class="text-decoration-none">[[${c.telClient}]]</a></td>
+                            <td th:if="${c.prenomClient != null}">
+                                <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.prenomClient}]]</a>
+                            </td>
+                            <td th:if="${c.mailClient != null}">
+                                <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.mailClient}]]</a>
+                            </td>
+                            <td class="telClient" th:if="${c.telClient != null}">
+                                <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="">[[${c.telClient}]]</a>
+                            </td>
 
-                            <td th:if="${c.adresse != null}" th:text="${c.adresse.numeroDeRue}" class="ps-2"></td>
-                            <td th:if="${c.adresse == null}" class="ps-2">N/A</td>
-                            <td th:if="${c.adresse != null}" th:text="${c.adresse.rue}" class="ps-2"></td>
-                            <td th:if="${c.adresse == null}" class="ps-2">N/A</td>
-                            <td th:if="${c.adresse != null}" th:text="${c.adresse.cp}" class="ps-2"></td>
-                            <td th:if="${c.adresse == null}" class="ps-2">N/A</td>
-                            <td th:if="${c.adresse != null}" th:text="${c.adresse.ville}" class="ps-2"></td>
-                            <td th:if="${c.adresse == null}" class="ps-2">N/A</td>
+<!--                            <td th:if="${c.adresse != null}" th:text="${c.adresse.numeroDeRue}" class="ps-2"></td>-->
+<!--                            <td th:if="${c.adresse == null}" class="ps-2">N/A</td>-->
+<!--                            <td th:if="${c.adresse != null}" th:text="${c.adresse.rue}" class="ps-2"></td>-->
+<!--                            <td th:if="${c.adresse == null}" class="ps-2">N/A</td>-->
+<!--                            <td th:if="${c.adresse != null}" th:text="${c.adresse.cp}" class="ps-2"></td>-->
+<!--                            <td th:if="${c.adresse == null}" class="ps-2">N/A</td>-->
+<!--                            <td th:if="${c.adresse != null}" th:text="${c.adresse.ville}" class="ps-2"></td>-->
+<!--                            <td th:if="${c.adresse == null}" class="ps-2">N/A</td>-->
 
                         </tr>
                         </tbody>

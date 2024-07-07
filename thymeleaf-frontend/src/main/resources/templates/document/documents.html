@@ -5,28 +5,33 @@
 <head>
     <meta charset="UTF-8">
     <title>Documents</title>
+    <style>
+        .table-reposnive {
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
     <main class="container">
         <h3>Liste des documents</h3>
-        <div class="card">
+        <div class="card w-100">
             <div class="card-body">
-                <table class="table">
+                <table class="table w-100">
                     <div th:if="${#lists.isEmpty(documents)}" class="text-center alert alert-warning" role="alert">
                         Aucun document trouvé
                     </div>
                     <th:block th:unless="${#lists.isEmpty(documents)}">
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            <!--                            <th>ID</th>-->
                             <th>Nom du document</th>
                             <th>Titre</th>
                             <th>Emetteur</th>
                             <th>Type</th>
                             <th>Date de création</th>
-                            <th>Date de modification</th>
-                            <th>Status du document</th>
+                            <!--                            <th>Date de modification</th>-->
+                            <!--                            <th>Status du document</th>-->
                         </tr>
                         </thead>
                         <tbody>
@@ -34,9 +39,9 @@
 
                         <tr th:each="d:${documents}">
 
-                            <td th:if="${d.id != null}">
-                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.id}]]</a>
-                            </td>
+                            <!--                            <td th:if="${d.id != null}">-->
+                            <!--                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.id}]]</a>-->
+                            <!--                            </td>-->
                             <td th:if="${d.id == null}" class="text-decoration-none">N/A</td>
                             <td th:if="${d.nomDocument != null}">
                                 <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.nomDocument}]]</a>
@@ -51,14 +56,15 @@
                                 <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.typeDocument.nomTypeDocument}]]</a>
                             </td>
                             <td th:if="${d.dateCreationDocument != null}">
-                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.dateCreationDocument}]]</a>
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${#temporals.format(d.dateCreationDocument,
+                                    'dd MMM yyyy')}]]</a>
                             </td>
-                            <td th:if="${d.dateModificationDocument != null}">
-                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.dateModificationDocument}]]</a>
-                            </td>
-                            <td th:if="${d.documentStatus != null}">
-                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.documentStatus}]]</a>
-                            </td>
+                            <!--                            <td th:if="${d.dateModificationDocument != null}">-->
+                            <!--                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.dateModificationDocument}]]</a>-->
+                            <!--                            </td>-->
+                            <!--                            <td th:if="${d.documentStatus != null}">-->
+                            <!--                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.documentStatus}]]</a>-->
+                            <!--                            </td>-->
                         </tr>
                     </th:block>
                     </tbody>
