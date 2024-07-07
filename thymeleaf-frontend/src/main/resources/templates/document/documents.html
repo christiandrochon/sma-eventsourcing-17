@@ -13,10 +13,10 @@
         <div class="card">
             <div class="card-body">
                 <table class="table">
-<!--                    <th:block th:if="${#lists.isEmpty(documents)}">-->
-<!--                        <tr>-->
-<!--                            <td colspan="8" class="text-center">Aucun document trouvé</td>-->
-<!--                        </tr>-->
+                    <th:block th:if="${#lists.isEmpty(documents)}">
+                        <tr>
+                            <td colspan="8" class="text-center">Aucun document trouvé</td>
+                        </tr>
                     <thead>
                     <tr>
                         <th>ID</th>
@@ -60,7 +60,7 @@
                                 <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.documentStatus}]]</a>
                             </td>
                         </tr>
-<!--                    </th:block>-->
+                    </th:block>
                     </tbody>
                 </table>
             </div>

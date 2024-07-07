@@ -14,6 +14,10 @@
             <div class="card">
                 <div class="card-body">
                     <table class="table">
+                        <th:block th:if="${#lists.isEmpty(documents)}">
+                            <tr>
+                                <td colspan="8" class="text-center">Aucun véhicule trouvé</td>
+                            </tr>
                         <thead>
                         <tr>
                             <th>ID</th>
@@ -47,6 +51,7 @@
                             <!--                        <td th:text="${v.climatisationVehicule}"></td>-->
                         </tr>
                         </tbody>
+                        </th:block>
                     </table>
                 </div>
             </div>
