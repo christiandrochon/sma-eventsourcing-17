@@ -8,78 +8,42 @@
 </head>
 <body>
 <div layout:fragment="content">
-
-
-    <!--    <h2>Création d'un véhicule</h2>-->
-    <!--    <h4><a th:href="@{vehicules}"> Retour à la liste des véhicules</a></h4>-->
-
-    <!--    <form action='#' th:action="@{/createVehicule}" method='post' class="box" th:object="${vehiculePostDTO}">-->
-
-    <!--        <div class="field">-->
-    <!--            <label for="immatriculationVehicule">Immatriculation:</label>-->
-    <!--            <div class="control">-->
-    <!--                <input type="text" id="immatriculationVehicule" name="immatriculationVehicule" th:field="*{immatriculationVehicule}"/>-->
-    <!--                <div class="bg-danger" th:if="${#fields.hasErrors('immatriculationVehicule')}" th:errors="*{immatriculationVehicule}">Erreur-->
-    <!--                    d'immatriculation-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--            <div class="field">-->
-    <!--                <label class="label">Date de mise en circulation</label>-->
-    <!--                <div class="control">-->
-    <!--                    <input id="dateMiseEnCirculationVehicule" class="input" type="date" th:field="*{dateMiseEnCirculationVehicule}">-->
-    <!--                    <div class="bg-danger-subtle border-danger" th:if="${#fields.hasErrors('dateMiseEnCirculationVehicule')}"-->
-    <!--                         th:errors="*{dateMiseEnCirculationVehicule}">Erreur-->
-    <!--                    </div>-->
-    <!--                </div>-->
-    <!--                &lt;!&ndash;                				<div class="message is-danger" th:if="${#fields.hasErrors('dateMiseEnCirculation')}" th:errors="*{dateMiseEnCirculation}">&ndash;&gt;-->
-    <!--            </div>-->
-    <!--            <div class="field is-grouped">-->
-    <!--                <div class="control">-->
-    <!--                    <button class="button is-link">Submit</button>-->
-    <!--                </div>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </form>-->
-
-
     <main class="container mt-5">
 
         <h7><a th:href="@{/vehicules}">Retour aux véhicules</a></h7>
-        <div class="d-flex justify-content-center align-items-center">
-            <div class="row w-75 mt-lg-5">
-                <div class="mt-lg-5">
-                    <h3>Création d'un véhicule</h3>
+        <!--        <div class="d-flex justify-content-center align-items-center">-->
+        <!--            <div class="row w-75 mt-lg-5">-->
+        <div class="mt-lg-5">
+            <h3>Création d'un véhicule</h3>
+        </div>
+
+        <form action='#' th:action="@{/createVehicule}" method='post' th:object="${vehiculePostDTO}" class="needs-validation" novalidate>
+            <div class="row g-3">
+
+
+                <div class="w-100">
+                    <label for="immatriculationVehicule" class="form-label">Immatriculation du véhicule</label>
+                    <input type="text" class="form-control" id="immatriculationVehicule" th:field="*{immatriculationVehicule}" placeholder="AA-000-AA"
+                           value="" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('immatriculationVehicule')}" th:errors="*{immatriculationVehicule}">
+                        Immatriculation incorrecte
+                    </div>
                 </div>
 
-                <form action='#' th:action="@{/createVehicule}" method='post' th:object="${vehiculePostDTO}" class="needs-validation" novalidate>
-                    <div class="row g-3">
-
-
-                        <div class="w-100">
-                            <label for="immatriculationVehicule" class="form-label">Immatriculation du véhicule</label>
-                            <input type="text" class="form-control" id="immatriculationVehicule" th:field="*{immatriculationVehicule}" placeholder="AA-000-AA"
-                                   value="" required>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('immatriculationVehicule')}" th:errors="*{immatriculationVehicule}">
-                                Immatriculation incorrecte
-                            </div>
-                        </div>
-
-                        <div class="w-100">
-                            <label class="form-label">Date de mise en circulation</label>
-                            <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" th:field="*{dateMiseEnCirculationVehicule}">
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dateMiseEnCirculationVehicule')}"
-                                 th:errors="*{dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
-                            </div>
-                        </div>
-
-                        <hr class="my-4 mt-5">
-<!--                        <div class="d-flex justify-content-center align-items-center">-->
-                            <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
-<!--                        </div>-->
+                <div class="w-100">
+                    <label class="form-label">Date de mise en circulation</label>
+                    <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" th:field="*{dateMiseEnCirculationVehicule}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('dateMiseEnCirculationVehicule')}"
+                         th:errors="*{dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
                     </div>
-                </form>
+                </div>
+
+                <hr class="my-4 mt-5">
+                <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
             </div>
-        </div>
+        </form>
+        <!--            </div>-->
+        <!--        </div>-->
     </main>
 </div>
 </body>
