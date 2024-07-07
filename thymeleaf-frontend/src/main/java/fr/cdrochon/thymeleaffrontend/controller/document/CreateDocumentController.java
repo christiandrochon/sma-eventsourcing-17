@@ -26,11 +26,6 @@ import java.util.List;
 public class CreateDocumentController {
     
     RestClient restClient = RestClient.create("http://localhost:8092");
-//    private final StringToTypeDocumentConverter stringToTypeDocumentConverter;
-//
-//    public CreateDocumentController(StringToTypeDocumentConverter stringToTypeDocumentConverter) {
-//        this.stringToTypeDocumentConverter = stringToTypeDocumentConverter;
-//    }
     
     @GetMapping("/createDocument")
     //    @PreAuthorize("hasAuthority('ADMIN')")
@@ -86,6 +81,7 @@ public class CreateDocumentController {
                       .contentType(MediaType.APPLICATION_JSON)
                       .body(document).retrieve().toBodilessEntity();
             
+            redirectAttributes.addFlashAttribute("successMessage", "Document created successfully");
             return "redirect:/documents";
         } catch(Exception e) {
             System.out.println("ERREUR DANS LE FOR DOCUMENT : " + e.getMessage());

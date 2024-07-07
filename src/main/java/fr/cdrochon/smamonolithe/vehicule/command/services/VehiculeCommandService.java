@@ -10,7 +10,6 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class VehiculeCommandService {
-    
     private final CommandGateway commandGateway;
     
     public VehiculeCommandService(CommandGateway commandGateway) {
@@ -28,10 +27,7 @@ public class VehiculeCommandService {
         return commandGateway.send(new VehiculeCreateCommand(UUID.randomUUID().toString(),
                                                              vehiculeRestPostDTO.getImmatriculationVehicule(),
                                                              vehiculeRestPostDTO.getDateMiseEnCirculationVehicule()
-                                                             
-                                                             
-                                                             
         ));
-       
+        
     }
 }
