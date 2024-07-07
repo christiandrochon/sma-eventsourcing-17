@@ -2,91 +2,88 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="template">
+
 <head>
     <meta charset="UTF-8">
     <title>Creation Document</title>
 </head>
+
 <body>
 <div layout:fragment="content">
+    <main class="container mt-5">
 
-    <main class="container">
-        <h2>Création d'un document</h2>
-        <h4><a th:href="@{/documents}"> Retour à la liste des documents</a></h4>
+        <h7><a th:href="@{/documents}"> Retour à la liste des documents</a></h7>
+        <div class="mt-lg-5">
+            <h3>Création d'un document</h3>
+        </div>
 
         <form action='#' th:action="@{/createDocument}" method='post' class="box" th:object="${documentDTO}">
 
-            <div class="field">
-                <div class="bg-danger-subtle" th:if="${#fields.hasErrors('nomDocument')}" th:errors="*{nomDocument}">Erreur
+            <div class="">
+                <label for="nomDocument" class="form-label">Nom du document</label>
+                <input type="text" id="nomDocument" class="form-control" th:field="*{nomDocument}"/>
+                <div class="is-invalid bg-light-subtle" th:if="${#fields.hasErrors('nomDocument')}" th:errors="*{nomDocument}">Erreur
                     dans le nom du document
                 </div>
-                <label>Nom du document</label>
-                <div class="control">
-                    <input type="text" id="nomDocument" th:field="*{nomDocument}"/>
-                </div>
             </div>
-            <div class="field">
-                <div class="bg-danger-subtle border-danger" th:if="${#fields.hasErrors('titreDocument')}"
+
+            <div>
+                <label class="form-label">Titre du document</label>
+                <div class="control">
+                    <input id="titreDocument" class="form-control" type="text" th:field="*{titreDocument}">
+                </div>
+                <div class="is-invalid-input bg-warning" th:if="${#fields.hasErrors('titreDocument')}"
                      th:errors="*{titreDocument}">Erreur de titre du document
                 </div>
-                <label class="label">Titre du document</label>
-                <div class="control">
-                    <input id="titreDocument" class="input" type="text" th:field="*{titreDocument}">
-                </div>
             </div>
-            <div class="field">
-                <div class="bg-danger-subtle" th:if="${#fields.hasErrors('emetteurDuDocument')}" th:errors="*{emetteurDuDocument}">Erreur
+            <div>
+                <label>Emetteur du document</label>
+                <div class="form-label">
+                    <input type="text" id="emetteurDuDocument" class="form-control" th:field="*{emetteurDuDocument}"/>
+                </div>
+                <div class="is-invalid bg-danger-subtle" th:if="${#fields.hasErrors('emetteurDuDocument')}" th:errors="*{emetteurDuDocument}">Erreur
                     dans l'emetteur du document
                 </div>
-                <label>Emetteur du document</label>
-                <div class="control">
-                    <input type="text" id="emetteurDuDocument" th:field="*{emetteurDuDocument}"/>
-                </div>
             </div>
-            <div class="field">
-                <div class="bg-danger-subtle border-danger" th:if="${#fields.hasErrors('typeDocument')}"
-                     th:errors="*{typeDocument}">Erreur de type du document
-                </div>
-                <label for="typeDocument">Type de Document:</label>
-                <select id="typeDocument" th:field="*{typeDocument}">
+            <div>
+                <label for="typeDocument" class="form-label">Type de Document:</label>
+                <select id="typeDocument" class="form-select" th:field="*{typeDocument}">
                     <option th:each="typeDocument : ${typeDocuments}" th:value="${typeDocument.nomTypeDocument}" th:text="${typeDocument.nomTypeDocument}">
-                        Type
+                        Type de document
                     </option>
                 </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('typeDocument')}"
+                     th:errors="*{typeDocument}">Erreur de type du document
+                </div>
             </div>
-            <div class="field">
-                <div class="bg-danger-subtle" th:if="${#fields.hasErrors('dateCreationDocument')}" th:errors="*{dateCreationDocument}">Erreur
+            <div>
+                <label for="dateCreationDocument" class="form-label">Date de création du document</label>
+                <input class="form-control" type="date" id="dateCreationDocument" th:field="*{dateCreationDocument}"/>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateCreationDocument')}" th:errors="*{dateCreationDocument}">Erreur
                     de date de création du document
                 </div>
-                <label>Date de création du document</label>
-                <div class="control">
-                    <input type="date" id="dateCreationDocument" th:field="*{dateCreationDocument}"/>
-                </div>
             </div>
-            <div class="field">
-                <div class="bg-danger-subtle border-danger" th:if="${#fields.hasErrors('dateModificationDocument')}"
-                     th:errors="*{dateModificationDocument}">Erreur de date de modification du document
-                </div>
-                <label class="label">Date de modification du document</label>
-                <div class="control">
-                    <input id="dateMiseEnCirculationVehicule" class="input" type="date" th:field="*{dateModificationDocument}">
-                </div>
-            </div>
-            <div class="field">
-                <div class="bg-danger-subtle" th:if="${#fields.hasErrors('documentStatus')}" th:errors="*{documentStatus}">Erreur
-                    du status du document
-                </div>
-                <label for="status">Status:</label>
-                <select id="status" th:field="*{documentStatus}">
+            <!--            <div class="field">-->
+            <!--                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateModificationDocument')}"-->
+            <!--                     th:errors="*{dateModificationDocument}">Erreur de date de modification du document-->
+            <!--                </div>-->
+            <!--                <label class="form-label">Date de modification du document</label>-->
+            <!--                <div class="form-control">-->
+            <!--                    <input id="dateMiseEnCirculationVehicule" class="input" type="date" th:field="*{dateModificationDocument}">-->
+            <!--                </div>-->
+            <!--            </div>-->
+            <div>
+                <label for="status" class="form-label">Status:</label>
+                <select id="status" class="form-select" th:field="*{documentStatus}">
                     <option th:each="status : ${documentStatuses}" th:value="${status}" th:text="${status}">Status</option>
                 </select>
-            </div>
-
-            <div class="field is-grouped">
-                <div class="control">
-                    <button class="button is-link">Submit</button>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('documentStatus')}" th:errors="*{documentStatus}">Erreur
+                    du status du document
                 </div>
             </div>
 
+            <hr class="my-4 mt-5">
+            <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
         </form>
     </main>
 </div>
