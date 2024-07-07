@@ -5,17 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Clients</title>
-
-<!--    Formattage du numero de telephone-->
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            document.querySelectorAll('.telClient').forEach(function(node) {
-                let formattedNumber = node.textContent.replace(/(\d{2})(?=(\d{2})+(?!\d))/g, "$1 ");
-                node.textContent = formattedNumber;
-            });
-        });
-    </script>
-
 </head>
 
 <body>
@@ -60,7 +49,7 @@
                             <td th:if="${c.mailClient != null}">
                                 <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="text-decoration-none">[[${c.mailClient}]]</a>
                             </td>
-                            <td class="telClient" th:if="${c.telClient != null}">
+                            <td th:if="${c.telClient != null}">
                                 <a href="#" th:href="@{/client/{id}(id=${c.id})}" class="">[[${c.telClient}]]</a>
                             </td>
 

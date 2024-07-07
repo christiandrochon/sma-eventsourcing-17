@@ -14,11 +14,13 @@ import java.util.List;
 public class ClientController {
     
     RestClient restClient = RestClient.create("http://localhost:8092");
+    
     @GetMapping("/client/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String clientById(@PathVariable String id, Model model) {
         Client client = restClient.get().uri("/queries/clients/" + id)
-                                  //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
+                                  //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
+                                  //                                  getJwtTokenValue()))
                                   .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("client", client);
@@ -34,7 +36,19 @@ public class ClientController {
                           //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                           .retrieve().body(new ParameterizedTypeReference<>() {
                           });
+        
+        clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
         model.addAttribute("clients", clients);
         return "client/clients";
+    }
+    
+    /**
+     * >Formatage du numéro de téléphone, avec un formatage de type "XX XX XX XX XX"
+     *
+     * @param numero le numéro de téléphone à formater
+     * @return le numéro de téléphone formaté
+     */
+    public String formaterNumeroTelephone(String numero) {
+        return numero.replaceAll("(\\d{2})(?=(\\d{2})+(?!\\d))", "$1 ");
     }
 }
