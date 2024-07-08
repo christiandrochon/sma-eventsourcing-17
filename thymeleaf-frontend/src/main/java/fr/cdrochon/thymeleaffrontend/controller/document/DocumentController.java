@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.document;
 
-import fr.cdrochon.thymeleaffrontend.entity.document.Document;
+import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentConvertPostDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,9 +16,9 @@ public class DocumentController {
     @GetMapping("/document/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String getDocById(@PathVariable String id, Model model) {
-        Document document = restClient.get().uri("/queries/documents/" + id)
-                                    //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                    .retrieve().body(new ParameterizedTypeReference<>() {
+        DocumentConvertPostDTO document = restClient.get().uri("/queries/documents/" + id)
+                                                    //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
+                                                    .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("document", document);
         return "document/view";
@@ -27,7 +27,7 @@ public class DocumentController {
     @GetMapping("/documents")
     //    @PreAuthorize("hasAuthority('USER')")
     public String getAllDocuments(Model model) {
-        List<Document> documents =
+        List<DocumentConvertPostDTO> documents =
                 restClient.get()
                           .uri("/queries/documents")
                           //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))

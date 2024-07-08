@@ -1,9 +1,9 @@
 package fr.cdrochon.thymeleaffrontend.controller.document;
 
+import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentConvertPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentPostDTO;
-import fr.cdrochon.thymeleaffrontend.entity.document.Document;
-import fr.cdrochon.thymeleaffrontend.entity.document.DocumentStatus;
-import fr.cdrochon.thymeleaffrontend.entity.document.TypeDocument;
+import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentStatusDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.document.TypeDocumentDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -35,8 +35,8 @@ public class CreateDocumentController {
         }
         
         //chargement des listes de type de document et de status de document
-        model.addAttribute("typeDocuments", TypeDocument.PREDEFINED_VALUES);
-        model.addAttribute("documentStatuses", List.of(DocumentStatus.values()));
+        model.addAttribute("typeDocuments", TypeDocumentDTO.PREDEFINED_VALUES);
+        model.addAttribute("documentStatuses", List.of(DocumentStatusDTO.values()));
         
         return "document/createDocumentForm";
     }
@@ -48,14 +48,13 @@ public class CreateDocumentController {
         if(result.hasErrors()) {
             model.addAttribute("documentDTO", documentPostDTO);
             // rechargement des listes en cas d'erreur du formulaire de création
-            Collection<TypeDocument> typeDocuments = TypeDocument.PREDEFINED_VALUES;
+            Collection<TypeDocumentDTO> typeDocuments = TypeDocumentDTO.PREDEFINED_VALUES;
             model.addAttribute("typeDocuments", typeDocuments);
-            model.addAttribute("documentStatuses", List.of(DocumentStatus.values()));
+            model.addAttribute("documentStatuses", List.of(DocumentStatusDTO.values()));
             return "document/createDocumentForm";
         }
         try {
-            //TODO : envoyer le dto
-            Document document = new Document();
+            DocumentConvertPostDTO document = new DocumentConvertPostDTO();
             document.setId(documentPostDTO.getId());
             document.setNomDocument(documentPostDTO.getNomDocument());
             document.setTitreDocument(documentPostDTO.getTitreDocument());

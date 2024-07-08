@@ -1,7 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.document;
 
-import fr.cdrochon.thymeleaffrontend.entity.document.DocumentStatus;
-import fr.cdrochon.thymeleaffrontend.entity.document.TypeDocument;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,11 +23,11 @@ public class DocumentPostDTO {
     @Size(min = 3, max = 50)
     private String emetteurDuDocument;
     @NotNull(message = "Le type du document est obligatoire")
-    private TypeDocument typeDocument;
+    private TypeDocumentDTO typeDocument;
     @NotBlank(message = "La date de création du document est obligatoire")
     private String dateCreationDocument;
     @NotBlank(message = "La date de modification du document est obligatoire")
     private String dateModificationDocument;
     @NotNull(message = "Le status du document est obligatoire")
-    private DocumentStatus documentStatus;
+    private DocumentStatusDTO documentStatus;
 }
