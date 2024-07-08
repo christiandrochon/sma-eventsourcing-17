@@ -1,0 +1,5 @@
+package fr.cdrochon.smamonolithe.dossier.query.dtos;
+
+public enum DossierStatusDTO {
+    OUVERT, CLOTURE, REOUVERT, ANNULE, REFUSE, MODIFIE, VALIDE, REJET, ACCEPTE, TRAITE, ENVOYE, RECU, RETOURNE, ARCHIVE, DESARCHIVE, SUPPRIME, RESTAURE, PURGE
+}
