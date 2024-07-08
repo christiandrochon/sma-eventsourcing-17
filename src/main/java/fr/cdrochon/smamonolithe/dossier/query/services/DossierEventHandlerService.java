@@ -1,10 +1,9 @@
 package fr.cdrochon.smamonolithe.dossier.query.services;
 
-import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
-import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
-import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
-import fr.cdrochon.smamonolithe.client.query.entities.Client;
-import fr.cdrochon.smamonolithe.client.query.mapper.ClientMapper;
+import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
+import fr.cdrochon.smamonolithe.dossier.events.DossierCreatedEvent;
+import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierResponseDTO;
+import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
 import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -39,50 +38,50 @@ public class DossierEventHandlerService {
      * @param event l'event GarageQueryCreatedEvent
      */
     @EventHandler
-    public void on(ClientCreatedEvent event, EventMessage<ClientCreatedEvent> eventMessage) {
+    public void on(DossierCreatedEvent event, EventMessage<DossierCreatedEvent> eventMessage) {
         log.info("********************************");
-        log.info("ClientQueryCreatedEvent received !!!!!!!!!!!!!!!!!!!!!!");
+        log.info("DossierCreatedEvent received !!!!!!!!!!!!!!!!!!!!!!");
         log.info("Identifiant d'evenement : " + event.getId());
         log.info("Identifiant d'agregat : " + eventMessage.getIdentifier());
         
         try {
-            Client client = new Client();
-            client.setId(event.getId());
-            client.setNomClient(event.getNomClient());
-            client.setPrenomClient(event.getPrenomClient());
-            client.setMailClient(event.getMailClient());
-            client.setTelClient(event.getTelClient());
-            client.setAdresse(event.getAdresseClient());
-            client.setClientStatus(event.getClientStatus());
+            Dossier dossier = new Dossier();
+            dossier.setId(event.getId());
+            dossier.setNomDossier(event.getNomDossier());
+            dossier.setDateCreationDossier(event.getDateCreationDossier());
+            dossier.setDateModificationDossier(event.getDateModificationDossier());
+            dossier.setClient(event.getClient());
+            dossier.setVehicule(event.getVehicule());
+            dossier.setDossierStatus(event.getDossierStatus());
             
-            clientRepository.save(client);
+            
         } catch(Exception e) {
-            System.out.println("ERRRRRRRRRRRRRRRRRRRROOR : " + e.getMessage());
+            System.out.println("ERRRRRROOR : " + e.getMessage());
         }
     }
     
     /**
-     * Recupere un client avec son id
+     * Recupere un dossier avec son id
      *
-     * @param getClientQueryDTO
-     * @return ClientResponseDTO
+     * @param getDossierDTO DTO contenant l'id du dossier a recuperer
+     * @return DossierResponseDTO contenant les informations du dossier
      */
     @QueryHandler
-    public ClientResponseDTO on(GetClientDTO getClientQueryDTO) {
+    public DossierResponseDTO on(GetDossierDTO getDossierDTO) {
         //        ClientResponseDTO clientResponseDTO = clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO).get();
-        return clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO)
-                               .orElseThrow(() -> new EntityNotFoundException("Client non trouvé"));
+        return dossierRepository.findById(getDossierDTO.getId()).map(DossierMapper::convertDossierToDossierDTO)
+                                .orElseThrow(() -> new EntityNotFoundException("Dossier non trouvé"));
     }
     
     /**
-     * Recupere tous les clients
+     * Recupere tous les dossiers
      *
-     * @return List<ClientResponseDTO>
+     * @return List<DossierResponseDTO> contenant les informations de tous les dossiers
      */
     @QueryHandler
-    public List<ClientResponseDTO> on() {
-        List<Client> clients = clientRepository.findAll();
-        List<ClientResponseDTO> clientResponseDTOS = clients.stream().map(ClientMapper::convertClientToClientDTO).collect(Collectors.toList());
-        return clients.stream().map(ClientMapper::convertClientToClientDTO).collect(Collectors.toList());
+    public List<DossierResponseDTO> on() {
+        List<Dossier> dossiers = dossierRepository.findAll();
+        List<DossierResponseDTO> dossierResponseDTOS = dossiers.stream().map(DossierMapper::convertDossierToDossierDTO).collect(Collectors.toList());
+        return dossiers.stream().map(DossierMapper::convertDossierToDossierDTO).collect(Collectors.toList());
     }
 }
