@@ -8,25 +8,34 @@
 
 <body>
 <div layout:fragment="content">
-    <main class="container">
-        <h2>Détails d'un garage</h2>
-        <a th:text="Retour" th:href="@{/garages}"></a>
+    <main class="container mt-5">
 
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Information garage</h3>
-                <p>id : [[${garage.id}]]</p>
-                <p>nom du garage : [[${garage.nomGarage}]]</p>
-                <p>Mail du responsable : [[${garage.mailResp}]]</p>
-            </div>
-            <div class="col-md-6">
-                <h4>Adresse</h4>
-                <p>N° de rue : [[${garage.adresse.numeroDeRue}]]</p>
-                <p>Nom de rue : [[${garage.adresse.rue}]]</p>
-                <p>CP : [[${garage.adresse.cp}]] </p>
-                <p>Ville : [[${garage.adresse.ville}]]</p>
+        <h6 class="mb-5">
+            <a th:href="@{/garages}">Retour à la liste des garages
+            </a>
+        </h6>
+        <h2>Détails du garage</h2>
+
+        <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+            <div class="container-fluid ">
+                <h1 class="display-5 fw-bold text-center pb-4 h1-titre-trop-long">[[${#strings.toUpperCase(garage.nomGarage)}]]</h1>
+                <p class="col-md-8 fs-4 fst-italic">id : [[${garage.id}]]</p>
+                <p class="col-md-8 fs-4">Nom du garage : [[${garage.nomGarage}]]</p>
+                <p class="col-md-8 fs-4">Mail du responsable : [[${garage.mailResp}]]</p>
             </div>
         </div>
+
+        <div class="row align-items-md-stretch">
+            <div class="w-100">
+                <div class="h-100 p-5 bg-body-tertiary border rounded-3">
+                    <h2 class="pb-2">Adresse</h2>
+                    <hr class="mt-1 mb-3">
+                    <p class="col-md-8 fs-5">[[${garage.adresse.numeroDeRue}]], &nbsp; [[${garage.adresse.rue}]]</p>
+                    <p class="col-md-8 fs-5">[[${garage.adresse.cp}]] - [[${#strings.toUpperCase(garage.adresse.ville)}]]</p>
+                </div>
+            </div>
+        </div>
+
     </main>
 </div>
 </body>

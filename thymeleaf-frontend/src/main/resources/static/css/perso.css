@@ -1,0 +1,14 @@
+/*gestion des tailles de police en fonction de la largeur de l'écran*/
+.h1-titre-trop-long {
+    font-size: 4vw; /* Ajuste la taille de la police en fonction de la largeur de l'écran */
+    word-wrap: break-word; /* Permet au texte de passer à la ligne suivante */
+    hyphens: auto; /* Active la césure automatique */
+    overflow-wrap: break-word; /* Gère le débordement de texte */
+
+}
+
+@media (min-width: 768px) {
+    .h1-titre-trop-long {
+        font-size: 2rem; /* Taille de police fixe pour les écrans plus larges */
+    }
+}

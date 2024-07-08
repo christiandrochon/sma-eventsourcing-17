@@ -11,21 +11,27 @@
 
 <body>
 <div layout:fragment="content">
-    <main class="container">
-        <h2>Détails d'un document</h2>
-        <a th:text="Retour" th:href="@{/documents}"></a>
+    <main class="container mt-5">
 
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Information à propos d'un document</h3>
-                <p>id : [[${document.id}]]</p>
-                <p>Immatriculation : [[${document.nomDocument}]]</p>
-                <p>Date de mise en circulation : [[${document.titreDocument}]]</p>
-                <p>Status du vehicule : [[${document.emetteurDuDocument}]]</p>
-                <p>Status du vehicule : [[${document.typeDocument.nomTypeDocument}]]</p>
-                <p>Status du vehicule : [[${document.dateCreationDocument}]]</p>
-                <p>Status du vehicule : [[${document.dateModificationDocument}]]</p>
-                <p>Status du vehicule : [[${document.documentStatus}]]</p>
+        <h6 class="mb-5">
+            <a th:href="@{/documents}">Retour à la liste des documents
+            </a>
+        </h6>
+        <h2>Détails du document</h2>
+
+        <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+            <div class="container-fluid ">
+                <h1 class="display-5 fw-bold text-center pb-4 h1-titre-trop-long">[[${#strings.toUpperCase(document.nomDocument)}]]</h1>
+                <p class="col-md-8 fs-4 fst-italic">id : [[${document.id}]]</p>
+                <p class="col-md-8 fs-4">Nom du document : [[${document.nomDocument}]]</p>
+                <p class="col-md-8 fs-4">Titre : [[${document.titreDocument}]]</p>
+                <p class="col-md-8 fs-4">Emis par : [[${document.emetteurDuDocument}]]</p>
+                <p class="col-md-8 fs-4">Type du document : [[${document.typeDocument.nomTypeDocument}]]</p>
+                <p class="col-md-8 fs-4">Date de création : [[${#temporals.format(document.dateCreationDocument,
+                    'dd MMMM yyyy')}]]</p>
+                <p class="col-md-8 fs-4">Date de modification : [[${#temporals.format(document.dateModificationDocument,
+                    'dd MMMM yyyy')}]]</p>
+                <p class="col-md-8 fs-4">Status : [[${document.documentStatus}]]</p>
             </div>
         </div>
     </main>

@@ -11,17 +11,22 @@
 
 <body>
 <div layout:fragment="content">
-    <main class="container">
-        <h2>Détails d'un véhicule</h2>
-        <a th:text="Retour" th:href="@{/vehicules}"></a>
+    <main class="container mt-5">
 
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Information vehicule</h3>
-                <p>id : [[${vehicule.idVehicule}]]</p>
-                <p>Immatriculation : [[${vehicule.immatriculationVehicule}]]</p>
-                <p>Date de mise en circulation : [[${vehicule.dateMiseEnCirculationVehicule}]]</p>
-                <p>Status du vehicule : [[${vehicule.vehiculeStatus}]]</p>
+        <h6 class="mb-5">
+            <a th:href="@{/vehicules}">Retour à la liste des véhicules
+            </a>
+        </h6>
+        <h2>Détails du véhicule</h2>
+
+        <div class="p-5 mb-4 bg-body-tertiary rounded-3">
+            <div class="container-fluid ">
+                <h1 class="display-5 fw-bold text-center pb-4 h1-titre-trop-long">[[${#strings.toUpperCase(vehicule.immatriculationVehicule)}]]</h1>
+                <p class="col-md-8 fs-4 fst-italic">id : [[${vehicule.idVehicule}]]</p>
+                <p class="col-md-8 fs-4">Immatriculation : [[${vehicule.immatriculationVehicule}]]</p>
+                <p class="col-md-8 fs-4">Date de mise en circulation : [[${#temporals.format(vehicule.dateMiseEnCirculationVehicule,
+                    'dd MMMM yyyy')}]]</p>
+                <p class="col-md-8 fs-4">Status du vehicule : [[${vehicule.vehiculeStatus}]]</p>
             </div>
         </div>
     </main>
