@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Service
 @Transactional
 @Slf4j
@@ -24,12 +25,10 @@ public class ClientEventHandlerService {
     
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
-    private final QueryUpdateEmitter queryUpdateEmitter;
     
-    public ClientEventHandlerService(ClientRepository clientRepository, ClientMapper clientMapper, QueryUpdateEmitter queryUpdateEmitter) {
+    public ClientEventHandlerService(ClientRepository clientRepository, ClientMapper clientMapper) {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
-        this.queryUpdateEmitter = queryUpdateEmitter;
     }
     
     /**

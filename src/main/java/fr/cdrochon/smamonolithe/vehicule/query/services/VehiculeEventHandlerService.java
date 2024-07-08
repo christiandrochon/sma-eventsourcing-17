@@ -25,11 +25,9 @@ import java.util.stream.Collectors;
 public class VehiculeEventHandlerService {
     
     private final VehiculeRepository vehiculeRepository;
-    private final QueryUpdateEmitter queryUpdateEmitter;
     
-    public VehiculeEventHandlerService(VehiculeRepository vehiculeRepository, QueryUpdateEmitter queryUpdateEmitter) {
+    public VehiculeEventHandlerService(VehiculeRepository vehiculeRepository) {
         this.vehiculeRepository = vehiculeRepository;
-        this.queryUpdateEmitter = queryUpdateEmitter;
     }
     
     /**

@@ -25,12 +25,9 @@ import java.util.stream.Collectors;
 public class GarageEventHandlerService {
     private final GarageRepository garageQueryRepository;
     private final GarageMapper garageQueryMapper;
-    private final QueryUpdateEmitter queryUpdateEmitter;
     
-    public GarageEventHandlerService(GarageRepository garageQueryRepository,
-                                     QueryUpdateEmitter queryUpdateEmitter, GarageMapper garageQueryMapper) {
+    public GarageEventHandlerService(GarageRepository garageQueryRepository, GarageMapper garageQueryMapper) {
         this.garageQueryRepository = garageQueryRepository;
-        this.queryUpdateEmitter = queryUpdateEmitter;
         this.garageQueryMapper = garageQueryMapper;
     }
     

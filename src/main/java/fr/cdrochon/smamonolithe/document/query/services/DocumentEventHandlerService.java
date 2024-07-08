@@ -24,11 +24,9 @@ import java.util.stream.Collectors;
 public class DocumentEventHandlerService {
     
     private final DocumentRepository documentRepository;
-    private final QueryUpdateEmitter queryUpdateEmitter;
     
-    public DocumentEventHandlerService(DocumentRepository documentRepository, QueryUpdateEmitter queryUpdateEmitter) {
+    public DocumentEventHandlerService(DocumentRepository documentRepository) {
         this.documentRepository = documentRepository;
-        this.queryUpdateEmitter = queryUpdateEmitter;
     }
     
     /**
