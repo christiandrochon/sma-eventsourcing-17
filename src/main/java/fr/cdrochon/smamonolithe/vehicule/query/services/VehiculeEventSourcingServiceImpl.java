@@ -15,7 +15,6 @@ public class VehiculeEventSourcingServiceImpl implements VehiculeEventSourcingSe
     
     @Override
     public DomainEventStream eventsByVehiculeId(String id) {
-        DomainEventStream domainEventStream = eventStore.readEvents(id);
-        return domainEventStream;
+        return eventStore.readEvents(id);
     }
 }

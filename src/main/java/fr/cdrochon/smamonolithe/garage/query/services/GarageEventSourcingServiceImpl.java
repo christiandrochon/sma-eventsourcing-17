@@ -15,7 +15,6 @@ public class GarageEventSourcingServiceImpl implements GarageEventSourcingServic
     
     @Override
     public DomainEventStream eventsByGarageId(String id) {
-        DomainEventStream domainEventStream = eventStore.readEvents(id);
-        return domainEventStream;
+        return eventStore.readEvents(id);
     }
 }
