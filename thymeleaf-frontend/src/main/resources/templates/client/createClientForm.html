@@ -73,7 +73,7 @@
 
             <div>
                 <label for="cp" class="form-label">Code postal</label>
-                <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" pattern="[0-9]{5}" required>
+                <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" placeholder="00000"  pattern="[0-9]{5}" required>
                 <div class="is-invalid" th:if="${#fields.hasErrors('adresse.cp')}" th:errors="*{adresse.cp}">Erreur
                     de code postal
                 </div>
@@ -81,7 +81,7 @@
 
             <div>
                 <label for="ville" class="form-label">Ville</label>
-                <input id="ville" class="form-control" type="text" th:field="*{adresse.ville}" placeholder="00000" required>
+                <input id="ville" class="form-control" type="text" th:field="*{adresse.ville}" required>
                 <div class="is-invalid" th:if="${#fields.hasErrors('adresse.ville')}" th:errors="*{adresse.ville}">Ville inconnue
                 </div>
             </div>
