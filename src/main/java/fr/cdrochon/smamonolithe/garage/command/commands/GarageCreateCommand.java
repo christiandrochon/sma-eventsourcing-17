@@ -43,7 +43,7 @@ public class GarageCreateCommand extends GarageBaseCommand<String> {
     /**
      * Capture n'importe quelle exception en interne et affiche son message
      *
-     * @param exception
+     * @param exception Exception
      * @return ResponseEntity<String>
      */
     @ExceptionHandler(Exception.class)

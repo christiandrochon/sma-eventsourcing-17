@@ -5,10 +5,12 @@ import fr.cdrochon.smamonolithe.client.command.services.ClientCommandService;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.queryhandling.QueryGateway;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -24,12 +26,44 @@ public class ClientCommandController {
     private final QueryGateway queryGateway;
     private final EventStore eventStore;
     private final ClientCommandService clientCommandService;
+    private final RestTemplate restTemplate;
     
-    public ClientCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore, ClientCommandService clientCommandService) {
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
+    
+    public ClientCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore, ClientCommandService clientCommandService,
+                                   RestTemplate restTemplate) {
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
         this.eventStore = eventStore;
         this.clientCommandService = clientCommandService;
+        this.restTemplate = restTemplate;
+    }
+    
+    /**
+     * Sert à ramner les informations sur l'ecran de creation d'un client s'il n' pas été validé (en gros, ne pas perdre les données saisies si
+     * rafraichissement de l'ecran)
+     * <p>
+     * Recoit les informations du dto, et renvoi une commande avec les attributs du dto
+     * <p>
+     * Les attributs de la command doivent correspondre au dto. Le controller ne fait que retourner le dto et c'est le command handler qui va se charger
+     * d'executer cette commande
+     * <p>
+     * L'id ne peut pas etre negatif
+     *
+     * @param documentRestDTO DTO contenant les informations du garage a creer
+     * @return CompletableFuture<String>
+     */
+    @GetMapping(value = "/createClient", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public CompletableFuture<CompletableFuture<String>> createDocumentGet(@RequestBody ClientRestPostDTO documentRestDTO) {
+        return CompletableFuture.supplyAsync(() -> {
+            ResponseEntity<ClientRestPostDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createClient",
+                                                                                        documentRestDTO,
+                                                                                        ClientRestPostDTO.class);
+            ClientRestPostDTO responseDto = responseEntity.getBody();
+            assert responseDto != null;
+            return clientCommandService.createClient(responseDto);
+        });
     }
     
     /**
@@ -49,13 +83,13 @@ public class ClientCommandController {
     public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRestPostDTO) {
         
         try {
-            System.out.println(clientRestPostDTO.toString());
+
             String url = "http://localhost:8091/createClient";
             HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
             int responseCode = httpClient.getResponseCode();
             System.out.println("GET Response Code :: " + responseCode);
             
-            if(responseCode == HttpURLConnection.HTTP_OK) { // success
+            if(responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
                 String inputLine;
                 StringBuilder response = new StringBuilder();
@@ -64,24 +98,7 @@ public class ClientCommandController {
                     response.append(inputLine);
                 }
                 in.close();
-                System.out.println(clientRestPostDTO);
-                
-                //            // Ensure the response is not HTML or XML
-                //            if(response.toString().trim().startsWith("<")) {
-                //                throw new IllegalArgumentException("Expected JSON response but received HTML/XML.");
-                //            }
-                //
-                //            // Print result
-                //            String jsonResponse = response.toString();
-                //            System.out.println(jsonResponse);
-                //
-                //            // Parse JSON response to Post object
-                //            ObjectMapper objectMapper = new ObjectMapper();
-                //            ClientRestPostDTO  clientRequestDTO = objectMapper.readValue(jsonResponse, ClientRestPostDTO.class);
-                //
-                //            // Print the post object
-                //            System.out.println(clientRequestDTO);
-                
+
                 return clientCommandService.createClient(clientRestPostDTO);
             }
             else {

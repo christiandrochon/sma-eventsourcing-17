@@ -21,8 +21,8 @@ public class GarageEventSourcingRestController {
     /**
      * Renvoi l'ensemble des events pour un garageQuery recupéré avec son id
      *
-     * @param id
-     * @return
+     * @param id id du garage
+     * @return Stream
      */
     @GetMapping("/garageQueries/{id}")
 //    @PreAuthorize("hasAuthority('USER')")

@@ -65,7 +65,7 @@ public class GarageEventHandlerService {
     /**
      * Recupere un garage avec son id
      *
-     * @param getGarageQueryDTO
+     * @param getGarageQueryDTO DTO contenant l'id du garage à recuperer
      * @return GarageResponseDTO
      */
     @QueryHandler

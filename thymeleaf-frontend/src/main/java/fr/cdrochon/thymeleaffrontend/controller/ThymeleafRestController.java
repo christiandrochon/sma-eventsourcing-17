@@ -1,7 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.controller;
 
-import fr.cdrochon.thymeleaffrontend.entity.document.Document;
-import org.springframework.core.ParameterizedTypeReference;
 //import org.springframework.security.access.prepost.PreAuthorize;
 //import org.springframework.security.core.Authentication;
 //import org.springframework.security.core.context.SecurityContext;
@@ -11,11 +9,8 @@ import org.springframework.core.ParameterizedTypeReference;
 //import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 //import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
-
-import java.util.List;
 
 @Controller
 public class ThymeleafRestController {

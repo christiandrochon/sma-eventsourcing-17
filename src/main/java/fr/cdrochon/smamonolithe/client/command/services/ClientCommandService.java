@@ -20,7 +20,7 @@ public class ClientCommandService {
     /**
      * Genere un UUID aleatoirement pour la creation d'un id de client
      *
-     * @param clientrestPostDTO
+     * @param clientrestPostDTO DTO contenant les informations du client a creer
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
     public CompletableFuture<String> createClient(ClientRestPostDTO clientrestPostDTO) {

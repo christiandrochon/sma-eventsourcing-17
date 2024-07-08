@@ -65,10 +65,18 @@ public class VehiculeCommandController {
     }
     
     
+    //todo avec les classes nouvellement crééées
+    //    @PostMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
+    //    public CompletableFuture<String> createVehiculePost(@RequestBody VehiculeRestPostDTO vehiculeRestPostDTO) {
+    //        return commandGateway.send(new CreateVehiculeCommand(vehiculeRestPostDTO));
+    //    }
+    
+    
     /**
      * Recoit les informations du dto, et renvoi un une commande avec les attributs du dto
      * <p>
-     * Les attributs de la command doivcent correspondre au dto. Le controller ne fait que retourner le dto et c'est le command handler qui va se charger
+     * Les attributs de la command doivcent correspondre au dto. Le controller ne fait que retourner le dto et c'est
+     * le command handler qui va se charger
      * d'executer cette commande
      * <p>
      * L'id ne peut pas etre negatif
@@ -76,53 +84,36 @@ public class VehiculeCommandController {
      * @param vehiculeRestPostDTO DTO contenant les informations du vehicule a creer
      * @return CompletableFuture<String>
      */
-    @PostMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
-    //    @PreAuthorize("hasRole('USER')")
-    //    @PreAuthorize("hasAuthority('USER')")
-    public CompletableFuture<String> createVehicule(@RequestBody VehiculeRestPostDTO vehiculeRestPostDTO) {
-        System.out.println( "createVehicule");
-        try {
-            String url = "http://localhost:8091/createVehicule";
-            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-            int responseCode = httpClient.getResponseCode();
-            System.out.println("GET Response Code :: " + responseCode);
-            
-            if(responseCode == HttpURLConnection.HTTP_OK) { // success
-                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                
-                while((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+        @PostMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
+        //    @PreAuthorize("hasRole('USER')")
+        //    @PreAuthorize("hasAuthority('USER')")
+        public CompletableFuture<String> createVehicule(@RequestBody VehiculeRestPostDTO vehiculeRestPostDTO) {
+            System.out.println( "createVehicule");
+            try {
+                String url = "http://localhost:8091/createVehicule";
+                HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+                int responseCode = httpClient.getResponseCode();
+                System.out.println("GET Response Code :: " + responseCode);
+
+                if(responseCode == HttpURLConnection.HTTP_OK) { // success
+                    BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+
+                    while((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+                    System.out.println(vehiculeRestPostDTO.toString());
+                    return vehiculeCommandService.createVehicule(vehiculeRestPostDTO);
                 }
-                in.close();
-                System.out.println(vehiculeRestPostDTO.toString());
-                
-                //            // Ensure the response is not HTML or XML
-                //            if(response.toString().trim().startsWith("<")) {
-                //                throw new IllegalArgumentException("Expected JSON response but received HTML/XML.");
-                //            }
-                //
-                //            // Print result
-                //            String jsonResponse = response.toString();
-                //            System.out.println(jsonResponse);
-                //
-                //            // Parse JSON response to Post object
-                //            ObjectMapper objectMapper = new ObjectMapper();
-                //            ClientRestPostDTO  clientRequestDTO = objectMapper.readValue(jsonResponse, ClientRestPostDTO.class);
-                //
-                //            // Print the post object
-                //            System.out.println(clientRequestDTO);
-                
-                return vehiculeCommandService.createVehicule(vehiculeRestPostDTO);
+                else {
+                    System.out.println("GET request not worked, response code: " + responseCode);
+                    return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+                return CompletableFuture.completedFuture("Error: " + e.getMessage());
             }
-            else {
-                System.out.println("GET request not worked, response code: " + responseCode);
-                return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-            return CompletableFuture.completedFuture("Error: " + e.getMessage());
         }
-    }
 }

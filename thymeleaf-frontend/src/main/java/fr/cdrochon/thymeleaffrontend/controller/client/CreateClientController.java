@@ -2,7 +2,6 @@ package fr.cdrochon.thymeleaffrontend.controller.client;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.AdresseClientDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
-import fr.cdrochon.thymeleaffrontend.entity.client.Client;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;

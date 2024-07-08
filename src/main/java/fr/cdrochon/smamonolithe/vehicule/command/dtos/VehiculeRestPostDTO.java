@@ -12,6 +12,7 @@ import java.time.Instant;
 @Builder
 public class VehiculeRestPostDTO {
 
+    private String id;
     private String immatriculationVehicule;
     private Instant dateMiseEnCirculationVehicule;
     //    private Instant dateDeValiditeControleTechnique;

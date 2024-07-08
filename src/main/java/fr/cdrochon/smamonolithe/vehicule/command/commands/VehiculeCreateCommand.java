@@ -1,6 +1,5 @@
 package fr.cdrochon.smamonolithe.vehicule.command.commands;
 
-import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +53,7 @@ public class VehiculeCreateCommand extends VehiculeBaseCommand<String> {
     /**
      * Capture n'importe quelle exception en interne et affiche son message
      *
-     * @param exception
+     * @param exception Exception
      * @return ResponseEntity<String>
      */
     @ExceptionHandler(Exception.class)

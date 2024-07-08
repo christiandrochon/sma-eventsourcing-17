@@ -1,14 +1,11 @@
 package fr.cdrochon.smamonolithe.document.query.entities;
 
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Getter

@@ -1,8 +1,5 @@
 package fr.cdrochon.smamonolithe.client.query.dtos;
 
-import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
-import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
-import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import lombok.*;
 
 @Getter

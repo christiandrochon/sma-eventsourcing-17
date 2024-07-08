@@ -3,7 +3,6 @@ package fr.cdrochon.smamonolithe.client.query.mapper;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientStatusDTO;
-import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import org.springframework.stereotype.Component;
 

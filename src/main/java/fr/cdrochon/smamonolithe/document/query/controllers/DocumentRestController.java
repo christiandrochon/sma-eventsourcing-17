@@ -6,8 +6,6 @@ import fr.cdrochon.smamonolithe.document.query.dtos.GetDocumentDTO;
 import fr.cdrochon.smamonolithe.document.query.entities.Document;
 import fr.cdrochon.smamonolithe.document.query.mapper.DocumentMapper;
 import fr.cdrochon.smamonolithe.document.query.repositories.DocumentRepository;
-import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
-import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;

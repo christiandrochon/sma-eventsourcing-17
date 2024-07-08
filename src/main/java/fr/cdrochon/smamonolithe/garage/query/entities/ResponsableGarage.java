@@ -1,7 +1,5 @@
 package fr.cdrochon.smamonolithe.garage.query.entities;
 
-import javax.persistence.Embeddable;
-
 //@Embeddable
 public class ResponsableGarage {
     private String nomDuResponsable;

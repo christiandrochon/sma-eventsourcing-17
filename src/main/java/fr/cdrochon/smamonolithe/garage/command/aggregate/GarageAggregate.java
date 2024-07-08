@@ -38,7 +38,7 @@ public class GarageAggregate {
     
     /**
      * FONCTION DE DECISION = regle metier
-     *
+     * <p>
      * Publiation d'un event via AggregateLifeCycle.apply(). Normalement, cet event devrait etre enregistré dans l'event store
      * <p>
      * Prise en charge d'une commande = FONCTION DE DECISION pour la creation d'un client
@@ -50,7 +50,7 @@ public class GarageAggregate {
      *  constructeur par defaut)
      *
      *
-     * @param createGarageCommand
+     * @param createGarageCommand Commande de creation d'un client
      */
     @CommandHandler
     public GarageAggregate(GarageCreateCommand createGarageCommand) {
@@ -72,10 +72,10 @@ public class GarageAggregate {
     
     /**
      * FONCTION D'EVOLUTION = Muter l'etat de l'agregat
-     *
+     * <p>
      * Pour chaque event de type ClientCreatedEvent qui arrive dans l'eventstore, on va muter l'etat de l'application
      *
-     * @param event
+     * @param event Event de mutation d'un client
      */
     @EventSourcingHandler
     public void on(GarageCreatedEvent event) {

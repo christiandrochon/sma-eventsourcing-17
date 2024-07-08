@@ -5,10 +5,12 @@ import fr.cdrochon.smamonolithe.document.command.services.DocumentCommandService
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.queryhandling.QueryGateway;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -21,17 +23,44 @@ import java.util.stream.Stream;
 @RequestMapping("/commands")
 public class DocumentCommandController {
     
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
     private final EventStore eventStore;
+    private final RestTemplate restTemplate;
     private final DocumentCommandService documentCommandService;
     
-    public DocumentCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore,
+    public DocumentCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore, RestTemplate restTemplate,
                                      DocumentCommandService documentCommandService) {
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
         this.eventStore = eventStore;
+        this.restTemplate = restTemplate;
         this.documentCommandService = documentCommandService;
+    }
+    
+    /**
+     * Recoit les informations du dto, et renvoi une commande avec les attributs du dto
+     * <p>
+     * Les attributs de la command doivent correspondre au dto. Le controller ne fait que retourner le dto et c'est le command handler qui va se charger
+     * d'executer cette commande
+     * <p>
+     * L'id ne peut pas etre negatif
+     *
+     * @param documentRestDTO DTO contenant les informations du garage a creer
+     * @return CompletableFuture<String>
+     */
+    @GetMapping(value = "/createDocument", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public CompletableFuture<CompletableFuture<String>> createDocumentGet(@RequestBody DocumentRestDTO documentRestDTO) {
+        return CompletableFuture.supplyAsync(() -> {
+            ResponseEntity<DocumentRestDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createDocument",
+                                                                                          documentRestDTO,
+                                                                                          DocumentRestDTO.class);
+            DocumentRestDTO responseDto = responseEntity.getBody();
+            assert responseDto != null;
+            return documentCommandService.createDocument(responseDto);
+        });
     }
     
     /**
@@ -48,7 +77,7 @@ public class DocumentCommandController {
     @PostMapping(value = "/createDocument", consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
-    public CompletableFuture<String> createClient(@RequestBody DocumentRestDTO documentDTO) {
+    public CompletableFuture<String> createDocumentPost(@RequestBody DocumentRestDTO documentDTO) {
         
         try {
             System.out.println(documentDTO.toString());

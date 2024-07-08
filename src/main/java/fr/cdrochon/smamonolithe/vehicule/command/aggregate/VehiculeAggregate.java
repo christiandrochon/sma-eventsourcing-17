@@ -59,7 +59,7 @@ public class VehiculeAggregate {
      * Instancie un nouvel agregat à chaque requete recue
      * ici => fonction de decision = verifie regle metier
      *
-     * @param createVehiculeCommand
+     * @param createVehiculeCommand Commande de creation d'un vehicule
      */
     @CommandHandler
     public VehiculeAggregate(VehiculeCreateCommand createVehiculeCommand) {
@@ -84,7 +84,7 @@ public class VehiculeAggregate {
      * <p>
      * Pour chaque event de type VehiculeCreatedEvent qui arrive dans l'eventstore, on va muter l'etat de l'application
      *
-     * @param event
+     * @param event Event de mutation d'un vehicule
      */
     @EventSourcingHandler
     public void on(VehiculeCreatedEvent event) {

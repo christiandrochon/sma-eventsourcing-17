@@ -12,7 +12,7 @@ import javax.persistence.*;
 
 /**
  * En lien avec les entités Garage dans l'autre package
- *
+ * <p>
  * Cette partie query est un microservice à part entiere, sur la base de lecture
  * Je recupere ces données sous forme d'events
  */

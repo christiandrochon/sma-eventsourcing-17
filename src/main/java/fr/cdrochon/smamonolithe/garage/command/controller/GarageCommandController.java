@@ -8,10 +8,8 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.CompletableFuture;
@@ -49,24 +47,24 @@ public class GarageCommandController {
      * <p>
      * L'id ne peut pas etre negatif
      *
-     * @param garageRequestDTO DTO contenant les informations du garage a creer
+     * @param garageRestPostDTO DTO contenant les informations du garage a creer
      * @return CompletableFuture<String>
      */
-//    @GetMapping(value = "/createGarage", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public CompletableFuture<CompletableFuture<String>> createGarage(@RequestBody GarageRestPostDTO creatClientRequestDTO) {
-//        return CompletableFuture.supplyAsync(() -> {
-//            ResponseEntity<GarageRestPostDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/creategarage",
-//                                                                                          creatClientRequestDTO,
-//                                                                                          GarageRestPostDTO.class);
-//            GarageRestPostDTO responseDto = responseEntity.getBody();
-//            assert responseDto != null;
-//            return garageQueryCommandService.createGarage(responseDto);
-//        });
-//    }
+    @GetMapping(value = "/createGarage", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public CompletableFuture<CompletableFuture<String>> createGarageGet(@RequestBody GarageRestPostDTO garageRestPostDTO) {
+        return CompletableFuture.supplyAsync(() -> {
+            ResponseEntity<GarageRestPostDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createGarage",
+                                                                                          garageRestPostDTO,
+                                                                                          GarageRestPostDTO.class);
+            GarageRestPostDTO responseDto = responseEntity.getBody();
+            assert responseDto != null;
+            return garageQueryCommandService.createGarage(responseDto);
+        });
+    }
     @PostMapping(value = "/createGarage", consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
-    public CompletableFuture<String> createGarage(@RequestBody GarageRestPostDTO garageRequestDTO) {
+    public CompletableFuture<String> createGaragePost(@RequestBody GarageRestPostDTO garageRequestDTO) {
         //TODO: A supprimer?
 //        try {
 //            String url = "http://localhost:8091/createGarage";

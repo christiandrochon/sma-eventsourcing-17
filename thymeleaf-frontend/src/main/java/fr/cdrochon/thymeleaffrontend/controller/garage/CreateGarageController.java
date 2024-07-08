@@ -1,7 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.garage;
 
 import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
-import fr.cdrochon.thymeleaffrontend.entity.garage.Garage;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -17,7 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CreateGarageController {
     
     RestClient restClient = RestClient.create("http://localhost:8092");
-    
+
     @GetMapping("/createGarage")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createGarage(Model model) {
@@ -28,30 +27,6 @@ public class CreateGarageController {
     }
     
     
-//    @PostMapping("/createGarage")
-//    public ModelAndView createGarage(@Valid @ModelAttribute("garageDTO") GaragePostDTO garageDTO, BindingResult result, RedirectAttributes redirectAttributes) {
-//        if (result.hasErrors()) {
-//            return new ModelAndView("createGarageForm");
-//        }
-//        try {
-//            Garage garage = new Garage();
-//            garage.setNomGarage(garageDTO.getNomGarage());
-//            garage.setEmailContactGarage(garageDTO.getMailResp());
-//            garage.setAdresseGarage(garageDTO.getAdresse());
-//
-//            restClient.post().uri("/commands/creategarage")
-//                      .contentType(MediaType.APPLICATION_JSON)
-//                      .body(garage).retrieve().toBodilessEntity();
-//
-//            return new ModelAndView("redirect:/garages");
-//        } catch(Exception e) {
-//            System.out.println("ERROR : " + e.getMessage());
-//            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + e.getMessage());
-//            redirectAttributes.addFlashAttribute("garageDTO", garageDTO); // Re-add garageDTO to the model if there's an error
-//            return new ModelAndView("redirect:/createGarage");
-//        }
-//    }
-    
     @PostMapping("/createGarage")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createGarage(@Valid @ModelAttribute("garageDTO") GaragePostDTO garageDTO, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
@@ -61,17 +36,20 @@ public class CreateGarageController {
             return "garage/createGarageForm";
         }
         try {
-            Garage garage = new Garage();
-            //            garage.setId(garageDTO.getId());
-            garage.setNomGarage(garageDTO.getNomGarage());
-            garage.setEmailContactGarage(garageDTO.getMailResp());
-            garage.setAdresseGarage(garageDTO.getAdresse());
+//            Garage garage = new Garage();
+//            //            garage.setId(garageDTO.getId());
+//            garage.setNomGarage(garageDTO.getNomGarage());
+//            garage.setEmailContactGarage(garageDTO.getMailResp());
+//            garage.setAdresseGarage(garageDTO.getAdresse());
 
             restClient.post().uri("/commands/createGarage")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                       //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                       .contentType(MediaType.APPLICATION_JSON)
-                      .body(garage).retrieve().toBodilessEntity();
+                      .body(garageDTO).retrieve().toBodilessEntity();
+            
+            //rafraichissement
+            redirectAttributes.addFlashAttribute("successMessage", "Garage created successfully");
             return "redirect:/garages";
         } catch(Exception e) {
             System.out.println("ERRRRRRRRRRRRRRRRROOR : " + e.getMessage());
@@ -82,4 +60,5 @@ public class CreateGarageController {
             return "redirect:/createGarage";
         }
     }
+    
 }

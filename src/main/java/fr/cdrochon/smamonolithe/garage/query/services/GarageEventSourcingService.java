@@ -6,8 +6,8 @@ public interface GarageEventSourcingService {
     
     /**
      * Renvoi les events d'un garage identifié par son id
-     * @param id
-     * @return
+     * @param id id du garage
+     * @return DomainEventStream
      */
     DomainEventStream eventsByGarageId(String id);
 }

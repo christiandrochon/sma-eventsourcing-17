@@ -3,7 +3,6 @@ package fr.cdrochon.thymeleaffrontend.dtos.client;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.springframework.format.annotation.NumberFormat;
 
 @Getter
 @Setter

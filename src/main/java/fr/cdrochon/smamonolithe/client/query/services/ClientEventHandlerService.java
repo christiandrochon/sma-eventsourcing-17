@@ -3,7 +3,6 @@ package fr.cdrochon.smamonolithe.client.query.services;
 import fr.cdrochon.smamonolithe.client.query.mapper.ClientMapper;
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
-import fr.cdrochon.smamonolithe.client.query.dtos.GetAllClientsDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;

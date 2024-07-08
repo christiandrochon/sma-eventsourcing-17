@@ -1,6 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.client;
 
-import fr.cdrochon.thymeleaffrontend.entity.client.AdresseClient;
 import fr.cdrochon.thymeleaffrontend.entity.client.ClientStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;

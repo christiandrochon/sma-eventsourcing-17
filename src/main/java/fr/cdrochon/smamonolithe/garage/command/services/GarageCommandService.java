@@ -20,7 +20,7 @@ public class GarageCommandService {
     /**
      * Genere un UUID aleatoirement pour la creation d'un id de garage
      *
-     * @param garageRestPostDTO
+     * @param garageRestPostDTO DTO contenant les informations du garage a creer
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
     public CompletableFuture<String> createGarage(GarageRestPostDTO garageRestPostDTO) {
