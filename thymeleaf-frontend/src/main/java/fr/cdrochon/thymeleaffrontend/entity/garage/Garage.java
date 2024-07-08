@@ -17,5 +17,6 @@ public class Garage {
     private String nomGarage;
     private String emailContactGarage;
     @Embedded
-    private AdresseGarage adresseGarage;
+    private AdresseGarage adresse;
+
 }

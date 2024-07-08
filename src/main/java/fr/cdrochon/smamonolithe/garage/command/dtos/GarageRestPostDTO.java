@@ -1,12 +1,15 @@
 package fr.cdrochon.smamonolithe.garage.command.dtos;
 
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
-import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * DTO pour la création d'un garage
+ * Le nom des attributs est identique à ceux de l'entité Garage pour faciliter la conversion entre les deux.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -14,8 +17,8 @@ import lombok.NoArgsConstructor;
 public class GarageRestPostDTO {
 //    private String id;
     private String nomGarage;
-    private String emailContactGarage;
-    private GarageAdresseDTO adresseGarage;
+    private String mailResp;
+    private GarageAdresseDTO adresse;
     //    private GarageStatus garageStatus;
     //    private Instant dateQuery;
     
@@ -24,6 +27,6 @@ public class GarageRestPostDTO {
      * @param adresseGarage AdresseGarage
      */
     public GarageRestPostDTO(GarageAdresseDTO adresseGarage) {
-        this.adresseGarage = adresseGarage;
+        this.adresse = adresseGarage;
     }
 }

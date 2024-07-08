@@ -27,8 +27,8 @@ public class GarageCommandService {
         
         return commandGateway.send(new GarageCreateCommand(UUID.randomUUID().toString(),
                                                            garageRestPostDTO.getNomGarage(),
-                                                           garageRestPostDTO.getEmailContactGarage(),
-                                                           garageRestPostDTO.getAdresseGarage()
+                                                           garageRestPostDTO.getMailResp(),
+                                                           garageRestPostDTO.getAdresse()
                                    ));
         //                                                                createGarageQueryRequestDTO.getDateQuery()));
     }

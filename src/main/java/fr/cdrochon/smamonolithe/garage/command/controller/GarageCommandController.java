@@ -12,7 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.concurrent.CompletableFuture;
+
+import static org.springframework.http.HttpHeaders.USER_AGENT;
 
 @RestController
 @RequestMapping("/commands")
@@ -65,31 +71,31 @@ public class GarageCommandController {
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
     public CompletableFuture<String> createGaragePost(@RequestBody GarageRestPostDTO garageRequestDTO) {
-        //TODO: A supprimer?
-//        try {
-//            String url = "http://localhost:8091/createGarage";
-//            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-//
-//            // Optional default is GET
-//            httpClient.setRequestMethod("GET");
-//
-//            // Add request header
-//            httpClient.setRequestProperty("User-Agent", USER_AGENT);
-//            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
-//
-//            int responseCode = httpClient.getResponseCode();
-//            System.out.println("GET Response Code :: " + responseCode);
-//
-//            if(responseCode == HttpURLConnection.HTTP_OK) { // success
-//                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-//                String inputLine;
-//                StringBuilder response = new StringBuilder();
-//
-//                while((inputLine = in.readLine()) != null) {
-//                    response.append(inputLine);
-//                }
-//                in.close();
-//
+        //TODO: A changer ?
+        try {
+            String url = "http://localhost:8091/createGarage";
+            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+
+            // Optional default is GET
+            httpClient.setRequestMethod("GET");
+
+            // Add request header
+            httpClient.setRequestProperty("User-Agent", USER_AGENT);
+            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
+
+            int responseCode = httpClient.getResponseCode();
+            System.out.println("GET Response Code :: " + responseCode);
+
+            if(responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
 //                // Print result
 //                String jsonResponse = response.toString();
 //                System.out.println(jsonResponse);
@@ -100,17 +106,17 @@ public class GarageCommandController {
 //
 //                // Print the post object
 //                System.out.println(garageRequestDTO);
-//
-//                return garageQueryCommandService.createGarage(garageRequestDTO);
-//
-//            }
-//            else {
-//                System.out.println("GET request not worked");
-//            }
-//
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
+
+                return garageQueryCommandService.createGarage(garageRequestDTO);
+
+            }
+            else {
+                System.out.println("GET request not worked");
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         return garageQueryCommandService.createGarage(garageRequestDTO);
     }
     

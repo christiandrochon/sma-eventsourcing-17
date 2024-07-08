@@ -19,26 +19,22 @@ import java.time.Instant;
 public class GarageCreateCommand extends GarageBaseCommand<String> {
     
     private String nomGarage;
-    private String mailResponsable;
-    private AdresseGarage adresseGarage;
-    private Instant dateQuery;
+    private String mailResp;
+    private AdresseGarage adresse;
     
-    public GarageCreateCommand(String id) {
-        super(id);
-    }
-    
-    public GarageCreateCommand(String id, String nomGarage, String mailResponsable, Instant dateQuery) {
-        super(id);
-        this.nomGarage = nomGarage;
-        this.mailResponsable = mailResponsable;
-        this.dateQuery = dateQuery;
-    }
-    
-    public GarageCreateCommand(String id, String nomGarage, String mailResponsable, GarageAdresseDTO adresseGarageDTO) {
+    /**
+     * Copie de l'adresse du garage pour eviter l'exposition de la representation interne
+     *
+     * @param id        id du garage
+     * @param nomGarage nom du garage
+     * @param mailResp  mail du responsable
+     * @param adresse   adresse du garage
+     */
+    public GarageCreateCommand(String id, String nomGarage, String mailResp, GarageAdresseDTO adresse) {
         super(id);
         this.nomGarage = nomGarage;
-        this.mailResponsable = mailResponsable;
-        this.adresseGarage = new AdresseGarage(adresseGarageDTO);
+        this.mailResp = mailResp;
+        this.adresse = new AdresseGarage(adresse);
     }
     
     /**

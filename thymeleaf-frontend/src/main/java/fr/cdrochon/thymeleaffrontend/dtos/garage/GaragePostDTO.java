@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.dtos.garage;
 
-import fr.cdrochon.thymeleaffrontend.entity.garage.AdresseGarage;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -21,6 +21,6 @@ public class GaragePostDTO implements Serializable {
     @NotBlank(message = "champ obligatoire")
     @Email(message = "adresse mail invalide")
     private String mailResp;
-    //FIXME : utiliser l'adresse DTO ?
-    private  AdresseGarage adresse;
+    @Valid
+    private GarageAdresseDTO adresse;
 }

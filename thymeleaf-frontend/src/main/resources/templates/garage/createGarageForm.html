@@ -38,6 +38,42 @@
                         </div>
                     </div>
 
+                    <!--            <hr class="my-4 mt-8">-->
+                    <div class="my-3 mt-4">
+                        <h5>Adresse du client</h5>
+                    </div>
+                    <div>
+                        <label for="numeroDeRue" class="form-label">N° de rue</label>
+                        <input id="numeroDeRue" class="form-control" type="text" th:field="*{adresse.numeroDeRue}" required>
+                        <!--                <div class="invalid-feedback">Erreur de numero de rue</div>-->
+                        <div class="is-invalid bg-light-subtle" th:if="${#fields.hasErrors('adresse.numeroDeRue')}" th:errors="*{adresse.numeroDeRue}">Erreur
+                            de numéro de rue dans l'adresse
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="rue" class="form-label">Nom de la rue</label>
+                        <input id="rue" class="form-control" type="text" th:field="*{adresse.rue}" required>
+                        <div class="is-invalid" th:if="${#fields.hasErrors('adresse.rue')}" th:errors="*{adresse.rue}">Erreur
+                            du nom de la rue dans l'adresse
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="cp" class="form-label">Code postal</label>
+                        <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" placeholder="00000"  pattern="[0-9]{5}" required>
+                        <div class="is-invalid" th:if="${#fields.hasErrors('adresse.cp')}" th:errors="*{adresse.cp}">Erreur
+                            de code postal
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="ville" class="form-label">Ville</label>
+                        <input id="ville" class="form-control" type="text" th:field="*{adresse.ville}" required>
+                        <div class="is-invalid" th:if="${#fields.hasErrors('adresse.ville')}" th:errors="*{adresse.ville}">Ville inconnue
+                        </div>
+                    </div>
+
                     <hr class="my-4 mt-5">
                     <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
                 </form>

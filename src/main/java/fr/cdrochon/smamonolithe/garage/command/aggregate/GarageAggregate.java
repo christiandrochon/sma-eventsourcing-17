@@ -64,8 +64,8 @@ public class GarageAggregate {
         System.out.println("Publication de l'evenement = commandHandler dans aggregate");
         AggregateLifecycle.apply(new GarageCreatedEvent(createGarageCommand.getId(),
                                                         createGarageCommand.getNomGarage(),
-                                                        createGarageCommand.getMailResponsable(),
-                                                        createGarageCommand.getAdresseGarage(),
+                                                        createGarageCommand.getMailResp(),
+                                                        createGarageCommand.getAdresse(),
                                                         GarageStatus.CREATED
         ));
     }

@@ -1,5 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.garage;
 
+import fr.cdrochon.thymeleaffrontend.dtos.garage.GarageAdresseDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -20,6 +21,9 @@ public class CreateGarageController {
     @GetMapping("/createGarage")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createGarage(Model model) {
+        GaragePostDTO garageDTO = new GaragePostDTO();
+        garageDTO.setAdresse(new GarageAdresseDTO());
+        
         if (!model.containsAttribute("garageDTO")) {
             model.addAttribute("garageDTO", new GaragePostDTO());
         }
@@ -36,12 +40,8 @@ public class CreateGarageController {
             return "garage/createGarageForm";
         }
         try {
-//            Garage garage = new Garage();
-//            //            garage.setId(garageDTO.getId());
-//            garage.setNomGarage(garageDTO.getNomGarage());
-//            garage.setEmailContactGarage(garageDTO.getMailResp());
-//            garage.setAdresseGarage(garageDTO.getAdresse());
-
+            
+            garageDTO.setAdresse(garageDTO.getAdresse());
             restClient.post().uri("/commands/createGarage")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                       //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
