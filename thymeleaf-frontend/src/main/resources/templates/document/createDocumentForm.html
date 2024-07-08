@@ -63,15 +63,13 @@
                     de date de création du document
                 </div>
             </div>
-            <!--            <div class="field">-->
-            <!--                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateModificationDocument')}"-->
-            <!--                     th:errors="*{dateModificationDocument}">Erreur de date de modification du document-->
-            <!--                </div>-->
-            <!--                <label class="form-label">Date de modification du document</label>-->
-            <!--                <div class="form-control">-->
-            <!--                    <input id="dateMiseEnCirculationVehicule" class="input" type="date" th:field="*{dateModificationDocument}">-->
-            <!--                </div>-->
-            <!--            </div>-->
+            <div>
+                <label for="dateModificationDocument" class="form-label">Date de modification du document</label>
+                <input id="dateModificationDocument" class="form-control" type="date" th:field="*{dateModificationDocument}">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateModificationDocument')}"
+                     th:errors="*{dateModificationDocument}">Erreur de date de modification du document
+                </div>
+            </div>
             <div>
                 <label for="status" class="form-label">Status:</label>
                 <select id="status" class="form-select" th:field="*{documentStatus}">

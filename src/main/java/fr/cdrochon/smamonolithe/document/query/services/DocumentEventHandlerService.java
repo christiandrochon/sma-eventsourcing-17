@@ -38,7 +38,7 @@ public class DocumentEventHandlerService {
      * @param event l'event GarageQueryCreatedEvent
      */
     @EventHandler
-    public void on(DocumentCreatedEvent event, EventMessage<ClientCreatedEvent> eventMessage) {
+    public void on(DocumentCreatedEvent event, EventMessage<DocumentCreatedEvent> eventMessage) {
         log.info("********************************");
         log.info("DocumentCreatedEvent received !!!!!!!!!!!!!!!!!!!!!!");
         log.info("Identifiant d'evenement : " + event.getId());

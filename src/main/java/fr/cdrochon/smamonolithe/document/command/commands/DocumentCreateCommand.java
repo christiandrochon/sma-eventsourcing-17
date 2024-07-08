@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.document.command.commands;
 
+import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -23,9 +24,10 @@ public class DocumentCreateCommand extends DocumentBaseCommand<String> {
     private final TypeDocument typeDocument;
     private final Instant dateCreationDocument;
     private final Instant dateModificationDocument;
+    private final DocumentStatus documentStatus;
     
     public DocumentCreateCommand(String id, String nomDocument, String titreDocument, String emetteurDuDocument, TypeDocument typeDocument,
-                                 Instant dateCreationDocument, Instant dateModificationDocument) {
+                                 Instant dateCreationDocument, Instant dateModificationDocument, DocumentStatus documentStatus) {
         super(id);
         this.nomDocument = nomDocument;
         this.titreDocument = titreDocument;
@@ -33,6 +35,7 @@ public class DocumentCreateCommand extends DocumentBaseCommand<String> {
         this.typeDocument = typeDocument;
         this.dateCreationDocument = dateCreationDocument;
         this.dateModificationDocument = dateModificationDocument;
+        this.documentStatus = documentStatus;
     }
     
     /**

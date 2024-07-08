@@ -54,6 +54,7 @@ public class CreateDocumentController {
             return "document/createDocumentForm";
         }
         try {
+            //TODO : envoyer le dto
             Document document = new Document();
             document.setId(documentPostDTO.getId());
             document.setNomDocument(documentPostDTO.getNomDocument());
@@ -73,6 +74,7 @@ public class CreateDocumentController {
             LocalDate localDate1 = LocalDate.parse(dateModificationDocument, formatter);
             Instant dateModif = localDate1.atStartOfDay().toInstant(ZoneOffset.UTC);
             document.setDateModificationDocument(dateModif);
+            
             document.setDocumentStatus(documentPostDTO.getDocumentStatus());
             
             restClient.post().uri("/commands/createDocument")

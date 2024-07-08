@@ -31,8 +31,8 @@
                             <th>Emetteur</th>
                             <th>Type</th>
                             <th>Date de création</th>
-                            <!--                            <th>Date de modification</th>-->
-                            <!--                            <th>Status du document</th>-->
+                            <th>Date de modification</th>
+                            <th>Status du document</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -60,12 +60,13 @@
                                 <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${#temporals.format(d.dateCreationDocument,
                                     'dd MMM yyyy')}]]</a>
                             </td>
-                            <!--                            <td th:if="${d.dateModificationDocument != null}">-->
-                            <!--                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.dateModificationDocument}]]</a>-->
-                            <!--                            </td>-->
-                            <!--                            <td th:if="${d.documentStatus != null}">-->
-                            <!--                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.documentStatus}]]</a>-->
-                            <!--                            </td>-->
+                            <td th:if="${d.dateModificationDocument != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${#temporals.format(d.dateModificationDocument,
+                                    'dd MMM yyyy')}]]</a>
+                            </td>
+                            <td th:if="${d.documentStatus != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.documentStatus}]]</a>
+                            </td>
                         </tr>
                     </th:block>
                     </tbody>

@@ -23,8 +23,8 @@ public class DocumentCreatedEvent extends DocumentBaseEvent<String> {
     private final Instant dateModificationDocument;
     private final DocumentStatus documentStatus;
     
-    public DocumentCreatedEvent(String id, String nomDocument, String titreDocument, String emetteurDuDocument,TypeDocument typeDocument,
-                                Instant dateCreationDocument, Instant dateModificationDocument, DocumentStatus documentStatus) {
+    public DocumentCreatedEvent(String id, String nomDocument, String titreDocument, String emetteurDuDocument, TypeDocument typeDocument,
+                                Instant dateCreationDocument, Instant  dateModificationDocument, DocumentStatus documentStatus) {
         super(id);
         this.nomDocument = nomDocument;
         this.titreDocument = titreDocument;

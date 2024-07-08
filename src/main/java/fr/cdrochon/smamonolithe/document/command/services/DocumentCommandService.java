@@ -31,7 +31,8 @@ public class DocumentCommandService {
                                                              documentRestDTO.getEmetteurDuDocument(),
                                                              documentRestDTO.getTypeDocument(),
                                                              documentRestDTO.getDateCreationDocument(),
-                                                             documentRestDTO.getDateModificationDocument()
+                                                             documentRestDTO.getDateModificationDocument(),
+                                                             documentRestDTO.getDocumentStatus()
         ));
     }
 }

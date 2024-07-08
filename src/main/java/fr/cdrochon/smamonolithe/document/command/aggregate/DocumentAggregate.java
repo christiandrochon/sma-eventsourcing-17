@@ -12,6 +12,7 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
 import java.time.Instant;
+
 @Aggregate
 public class DocumentAggregate {
     @AggregateIdentifier
@@ -37,26 +38,26 @@ public class DocumentAggregate {
      */
     @CommandHandler
     public DocumentAggregate(DocumentCreateCommand createDocumentCommand) {
-
+        
         //ici => fonction de decision = verifie regle metier
         if(createDocumentCommand.getNomDocument() == null) {
             throw new CreatedGarageException("Le document doit exister ! ");
         }
-
+        
         System.out.println("**************************");
         System.out.println("Publication de l'evenement = commandHandler dans aggregate");
         AggregateLifecycle.apply(new DocumentCreatedEvent(createDocumentCommand.getId(),
                                                           createDocumentCommand.getNomDocument(),
                                                           createDocumentCommand.getTitreDocument(),
-                                                            createDocumentCommand.getEmetteurDuDocument(),
-                                                            createDocumentCommand.getTypeDocument(),
-                                                            createDocumentCommand.getDateCreationDocument(),
-                                                            createDocumentCommand.getDateModificationDocument(),
-                                                            DocumentStatus.CREATED
+                                                          createDocumentCommand.getEmetteurDuDocument(),
+                                                          createDocumentCommand.getTypeDocument(),
+                                                          createDocumentCommand.getDateCreationDocument(),
+                                                          createDocumentCommand.getDateModificationDocument(),
+                                                          createDocumentCommand.getDocumentStatus()
         ));
         System.out.println("**************************");
     }
-
+    
     /**
      * FONCTION D'EVOLUTION (muter l'etat de l'agregat)
      * <p>
@@ -66,7 +67,7 @@ public class DocumentAggregate {
      */
     @EventSourcingHandler
     public void on(DocumentCreatedEvent event) {
-
+        
         System.out.println("**********************");
         System.out.println("Agregat Enventsourcinghandler ");
         this.idDocument = event.getId();
