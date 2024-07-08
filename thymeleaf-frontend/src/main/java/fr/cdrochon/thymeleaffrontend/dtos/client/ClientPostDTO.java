@@ -1,6 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.client;
 
-import fr.cdrochon.thymeleaffrontend.entity.client.ClientStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,7 +28,7 @@ public class ClientPostDTO {
     private String telClient;
     @Valid
     private AdresseClientDTO adresse;
-    private ClientStatus clientStatus;
+    private ClientStatusDTO clientStatus;
     
     /**
      * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne

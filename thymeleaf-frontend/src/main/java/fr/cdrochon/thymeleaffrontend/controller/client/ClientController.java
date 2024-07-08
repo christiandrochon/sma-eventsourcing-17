@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
-import fr.cdrochon.thymeleaffrontend.entity.client.Client;
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,10 +18,10 @@ public class ClientController {
     @GetMapping("/client/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String clientById(@PathVariable String id, Model model) {
-        Client client = restClient.get().uri("/queries/clients/" + id)
-                                  //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
-                                  //                                  getJwtTokenValue()))
-                                  .retrieve().body(new ParameterizedTypeReference<>() {
+        ClientPostDTO client = restClient.get().uri("/queries/clients/" + id)
+                                         //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
+                                         //                                  getJwtTokenValue()))
+                                         .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("client", client);
         return "client/view";
@@ -30,7 +30,7 @@ public class ClientController {
     @GetMapping("/clients")
     //    @PreAuthorize("hasAuthority('USER')")
     public String clients(Model model) {
-        List<Client> clients =
+        List<ClientPostDTO> clients =
                 restClient.get()
                           .uri("/queries/clients")
                           //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
