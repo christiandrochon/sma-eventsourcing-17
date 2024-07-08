@@ -21,21 +21,15 @@ public class Dossier {
     private Instant dateCreationDossier;
     private Instant dateModificationDossier;
     //    private Instant dateClotureDossier;
-    
     @OneToOne
     @JoinColumn(name = "client_id")
     private Client client;
-    //    @OneToMany
-    //    @JoinColumn(name = "dossier_id")
-//    @OneToMany
-//    @JoinTable(
-//            name = "dossier",
-////            joinColumns = @JoinColumn(name = "dossier_id"),
-//            inverseJoinColumns = @JoinColumn(name = "vehicule_id")
-//    )
+
     @OneToOne
     @JoinColumn(name = "vehicule_id")
     private Vehicule vehicule;
+    @Enumerated
+    private DossierStatus dossierStatus;
     //    private String idConseiller;
     //    private String idAgence;
     //    private String idProduit;
@@ -82,6 +76,5 @@ public class Dossier {
     //    private String idMotifRefusMotifClotureDossier;
     //    private String idMotifModificationMotifClotureDossier;
     //    private String idMotifValidationMotifReouvertureDossier;
-    
-    
+
 }
