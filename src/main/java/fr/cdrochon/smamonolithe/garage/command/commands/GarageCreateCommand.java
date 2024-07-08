@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.garage.command.commands;
 
+import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -33,11 +34,11 @@ public class GarageCreateCommand extends GarageBaseCommand<String> {
         this.dateQuery = dateQuery;
     }
     
-    public GarageCreateCommand(String id, String nomGarage, String mailResponsable, AdresseGarage adresseGarage) {
+    public GarageCreateCommand(String id, String nomGarage, String mailResponsable, GarageAdresseDTO adresseGarageDTO) {
         super(id);
         this.nomGarage = nomGarage;
         this.mailResponsable = mailResponsable;
-        this.adresseGarage = adresseGarage;
+        this.adresseGarage = new AdresseGarage(adresseGarageDTO);
     }
     
     /**

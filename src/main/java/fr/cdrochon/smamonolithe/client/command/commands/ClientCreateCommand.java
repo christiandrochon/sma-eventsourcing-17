@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.client.command.commands;
 
+import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,14 @@ public class ClientCreateCommand extends ClientBaseCommand<String> {
     private final String telClient;
     private final AdresseClient adresseClient;
     
-    public ClientCreateCommand(String id, String nomClient, String prenomClient, String mailClient, String telClient, AdresseClient adresseClient) {
+    public ClientCreateCommand(String id, String nomClient, String prenomClient, String mailClient, String telClient, ClientAdresseDTO adresseClientDTO) {
         super(id);
         this.nomClient = nomClient;
         this.prenomClient = prenomClient;
         this.mailClient = mailClient;
         this.telClient = telClient;
-        this.adresseClient = adresseClient;
+        // Crée une copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
+        this.adresseClient = new AdresseClient(adresseClientDTO);
     }
     
     /**
@@ -40,4 +42,5 @@ public class ClientCreateCommand extends ClientBaseCommand<String> {
     public ResponseEntity<String> exceptionHandler(Exception exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    
 }

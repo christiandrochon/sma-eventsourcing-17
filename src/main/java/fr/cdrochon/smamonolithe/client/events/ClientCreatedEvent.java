@@ -23,4 +23,5 @@ public class ClientCreatedEvent extends ClientBaseEvent<String> {
         this.adresseClient = adresseClient;
         this.clientStatus = clientStatus;
     }
+    
 }

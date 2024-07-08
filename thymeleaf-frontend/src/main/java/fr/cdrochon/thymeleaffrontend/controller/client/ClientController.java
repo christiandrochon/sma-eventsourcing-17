@@ -37,6 +37,7 @@ public class ClientController {
                           .retrieve().body(new ParameterizedTypeReference<>() {
                           });
         
+        assert clients != null;
         clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
         model.addAttribute("clients", clients);
         return "client/clients";
