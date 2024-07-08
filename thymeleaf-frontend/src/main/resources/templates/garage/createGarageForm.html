@@ -13,7 +13,7 @@
 <div layout:fragment="content">
     <main class="container mt-5">
 
-        <h7><a th:href="@{/garages}"> Retour aux garages</a></h7>
+        <h7><a th:href="@{/garages}">Retour aux garages</a></h7>
 
 <!--        <div class="d-flex justify-content-center align-items-center">-->
 <!--            <div class="row w-75 mt-lg-5">-->
@@ -45,7 +45,6 @@
                     <div>
                         <label for="numeroDeRue" class="form-label">N° de rue</label>
                         <input id="numeroDeRue" class="form-control" type="text" th:field="*{adresse.numeroDeRue}" required>
-                        <!--                <div class="invalid-feedback">Erreur de numero de rue</div>-->
                         <div class="is-invalid bg-light-subtle" th:if="${#fields.hasErrors('adresse.numeroDeRue')}" th:errors="*{adresse.numeroDeRue}">Erreur
                             de numéro de rue dans l'adresse
                         </div>

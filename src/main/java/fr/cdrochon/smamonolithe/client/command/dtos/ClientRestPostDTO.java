@@ -1,10 +1,11 @@
 package fr.cdrochon.smamonolithe.client.command.dtos;
 
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
-import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import lombok.*;
 /**
  * Permet de faire le lien entre les services command de l'appli et le monde exteieur
+ *
+ * Les noms des attributs doivent correspondre à ceux du dto
  */
 
 @NoArgsConstructor
@@ -18,13 +19,13 @@ public class ClientRestPostDTO {
     private String prenomClient;
     private String mailClient;
     private String telClient;
-    private ClientAdresseDTO adresseClient;
+    private ClientAdresseDTO adresse;
     
     /**
      * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
      * @param adresseClient AdresseClient
      */
     public ClientRestPostDTO(ClientAdresseDTO adresseClient) {
-        this.adresseClient = adresseClient;
+        this.adresse = adresseClient;
     }
 }

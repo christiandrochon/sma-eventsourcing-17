@@ -30,7 +30,7 @@ public class ClientCommandService {
                                                            clientrestPostDTO.getPrenomClient(),
                                                            clientrestPostDTO.getMailClient(),
                                                            clientrestPostDTO.getTelClient(),
-                                                           clientrestPostDTO.getAdresseClient()
+                                                           clientrestPostDTO.getAdresse()
         ));
     }
 }
