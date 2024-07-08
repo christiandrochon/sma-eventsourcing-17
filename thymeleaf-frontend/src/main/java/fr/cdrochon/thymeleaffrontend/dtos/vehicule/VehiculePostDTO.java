@@ -1,6 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.vehicule;
 
-import fr.cdrochon.thymeleaffrontend.entity.vehicule.VehiculeStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -19,6 +18,7 @@ public class VehiculePostDTO {
 //    @DateTimeFormat(pattern = "yyyy-MM-dd")
 //    @PastOrPresent(message = "la date de mise en circulation doit être passée ou présente")
     private String dateMiseEnCirculationVehicule;
+    
     //    private Instant dateDeValiditeControleTechnique;
     //    private Instant dateValiditeControleTechniqueComplementaire;
     //    private String urlCertificatImmatriculation;
@@ -43,6 +43,6 @@ public class VehiculePostDTO {
     //    private String couleurVehicule;
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
-    private VehiculeStatus vehiculeStatus;
+    private VehiculeStatusDTO vehiculeStatus;
 
 }

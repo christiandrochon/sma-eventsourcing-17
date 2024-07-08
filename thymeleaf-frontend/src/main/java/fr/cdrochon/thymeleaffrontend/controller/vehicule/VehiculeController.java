@@ -1,6 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
-import fr.cdrochon.thymeleaffrontend.entity.vehicule.Vehicule;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +18,9 @@ public class VehiculeController {
     @GetMapping("/vehicule/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String vehiculeById(@PathVariable String id, Model model) {
-        Vehicule vehicule = restClient.get().uri("/queries/vehicules/" + id)
-                                      //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                      .retrieve().body(new ParameterizedTypeReference<>() {
+        VehiculeDateConvertDTO vehicule = restClient.get().uri("/queries/vehicules/" + id)
+                                                    //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
+                                                    .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("vehicule", vehicule);
         return "vehicule/view";
@@ -28,7 +29,7 @@ public class VehiculeController {
     @GetMapping("/vehicules")
     //    @PreAuthorize("hasAuthority('USER')")
     public String vehicules(Model model) {
-        List<Vehicule> vehicules = restClient.get().uri("/queries/vehicules")
+        List<VehiculeDateConvertDTO> vehicules = restClient.get().uri("/queries/vehicules")
                                              //                                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                              .retrieve().body(new ParameterizedTypeReference<>() {
                 });
