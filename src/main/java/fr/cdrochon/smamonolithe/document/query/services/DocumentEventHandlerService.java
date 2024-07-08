@@ -15,6 +15,7 @@ import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +68,9 @@ public class DocumentEventHandlerService {
      */
     @QueryHandler
     public DocumentResponseDTO on(GetDocumentDTO getDocumentDTO) {
-        return documentRepository.findById(getDocumentDTO.getId()).map(DocumentMapper::convertDocumentToDocumentDTO).get();
+        return documentRepository.findById(getDocumentDTO.getId())
+                                 .map(DocumentMapper::convertDocumentToDocumentDTO)
+                                 .orElseThrow(() -> new EntityNotFoundException("Document not found"));
     }
     
     /**

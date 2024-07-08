@@ -14,6 +14,7 @@ import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,7 @@ public class ClientEventHandlerService {
     public void on(ClientCreatedEvent event, EventMessage<ClientCreatedEvent> eventMessage) {
         log.info("********************************");
         log.info("ClientQueryCreatedEvent received !!!!!!!!!!!!!!!!!!!!!!");
-                log.info("Identifiant d'evenement : " + event.getId());
+        log.info("Identifiant d'evenement : " + event.getId());
         log.info("Identifiant d'agregat : " + eventMessage.getIdentifier());
         
         try {
@@ -69,8 +70,9 @@ public class ClientEventHandlerService {
      */
     @QueryHandler
     public ClientResponseDTO on(GetClientDTO getClientQueryDTO) {
-        ClientResponseDTO clientResponseDTO = clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO).get();
-        return clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO).get();
+        //        ClientResponseDTO clientResponseDTO = clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO).get();
+        return clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO)
+                               .orElseThrow(() -> new EntityNotFoundException("Client non trouvé"));
     }
     
     /**

@@ -67,7 +67,9 @@ public class GarageEventHandlerService {
      */
     @QueryHandler
     public GarageResponseDTO on(GetGarageDTO getGarageQueryDTO) {
-        return garageQueryRepository.findById(getGarageQueryDTO.getId()).map(GarageMapperManuel::convertGarageToGarageDTO).get();
+        return garageQueryRepository.findById(getGarageQueryDTO.getId())
+                                    .map(GarageMapperManuel::convertGarageToGarageDTO)
+                                    .orElseThrow(() -> new IllegalArgumentException("Garage non trouvé"));
     }
     
     /**

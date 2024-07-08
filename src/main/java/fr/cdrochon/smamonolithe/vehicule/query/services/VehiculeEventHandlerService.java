@@ -16,6 +16,7 @@ import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,9 @@ public class VehiculeEventHandlerService {
      */
     @QueryHandler
     public VehiculeResponseDTO on(GetVehiculeDTO getVehiculeDTO) {
-        return vehiculeRepository.findById(getVehiculeDTO.getId()).map(VehiculeMapper::convertVehiculeToVehiculeDTO).get();
+        return vehiculeRepository.findById(getVehiculeDTO.getId())
+                                 .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
+                                 .orElseThrow(() -> new EntityNotFoundException("Vehicule not found"));
     }
     
     /**
