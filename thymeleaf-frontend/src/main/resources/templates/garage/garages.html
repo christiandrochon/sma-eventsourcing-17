@@ -10,52 +10,50 @@
 <div layout:fragment="content">
 
     <main class="container">
-        <h4>Liste des garages </h4>
-        <div class="ps-3">
-            <div class="card">
-                <div class="card-body">
-                    <table class="table w-100">
-                        <div th:if="${#lists.isEmpty(garages)}" class=" text-center alert alert-warning" role="alert">
-                            Aucun garage trouvé
-                        </div>
-                        <th:block th:unless="${#lists.isEmpty(garages)}">
-                            <thead>
-                            <tr>
-                                <!--                            <th>ID</th>-->
-                                <th>Nom du garage</th>
-                                <th>Email du responsable</th>
-                                <!--                            <th>numero</th>-->
-                                <!--                            <th>rue</th>-->
-                                <!--                            <th>CP</th>-->
-                                <!--                            <th>Ville</th>-->
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="g:${garages}">
+        <h3>Liste des garages </h3>
+        <div class="card w-100">
+            <div class="card-body">
+                <table class="table w-100">
+                    <div th:if="${#lists.isEmpty(garages)}" class=" text-center alert alert-warning" role="alert">
+                        Aucun garage trouvé
+                    </div>
+                    <th:block th:unless="${#lists.isEmpty(garages)}">
+                        <thead>
+                        <tr>
+                            <!--                            <th>ID</th>-->
+                            <th>Nom du garage</th>
+                            <th>Email du responsable</th>
+                            <!--                            <th>numero</th>-->
+                            <!--                            <th>rue</th>-->
+                            <!--                            <th>CP</th>-->
+                            <!--                            <th>Ville</th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="g:${garages}">
 
-                                <!--                            <td th:if="${g.id != null}">-->
-                                <!--                                <a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.id}]]</a>-->
-                                <!--                            </td>-->
-                                <td th:if="${g.id == null}" class="text-decoration-none">N/A</td>
-                                <td th:if="${g.nomGarage != null}" class="text-decoration-none">
-                                    <a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.nomGarage}]]</a>
-                                </td>
-                                <td th:if="${g.mailResp != null}" class="text-decoration-none">
-                                    <a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.mailResp}]]</a>
-                                </td>
+                            <!--                            <td th:if="${g.id != null}">-->
+                            <!--                                <a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.id}]]</a>-->
+                            <!--                            </td>-->
+                            <td th:if="${g.id == null}" class="text-decoration-none">N/A</td>
+                            <td th:if="${g.nomGarage != null}" class="text-decoration-none">
+                                <a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.nomGarage}]]</a>
+                            </td>
+                            <td th:if="${g.mailResp != null}" class="text-decoration-none">
+                                <a href="#" th:href="@{/garage/{id}(id=${g.id})}" class="text-decoration-none">[[${g.mailResp}]]</a>
+                            </td>
 
-                                <!--                            <td th:if="${g.adresse != null}" th:text="${g.adresse.numeroDeRue}" class="ps-2"></td>-->
-                                <!--                            <td th:if="${g.adresse == null}" class="ps-2">N/A</td>-->
-                                <!--                            <td th:if="${g.adresse != null}" th:text="${g.adresse.rue}" class="ps-2"></td>-->
-                                <!--                            <td th:if="${g.adresse == null}" class="ps-2">N/A</td>-->
-                                <!--                            <td th:if="${g.adresse != null}" th:text="${g.adresse.cp}" class="ps-2"></td>-->
-                                <!--                            <td th:if="${g.adresse == null}" class="ps-2">N/A</td>-->
-                                <!--                            <td th:if="${g.adresse != null}" th:text="${g.adresse.ville}" class="ps-2"></td>-->
-                            </tr>
-                            </tbody>
-                        </th:block>
-                    </table>
-                </div>
+                            <!--                            <td th:if="${g.adresse != null}" th:text="${g.adresse.numeroDeRue}" class="ps-2"></td>-->
+                            <!--                            <td th:if="${g.adresse == null}" class="ps-2">N/A</td>-->
+                            <!--                            <td th:if="${g.adresse != null}" th:text="${g.adresse.rue}" class="ps-2"></td>-->
+                            <!--                            <td th:if="${g.adresse == null}" class="ps-2">N/A</td>-->
+                            <!--                            <td th:if="${g.adresse != null}" th:text="${g.adresse.cp}" class="ps-2"></td>-->
+                            <!--                            <td th:if="${g.adresse == null}" class="ps-2">N/A</td>-->
+                            <!--                            <td th:if="${g.adresse != null}" th:text="${g.adresse.ville}" class="ps-2"></td>-->
+                        </tr>
+                        </tbody>
+                    </th:block>
+                </table>
             </div>
         </div>
     </main>

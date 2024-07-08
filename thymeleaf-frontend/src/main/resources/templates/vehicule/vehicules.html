@@ -10,21 +10,20 @@
 <div layout:fragment="content">
     <main class="container">
         <h3>Liste des véhicules</h3>
-        <div class="ps-3">
-            <div class="card">
-                <div class="card-body">
-                    <table class="table w-100">
-                        <div th:if="${#lists.isEmpty(vehicules)}" class=" text-center alert alert-warning" role="alert">
-                            Aucun véhicule trouvé
-                        </div>
-                        <th:block th:unless="${#lists.isEmpty(vehicules)}">
-<!--                        <th:block th:if="${#lists.isEmpty(documents)}">-->
-<!--                            <tr>-->
-<!--                                <td colspan="8" class="text-center">Aucun véhicule trouvé</td>-->
-<!--                            </tr>-->
+        <div class="card w-100">
+            <div class="card-body">
+                <table class="table w-100">
+                    <div th:if="${#lists.isEmpty(vehicules)}" class=" text-center alert alert-warning" role="alert">
+                        Aucun véhicule trouvé
+                    </div>
+                    <th:block th:unless="${#lists.isEmpty(vehicules)}">
+                        <!--                        <th:block th:if="${#lists.isEmpty(documents)}">-->
+                        <!--                            <tr>-->
+                        <!--                                <td colspan="8" class="text-center">Aucun véhicule trouvé</td>-->
+                        <!--                            </tr>-->
                         <thead>
                         <tr>
-<!--                            <th>ID</th>-->
+                            <!--                            <th>ID</th>-->
                             <th>Immat</th>
                             <th>Date de mise en circulation</th>
                             <th>Status du vehicule</th>
@@ -36,9 +35,9 @@
                         <tbody>
                         <tr th:each="v:${vehicules}">
 
-<!--                            <td th:if="${v.idVehicule != null}">-->
-<!--                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.idVehicule}]]</a>-->
-<!--                            </td>-->
+                            <!--                            <td th:if="${v.idVehicule != null}">-->
+                            <!--                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.idVehicule}]]</a>-->
+                            <!--                            </td>-->
                             <td th:if="${v.idVehicule == null}" class="text-decoration-none">N/A</td>
                             <td th:if="${v.immatriculationVehicule != null}">
                                 <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.immatriculationVehicule}]]</a>
@@ -57,9 +56,8 @@
                             <!--                        <td th:text="${v.climatisationVehicule}"></td>-->
                         </tr>
                         </tbody>
-                        </th:block>
-                    </table>
-                </div>
+                    </th:block>
+                </table>
             </div>
         </div>
     </main>
