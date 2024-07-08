@@ -1,12 +1,10 @@
 package fr.cdrochon.smamonolithe.client.query.entities;
 
 import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
+import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import lombok.*;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 
 @Entity
@@ -25,4 +23,7 @@ public class Client {
     private AdresseClient adresse;
     @Enumerated
     private ClientStatus clientStatus;
+    
+    @OneToOne(mappedBy = "client")
+    private Dossier dossier;
 }

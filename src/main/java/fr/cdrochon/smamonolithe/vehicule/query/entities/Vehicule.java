@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.vehicule.query.entities;
 
 
+import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Vehicule {
     private String immatriculationVehicule;
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant dateMiseEnCirculationVehicule;
+   
 //    private Instant dateDeValiditeControleTechnique;
 //    private Instant dateValiditeControleTechniqueComplementaire;
 //    private String urlCertificatImmatriculation;
@@ -48,6 +50,11 @@ public class Vehicule {
 //    private boolean climatisationVehicule;
     @Enumerated(EnumType.STRING)
     private VehiculeStatus vehiculeStatus;
+    
+//    @ManyToOne
+//    @JoinColumn(name = "dossier_id")
+    @OneToOne(mappedBy = "vehicule")
+    private Dossier dossier;
 
     // communication inter ms
 //    @Transient
