@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GaragePostDTO implements Serializable {
+public class GaragePostDTO{
     private String id;
     @NotBlank(message = "champ obligatoire")
     @Size(max = 50)
