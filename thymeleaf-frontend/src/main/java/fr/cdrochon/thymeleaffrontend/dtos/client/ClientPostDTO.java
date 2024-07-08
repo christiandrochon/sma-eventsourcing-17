@@ -35,12 +35,12 @@ public class ClientPostDTO {
      * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
      * @return AdresseClientDTO
      */
-    public @Valid AdresseClientDTO getAdresse() {
-        return new AdresseClientDTO(
-            this.adresse.getNumeroDeRue(),
-            this.adresse.getRue(),
-            this.adresse.getCp(),
-            this.adresse.getVille()
-        );
-    }
+//    public @Valid AdresseClientDTO getAdresse() {
+//        return new AdresseClientDTO(
+//            this.adresse.getNumeroDeRue(),
+//            this.adresse.getRue(),
+//            this.adresse.getCp(),
+//            this.adresse.getVille()
+//        );
+//    }
 }

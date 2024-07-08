@@ -28,12 +28,12 @@ public class GaragePostDTO{
      * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
      * @return GarageAdresseDTO
      */
-    public @Valid GarageAdresseDTO getAdresse() {
-        return new GarageAdresseDTO(
-            this.adresse.getNumeroDeRue(),
-            this.adresse.getRue(),
-            this.adresse.getCp(),
-            this.adresse.getVille()
-        );
-    }
+//    public @Valid GarageAdresseDTO getAdresse() {
+//        return new GarageAdresseDTO(
+//            this.adresse.getNumeroDeRue(),
+//            this.adresse.getRue(),
+//            this.adresse.getCp(),
+//            this.adresse.getVille()
+//        );
+//    }
 }
