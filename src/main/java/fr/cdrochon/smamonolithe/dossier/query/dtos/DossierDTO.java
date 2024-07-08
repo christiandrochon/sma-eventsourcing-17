@@ -20,6 +20,5 @@ public class DossierDTO {
     private Instant dateModificationDossier;
     private Client client;
     private Vehicule vehicule;
-    @Enumerated(EnumType.STRING)
-    private DossierStatus dossierStatus;
+    private DossierStatusDTO dossierStatus;
 }
