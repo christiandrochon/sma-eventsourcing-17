@@ -1,7 +1,9 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
+import fr.cdrochon.thymeleaffrontend.entity.document.DocumentStatus;
 import fr.cdrochon.thymeleaffrontend.entity.vehicule.Vehicule;
+import fr.cdrochon.thymeleaffrontend.entity.vehicule.VehiculeStatus;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 public class CreateVehiculeController {
@@ -29,6 +32,8 @@ public class CreateVehiculeController {
         if(!model.containsAttribute("vehiculeDTO")) {
             model.addAttribute("vehiculePostDTO", new VehiculePostDTO());
         }
+        //chargement des listes de type de document et de status de vehicule
+        model.addAttribute("vehiculeStatuses", List.of(VehiculeStatus.values()));
         return "vehicule/createVehiculeForm";
     }
     
@@ -41,12 +46,13 @@ public class CreateVehiculeController {
             
             result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
             model.addAttribute("vehiculePostDTO", vehiculePostDTO);
+            model.addAttribute("vehiculeStatuses", List.of(VehiculeStatus.values()));
             return "vehicule/createVehiculeForm";
         }
         try {
             Vehicule vehicule = new Vehicule();
             vehicule.setImmatriculationVehicule(vehiculePostDTO.getImmatriculationVehicule());
-            
+
             //Transformation du String en Instant
             String dateMiseEnCirculationVehicule = vehiculePostDTO.getDateMiseEnCirculationVehicule();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -54,6 +60,8 @@ public class CreateVehiculeController {
             Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
             //            Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
             vehicule.setDateMiseEnCirculationVehicule(instant);
+
+            vehicule.setVehiculeStatus(vehiculePostDTO.getVehiculeStatus());
             
             restClient.post().uri("/commands/createVehicule")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))

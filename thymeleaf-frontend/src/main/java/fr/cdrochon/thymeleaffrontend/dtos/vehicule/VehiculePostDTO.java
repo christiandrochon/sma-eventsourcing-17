@@ -1,5 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.dtos.vehicule;
 
+import fr.cdrochon.thymeleaffrontend.entity.vehicule.VehiculeStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -42,6 +43,6 @@ public class VehiculePostDTO {
     //    private String couleurVehicule;
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
-    
+    private VehiculeStatus vehiculeStatus;
 
 }

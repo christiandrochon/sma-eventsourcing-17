@@ -26,7 +26,8 @@ public class VehiculeCommandService {
         System.out.println("ClientCommandService.createClient");
         return commandGateway.send(new VehiculeCreateCommand(UUID.randomUUID().toString(),
                                                              vehiculeRestPostDTO.getImmatriculationVehicule(),
-                                                             vehiculeRestPostDTO.getDateMiseEnCirculationVehicule()
+                                                             vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
+                                                                vehiculeRestPostDTO.getVehiculeStatus()
         ));
         
     }

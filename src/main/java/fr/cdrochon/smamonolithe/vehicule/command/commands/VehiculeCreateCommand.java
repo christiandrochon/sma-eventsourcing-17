@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.command.commands;
 
+import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,11 +44,14 @@ public class VehiculeCreateCommand extends VehiculeBaseCommand<String> {
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
     
+    private VehiculeStatus vehiculeStatus;
     
-    public VehiculeCreateCommand(String id, String immatriculationVehicule, Instant dateMiseEnCirculationVehicule) {
+    
+    public VehiculeCreateCommand(String id, String immatriculationVehicule, Instant dateMiseEnCirculationVehicule, VehiculeStatus vehiculeStatus) {
         super(id);
         this.immatriculationVehicule = immatriculationVehicule;
         this.dateMiseEnCirculationVehicule = dateMiseEnCirculationVehicule;
+        this.vehiculeStatus = vehiculeStatus;
     }
     
     /**

@@ -74,7 +74,7 @@ public class VehiculeAggregate {
         AggregateLifecycle.apply(new VehiculeCreatedEvent(createVehiculeCommand.getId(),
                                                           createVehiculeCommand.getImmatriculationVehicule(),
                                                           createVehiculeCommand.getDateMiseEnCirculationVehicule(),
-                                                          VehiculeStatus.EN_CIRCULATION
+                                                          createVehiculeCommand.getVehiculeStatus()
         ));
         System.out.println("**************************");
     }
