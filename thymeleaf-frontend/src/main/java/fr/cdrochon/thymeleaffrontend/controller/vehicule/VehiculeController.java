@@ -13,7 +13,7 @@ import java.util.List;
 @Controller
 public class VehiculeController {
     
-    RestClient restClient = RestClient.create("http://localhost:8092");
+    final RestClient restClient = RestClient.create("http://localhost:8092");
     @GetMapping("/vehicule/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String vehiculeById(@PathVariable String id, Model model) {

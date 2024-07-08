@@ -11,7 +11,8 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 @Getter
 public class ClientBaseCommand<T> {
     @TargetAggregateIdentifier
-
+    final
+    
     T id;
     
     public ClientBaseCommand(T id) {

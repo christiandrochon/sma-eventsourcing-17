@@ -14,7 +14,7 @@ import java.util.List;
 @Controller
 public class GarageController {
     
-    RestClient restClient = RestClient.create("http://localhost:8092");
+    final RestClient restClient = RestClient.create("http://localhost:8092");
     
     /**
      * Affiche les données d'un garage

@@ -13,7 +13,7 @@ import java.util.List;
 @Controller
 public class ClientController {
     
-    RestClient restClient = RestClient.create("http://localhost:8092");
+    final RestClient restClient = RestClient.create("http://localhost:8092");
     
     @GetMapping("/client/{id}")
     //    @PreAuthorize("hasAuthority('USER')")

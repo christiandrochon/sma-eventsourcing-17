@@ -5,6 +5,7 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 @Getter
 public class DocumentBaseCommand<T> {
     @TargetAggregateIdentifier
+    final
     T id;
     public DocumentBaseCommand(T id) {
         this.id = id;

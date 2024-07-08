@@ -12,7 +12,7 @@ import java.util.List;
 @Controller
 public class DocumentController {
     
-    RestClient restClient = RestClient.create("http://localhost:8092");
+    final RestClient restClient = RestClient.create("http://localhost:8092");
     @GetMapping("/document/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String getDocById(@PathVariable String id, Model model) {

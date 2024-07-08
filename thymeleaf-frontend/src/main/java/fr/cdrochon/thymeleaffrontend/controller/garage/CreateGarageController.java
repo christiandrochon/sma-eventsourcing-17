@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class CreateGarageController {
     
-    RestClient restClient = RestClient.create("http://localhost:8092");
+    final RestClient restClient = RestClient.create("http://localhost:8092");
 
     @GetMapping("/createGarage")
     //    @PreAuthorize("hasAuthority('ADMIN')")

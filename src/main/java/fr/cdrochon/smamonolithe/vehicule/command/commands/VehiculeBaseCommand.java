@@ -7,6 +7,7 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 public class VehiculeBaseCommand<T> {
     
     @TargetAggregateIdentifier
+    final
     T id;
     
     public VehiculeBaseCommand(T id) {

@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 @Controller
 public class CreateVehiculeController {
     
-    RestClient restClient = RestClient.create("http://localhost:8092");
+    final RestClient restClient = RestClient.create("http://localhost:8092");
     
     @GetMapping("/createVehicule")
     //    @PreAuthorize("hasAuthority('ADMIN')")

@@ -25,7 +25,7 @@ import java.util.List;
 @Controller
 public class CreateDocumentController {
     
-    RestClient restClient = RestClient.create("http://localhost:8092");
+    final RestClient restClient = RestClient.create("http://localhost:8092");
     
     @GetMapping("/createDocument")
     //    @PreAuthorize("hasAuthority('ADMIN')")
