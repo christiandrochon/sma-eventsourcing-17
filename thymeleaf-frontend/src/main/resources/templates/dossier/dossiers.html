@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Dossiers</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <main class="container">
+        <h3>Liste des Dossiers</h3>
+        <h6 class="fst-italic">(Cliquez sur une ligne pour accéder aux details d'un dossier)</h6>
+        <div class="card w-100">
+            <div class="card-body">
+                <table class="table w-100">
+                    <div th:if="${#lists.isEmpty(dossiers)}" class=" text-center alert alert-warning" role="alert">
+                        Aucun dossier trouvé
+                    </div>
+                    <th:block th:unless="${#lists.isEmpty(dossiers)}">
+
+                        <thead>
+                        <tr>
+                            <th>Nom dossier</th>
+                            <th>Client (nom et prenom)</th>
+                            <th>Immatriculation</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="d:${dossiers}">
+                            <td th:if="${d.id == null}" class="text-decoration-none">N/A</td>
+                            <td th:if="${d.nomDossier != null}">
+                                <a href="#" th:href="@{/dossier/{id}(id=${d.id})}" class="text-decoration-none">[[${d.nomDossier}]]</a>
+                            </td>
+                            <td th:if="${d.client.nomClient != null}">
+                                <a href="#" th:href="@{/dossier/{id}(id=${d.id})}" class="text-decoration-none">
+                                        [[${d.client.nomClient}]] &nbsp;   [[${d.client.prenomClient}]]</a>
+                            </td>
+                            <td th:if="${d.vehicule.immatriculationVehicule != null}">
+                                <a href="#" th:href="@{/dossier/{id}(id=${d.id})}" class="text-decoration-none">[[${d.vehicule.immatriculationVehicule}]]</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </th:block>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
+
