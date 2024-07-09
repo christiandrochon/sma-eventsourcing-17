@@ -65,25 +65,25 @@ public class DossierEventHandlerService {
             dossier.setClient(event.getClient());
             dossier.setVehicule(event.getVehicule());
             
-//            Client client = new Client();
-//            client.setId(event.getClientId());
-//            client.setNomClient(event.getClient().getNomClient());
-//            client.setPrenomClient(event.getClient().getPrenomClient());
-//            client.setAdresse(event.getClient().getAdresse());
-//            client.setTelClient(event.getClient().getTelClient());
-//            client.setMailClient(event.getClient().getMailClient());
-//            client.setClientStatus(event.getClient().getClientStatus());
-//            clientRepository.save(client);
-//
-//            Vehicule vehicule = new Vehicule();
-//            vehicule.setIdVehicule(event.getVehiculeId());
-//            vehicule.setImmatriculationVehicule(event.getVehicule().getImmatriculationVehicule());
-//            vehicule.setDateMiseEnCirculationVehicule(event.getVehicule().getDateMiseEnCirculationVehicule());
-//            vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());
-//            vehiculeRepository.save(vehicule);
+            Client client = new Client();
+            client.setId(event.getClientId());
+            client.setNomClient(event.getClient().getNomClient());
+            client.setPrenomClient(event.getClient().getPrenomClient());
+            client.setAdresse(event.getClient().getAdresse());
+            client.setTelClient(event.getClient().getTelClient());
+            client.setMailClient(event.getClient().getMailClient());
+            client.setClientStatus(event.getClient().getClientStatus());
+            clientRepository.save(client);
+
+            Vehicule vehicule = new Vehicule();
+            vehicule.setIdVehicule(event.getVehiculeId());
+            vehicule.setImmatriculationVehicule(event.getVehicule().getImmatriculationVehicule());
+            vehicule.setDateMiseEnCirculationVehicule(event.getVehicule().getDateMiseEnCirculationVehicule());
+            vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());
+            vehiculeRepository.save(vehicule);
             
-            vehiculeRepository.save(event.getVehicule());
-            clientRepository.save(event.getClient());
+//            vehiculeRepository.save(event.getVehicule());
+//            clientRepository.save(event.getClient());
             dossierRepository.save(dossier);
             
         } catch(Exception e) {

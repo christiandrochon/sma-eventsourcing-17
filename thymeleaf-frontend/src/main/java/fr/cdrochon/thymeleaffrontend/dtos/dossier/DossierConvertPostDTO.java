@@ -1,10 +1,8 @@
 package fr.cdrochon.thymeleaffrontend.dtos.dossier;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.Instant;
@@ -20,6 +18,6 @@ public class DossierConvertPostDTO {
     private Instant dateCreationDossier;
     private Instant dateModificationDossier;
     private ClientPostDTO client;
-    private VehiculePostDTO vehicule;
+    private VehiculeDateConvertDTO vehicule;
     private DossierStatusDTO dossierStatus;
 }

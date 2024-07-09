@@ -11,6 +11,8 @@ import fr.cdrochon.thymeleaffrontend.dtos.document.TypeDocumentDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierConvertPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierStatusDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -68,27 +70,25 @@ public class CreateDossierController {
         }
         try {
             DossierConvertPostDTO dossierConvertPostDTO = new DossierConvertPostDTO();
-            dossierConvertPostDTO.setId(dossierPostDTO.getId());
+            
             dossierConvertPostDTO.setNomDossier(dossierPostDTO.getNomDossier());
-            
-            //Transformation du String en Instant
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            
-            String dateCreationDossier = dossierPostDTO.getDateCreationDossier();
-            LocalDate localDate = LocalDate.parse(dateCreationDossier, formatter);
-            Instant dateCreation = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-            dossierConvertPostDTO.setDateCreationDossier(dateCreation);
-//            dossierConvertPostDTO.setDateCreationDossier(Instant.now());
-            
-            String dateModificationDossier = dossierPostDTO.getDateModificationDossier();
-            LocalDate localDate1 = LocalDate.parse(dateModificationDossier, formatter);
-            Instant dateModif = localDate1.atStartOfDay().toInstant(ZoneOffset.UTC);
-            dossierConvertPostDTO.setDateModificationDossier(dateModif);
-//            dossierConvertPostDTO.setDateModificationDossier(Instant.now());
-            
-            dossierConvertPostDTO.setClient(dossierPostDTO.getClient());
-            dossierConvertPostDTO.setVehicule(dossierPostDTO.getVehicule());
+            dossierConvertPostDTO.setDateCreationDossier(Instant.now());
+            dossierConvertPostDTO.setDateModificationDossier(Instant.now());
             dossierConvertPostDTO.setDossierStatus(dossierPostDTO.getDossierStatus());
+            dossierConvertPostDTO.setClient(dossierPostDTO.getClient());
+            
+            //conversion du vehciuel à cause la date de mise en circulation
+            VehiculeDateConvertDTO vehiculeDateConvertDTO = new VehiculeDateConvertDTO();
+            vehiculeDateConvertDTO.setImmatriculationVehicule(dossierPostDTO.getVehicule().getImmatriculationVehicule());
+            vehiculeDateConvertDTO.setVehiculeStatus(dossierPostDTO.getVehicule().getVehiculeStatus());
+            // conversion de la date de mise en circulation du vehicule
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String dateMiseEnCirculationVehicule = dossierPostDTO.getVehicule().getDateMiseEnCirculationVehicule();
+            LocalDate localDate = LocalDate.parse(dateMiseEnCirculationVehicule, formatter);
+            Instant date = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
+            vehiculeDateConvertDTO.setDateMiseEnCirculationVehicule(date);
+            
+            dossierConvertPostDTO.setVehicule(vehiculeDateConvertDTO);
             
             restClient.post().uri("/commands/createDossier")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
@@ -101,10 +101,9 @@ public class CreateDossierController {
             
         } catch(Exception e) {
             System.out.println("ERREUR DANS LE FOR DOCUMENT : " + e.getMessage());
-            //            return new ModelAndView("createGarageForm");
+            
             redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + e.getMessage());
             redirectAttributes.addFlashAttribute("documentDTO", dossierPostDTO); // Re-add garageDTO to the model if there's an error
-            //            return new ModelAndView("redirect:/createGarage");
             return "redirect:/createDossier";
         }
     }
