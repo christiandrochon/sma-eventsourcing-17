@@ -70,7 +70,6 @@ public class ClientEventHandlerService {
      */
     @QueryHandler
     public ClientResponseDTO on(GetClientDTO getClientQueryDTO) {
-        //        ClientResponseDTO clientResponseDTO = clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO).get();
         return clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO)
                                .orElseThrow(() -> new EntityNotFoundException("Client non trouvé"));
     }
@@ -83,7 +82,6 @@ public class ClientEventHandlerService {
     @QueryHandler
     public List<ClientResponseDTO> on() {
         List<Client> clients = clientRepository.findAll();
-        List<ClientResponseDTO> clientResponseDTOS = clients.stream().map(ClientMapper::convertClientToClientDTO).collect(Collectors.toList());
         return clients.stream().map(ClientMapper::convertClientToClientDTO).collect(Collectors.toList());
     }
 }
