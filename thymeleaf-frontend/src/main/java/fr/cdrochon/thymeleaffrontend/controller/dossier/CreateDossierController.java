@@ -4,15 +4,10 @@ import fr.cdrochon.thymeleaffrontend.dtos.client.AdresseClientDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientStatusDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentConvertPostDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentPostDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentStatusDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.document.TypeDocumentDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierConvertPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierStatusDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -29,7 +24,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -75,6 +69,7 @@ public class CreateDossierController {
             dossierConvertPostDTO.setDateCreationDossier(Instant.now());
             dossierConvertPostDTO.setDateModificationDossier(Instant.now());
             dossierConvertPostDTO.setDossierStatus(dossierPostDTO.getDossierStatus());
+            
             dossierConvertPostDTO.setClient(dossierPostDTO.getClient());
             
             //conversion du vehciuel à cause la date de mise en circulation
