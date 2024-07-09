@@ -74,7 +74,7 @@ public class DossierEventHandlerService {
             client.setMailClient(event.getClient().getMailClient());
             client.setClientStatus(event.getClient().getClientStatus());
             clientRepository.save(client);
-
+            
             Vehicule vehicule = new Vehicule();
             vehicule.setIdVehicule(event.getVehiculeId());
             vehicule.setImmatriculationVehicule(event.getVehicule().getImmatriculationVehicule());
@@ -82,8 +82,8 @@ public class DossierEventHandlerService {
             vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());
             vehiculeRepository.save(vehicule);
             
-//            vehiculeRepository.save(event.getVehicule());
-//            clientRepository.save(event.getClient());
+            //            vehiculeRepository.save(event.getVehicule());
+            //            clientRepository.save(event.getClient());
             dossierRepository.save(dossier);
             
         } catch(Exception e) {
@@ -100,7 +100,6 @@ public class DossierEventHandlerService {
      */
     @QueryHandler
     public DossierResponseDTO on(GetDossierDTO getDossierDTO) {
-        //        ClientResponseDTO clientResponseDTO = clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO).get();
         return dossierRepository.findById(getDossierDTO.getId()).map(DossierMapper::convertDossierToDossierDTO)
                                 .orElseThrow(() -> new EntityNotFoundException("Dossier non trouvé"));
     }
@@ -113,7 +112,6 @@ public class DossierEventHandlerService {
     @QueryHandler
     public List<DossierResponseDTO> on() {
         List<Dossier> dossiers = dossierRepository.findAll();
-        List<DossierResponseDTO> dossierResponseDTOS = dossiers.stream().map(DossierMapper::convertDossierToDossierDTO).collect(Collectors.toList());
         return dossiers.stream().map(DossierMapper::convertDossierToDossierDTO).collect(Collectors.toList());
     }
 }
