@@ -49,6 +49,15 @@
                     de numéro de téléphone
                 </div>
             </div>
+            <div>
+                <label for="status" class="form-label">Status:</label>
+                <select id="status" class="form-select" th:field="*{clientStatus}">
+                    <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}">Status</option>
+                </select>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('clientStatus')}" th:errors="*{clientStatus}">Erreur
+                    du status du client
+                </div>
+            </div>
 
             <!--            <hr class="my-4 mt-8">-->
             <div class="my-3 mt-4">
@@ -84,6 +93,16 @@
                 <input id="ville" class="form-control" type="text" th:field="*{adresse.ville}" required>
                 <div class="is-invalid" th:if="${#fields.hasErrors('adresse.ville')}" th:errors="*{adresse.ville}">Ville inconnue
                 </div>
+            </div>
+            <div class="col-md-5">
+                <label for="pays" class="form-label">Pays</label>
+                <select class="form-select" id="pays" th:field="*{adresse.pays}" required>
+                    <option value="">Choose...</option>
+                    <option>France</option>
+                </select>
+                <!--                            <div class="invalid-feedback">-->
+                <!--                                Selectionnez un pays existant.-->
+                <!--                            </div>-->
             </div>
 
             <hr class="my-4 mt-5">

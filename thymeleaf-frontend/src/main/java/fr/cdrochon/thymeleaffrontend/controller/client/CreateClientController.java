@@ -2,6 +2,9 @@ package fr.cdrochon.thymeleaffrontend.controller.client;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.AdresseClientDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientStatusDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 public class CreateClientController {
@@ -27,6 +32,8 @@ public class CreateClientController {
         if(!model.containsAttribute("clientDTO")) {
             model.addAttribute("clientDTO", new ClientPostDTO());
         }
+        model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
+        model.addAttribute("pays", List.of(PaysDTO.values()));
         return "client/createClientForm";
     }
     
@@ -36,22 +43,24 @@ public class CreateClientController {
                                Model model) {
         if(result.hasErrors()) {
             model.addAttribute("clientDTO", clientDTO);
+            model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
+            model.addAttribute("pays", List.of(PaysDTO.values()));
             return "client/createClientForm";
         }
         try {
             clientDTO.setAdresse(clientDTO.getAdresse());
             
-//                        Client client = new Client();
-//                        //            garage.setId(garageDTO.getId());
-//                        client.setNomClient(clientDTO.getNomClient());
-//
-//                        client.setPrenomClient(clientDTO.getPrenomClient());
-//                        client.setMailClient(clientDTO.getMailClient());
-//                        client.setTelClient(clientDTO.getTelClient());
-//                        //FIXME : utiliser l'adresse DTO ?
-//                        client.setAdresse(clientDTO.getAdresse());
-//                        client.setClientStatus(clientDTO.getClientStatus());
-
+            //                        Client client = new Client();
+            //                        //            garage.setId(garageDTO.getId());
+            //                        client.setNomClient(clientDTO.getNomClient());
+            //
+            //                        client.setPrenomClient(clientDTO.getPrenomClient());
+            //                        client.setMailClient(clientDTO.getMailClient());
+            //                        client.setTelClient(clientDTO.getTelClient());
+            //                        //FIXME : utiliser l'adresse DTO ?
+            //                        client.setAdresse(clientDTO.getAdresse());
+            //                        client.setClientStatus(clientDTO.getClientStatus());
+            
             
             restClient.post().uri("/commands/createClient")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
