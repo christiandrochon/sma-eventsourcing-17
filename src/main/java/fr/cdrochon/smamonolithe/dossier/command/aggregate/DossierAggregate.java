@@ -61,7 +61,9 @@ public class DossierAggregate {
                                                         dossierCreateCommand.getDateModificationDossier(),
                                                         dossierCreateCommand.getClient(),
                                                         dossierCreateCommand.getVehicule(),
-                                                        DossierStatus.OUVERT
+                                                        dossierCreateCommand.getDossierStatus(),
+                                                        dossierCreateCommand.getClient().getId(),
+                                                        dossierCreateCommand.getVehicule().getIdVehicule()
         ));
     }
     
@@ -84,6 +86,9 @@ public class DossierAggregate {
         this.client = event.getClient();
         this.vehicule = event.getVehicule();
         this.dossierStatus = event.getDossierStatus();
+        this.client.setId(event.getClient().getId());
+        this.vehicule.setIdVehicule(event.getVehicule().getIdVehicule());
+        
         //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }
 }
