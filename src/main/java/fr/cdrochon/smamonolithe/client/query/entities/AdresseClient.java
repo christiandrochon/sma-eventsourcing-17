@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import lombok.*;
 
 import javax.persistence.Embeddable;
+import javax.persistence.Enumerated;
 
 
 @Embeddable
@@ -13,8 +14,11 @@ public class AdresseClient {
     
     private String numeroDeRue;
     private String rue;
+    private String complementAdresse;
     private String cp;
     private String ville;
+    @Enumerated
+    private Pays pays;
     
 //    public AdresseClient(AdresseClient adresseClient) {
 //        this.numeroDeRue = adresseClient.getNumeroDeRue();
@@ -32,5 +36,6 @@ public class AdresseClient {
         this.rue = adresseClient.getRue();
         this.cp = adresseClient.getCp();
         this.ville = adresseClient.getVille();
+        this.pays = Pays.valueOf(adresseClient.getPays().name());
     }
 }
