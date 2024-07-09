@@ -80,7 +80,7 @@ public class DossierCommandController {
      * @param dossierRestDTO DTO contenant les informations du client a creer
      * @return CompletableFuture<String>
      */
-    @PostMapping(value = "/createDocument")
+    @PostMapping(value = "/createDossier")
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
     public CompletableFuture<String> createDocument(@RequestBody DossierRestDTO dossierRestDTO) {
