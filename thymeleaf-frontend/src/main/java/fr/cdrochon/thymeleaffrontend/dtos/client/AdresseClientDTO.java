@@ -14,8 +14,11 @@ public class AdresseClientDTO {
     private String numeroDeRue;
     @NotBlank(message = "champ obligatoire")
     private String rue;
+    private String complementAdresse;
     @Pattern(regexp = "^[0-9]{5}$", message = "code postal invalide")
     private String cp;
     @NotBlank(message = "champ obligatoire")
     private String ville;
+    @NotBlank(message = "champ obligatoire")
+    private PaysDTO pays;
 }
