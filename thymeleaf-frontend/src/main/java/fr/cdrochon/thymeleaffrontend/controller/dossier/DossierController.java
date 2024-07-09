@@ -18,11 +18,11 @@ public class DossierController {
     @GetMapping("/dossier/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String getDossierById(@PathVariable String id, Model model) {
-        DossierConvertPostDTO dosssier = restClient.get().uri("/queries/dossiers/" + id)
+        DossierConvertPostDTO dossier = restClient.get().uri("/queries/dossiers/" + id)
                                                    //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                                    .retrieve().body(new ParameterizedTypeReference<>() {
                 });
-        model.addAttribute("dossier", dosssier);
+        model.addAttribute("dossier", dossier);
         return "dossier/view";
     }
     
