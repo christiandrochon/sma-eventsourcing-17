@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class Dossier {
     @Id
     private String id;
@@ -76,5 +75,19 @@ public class Dossier {
     //    private String idMotifRefusMotifClotureDossier;
     //    private String idMotifModificationMotifClotureDossier;
     //    private String idMotifValidationMotifReouvertureDossier;
-
+    
+    /**
+     * Au lieu d'inclure l'objet Dossier complet dans le toString(), on inclut uniquement l'identifiant du Dossier. Cela évite la récursion infinie tout en
+     * fournissant une information utile sur la relation
+     *
+     * @return String représentant l'objet Dossier
+     */
+    @Override
+    public String toString() {
+        return "Dossier{" +
+                "id=" + id +
+                ", client=" + (client != null ? "Client[id=" + client.getId() + "]" : "null") +
+                ", vehicule=" + (vehicule != null ? "Vehicule[id=" + vehicule.getIdVehicule() + "]" : "null") +
+                '}';
+    }
 }

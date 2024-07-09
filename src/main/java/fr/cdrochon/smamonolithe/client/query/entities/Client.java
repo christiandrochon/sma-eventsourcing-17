@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Data @NoArgsConstructor @AllArgsConstructor @Builder @ToString
+@Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Client {
     
     @Id
@@ -26,4 +26,19 @@ public class Client {
     
     @OneToOne(mappedBy = "client")
     private Dossier dossier;
+    
+    /**
+     * Au lieu d'inclure l'objet Dossier complet dans le toString(), on inclut uniquement l'identifiant du Dossier. Cela évite la récursion infinie tout en
+     * fournissant une information utile sur la relation
+     *
+     * @return String représentant l'objet Client
+     */
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                // Ne pas appeler dossier.toString() pour éviter la récursion
+                ", dossierId=" + (dossier != null ? dossier.getId() : "null") +
+                '}';
+    }
 }
