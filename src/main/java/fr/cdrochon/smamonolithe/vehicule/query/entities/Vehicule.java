@@ -50,15 +50,8 @@ public class Vehicule {
     @Enumerated(EnumType.STRING)
     private VehiculeStatus vehiculeStatus;
     
-    //    @ManyToOne
-    //    @JoinColumn(name = "dossier_id")
     @OneToOne(mappedBy = "vehicule")
     private Dossier dossier;
-    
-    // communication inter ms
-    //    @Transient
-    //    private Client client;
-    //    private String clientId;
     
     /**
      * Au lieu d'inclure l'objet Dossier complet dans le toString(), on inlue uniquement l'identifiant du Dossier. Cela évite la récursion infinie tout en
