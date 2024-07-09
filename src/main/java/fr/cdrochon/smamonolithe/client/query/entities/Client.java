@@ -1,5 +1,7 @@
 package fr.cdrochon.smamonolithe.client.query.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
 import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import lombok.*;
@@ -24,7 +26,10 @@ public class Client {
     @Enumerated
     private ClientStatus clientStatus;
     
+    //relation qui ne doit pas etre serialisée
     @OneToOne(mappedBy = "client")
+    @JsonBackReference
+//    @JsonIgnore
     private Dossier dossier;
     
     /**

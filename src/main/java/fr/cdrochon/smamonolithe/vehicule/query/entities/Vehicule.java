@@ -1,6 +1,8 @@
 package fr.cdrochon.smamonolithe.vehicule.query.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import lombok.*;
@@ -50,7 +52,10 @@ public class Vehicule {
     @Enumerated(EnumType.STRING)
     private VehiculeStatus vehiculeStatus;
     
+    //relation qui ne doit pas etre serialisée
     @OneToOne(mappedBy = "vehicule")
+    @JsonBackReference
+//    @JsonIgnore
     private Dossier dossier;
     
     /**

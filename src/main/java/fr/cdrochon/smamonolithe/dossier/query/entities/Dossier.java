@@ -1,5 +1,7 @@
 package fr.cdrochon.smamonolithe.dossier.query.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import lombok.*;
@@ -22,10 +24,20 @@ public class Dossier {
     //    private Instant dateClotureDossier;
     @OneToOne
     @JoinColumn(name = "client_id")
+    //relation qui doit etre serialisée
+    @JsonManagedReference("dossier-client")
+//    @JsonManagedReference("dossier-client")
+//    @JsonManagedReference("client-dossier")
+//    @JsonIgnore
     private Client client;
 
     @OneToOne
     @JoinColumn(name = "vehicule_id")
+    //relation qui doit etre serialisée
+    @JsonManagedReference("dossier-vehicule")
+//    @JsonManagedReference("dossier-vehicule")
+//    @JsonManagedReference("vehicule-dossier")
+//    @JsonIgnore
     private Vehicule vehicule;
     @Enumerated
     private DossierStatus dossierStatus;
