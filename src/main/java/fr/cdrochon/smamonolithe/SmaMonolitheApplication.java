@@ -8,7 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "fr.cdrochon.smamonolithe.garage.query.mapper")
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SmaMonolitheApplication {
     
@@ -22,7 +22,7 @@ public class SmaMonolitheApplication {
     //    Configurer configurer = DefaultConfigurer.defaultConfiguration();
     
     
-    @Bean
+//    @Bean
         //    CommandLineRunner commandLineRunner(GarageRepository garageRepository,
         //                                        ClientRepository clientRepository,
         //                                        VehiculeRepository vehiculeRepository,
