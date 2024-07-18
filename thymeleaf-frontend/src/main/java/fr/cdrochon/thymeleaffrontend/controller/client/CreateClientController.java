@@ -26,14 +26,15 @@ public class CreateClientController {
     @GetMapping("/createClient")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createGarage(Model model) {
-        ClientPostDTO clientDTO = new ClientPostDTO();
-        clientDTO.setAdresse(new AdresseClientDTO());
+//        ClientPostDTO clientDTO = new ClientPostDTO();
+//        clientDTO.setAdresse(new AdresseClientDTO());
         
         if(!model.containsAttribute("clientDTO")) {
             model.addAttribute("clientDTO", new ClientPostDTO());
         }
         model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
         model.addAttribute("pays", List.of(PaysDTO.values()));
+        model.addAttribute("paysDefaut", PaysDTO.FRANCE);
         return "client/createClientForm";
     }
     
@@ -48,7 +49,7 @@ public class CreateClientController {
             return "client/createClientForm";
         }
         try {
-            clientDTO.setAdresse(clientDTO.getAdresse());
+//            clientDTO.setAdresse(clientDTO.getAdresse());
             
             //                        Client client = new Client();
             //                        //            garage.setId(garageDTO.getId());

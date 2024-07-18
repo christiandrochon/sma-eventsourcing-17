@@ -1,9 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.dossier;
 
-import fr.cdrochon.thymeleaffrontend.dtos.client.AdresseClientDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.client.ClientStatusDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.client.*;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierConvertPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierStatusDTO;
@@ -26,15 +23,20 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO.FRANCE;
+
 @Controller
 public class CreateDossierController {
+    private final PaysListDTO paysListDTO = new PaysListDTO();
     final RestClient restClient = RestClient.create("http://localhost:8092");
     
     @GetMapping("/createDossier")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createDossier(Model model) {
-        ClientPostDTO clientDTO = new ClientPostDTO();
-        clientDTO.setAdresse(new AdresseClientDTO());
+        //initilaisation du client
+        //        ClientPostDTO clientDTO = new ClientPostDTO();
+        //        clientDTO.setAdresse(new AdresseClientDTO());
+        
         
         if(!model.containsAttribute("dossierDTO")) {
             model.addAttribute("dossierDTO", new DossierPostDTO());
@@ -44,7 +46,19 @@ public class CreateDossierController {
         model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
         model.addAttribute("dossierStatuses", List.of(DossierStatusDTO.values()));
         model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
-        model.addAttribute("pays", List.of(PaysDTO.values()));
+//                model.addAttribute("paysList", List.of(PaysDTO.values()));
+//                model.addAttribute("valeurParDefaut", PaysDTO.valeurParDefaut());
+                
+        model.addAttribute("paysList", paysListDTO.getPaysList());
+        model.addAttribute("paysForm", new PaysForm());
+        
+        //        List.of(PaysDTO.values()).forEach(paysDTO -> {
+        //            if(paysDTO.equals(FRANCE)) {
+        //                model.addAttribute("paysDefaut", paysDTO);
+        //            }
+        //        });
+        //        model.addAttribute("paysDefaut", PaysDTO.getDefault());
+        
         return "dossier/createDossierForm";
     }
     
@@ -55,11 +69,13 @@ public class CreateDossierController {
         if(result.hasErrors()) {
             result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
             // rechargement des listes en cas d'erreur du formulaire de création
-            model.addAttribute("dossierDTO", dossierPostDTO);
             model.addAttribute("dossierStatuses", List.of(DossierStatusDTO.values()));
             model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
             model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
-            model.addAttribute("pays", List.of(PaysDTO.values()));
+            model.addAttribute("paysList", List.of(PaysDTO.values()));
+            
+            
+            model.addAttribute("dossierDTO", dossierPostDTO);
             return "dossier/createDossierForm";
         }
         try {

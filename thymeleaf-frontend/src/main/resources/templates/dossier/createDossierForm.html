@@ -27,7 +27,7 @@
                 <!--                <div class="mt-lg-5">-->
                 <!--                    <h3>Création du dossier</h3>-->
                 <!--                </div>-->
-                <form action='#' th:action="@{/createDossier}" method='post' th:object="${dossierDTO}" class="needs-validation" novalidate>
+                <form action='#' th:action="@{/createDossier}" method='post' th:object="${dossierDTO}">
                     <!--                    <hr class="my-4">-->
 
                     <!--                    <h4 class="mb-3">Client</h4>-->
@@ -61,7 +61,7 @@
                         <div class="col-sm-3">
                             <label for="dossierStatus" class="form-label">Status du dossier</label>
                             <select id="dossierStatus" class="form-select" th:field="*{dossierStatus}" required>
-                                <option th:each="status : ${dossierStatuses}" th:value="${status}" th:text="${status}">Status</option>
+                                <option th:each="status : ${dossierStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'OUVERT'}">Status</option>
                             </select>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('dossierStatus')}" th:errors="*{dossierStatus}">Erreur
                                 du status du dossier client
@@ -107,7 +107,7 @@
                         <div class="col-sm-3">
                             <label for="statusClient" class="form-label">Status du client</label>
                             <select id="statusClient" class="form-select" th:field="*{client.clientStatus}" required>
-                                <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}">Status</option>
+                                <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'ACTIF'}">Status</option>
                             </select>
                             <div class="invalid-feedback" th:if="${#fields.hasErrors('client.clientStatus')}" th:errors="*{client.clientStatus}">Erreur
                                 du status du client
@@ -119,54 +119,70 @@
                         </div>
                         <div class="col-sm-3">
                             <label for="numeroDeRue" class="form-label">N° de rue</label>
-                            <input id="numeroDeRue" class="form-control" type="text" th:field="*{client.adresse.numeroDeRue}" placeholder="1234 bis, ter"
+                            <input id="numeroDeRue" class="form-control" type="text" th:field="*{client.numeroDeRue}" placeholder="1234 bis, ter"
                                    required>
-                            <div class="is-invalid bg-light-subtle" th:if="${#fields.hasErrors('client.adresse.numeroDeRue')}"
-                                 th:errors="*{client.adresse.numeroDeRue}">Erreur de numéro de rue dans l'adresse
+                            <div class="is-invalid bg-light-subtle" th:if="${#fields.hasErrors('client.numeroDeRue')}"
+                                 th:errors="*{client.numeroDeRue}">Erreur de numéro de rue dans l'adresse
                             </div>
                         </div>
 
                         <div class="col-sm-9">
                             <label for="rue" class="form-label">Nom de la rue</label>
-                            <input id="rue" class="form-control" type="text" th:field="*{client.adresse.rue}" placeholder="rue, avenue, boulevard..." required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.rue')}" th:errors="*{client.adresse.rue}">Erreur
+                            <input id="rue" class="form-control" type="text" th:field="*{client.rue}" placeholder="rue, avenue, boulevard..." required>
+                            <div class="is-invalid" th:if="${#fields.hasErrors('client.rue')}" th:errors="*{client.rue}">Erreur
                                 du nom de la rue dans l'adresse
                             </div>
                         </div>
                         <div class="col-12">
                             <label for="address2" class="form-label">Supplément d'adresse <span class="text-body-secondary">(Optionnel)</span></label>
                             <input type="text" class="form-control" id="address2" placeholder="Appartement, suite, etc"
-                                   th:field="*{client.adresse.complementAdresse}">
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.complementAdresse')}"
-                                 th:errors="*{client.adresse.complementAdresse}">Erreur
+                                   th:field="*{client.complementAdresse}">
+                            <div class="is-invalid" th:if="${#fields.hasErrors('client.complementAdresse')}"
+                                 th:errors="*{client.complementAdresse}">Erreur
                                 d'information dans l'adresse complémentaire
                             </div>
                         </div>
 
                         <div class="col-sm-3">
                             <label for="cp" class="form-label">Code postal</label>
-                            <input id="cp" class="form-control" type="text" th:field="*{client.adresse.cp}" placeholder="12345" pattern="[0-9]{5}" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.cp')}" th:errors="*{client.adresse.cp}">Erreur
+                            <input id="cp" class="form-control" type="text" th:field="*{client.cp}" placeholder="12345" pattern="[0-9]{5}" required>
+                            <div class="is-invalid" th:if="${#fields.hasErrors('client.cp')}" th:errors="*{client.cp}">Erreur
                                 de code postal
                             </div>
                         </div>
 
                         <div class="col-sm-4">
                             <label for="ville" class="form-label">Ville</label>
-                            <input id="ville" class="form-control" type="text" th:field="*{client.adresse.ville}" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.ville')}" th:errors="*{client.adresse.ville}">Ville inconnue
+                            <input id="ville" class="form-control" type="text" th:field="*{client.ville}" required>
+                            <div class="is-invalid" th:if="${#fields.hasErrors('client.ville')}" th:errors="*{client.ville}">Ville inconnue
                             </div>
                         </div>
                         <div class="col-md-5">
+                            <label for="status" class="form-label">Status</label>
+
                             <label for="pays" class="form-label">Pays</label>
-                            <select class="form-select" id="pays" th:field="*{client.adresse.pays}" required>
-                                <option th:each="nomPays : ${pays}" th:value="${nomPays}" th:text="${nomPays}" th:selected="${nomPays == 'France'}">
-                                    Choisissez...
+                            <select id="pays" name="pays" class="form-select" required>
+                                <option th:each="pays : ${paysList}"
+                                        th:value="${pays}"
+                                        th:text="${pays}"
+                                        th:if="${pays} == ${paysForm.pays}" selected="selected">
+                                </option>
+                                <option th:each="pays : ${paysList}"
+                                        th:value="${pays}"
+                                        th:text="${pays}"
+                                        th:unless="${pays} == ${paysForm.pays}">
                                 </option>
                             </select>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.pays')}" th:errors="*{client.adresse.pays}">Veuillez renseigner
-                                le pays
-                            </div>
+<!--                            <select id="pays" class="form-select"  th:field="*{client.pays}" required>-->
+<!--                                <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:selected="${pays} == ${paysForm.pays}">Pays-->
+
+<!--&lt;!&ndash;                                <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:attr="selected=*{client.pays} == ${pays} ? 'selected' : null">Pays&ndash;&gt;-->
+<!--                                </option>-->
+<!--                            </select>-->
+                            <!--                            <div class="is-invalid" th:if="${#fields.hasErrors('client.pays')}" th:errors="*{client.pays}">Veuillez renseigner-->
+                            <!--                                le pays-->
+                            <!--                            </div>-->
+
                         </div>
                     </div>
 
@@ -196,7 +212,7 @@
                     <div>
                         <label for="status" class="form-label">Status</label>
                         <select id="status" class="form-select" th:field="*{vehicule.vehiculeStatus}" required>
-                            <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}">Status</option>
+                            <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'EN_ATTENTE'}">Status</option>
                         </select>
                         <div class="is-invalid" th:if="${#fields.hasErrors('vehicule.vehiculeStatus')}" th:errors="*{vehicule.vehiculeStatus}">Erreur
                             du status du document
