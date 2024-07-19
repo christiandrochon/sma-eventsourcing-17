@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
+//import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,15 +68,15 @@ public class VehiculeRestController {
      * @param id id du vehicule
      * @return Flux de VehiculeResponseDTO
      */
-    @GetMapping(value = "/vehicule/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<VehiculeResponseDTO> watch(@PathVariable String id) {
-        
-        try(SubscriptionQueryResult<VehiculeResponseDTO, VehiculeResponseDTO> result = queryGateway.subscriptionQuery(
-                new GetVehiculeDTO(id),
-                ResponseTypes.instanceOf(VehiculeResponseDTO.class),
-                ResponseTypes.instanceOf(VehiculeResponseDTO.class)
-                                                                                                                     )) {
-            return result.initialResult().concatWith(result.updates());
-        }
-    }
+//    @GetMapping(value = "/vehicule/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public Flux<VehiculeResponseDTO> watch(@PathVariable String id) {
+//
+//        try(SubscriptionQueryResult<VehiculeResponseDTO, VehiculeResponseDTO> result = queryGateway.subscriptionQuery(
+//                new GetVehiculeDTO(id),
+//                ResponseTypes.instanceOf(VehiculeResponseDTO.class),
+//                ResponseTypes.instanceOf(VehiculeResponseDTO.class)
+//                                                                                                                     )) {
+//            return result.initialResult().concatWith(result.updates());
+//        }
+//    }
 }
