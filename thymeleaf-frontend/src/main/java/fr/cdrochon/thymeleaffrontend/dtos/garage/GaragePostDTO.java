@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GaragePostDTO{
-//    private String id;
+    private String id;
     @NotBlank(message = "champ obligatoire")
     @Size(max = 50)
     private String nomGarage;
