@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
+//import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,15 +71,15 @@ public class GarageQueryRestController {
      * @param id id du garage
      * @return Flux de GarageResponseDTO
      */
-    @GetMapping(value = "/garage/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<GarageResponseDTO> watch(@PathVariable String id) {
-        
-        try(SubscriptionQueryResult<GarageResponseDTO, GarageResponseDTO> result = queryGateway.subscriptionQuery(
-                new GetGarageDTO(id),
-                ResponseTypes.instanceOf(GarageResponseDTO.class),
-                ResponseTypes.instanceOf(GarageResponseDTO.class)
-                                                                                                                 )) {
-            return result.initialResult().concatWith(result.updates());
-        }
-    }
+//    @GetMapping(value = "/garage/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public Flux<GarageResponseDTO> watch(@PathVariable String id) {
+//
+//        try(SubscriptionQueryResult<GarageResponseDTO, GarageResponseDTO> result = queryGateway.subscriptionQuery(
+//                new GetGarageDTO(id),
+//                ResponseTypes.instanceOf(GarageResponseDTO.class),
+//                ResponseTypes.instanceOf(GarageResponseDTO.class)
+//                                                                                                                 )) {
+//            return result.initialResult().concatWith(result.updates());
+//        }
+//    }
 }
