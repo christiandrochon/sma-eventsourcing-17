@@ -1,5 +1,8 @@
 package fr.cdrochon.smamonolithe.dossier.command.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.dossier.query.entities.DossierStatus;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
@@ -19,7 +22,7 @@ import java.time.Instant;
 @Setter
 public class DossierRestDTO {
 
-//    private String id;
+    private String id;
     private String nomDossier;
     private Instant dateCreationDossier;
     private Instant dateModificationDossier;
