@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.client.command.dtos;
 
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
+import fr.cdrochon.smamonolithe.client.query.dtos.ClientStatusDTO;
 import lombok.*;
 /**
  * Permet de faire le lien entre les services command de l'appli et le monde exteieur
@@ -14,12 +15,13 @@ import lombok.*;
 @Getter
 @Setter
 public class ClientRestPostDTO {
-//    private String id;
+    private String id;
     private String nomClient;
     private String prenomClient;
     private String mailClient;
     private String telClient;
     private ClientAdresseDTO adresse;
+    private ClientStatusDTO clientStatus;
     
     /**
      * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
