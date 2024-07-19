@@ -57,7 +57,7 @@ public class DossierCommandController {
      * @param dossierRestDTO DTO contenant les informations du garage a creer
      * @return CompletableFuture<String>
      */
-    @GetMapping(value = "/createDossier", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/createDossier")//, consumes = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<CompletableFuture<String>> createDossierGet(@RequestBody DossierRestDTO dossierRestDTO) {
         return CompletableFuture.supplyAsync(() -> {
             ResponseEntity<DossierRestDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createDossier",
@@ -80,28 +80,43 @@ public class DossierCommandController {
      * @param dossierRestDTO DTO contenant les informations du client a creer
      * @return CompletableFuture<String>
      */
-    @PostMapping(value = "/createDossier")
+    @PostMapping(value = "/createDossier")//, consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
+//    public ResponseEntity<?> createDossier(@RequestBody DossierRestDTO dossierRestDTO) {
+//        try {
+//            // Ici, vous pouvez ajouter une validation supplémentaire pour dossierRestDTO si nécessaire
+//
+//            // Appel au service pour créer le dossier et récupérer un identifiant ou un objet résultant
+//            String dossierId = dossierCommandService.createDossier(dossierRestDTO).toString();
+//
+//            // Si tout se passe bien, renvoyer l'ID du dossier avec une réponse 200 OK
+//            return ResponseEntity.ok().body("Dossier created successfully with ID: " + dossierId);
+//        } catch (Exception e) {
+//            // En cas d'erreur, logger l'exception et renvoyer une réponse 500 Internal Server Error
+//            e.printStackTrace(); // Considérez utiliser un logger approprié dans une application réelle
+//            return new ResponseEntity<>("Failed to create dossier: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
     public CompletableFuture<String> createDocument(@RequestBody DossierRestDTO dossierRestDTO) {
-        
+
         try {
-            
+
             String url = "http://localhost:8091/createDossier";
             HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
             int responseCode = httpClient.getResponseCode();
             System.out.println("GET Response Code :: " + responseCode);
-            
+
             if(responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
                 String inputLine;
                 StringBuilder response = new StringBuilder();
-                
+
                 while((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
                 in.close();
-                
+
                 return dossierCommandService.createDossier(dossierRestDTO);
             }
             else {
