@@ -1,18 +1,16 @@
 package fr.cdrochon.smamonolithe.garage.query.services;
 
-import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapper;
-import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.events.GarageCreatedEvent;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GetAllGarageDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GetGarageDTO;
 import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
+import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.queryhandling.QueryHandler;
-import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +22,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GarageEventHandlerService {
     private final GarageRepository garageQueryRepository;
-    private final GarageMapper garageQueryMapper;
+    private final GarageMapperManuel garageMapperManuel;
     
-    public GarageEventHandlerService(GarageRepository garageQueryRepository, GarageMapper garageQueryMapper) {
+    public GarageEventHandlerService(GarageRepository garageQueryRepository, GarageMapperManuel garageMapperManuel) {
         this.garageQueryRepository = garageQueryRepository;
-        this.garageQueryMapper = garageQueryMapper;
+        this.garageMapperManuel = garageMapperManuel;
     }
     
     /**
@@ -51,7 +49,7 @@ public class GarageEventHandlerService {
             garageQuery.setNomGarage(event.getNomGarage());
             garageQuery.setMailResponsable(event.getMailResponsable());
             garageQuery.setAdresseGarage(event.getAdresseGarage());
-            garageQuery.setGarageStatus(event.getClientStatus());
+            garageQuery.setGarageStatus(event.getGarageStatus());
             
             garageQueryRepository.save(garageQuery);
         } catch(Exception e) {
@@ -80,7 +78,7 @@ public class GarageEventHandlerService {
     @QueryHandler
     public List<GarageResponseDTO> on(GetAllGarageDTO getAllGarageQueries) {
         List<Garage> garageQueries = garageQueryRepository.findAll();
-        return garageQueries.stream().map(garageQueryMapper::garageToGarageDTO).collect(Collectors.toList());
+        return garageQueries.stream().map(GarageMapperManuel::convertGarageToGarageDTO).collect(Collectors.toList());
     }
     
 }

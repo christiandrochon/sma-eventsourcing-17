@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.configuration;
 
-import com.fasterxml.jackson.core.StreamReadConstraints;
+//import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -21,10 +21,10 @@ public class CustomObjectMapper {
         mapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL, true);
         
         // Augmenter la profondeur maximale
-        StreamReadConstraints constraints = StreamReadConstraints.builder()
-                                                                 .maxNestingDepth(2000) // Modifier cette valeur selon vos besoins
-                                                                 .build();
-        mapper.getFactory().setStreamReadConstraints(constraints);
+//        StreamReadConstraints constraints = StreamReadConstraints.builder()
+//                                                                 .maxNestingDepth(2000) // Modifier cette valeur selon vos besoins
+//                                                                 .build();
+//        mapper.getFactory().setStreamReadConstraints(constraints);
         
         return mapper;
     }
