@@ -8,7 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-@SpringBootApplication(scanBasePackages = "fr.cdrochon.smamonolithe.garage.query.mapper")
+@SpringBootApplication
 //@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SmaMonolitheApplication {
     
