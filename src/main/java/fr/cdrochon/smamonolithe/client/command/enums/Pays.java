@@ -1,11 +1,7 @@
-package fr.cdrochon.smamonolithe.client.query.dtos;
+package fr.cdrochon.smamonolithe.client.command.enums;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierStatusDTO;
-
-public enum PaysDTO {
-
+public enum Pays {
+    
     AFGHANISTAN,
     ALBANIE,
     ALGERIE,
@@ -197,24 +193,5 @@ public enum PaysDTO {
     ZAMBIE,
     ZIMBABWE;
     
-    
-    @JsonCreator
-    public static PaysDTO forValue(String value) {
-        for (PaysDTO status : values()) {
-            if (status.name().equalsIgnoreCase(value)) {
-                return status;
-            }
-        }
-        return FRANCE; // Default value for unknown enum values
-    }
-    
-    @JsonValue
-    public String getLabel() {
-        return this.name();
-    }
-    
-    // Méthode pour obtenir la valeur par défaut
-    public static PaysDTO valeurParDefaut() {
-        return FRANCE; // Retourne la valeur par défaut
-    }
 }
+
