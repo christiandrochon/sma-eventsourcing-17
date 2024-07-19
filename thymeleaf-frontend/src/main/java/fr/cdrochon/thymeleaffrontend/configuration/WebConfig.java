@@ -5,12 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
+    
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/templates/**")
@@ -26,9 +27,9 @@ public class WebConfig implements WebMvcConfigurer {
         return mapper;
     }
     
-//    @Bean
-//    public WebClient webClient() {
-//        return WebClient.builder().build();
-//    }
+    @Bean
+    public WebClient webClient() {
+        return WebClient.builder().baseUrl("http://localhost:8092").build();
+    }
 }
 
