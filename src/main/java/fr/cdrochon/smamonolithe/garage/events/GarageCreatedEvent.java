@@ -1,8 +1,12 @@
 package fr.cdrochon.smamonolithe.garage.events;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * Les events sont exprimés dans le passé (pour le nommage).
@@ -10,22 +14,21 @@ import lombok.Getter;
  * <p>
  * Objet immutable
  */
-@Getter
+@Getter @NoArgsConstructor
 public class GarageCreatedEvent extends GarageBaseEvent<String> {
     
     // je ne garde que le nom du client
-    private final String nomGarage;
-    private final String mailResponsable;
-    private final AdresseGarage adresseGarage;
-    private final GarageStatus clientStatus;
-    
-    
+    private String nomGarage;
+    private String mailResponsable;
+    private AdresseGarage adresseGarage;
+    private GarageStatus garageStatus;
+
     public GarageCreatedEvent(String id, String nomGarage, String mailResponsable, AdresseGarage adresseGarage, GarageStatus garageStatus) {
         super(id);
         this.nomGarage = nomGarage;
         this.mailResponsable = mailResponsable;
         this.adresseGarage = adresseGarage;
-        this.clientStatus = garageStatus;
+        this.garageStatus = garageStatus;
     }
     
 }

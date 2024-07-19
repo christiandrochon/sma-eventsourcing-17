@@ -13,7 +13,11 @@ import lombok.Getter;
 @Getter
 public class GarageBaseEvent<T> {
     
-    private final T id;
+    private T id;
+    
+    public GarageBaseEvent() {
+    }
+    
     public GarageBaseEvent(T id) {
         this.id = id;
     }
