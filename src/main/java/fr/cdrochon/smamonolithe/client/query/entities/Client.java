@@ -13,7 +13,7 @@ import javax.persistence.*;
 
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Client {
     
     @Id
@@ -31,7 +31,7 @@ public class Client {
     
     //relation qui ne doit pas etre serialisée
     @OneToOne(mappedBy = "client")
-    @JsonBackReference
+    @JsonBackReference("dossier-client")
 //    @JsonIgnore
     private Dossier dossier;
     

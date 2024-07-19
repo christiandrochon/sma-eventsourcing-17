@@ -1,7 +1,9 @@
 package fr.cdrochon.smamonolithe.dossier.query.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import lombok.*;
@@ -15,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Dossier {
     @Id
     private String id;

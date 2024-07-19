@@ -54,7 +54,7 @@ public class Vehicule {
     
     //relation qui ne doit pas etre serialisée
     @OneToOne(mappedBy = "vehicule")
-    @JsonBackReference
+    @JsonBackReference("dossier-vehicule")
 //    @JsonIgnore
     private Dossier dossier;
     
