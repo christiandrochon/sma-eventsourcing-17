@@ -85,8 +85,8 @@ public class GarageAggregate {
         this.id = event.getId();
         this.nomGarage = event.getNomGarage();
         this.mailResponsable = event.getMailResponsable();
-        this.status = event.getClientStatus();
         this.adresseGarage = event.getAdresseGarage();
+        this.status = event.getGarageStatus();
         //        this.date = event.getDateQuery();
         //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }
