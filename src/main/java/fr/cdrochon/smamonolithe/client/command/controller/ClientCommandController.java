@@ -5,12 +5,14 @@ import fr.cdrochon.smamonolithe.client.command.services.ClientCommandService;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.queryhandling.QueryGateway;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -27,6 +29,8 @@ public class ClientCommandController {
     private final EventStore eventStore;
     private final ClientCommandService clientCommandService;
     private final RestTemplate restTemplate;
+    //    private final WebClient webClient;
+    
     
     @Value("${external.service.url}")
     private String externalServiceUrl;
@@ -38,6 +42,8 @@ public class ClientCommandController {
         this.eventStore = eventStore;
         this.clientCommandService = clientCommandService;
         this.restTemplate = restTemplate;
+        //        this.webClient = webClientBuilder.baseUrl("http://localhost:8091").build();
+//        this.webClient = webClient;
     }
     
     /**
@@ -58,8 +64,8 @@ public class ClientCommandController {
     public CompletableFuture<CompletableFuture<String>> createDocumentGet(@RequestBody ClientRestPostDTO documentRestDTO) {
         return CompletableFuture.supplyAsync(() -> {
             ResponseEntity<ClientRestPostDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createClient",
-                                                                                        documentRestDTO,
-                                                                                        ClientRestPostDTO.class);
+                                                                                          documentRestDTO,
+                                                                                          ClientRestPostDTO.class);
             ClientRestPostDTO responseDto = responseEntity.getBody();
             assert responseDto != null;
             return clientCommandService.createClient(responseDto);
@@ -77,39 +83,63 @@ public class ClientCommandController {
      * @param clientRestPostDTO DTO contenant les informations du client a creer
      * @return CompletableFuture<String>
      */
-    @PostMapping(value = "/createClient")
+    @PostMapping(value = "/createClient", consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
-    public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRestPostDTO) {
+//    public Mono<CompletableFuture<String>> createDossier(@RequestBody ClientRestPostDTO clientRestPostDTO) {
+//        return Mono.just(clientRestPostDTO)
+//                   .map(clientCommandService::createClient);
         
-        try {
+//        Mono<CompletableFuture<String>> res = webClient.post()
+//                                                       .uri("/createClient")
+//                                                       .body(Mono.just(clientRestPostDTO), ClientRestPostDTO.class)
+//                                                       .retrieve()
+//                                                       .bodyToMono(ClientRestPostDTO.class)
+//                                                       .map(clientCommandService::createClient);
+//
+//        return webClient.post()
+//                        .uri("/createClient")
+//                .bodyValue(clientRestPostDTO)
+//                .retrieve()
+//                .bodyToMono(String.class);
 
-            String url = "http://localhost:8091/createClient";
-            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-            int responseCode = httpClient.getResponseCode();
-            System.out.println("GET Response Code :: " + responseCode);
-            
-            if(responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                
-                while((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
+//                        .body(Mono.just(clientRestPostDTO), ClientRestPostDTO.class)
+//                        .retrieve()
+//                        .bodyToMono(ClientRestPostDTO.class)
+//                        .map(clientCommandService::createClient);
+//    }
+    
+    
+        public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRestPostDTO) {
+
+            try {
+
+                String url = "http://localhost:8091/createClient";
+                HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+                int responseCode = httpClient.getResponseCode();
+                System.out.println("GET Response Code :: " + responseCode);
+
+                if(responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+                    String inputLine;
+                    StringBuilder response = new StringBuilder();
+
+                    while((inputLine = in.readLine()) != null) {
+                        response.append(inputLine);
+                    }
+                    in.close();
+
+                    return clientCommandService.createClient(clientRestPostDTO);
                 }
-                in.close();
-
-                return clientCommandService.createClient(clientRestPostDTO);
+                else {
+                    System.out.println("GET request not worked, response code: " + responseCode);
+                    return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+                return CompletableFuture.completedFuture("Error: " + e.getMessage());
             }
-            else {
-                System.out.println("GET request not worked, response code: " + responseCode);
-                return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-            return CompletableFuture.completedFuture("Error: " + e.getMessage());
         }
-    }
     
     
     //    public CompletableFuture<String> createClient(@RequestBody ClientRestPostDTO clientRequestDTO) {

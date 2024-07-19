@@ -1,7 +1,9 @@
 package fr.cdrochon.smamonolithe.client.query.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
 import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import lombok.*;
@@ -11,6 +13,7 @@ import javax.persistence.*;
 
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Client {
     
     @Id
