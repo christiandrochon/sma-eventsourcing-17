@@ -10,12 +10,12 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class GarageAdresseDTO {
-    @NotBlank(message = "champ obligatoire")
+    @NotBlank(message = "Champ obligatoire")
     private String numeroDeRue;
-    @NotBlank(message = "champ obligatoire")
+    @NotBlank(message = "Champ obligatoire")
     private String rue;
-    @Pattern(regexp = "^[0-9]{5}$", message = "code postal invalide")
+    @Pattern(regexp = "^[0-9]{5}$", message = "Code postal invalide")
     private String cp;
-    @NotBlank(message = "champ obligatoire")
+    @NotBlank(message = "Champ obligatoire")
     private String ville;
 }

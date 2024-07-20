@@ -3,6 +3,7 @@ package fr.cdrochon.thymeleaffrontend.dtos.garage;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -14,12 +15,14 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GaragePostDTO{
+    
     private String id;
-    @NotBlank(message = "champ obligatoire")
-    @Size(max = 50)
+    @NotBlank(message = "Champ obligatoire, veuillez renseigner le nom du garage")
+    @Size(min = 3, message = "Le nom du garage doit contenir au moins 3 caractères")
     private String nomGarage;
-    @NotBlank(message = "champ obligatoire")
-    @Email(message = "adresse mail invalide")
+    @NotBlank(message = "Champ obligatoire, veuillez renseigner le mail du responsable")
+//    @Email(message = "Adresse mail invalide")
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "Adresse mail invalide")
     private String mailResp;
     @Valid
     private GarageAdresseDTO adresse;
