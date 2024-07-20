@@ -16,17 +16,15 @@ import lombok.*;
 public class DossierPostDTO {
     
     private String id;
-    @NotBlank(message = "Le nom du document est obligatoire")
-    @Size(min = 3, max = 50)
+    @NotBlank(message = "Le nom du dossier est obligatoire, veuillez le renseigner.")
+    @Size(min = 3, message = "Le nom du dossier doit contenir au moins 3 caractères.")
     private String nomDossier;
-    @NotBlank(message = "La date de création du dossier est obligatoire")
     private String dateCreationDossier;
-    @NotBlank(message = "La date de modification du document est obligatoire")
     private String dateModificationDossier;
     @Valid
     private ClientPostDTO client;
     @Valid
     private VehiculePostDTO vehicule;
-    @NotNull(message = "Le status du dossier est obligatoire")
+    @NotNull(message = "Le status du dossier est obligatoire, merci de le renseigner.")
     private DossierStatusDTO dossierStatus;
 }

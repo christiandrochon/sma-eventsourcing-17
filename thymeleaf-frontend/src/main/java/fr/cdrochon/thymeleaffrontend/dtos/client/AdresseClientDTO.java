@@ -1,6 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.dtos.client;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -10,15 +11,15 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class AdresseClientDTO {
-    @NotBlank(message = "champ obligatoire")
+    @NotBlank(message = "Ce champ est obligatoire")
     private String numeroDeRue;
-    @NotBlank(message = "champ obligatoire")
+    @NotBlank(message = "Ce champ est obligatoire")
     private String rue;
     private String complementAdresse;
-    @Pattern(regexp = "^[0-9]{5}$", message = "code postal invalide")
+    @Pattern(regexp = "^[0-9]{5}$", message = "Code postal invalide")
     private String cp;
-    @NotBlank(message = "champ obligatoire")
+    @NotBlank(message = "Ce champ est obligatoire")
     private String ville;
-    @NotBlank(message = "champ obligatoire")
+    @NotNull(message = "Ce champ est obligatoire")
     private PaysDTO pays;
 }

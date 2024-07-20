@@ -8,6 +8,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierStatusDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
+@Slf4j
 public class CreateDossierController {
     @Autowired
     private WebClient webClient;
@@ -45,12 +47,13 @@ public class CreateDossierController {
         }
         
         //chargement des listes de status de dossier, de status de vehicule, de status de client et de pays
-        model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
         model.addAttribute("dossierStatuses", List.of(DossierStatusDTO.values()));
+        model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
         model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
+        model.addAttribute("valeurDossierStatutParDefaut", DossierStatusDTO.valeurDossierStatutParDefaut());
         
         model.addAttribute("paysList", List.of(PaysDTO.values()));
-        model.addAttribute("valeurParDefaut", PaysDTO.valeurParDefaut());
+        model.addAttribute("valeurPaysParDefaut", PaysDTO.valeurPaysParDefaut());
         
         return "dossier/createDossierForm";
     }
@@ -60,27 +63,16 @@ public class CreateDossierController {
     public String createDocument(@Valid @ModelAttribute("dossierDTO") DossierPostDTO dossierPostDTO, BindingResult result,
                                  RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {
-            result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
+            result.getAllErrors().forEach(err -> log.error("LOG ERROR : {}", err.getDefaultMessage()));
             // rechargement des listes en cas d'erreur du formulaire de création
             model.addAttribute("dossierStatuses", List.of(DossierStatusDTO.values()));
             model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
             model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
             model.addAttribute("paysList", List.of(PaysDTO.values()));
-            
-            
             model.addAttribute("dossierDTO", dossierPostDTO);
             return "dossier/createDossierForm";
         }
         try {
-            DossierConvertPostDTO dossierConvertPostDTO = new DossierConvertPostDTO();
-            
-            dossierConvertPostDTO.setNomDossier(dossierPostDTO.getNomDossier());
-            dossierConvertPostDTO.setDateCreationDossier(Instant.now());
-            dossierConvertPostDTO.setDateModificationDossier(Instant.now());
-            dossierConvertPostDTO.setDossierStatus(dossierPostDTO.getDossierStatus());
-            
-            dossierConvertPostDTO.setClient(dossierPostDTO.getClient());
-            
             //conversion du vehciuel à cause la date de mise en circulation
             VehiculeDateConvertDTO vehiculeDateConvertDTO = new VehiculeDateConvertDTO();
             vehiculeDateConvertDTO.setImmatriculationVehicule(dossierPostDTO.getVehicule().getImmatriculationVehicule());
@@ -88,44 +80,20 @@ public class CreateDossierController {
             // conversion de la date de mise en circulation du vehicule
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String dateMiseEnCirculationVehicule = dossierPostDTO.getVehicule().getDateMiseEnCirculationVehicule();
-            
             LocalDate localDate = LocalDate.parse(dateMiseEnCirculationVehicule, formatter);
             Instant date = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
             vehiculeDateConvertDTO.setDateMiseEnCirculationVehicule(date);
             
+            //conversion du dossier
+            DossierConvertPostDTO dossierConvertPostDTO = new DossierConvertPostDTO();
+            dossierConvertPostDTO.setNomDossier(dossierPostDTO.getNomDossier());
+            dossierConvertPostDTO.setDateCreationDossier(Instant.now());
+            dossierConvertPostDTO.setDateModificationDossier(Instant.now());
+            dossierConvertPostDTO.setDossierStatus(dossierPostDTO.getDossierStatus());
+            dossierConvertPostDTO.setClient(dossierPostDTO.getClient());
             dossierConvertPostDTO.setVehicule(vehiculeDateConvertDTO);
             
-            //            restClient.post().uri("/commands/createDossier")
-            //                      //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
-            //                      getJwtTokenValue()))
-            //                      //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            //                      .contentType(MediaType.APPLICATION_JSON)
-            //                      .body(dossierConvertPostDTO).retrieve().toBodilessEntity();
-            
-            
-            
-//            MediaType mediaType = new MediaType("application", "json", StandardCharsets.UTF_8);
-//            WebClient webClient = WebClient.builder()
-//                                           .baseUrl("http://localhost:8092")
-//                                           //                                           .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType
-//                                           //                                           .APPLICATION_JSON_VALUE)
-//                                           .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-//                                           .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-//                                           .build();
-//
-//            webClient.post()
-//                                       .uri("/commands/createDossier")
-//                                       .contentType(MediaType.APPLICATION_JSON)
-//                                       .acceptCharset(StandardCharsets.UTF_8)
-//                                       .bodyValue(dossierConvertPostDTO)
-//                                       .retrieve()
-//                                       .bodyToMono(String.class)
-//                                       .subscribe(response -> {
-//                                           System.out.println("Response: " + response);
-//                                       }, error -> {
-//                                           System.err.println("Error: " + error.getMessage());
-//                                       });
-////                                       .block();
+            //appel du ms dossier pour la création du dossier
             webClient.post()
                      .uri("/commands/createDossier")
                      .contentType(MediaType.APPLICATION_JSON)
@@ -133,18 +101,32 @@ public class CreateDossierController {
                      .retrieve()
                      .bodyToMono(String.class)
                      .block();
-            
-            System.out.println("Dossier created successfully");
-            
-            
-            redirectAttributes.addFlashAttribute("successMessage", "Dossier created successfully");
-            return "redirect:/dossiers";
+
+            log.info("Dossier created successfully");
+            redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
+            redirectAttributes.addFlashAttribute("urlRedirection", "/dossiers");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-success");
+            return "redirect:/success";
+//            return "redirect:/dossiers";
             
         } catch(Exception e) {
-            System.out.println("ERREUR DANS LE DOSSIER : " + e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage",
+                                                 "Erreur de création de dossier. Merci de communiquer le contenu de l'erreur suivante au développeur : '" + e.getMessage() + "'");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
             redirectAttributes.addFlashAttribute("dossierDTO", dossierPostDTO); // Re-add garageDTO to the model if there's an error
-            return "redirect:/createDossier";
+//            return "redirect:/createDossier";
+            return "redirect:/error";
+        
         }
+    }
+    
+    /**
+     * Affiche la page de succès
+     * @return la vue success
+     */
+    @GetMapping("/success")
+    public String showSuccess(){
+        return "success";
     }
 }

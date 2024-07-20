@@ -3,10 +3,9 @@ package fr.cdrochon.thymeleaffrontend.dtos.client;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierStatusDTO;
 
 public enum ClientStatusDTO {
-    ACTIF, HISTORISE;
+    ACTIF, INACTIF, HISTORISE;
     
     @JsonCreator
     public static ClientStatusDTO forValue(String value) {

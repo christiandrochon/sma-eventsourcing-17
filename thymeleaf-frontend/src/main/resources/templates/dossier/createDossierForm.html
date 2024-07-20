@@ -11,64 +11,55 @@
 <div layout:fragment="content">
     <!--<div th:fragment="~{content}"></div>-->
     <main class="container">
-        <!--        <h2>Création d'un document</h2>-->
         <h6><a th:href="@{/dossiers}"> Retour à la liste des dossiers</a></h6>
 
 
         <div class="py-5 text-center">
             <img class="d-block mx-auto mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
             <h2>Dossier</h2>
-            <!--            <p class="lead">Below is an example form built entirely with Bootstrap’s form controls. Each required form group has a validation state that can be-->
-            <!--                triggered by attempting to submit the form without completing it.</p>-->
         </div>
 
         <div class="row g-5">
             <div class="">
-                <!--                <div class="mt-lg-5">-->
-                <!--                    <h3>Création du dossier</h3>-->
-                <!--                </div>-->
                 <form action='#' th:action="@{/createDossier}" method='post' th:object="${dossierDTO}">
-                    <!--                    <hr class="my-4">-->
-
-                    <!--                    <h4 class="mb-3">Client</h4>-->
-
                     <div class="row g-3">
 
                         <div class="">
                             <label for="nomDossier" class="form-label">Nom du dossier</label>
-                            <input id="nomDossier" class="form-control" type="text" th:field="*{nomDossier}" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('nomDossier')}" th:errors="*{nomDossier}">Erreur
+                            <input id="nomDossier" class="form-control" type="text" th:field="*{nomDossier}"
+                                   th:classappend="${#fields.hasErrors('nomDossier')} ? 'validation-champ-surimpression'" required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('nomDossier')}" th:errors="*{nomDossier}">Erreur
                                 de nom dossier
                             </div>
                         </div>
                         <!--                        Test des erreurs de date. A Garder!-->
-<!--                        <div class="col-sm-6">-->
-<!--                            <label class="form-label">Date de mise en circulation</label>-->
-<!--                            <input id="dateCreationDossier" class="form-control" type="date" th:field="*{dateCreationDossier}"-->
-<!--                                   required>-->
-<!--                            <div class="is-invalid" th:if="${#fields.hasErrors('dateCreationDossier')}"-->
-<!--                                 th:errors="*{dateCreationDossier}">Erreur de date de création de dossier-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="col-sm-6">-->
-<!--                            <label class="form-label">Date de mise en circulation</label>-->
-<!--                            <input id="dateModificationDossier" class="form-control" type="date" th:field="*{dateModificationDossier}"-->
-<!--                                   required>-->
-<!--                            <div class="is-invalid" th:if="${#fields.hasErrors('dateModificationDossier')}"-->
-<!--                                 th:errors="*{dateModificationDossier}">Erreur de date de création de dossier-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <!--                        <div class="col-sm-6">-->
+                        <!--                            <label class="form-label">Date de mise en circulation</label>-->
+                        <!--                            <input id="dateCreationDossier" class="form-control" type="date" th:field="*{dateCreationDossier}"-->
+                        <!--                                   required>-->
+                        <!--                            <div class="is-invalid" th:if="${#fields.hasErrors('dateCreationDossier')}"-->
+                        <!--                                 th:errors="*{dateCreationDossier}">Erreur de date de création de dossier-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="col-sm-6">-->
+                        <!--                            <label class="form-label">Date de mise en circulation</label>-->
+                        <!--                            <input id="dateModificationDossier" class="form-control" type="date" th:field="*{dateModificationDossier}"-->
+                        <!--                                   required>-->
+                        <!--                            <div class="is-invalid" th:if="${#fields.hasErrors('dateModificationDossier')}"-->
+                        <!--                                 th:errors="*{dateModificationDossier}">Erreur de date de création de dossier-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
                         <div class="col-sm-3">
                             <label for="dossierStatus" class="form-label">Status du dossier</label>
                             <select id="dossierStatus" class="form-select" th:field="*{dossierStatus}" required>
-                                <option th:each="status : ${dossierStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'OUVERT'}">Status</option>
+                                <option th:each="status : ${dossierStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'OUVERT'}">
+                                    Status
+                                </option>
                             </select>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('dossierStatus')}" th:errors="*{dossierStatus}">Erreur
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('dossierStatus')}" th:errors="*{dossierStatus}">Erreur
                                 du status du dossier client
                             </div>
                         </div>
-
-
                     </div>
 
                     <hr class="my-4 mt-5">
@@ -78,38 +69,48 @@
 
                         <div class="col-sm-6">
                             <label for="nomClient" class="form-label">Nom du client</label>
-                            <input id="nomClient" class="form-control" type="text" th:field="*{client.nomClient}" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.nomClient')}" th:errors="*{client.nomClient}">Erreur
+                            <input id="nomClient" class="form-control" type="text" th:field="*{client.nomClient}"
+                                   th:classappend="${#fields.hasErrors('client.nomClient')} ? 'validation-champ-surimpression'" required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.nomClient')}" th:errors="*{client.nomClient}">Erreur
                                 de nom client
                             </div>
                         </div>
-
                         <div class="col-sm-6">
                             <label for="prenomClient" class="form-label">Prénom du client</label>
-                            <input id="prenomClient" class="form-control" type="text" th:field="*{client.prenomClient}" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.prenomClient')}" th:errors="*{client.prenomClient}">Erreur
+                            <input id="prenomClient" class="form-control" type="text" th:field="*{client.prenomClient}"
+                                   th:classappend="${#fields.hasErrors('client.prenomClient')} ? 'validation-champ-surimpression'" required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.prenomClient')}" th:errors="*{client.prenomClient}">
+                                Erreur
                                 de prenom client
                             </div>
                         </div>
                         <div class="col-sm-5">
                             <label for="mailClient" class="form-label">Email du client </label>
-                            <input id="mailClient" class="form-control" type="email" th:field="*{client.mailClient}" placeholder="you@example.com" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.mailClient')}" th:errors="*{client.mailClient}">Entrez un email valide
+                            <input id="mailClient" class="form-control" type="email" th:field="*{client.mailClient}"
+                                   th:classappend="${#fields.hasErrors('client.mailClient')} ? 'validation-champ-surimpression'" placeholder="you@example.com"
+                                   required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.mailClient')}" th:errors="*{client.mailClient}">Entrez un
+                                email valide
                             </div>
                         </div>
                         <div class="col-sm-4">
                             <label for="telClient" class="form-label">Téléphone du client</label>
-                            <input id="telClient" class="form-control" type="tel" th:field="*{client.telClient}" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.telClient')}" th:errors="*{client.telClient}">Entrez un numéro de
+                            <input id="telClient" class="form-control" type="tel" th:field="*{client.telClient}"
+                                   th:classappend="${#fields.hasErrors('client.telClient')} ? 'validation-champ-surimpression'" required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.telClient')}" th:errors="*{client.telClient}">Entrez un
+                                numéro de
                                 téléphone valide
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <label for="statusClient" class="form-label">Status du client</label>
                             <select id="statusClient" class="form-select" th:field="*{client.clientStatus}" required>
-                                <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'ACTIF'}">Status</option>
+                                <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'ACTIF'}">
+                                    Status
+                                </option>
                             </select>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('client.clientStatus')}" th:errors="*{client.clientStatus}">Erreur
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.clientStatus')}" th:errors="*{client.clientStatus}">
+                                Erreur
                                 du status du client
                             </div>
                         </div>
@@ -119,80 +120,65 @@
                         </div>
                         <div class="col-sm-3">
                             <label for="numeroDeRue" class="form-label">N° de rue</label>
-                            <input id="numeroDeRue" class="form-control" type="text" th:field="*{client.adresse.numeroDeRue}" placeholder="1234 bis, ter"
+                            <input id="numeroDeRue" class="form-control" type="text" th:field="*{client.adresse.numeroDeRue}"
+                                   th:classappend="${#fields.hasErrors('client.adresse.numeroDeRue')} ? 'validation-champ-surimpression'"
+                                   placeholder="1234 bis, ter"
                                    required>
-                            <div class="is-invalid bg-light-subtle" th:if="${#fields.hasErrors('client.adresse.numeroDeRue')}"
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.numeroDeRue')}"
                                  th:errors="*{client.adresse.numeroDeRue}">Erreur de numéro de rue dans l'adresse
                             </div>
                         </div>
 
                         <div class="col-sm-9">
                             <label for="rue" class="form-label">Nom de la rue</label>
-                            <input id="rue" class="form-control" type="text" th:field="*{client.adresse.rue}" placeholder="rue, avenue, boulevard..." required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.rue')}" th:errors="*{client.adresse.rue}">Erreur
+                            <input id="rue" class="form-control" type="text" th:field="*{client.adresse.rue}"
+                                   th:classappend="${#fields.hasErrors('client.adresse.rue')} ? 'validation-champ-surimpression'"
+                                   placeholder="rue, avenue, boulevard..." required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.rue')}" th:errors="*{client.adresse.rue}">Erreur
                                 du nom de la rue dans l'adresse
                             </div>
                         </div>
                         <div class="col-12">
                             <label for="address2" class="form-label">Supplément d'adresse <span class="text-body-secondary">(Optionnel)</span></label>
                             <input type="text" class="form-control" id="address2" placeholder="Appartement, suite, etc"
-                                   th:field="*{client.adresse.complementAdresse}">
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.complementAdresse')}"
+                                   th:field="*{client.adresse.complementAdresse}"
+                                   th:classappend="${#fields.hasErrors('client.adresse.complementAdresse')} ? 'validation-champ-surimpression'">
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.complementAdresse')}"
                                  th:errors="*{client.adresse.complementAdresse}">Erreur
                                 d'information dans l'adresse complémentaire
                             </div>
                         </div>
-
                         <div class="col-sm-3">
                             <label for="cp" class="form-label">Code postal</label>
-                            <input id="cp" class="form-control" type="text" th:field="*{client.adresse.cp}" placeholder="12345" pattern="[0-9]{5}" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.cp')}" th:errors="*{client.adresse.cp}">Erreur
+                            <input id="cp" class="form-control" type="text" th:field="*{client.adresse.cp}" placeholder="12345" pattern="[0-9]{5}"
+                                   th:classappend="${#fields.hasErrors('client.adresse.cp')} ? 'validation-champ-surimpression'" required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.cp')}" th:errors="*{client.adresse.cp}">Erreur
                                 de code postal
                             </div>
                         </div>
-
                         <div class="col-sm-4">
                             <label for="ville" class="form-label">Ville</label>
-                            <input id="ville" class="form-control" type="text" th:field="*{client.adresse.ville}" required>
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.ville')}" th:errors="*{client.adresse.ville}">Ville inconnue
+                            <input id="ville" class="form-control" type="text" th:field="*{client.adresse.ville}"
+                                   th:classappend="${#fields.hasErrors('client.adresse.ville')} ? 'validation-champ-surimpression'" required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.ville')}" th:errors="*{client.adresse.ville}">
+                                Ville inconnue
                             </div>
                         </div>
                         <div class="col-md-5">
-                            <label for="status" class="form-label">Status</label>
-
                             <label for="pays" class="form-label">Pays</label>
-                            <select id="pays" name="pays" class="form-select" th:field="*{client.adresse.pays}" required>
+                            <select id="pays" name="pays" class="form-select" th:field="*{client.adresse.pays}"
+                                   required>
                                 <option th:each="pays : ${paysList}"
                                         th:value="${pays}"
                                         th:text="${pays}"
-                                        th:if="${pays} == ${valeurParDefaut}" selected="selected">
+                                        th:if="${pays} == ${valeurPaysParDefaut}" selected="selected">
                                 </option>
                                 <option th:each="pays : ${paysList}"
                                         th:value="${pays}"
                                         th:text="${pays}"
-                                        th:unless="${pays} == ${valeurParDefaut}">
+                                        th:unless="${pays} == ${valeurPaysParDefaut}">
                                 </option>
-<!--                                <option th:each="pays : ${paysList}"-->
-<!--                                        th:value="${pays}"-->
-<!--                                        th:text="${pays}"-->
-<!--                                        th:if="${pays} == ${paysForm.pays}" selected="selected">-->
-<!--                                </option>-->
-<!--                                <option th:each="pays : ${paysList}"-->
-<!--                                        th:value="${pays}"-->
-<!--                                        th:text="${pays}"-->
-<!--                                        th:unless="${pays} == ${paysForm.pays}">-->
-<!--                                </option>-->
                             </select>
-<!--                            <select id="pays" class="form-select"  th:field="*{client.pays}" required>-->
-<!--                                <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:selected="${pays} == ${paysForm.pays}">Pays-->
-
-<!--&lt;!&ndash;                                <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:attr="selected=*{client.pays} == ${pays} ? 'selected' : null">Pays&ndash;&gt;-->
-<!--                                </option>-->
-<!--                            </select>-->
-                            <div class="is-invalid" th:if="${#fields.hasErrors('client.adresse.pays')}" th:errors="*{client.adresse.pays}">Veuillez renseigner
-                                le pays
-                            </div>
-
                         </div>
                     </div>
 
@@ -205,27 +191,28 @@
                         <input type="text" class="form-control" id="immatriculationVehicule" th:field="*{vehicule.immatriculationVehicule}"
                                placeholder="AA-123-AA"
                                value="" required>
-                        <div class="is-invalid" th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}"
+                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}"
                              th:errors="*{vehicule.immatriculationVehicule}">
                             Immatriculation incorrecte
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <label class="form-label">Date de mise en circulation</label>
                         <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" th:field="*{vehicule.dateMiseEnCirculationVehicule}"
                                required>
-                        <div class="is-invalid" th:if="${#fields.hasErrors('vehicule.dateMiseEnCirculationVehicule')}"
+                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.dateMiseEnCirculationVehicule')}"
                              th:errors="*{vehicule.dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
                         </div>
                     </div>
                     <div>
                         <label for="status" class="form-label">Status</label>
                         <select id="status" class="form-select" th:field="*{vehicule.vehiculeStatus}" required>
-                            <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'EN_ATTENTE'}">Status</option>
+                            <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'EN_ATTENTE'}">
+                                Status
+                            </option>
                         </select>
-                        <div class="is-invalid" th:if="${#fields.hasErrors('vehicule.vehiculeStatus')}" th:errors="*{vehicule.vehiculeStatus}">Erreur
-                            du status du document
+                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.vehiculeStatus')}" th:errors="*{vehicule.vehiculeStatus}">
+                            Erreur du statut du document
                         </div>
                     </div>
 

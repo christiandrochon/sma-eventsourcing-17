@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <main class="container">
+        <div th:if="${errorMessage}" th:class="'alert ' + ${alertClass}">
+            <h1  class="fw-bold fs-6 text-center" th:text="${errorMessage}"></h1>
+        </div>
+        <h4 class="text-center"><a th:href="${urlRedirection}">Retour à la création d'un dossier</a></h4>
+    </main>
+</div>
+</body>
+</html>
