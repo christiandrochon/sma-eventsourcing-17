@@ -5,6 +5,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Creation Dossier</title>
+    <script>
+        function formatImmatriculation(input) {
+            let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (value.length > 2) {
+                value = value.slice(0, 2) + '-' + value.slice(2);
+            }
+            if (value.length > 6) {
+                value = value.slice(0, 6) + '-' + value.slice(6);
+            }
+            input.value = value;
+        }
+    </script>
 </head>
 
 <body>
@@ -12,7 +24,6 @@
     <!--<div th:fragment="~{content}"></div>-->
     <main class="container">
         <h6><a th:href="@{/dossiers}"> Retour à la liste des dossiers</a></h6>
-
 
         <div class="py-5 text-center">
             <img class="d-block mx-auto mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
@@ -185,17 +196,15 @@
 
                     <hr class="my-4">
                     <h4 class="mb-3">Véhicule</h4>
-
-                    <div class="col-md-6">
-                        <label for="immatriculationVehicule" class="form-label">Immatriculation du véhicule</label>
-                        <input type="text" class="form-control" id="immatriculationVehicule" th:field="*{vehicule.immatriculationVehicule}"
-                               placeholder="AA-123-AA"
-                               value="" required>
-                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}"
-                             th:errors="*{vehicule.immatriculationVehicule}">
-                            Immatriculation incorrecte
+                      <div class="">
+                            <label for="immatriculation" class="form-label">Immatriculation du véhicule</label>
+                            <input id="immatriculation" class="form-control" type="text" th:field="*{vehicule.immatriculationVehicule}"
+                                   th:classappend="${#fields.hasErrors('vehicule.immatriculationVehicule')} ? 'validation-champ-incorrect'"
+                                   placeholder="AA-123-AA" oninput="formatImmatriculation(this)" required>
+                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}" th:errors="*{vehicule.immatriculationVehicule}"></div>
                         </div>
-                    </div>
+
+
                     <div class="col-md-6">
                         <label class="form-label">Date de mise en circulation</label>
                         <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" th:field="*{vehicule.dateMiseEnCirculationVehicule}"
