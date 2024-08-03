@@ -18,6 +18,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import static fr.cdrochon.thymeleaffrontend.dtos.vehicule.siv.VehiculeDTOMapper.toVehiculeSIVConvertDTO;
 
@@ -72,10 +78,26 @@ public class SearchVehiculeSIVController {
             VehiculeSIVDTO[] vehicules = objectMapper.readValue(inputStream, VehiculeSIVDTO[].class);
             for(VehiculeSIVDTO vehicule : vehicules) {
                 if(vehicule.getImmatriculation().equalsIgnoreCase(immatriculation)) {
-                    
+                    //Envoi vers serveur partie Command pour enregistrement
                     VehiculeSIVConvertDTO vehiculeConverted = toVehiculeSIVConvertDTO(vehicule);
-                    model.addAttribute("vehiculeConverted", vehiculeConverted);
-                    return "vehicule/resultatSIVForm"; // Page affichant les détails du véhicule
+                    
+                    // Conversion des formats de date et envoi vers la vue
+                    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
+                    try {
+                        Date date = inputFormat.parse(vehicule.getDateDeMiseEnCirculation());
+                        String dateMiseEnCirculationVehicule = outputFormat.format(date);
+                        vehicule.setDateDeMiseEnCirculation(dateMiseEnCirculationVehicule);
+                        
+                        Date date2 = inputFormat.parse(vehicule.getDateValiditeControleTechnique());
+                        String dateValiditeControleTechnique = outputFormat.format(date2);
+                        vehicule.setDateValiditeControleTechnique(dateValiditeControleTechnique);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    model.addAttribute("vehiculeConverted", vehicule);
+                    return "vehicule/resultatSIVForm"; // Affiche le résultat de la recherche
                 }
             }
             

@@ -1,12 +1,9 @@
 package fr.cdrochon.thymeleaffrontend.dtos.vehicule.siv;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
-//@Setter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
