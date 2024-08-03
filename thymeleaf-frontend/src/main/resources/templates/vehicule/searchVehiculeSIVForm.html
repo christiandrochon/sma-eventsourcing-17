@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Recherche Vehicule SIV</title>
+
+    <script>
+        function formatImmatriculation(input) {
+            let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (value.length > 2) {
+                value = value.slice(0, 2) + '-' + value.slice(2);
+            }
+            if (value.length > 6) {
+                value = value.slice(0, 6) + '-' + value.slice(6);
+            }
+            input.value = value;
+        }
+    </script>
+</head>
+<body>
+<div layout:fragment="content">
+    <main class="container mt-5">
+        <h6><a th:href="@{/vehicules}">Retour aux véhicules</a></h6>
+        <div class="mt-lg-5">
+            <h3>Recherche d'un véhicule sur SIV</h3>
+        </div>
+
+        <div class="w-100 py-2">
+            <div class="pt-4 pb-3">
+                <p>Recherchez un véhicule sur le SIV en saisissant son immatriculation</p>
+            </div>
+            <form th:action="@{/searchvehiculesiv}" method="post" class="needs-validation" novalidate th:object="${getImmatDTO}">
+                <div class="row g-3">
+                    <div class="w-100">
+                        <label for="immatriculation" class="form-label">Immatriculation</label>
+                        <input type="text" class="form-control" id="immatriculation" name="immatriculation" placeholder="AA-000-AA"
+                               th:classappend="${#fields.hasErrors('immatriculation')} ? 'validation-champ-surimpression'" oninput="formatImmatriculation(this)"
+                               required>
+                        <div class="is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('immatriculation')}" th:errors="*{immatriculation}">
+                            Immatriculation incorrecte
+                        </div>
+                    </div>
+
+                    <hr class="my-4 mt-5">
+                    <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+</body>
+</html>
