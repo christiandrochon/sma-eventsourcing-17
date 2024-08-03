@@ -1,0 +1,92 @@
+[
+    {
+        "immatriculation": "QG-306-BY",
+        "marque": "Citro\u00ebn",
+        "modele": "Golf",
+        "dateDeMiseEnCirculation": "2011-02-24",
+        "dateValiditeControleTechnique": "2014-02-05",
+        "typeCarburant": "Hybride",
+        "climatisation": true
+    },
+    {
+        "immatriculation": "OY-590-EX",
+        "marque": "Renault",
+        "modele": "C-Class",
+        "dateDeMiseEnCirculation": "2020-11-14",
+        "dateValiditeControleTechnique": "2023-05-30",
+        "typeCarburant": "Electrique",
+        "climatisation": false
+    },
+    {
+        "immatriculation": "LU-974-EE",
+        "marque": "Citro\u00ebn",
+        "modele": "Clio",
+        "dateDeMiseEnCirculation": "2012-12-28",
+        "dateValiditeControleTechnique": "2014-07-31",
+        "typeCarburant": "Electrique",
+        "climatisation": false
+    },
+    {
+        "immatriculation": "BH-660-BX",
+        "marque": "BMW",
+        "modele": "Focus",
+        "dateDeMiseEnCirculation": "2019-02-08",
+        "dateValiditeControleTechnique": "2022-12-17",
+        "typeCarburant": "Essence",
+        "climatisation": false
+    },
+    {
+        "immatriculation": "RD-110-ZG",
+        "marque": "Mercedes",
+        "modele": "A4",
+        "dateDeMiseEnCirculation": "2015-04-23",
+        "dateValiditeControleTechnique": "2018-01-11",
+        "typeCarburant": "Hybride",
+        "climatisation": false
+    },
+    {
+        "immatriculation": "BQ-646-BK",
+        "marque": "Audi",
+        "modele": "C3",
+        "dateDeMiseEnCirculation": "2018-03-24",
+        "dateValiditeControleTechnique": "2021-02-19",
+        "typeCarburant": "Electrique",
+        "climatisation": true
+    },
+    {
+        "immatriculation": "AW-752-KH",
+        "marque": "BMW",
+        "modele": "Yaris",
+        "dateDeMiseEnCirculation": "2016-04-07",
+        "dateValiditeControleTechnique": "2018-07-28",
+        "typeCarburant": "Essence",
+        "climatisation": true
+    },
+    {
+        "immatriculation": "OZ-553-XG",
+        "marque": "Volkswagen",
+        "modele": "208",
+        "dateDeMiseEnCirculation": "2018-06-14",
+        "dateValiditeControleTechnique": "2021-12-16",
+        "typeCarburant": "Diesel",
+        "climatisation": true
+    },
+    {
+        "immatriculation": "TN-490-PF",
+        "marque": "Audi",
+        "modele": "Yaris",
+        "dateDeMiseEnCirculation": "2012-05-15",
+        "dateValiditeControleTechnique": "2015-08-13",
+        "typeCarburant": "Diesel",
+        "climatisation": true
+    },
+    {
+        "immatriculation": "EV-545-VQ",
+        "marque": "Ford",
+        "modele": "A4",
+        "dateDeMiseEnCirculation": "2020-06-17",
+        "dateValiditeControleTechnique": "2021-09-30",
+        "typeCarburant": "Electrique",
+        "climatisation": true
+    }
+]
