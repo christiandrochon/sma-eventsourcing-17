@@ -19,10 +19,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import static fr.cdrochon.thymeleaffrontend.dtos.vehicule.siv.VehiculeDTOMapper.toVehiculeSIVConvertDTO;
