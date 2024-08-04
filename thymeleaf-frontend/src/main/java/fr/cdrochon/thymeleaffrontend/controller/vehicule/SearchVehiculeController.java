@@ -5,6 +5,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.VehiculeDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,9 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -59,40 +63,72 @@ public class SearchVehiculeController {
         }
         
         try {
-            
             //appel du ms dossier pour la recherche d'un vehicule
             Mono<VehiculeDTO> vehiculeDTO = webClient.get()
                                                      .uri("/queries/vehicules/immatriculation/" + getImmatDTO.getImmatriculation())
                                                      .accept(MediaType.APPLICATION_JSON)
                                                      .header("Content-Type", "application/json")
                                                      .retrieve()
-                                                     .bodyToMono(VehiculeDTO.class);//.block();
+                                                     .bodyToMono(VehiculeDTO.class);
+            
             VehiculeDTO vehicule = vehiculeDTO.block();
             
-            // Conversion des formats de date et envoi vers la vue
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
             try {
                 Date date = inputFormat.parse(vehicule.getDateMiseEnCirculationVehicule());
                 String dateMiseEnCirculationVehicule = outputFormat.format(date);
                 vehicule.setDateMiseEnCirculationVehicule(dateMiseEnCirculationVehicule);
-                
             } catch(Exception e) {
                 e.printStackTrace();
             }
             
             model.addAttribute("vehicule", vehicule);
-            
             log.info("Vehicule recherché : {}", getImmatDTO.getImmatriculation());
             return "/vehicule/inner/resultSearchVehiculeView";
             
+            //            vehiculeDTO
+            //                    .doOnNext(vehicule -> {
+            //                        // Conversion des formats de date et envoi vers la vue
+            //                        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+            //                        SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
+            //                        try {
+            //                            Date date = inputFormat.parse(vehicule.getDateMiseEnCirculationVehicule());
+            //                            String dateMiseEnCirculationVehicule = outputFormat.format(date);
+            //                            vehicule.setDateMiseEnCirculationVehicule(dateMiseEnCirculationVehicule);
+            //
+            //                        } catch(Exception e) { //TODO gerer les exceptions de date
+            //                            e.printStackTrace();
+            //                        }
+            //
+            //                        model.addAttribute("vehicule", vehicule);
+            //                        log.info("Vehicule recherché : {}", getImmatDTO.getImmatriculation());
+            //                    })
+            //                    .onErrorResume(e -> {
+            //                        redirectAttributes.addFlashAttribute("errorMessage",
+            //                                                             "Erreur de recherche d'un véhicule. Merci de communiquer le contenu de l'erreur
+            //                                                             suivante au " +
+            //                                                                     "développeur : '" + e.getMessage() + "'");
+            //                        redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+            //                        redirectAttributes.addFlashAttribute("urlRedirection", "/searchvehicule");
+            //                        redirectAttributes.addFlashAttribute("getImmatDTO", getImmatDTO); // Re-add garageDTO to the model if there's an error
+            //                        return Mono.empty();
+            //                    })
+            //                    .block();
+            //
+            //
+            //            if(vehiculeDTO != null) {
+            //                return "/vehicule/inner/resultSearchVehiculeView";
+            //            }
+            //            else {
+            //                return "redirect:/error";
+            //            }
+            
         } catch(WebClientResponseException e) {
-            log.error("Erreur lors de la recherche du véhicule : {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
             redirectAttributes.addFlashAttribute("errorMessage",
-                                                 "Erreur de recherche d'un véhicule. Merci de communiquer le contenu de l'erreur suivante au développeur : '" + e.getResponseBodyAsString() + "'");
+                                                 "Erreur de recherche. Le numéro d'immatriculation '" + getImmatDTO.getImmatriculation() + "' n'a pas été trouvé.");
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
             redirectAttributes.addFlashAttribute("urlRedirection", "/searchvehicule");
-            redirectAttributes.addFlashAttribute("getImmatDTO", getImmatDTO);
             return "redirect:/error";
         } catch(Exception e) {
             log.error("Erreur lors de la recherche du véhicule : {}", e.getMessage());
@@ -105,5 +141,29 @@ public class SearchVehiculeController {
             //            return "vehicule/inner/searchVehiculeForm";
             
         }
+    }
+    
+    private Mono<Void> handleData(String data, ServerWebExchange exchange) {
+        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        return Mono.empty();
+    }
+    
+    private Mono<Void> redirectToUrl(String url, String paramName, String paramValue) {
+        URI uri = UriComponentsBuilder.fromUriString(url)
+                                      .queryParam(paramName, paramValue)
+                                      .build()
+                                      .toUri();
+        return Mono.empty();
+    }
+    
+    private Mono<Void> redirectTo(RedirectAttributes redirectAttributes, GetImmatriculationDTO getImmatDTO) {
+        redirectAttributes.addFlashAttribute("errorMessage",
+                                             "Erreur de recherche d'un véhicule. Merci de " +
+                                                     "communiquer le contenu de l'erreur suivante au développeur : '");
+        redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+        redirectAttributes.addFlashAttribute("urlRedirection", "/searchvehicule");
+        redirectAttributes.addFlashAttribute("getImmatDTO", getImmatDTO);
+        //        return Mono.just("redirect:/error");
+        return Mono.empty();
     }
 }
