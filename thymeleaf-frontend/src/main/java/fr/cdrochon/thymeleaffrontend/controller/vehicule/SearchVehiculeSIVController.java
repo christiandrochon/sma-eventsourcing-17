@@ -47,7 +47,7 @@ public class SearchVehiculeSIVController {
         if(!model.containsAttribute("getImmatDTO")) {
             model.addAttribute("getImmatDTO", new GetImmatriculationDTO());
         }
-        return "vehicule/searchVehiculeSIVForm";
+        return "vehicule/siv/searchVehiculeSIVForm";
     }
     
     /**
@@ -57,7 +57,7 @@ public class SearchVehiculeSIVController {
      * @param result                BindingResult pour la validation des données
      * @param redirectAttributes    RedirectAttributes pour les attributs de redirection
      * @param model                 Model pour les données à afficher
-     * @return la vue resultatSIVForm
+     * @return la vue resultSIVForm
      */
     @PostMapping("/searchvehiculesiv")
     public String searchVehicule(@Valid @ModelAttribute("getImmatDTO") GetImmatriculationDTO getImmatriculationDTO, BindingResult result,
@@ -65,7 +65,7 @@ public class SearchVehiculeSIVController {
         if(result.hasErrors()) {
             result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
             model.addAttribute("getImmatDTO", getImmatriculationDTO);
-            return "vehicule/searchVehiculeSIVForm";
+            return "vehicule/siv/searchVehiculeSIVForm";
         }
         
         String immatriculation = getImmatriculationDTO.getImmatriculation();
@@ -93,7 +93,7 @@ public class SearchVehiculeSIVController {
                     }
 
                     model.addAttribute("vehiculeConverted", vehicule);
-                    return "vehicule/resultatSIVForm"; // Affiche le résultat de la recherche
+                    return "vehicule/siv/resultSearchVehiculeSIVView"; // Affiche le résultat de la recherche
                 }
             }
             
@@ -105,7 +105,7 @@ public class SearchVehiculeSIVController {
             return "redirect:/error";
         } catch(IOException e) {
             model.addAttribute("error", "Erreur lors de la lecture du fichier JSON: " + e.getMessage());
-            return "vehicule/searchVehiculeSIVForm";
+            return "vehicule/siv/searchVehiculeSIVForm";
         }
     }
 }
