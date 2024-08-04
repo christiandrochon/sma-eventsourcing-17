@@ -15,7 +15,7 @@ import java.util.List;
 public class VehiculeController {
     
     final RestClient restClient = RestClient.create("http://localhost:8092");
-    @GetMapping("/vehicule/{id}")
+    @GetMapping("/vehicule/id/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String vehiculeById(@PathVariable String id, Model model) {
         VehiculeDateConvertDTO vehicule = restClient.get().uri("/queries/vehicules/" + id)
