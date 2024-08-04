@@ -1,18 +1,18 @@
 package fr.cdrochon.smamonolithe.vehicule.query.services;
 
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
-import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetAllVehiculesDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetImmatDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
+import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.queryhandling.QueryHandler;
-import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,7 +67,23 @@ public class VehiculeEventHandlerService {
     public VehiculeResponseDTO on(GetVehiculeDTO getVehiculeDTO) {
         return vehiculeRepository.findById(getVehiculeDTO.getId())
                                  .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
-                                 .orElseThrow(() -> new EntityNotFoundException("Vehicule not found"));
+                                 .orElseThrow(() -> new EntityNotFoundException("Vehicule non trouvé !"));
+    }
+    
+    /**
+     * Recupere et renvoi un vehicule avec son immatriculation
+     *
+     * @param getImmatDTO DTO contenant l'immatriculation du vehicule
+     * @return VehiculeResponseDTO contenant les informations du vehicule
+     */
+    @QueryHandler
+    public VehiculeResponseDTO on(GetImmatDTO getImmatDTO) {
+        Vehicule vehicule = vehiculeRepository.findByImmatriculationVehicule(getImmatDTO.getImmatriculation());
+        if(vehicule == null) {
+            throw new EntityNotFoundException("Vehicule non trouvé !");
+        }
+        VehiculeResponseDTO vehiculeResponseDTO = VehiculeMapper.convertVehiculeToVehiculeDTO(vehicule);
+        return vehiculeResponseDTO;
     }
     
     /**

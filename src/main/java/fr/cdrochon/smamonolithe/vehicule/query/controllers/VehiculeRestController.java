@@ -1,19 +1,15 @@
 package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
-import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
+import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
-import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
-import org.axonframework.queryhandling.SubscriptionQueryResult;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-//import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,15 +27,27 @@ public class VehiculeRestController {
     }
     
     /**
+     * Renvoi les informations considérées comme utiles à la partie query lors de la recherche d'un vehicule par son immatriculation.
+     *
+     * @param immatriculation immatriculation du vehicule
+     * @return VehiculeResponseDTO
+     */
+    @GetMapping(value = "/vehicules/immatriculation/{immatriculation}")
+    public VehiculeResponseDTO getVehiculeByImmatriculation(@PathVariable String immatriculation) {
+        Vehicule vehicule = vehiculeRepository.findByImmatriculationVehicule(immatriculation);
+        return VehiculeMapper.convertVehiculeToVehiculeDTO(vehicule);
+    }
+    
+    /**
      * Renvoi les informations considérées comme utiles à la partie query lors de la recherche d'un vehicule par son id.
      *
      * @param id id du vehicule
      * @return VehiculeResponseDTO
      */
-    @GetMapping("/vehicules/{id}")
+    @GetMapping("/vehicules/id/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
-    public VehiculeResponseDTO getVehicule(@PathVariable String id) {
+    public VehiculeResponseDTO getVehiculeById(@PathVariable String id) {
         
         GetVehiculeDTO vehiculeDTO = new GetVehiculeDTO();
         vehiculeDTO.setId(id);
@@ -68,15 +76,15 @@ public class VehiculeRestController {
      * @param id id du vehicule
      * @return Flux de VehiculeResponseDTO
      */
-//    @GetMapping(value = "/vehicule/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public Flux<VehiculeResponseDTO> watch(@PathVariable String id) {
-//
-//        try(SubscriptionQueryResult<VehiculeResponseDTO, VehiculeResponseDTO> result = queryGateway.subscriptionQuery(
-//                new GetVehiculeDTO(id),
-//                ResponseTypes.instanceOf(VehiculeResponseDTO.class),
-//                ResponseTypes.instanceOf(VehiculeResponseDTO.class)
-//                                                                                                                     )) {
-//            return result.initialResult().concatWith(result.updates());
-//        }
-//    }
+    //    @GetMapping(value = "/vehicule/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    //    public Flux<VehiculeResponseDTO> watch(@PathVariable String id) {
+    //
+    //        try(SubscriptionQueryResult<VehiculeResponseDTO, VehiculeResponseDTO> result = queryGateway.subscriptionQuery(
+    //                new GetVehiculeDTO(id),
+    //                ResponseTypes.instanceOf(VehiculeResponseDTO.class),
+    //                ResponseTypes.instanceOf(VehiculeResponseDTO.class)
+    //                                                                                                                     )) {
+    //            return result.initialResult().concatWith(result.updates());
+    //        }
+    //    }
 }
