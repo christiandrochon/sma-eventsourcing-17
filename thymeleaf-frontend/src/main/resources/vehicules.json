@@ -9,6 +9,15 @@
         "climatisation": true
     },
     {
+        "immatriculation": "FZ-918-NL",
+        "marque": "Renault",
+        "modele": "Kangoo Cochocroute",
+        "dateDeMiseEnCirculation": "2020-12-06",
+        "dateValiditeControleTechnique": "2025-10-14",
+        "typeCarburant": "Diesel",
+        "climatisation": true
+    },
+    {
         "immatriculation": "OY-590-EX",
         "marque": "Renault",
         "modele": "C-Class",
