@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultat Recherche d'un Véhicule</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <main class="container mt-5">
+        <h6><a th:href="@{/vehicules}">Retour aux véhicules</a></h6>
+        <div class="mt-lg-5">
+            <h3>Résultat de la recherche</h3>
+        </div>
+        <div class="card w-100">
+            <div class="card-body">
+                <p><strong>Id véhicule : </strong><span th:text="${vehicule.idVehicule}"></span></p>
+                <p><strong>Immatriculation : </strong><span th:text="${vehicule.immatriculationVehicule}"></span></p>
+                <p><strong>Date de mise en circulation : </strong> <span th:text="${vehicule.dateMiseEnCirculationVehicule}"></span></p>
+                <p><strong>Status du véhicule : </strong> <span th:text="${vehicule.vehiculeStatus}"></span></p>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
