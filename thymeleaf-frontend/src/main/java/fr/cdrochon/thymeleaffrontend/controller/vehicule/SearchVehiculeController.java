@@ -2,6 +2,7 @@ package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.GetImmatriculationDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.VehiculeDTO;
+import fr.cdrochon.thymeleaffrontend.exception.InvalidDateFormatException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 @Controller
@@ -79,8 +81,9 @@ public class SearchVehiculeController {
                 Date date = inputFormat.parse(vehicule.getDateMiseEnCirculationVehicule());
                 String dateMiseEnCirculationVehicule = outputFormat.format(date);
                 vehicule.setDateMiseEnCirculationVehicule(dateMiseEnCirculationVehicule);
-            } catch(Exception e) {
-                e.printStackTrace();
+            } catch(DateTimeParseException e) {
+                throw new InvalidDateFormatException("Erreur de conversion de date : " + vehicule.getDateMiseEnCirculationVehicule() + ". Le format attendu " +
+                                                             "est de type dd MMM yyy");
             }
             
             model.addAttribute("vehicule", vehicule);
@@ -97,9 +100,10 @@ public class SearchVehiculeController {
             //                            String dateMiseEnCirculationVehicule = outputFormat.format(date);
             //                            vehicule.setDateMiseEnCirculationVehicule(dateMiseEnCirculationVehicule);
             //
-            //                        } catch(Exception e) { //TODO gerer les exceptions de date
-            //                            e.printStackTrace();
-            //                        }
+            //                        }  catch(DateTimeParseException e) {
+            //                throw new InvalidDateFormatException("Erreur de conversion de date : " + vehicule.getDateMiseEnCirculationVehicule() + ". Le format attendu " +
+            //                                                             "est de type dd MMM yyy");
+            //            }
             //
             //                        model.addAttribute("vehicule", vehicule);
             //                        log.info("Vehicule recherché : {}", getImmatDTO.getImmatriculation());
@@ -124,9 +128,11 @@ public class SearchVehiculeController {
             //                return "redirect:/error";
             //            }
             
+            //TODO  si le nombre de vehciules renovyés sont multiples (plusieurs vehicules avec la même immatriculation = grosse erreur!!)
         } catch(WebClientResponseException e) {
             redirectAttributes.addFlashAttribute("errorMessage",
-                                                 "Erreur de recherche. Le numéro d'immatriculation '" + getImmatDTO.getImmatriculation() + "' n'a pas été trouvé.");
+                                                 "Erreur de recherche. Le numéro d'immatriculation '" + getImmatDTO.getImmatriculation() + "' n'a pas été " +
+                                                         "trouvé.");
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
             redirectAttributes.addFlashAttribute("urlRedirection", "/searchvehicule");
             return "redirect:/error";
