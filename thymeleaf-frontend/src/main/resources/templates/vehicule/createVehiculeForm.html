@@ -5,6 +5,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Creation Vehicule</title>
+    <script>
+        function formatImmatriculation(input) {
+            let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (value.length > 2) {
+                value = value.slice(0, 2) + '-' + value.slice(2);
+            }
+            if (value.length > 6) {
+                value = value.slice(0, 6) + '-' + value.slice(6);
+            }
+            input.value = value;
+        }
+    </script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -24,6 +36,7 @@
                 <div class="w-100">
                     <label for="immatriculationVehicule" class="form-label">Immatriculation du véhicule</label>
                     <input type="text" class="form-control" id="immatriculationVehicule" th:field="*{immatriculationVehicule}" placeholder="AA-000-AA"
+                           th:classappend="${#fields.hasErrors('immatriculationVehicule')} ? 'validation-champ-surimpression'" oninput="formatImmatriculation(this)"
                            value="" required>
                     <div class="is-invalid" th:if="${#fields.hasErrors('immatriculationVehicule')}" th:errors="*{immatriculationVehicule}">
                         Immatriculation incorrecte
