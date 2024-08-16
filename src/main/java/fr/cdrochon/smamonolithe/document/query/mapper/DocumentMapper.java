@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 public class DocumentMapper {
     
     public static DocumentResponseDTO convertDocumentToDocumentDTO(Document document){
+        if(document == null){
+            return null;
+        }
         DocumentResponseDTO dto = new DocumentResponseDTO();
         dto.setId(document.getId());
         dto.setNomDocument(document.getNomDocument());

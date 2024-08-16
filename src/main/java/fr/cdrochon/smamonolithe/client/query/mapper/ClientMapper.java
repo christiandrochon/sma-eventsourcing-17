@@ -9,7 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClientMapper {
     
-    public static ClientResponseDTO convertClientToClientDTO(Client client){
+    public static ClientResponseDTO convertClientToClientDTO(Client client) {
+        if(client == null) {
+            return null;
+        }
+        
         ClientResponseDTO dto = new ClientResponseDTO();
         dto.setId(client.getId());
         dto.setNomClient(client.getNomClient());
@@ -17,20 +21,20 @@ public class ClientMapper {
         dto.setMailClient(client.getMailClient());
         dto.setTelClient(client.getTelClient());
         
-//        AdresseClient adresseClient = new AdresseClient();
-//        adresseClient.setNumeroDeRue(client.getAdresse().getNumeroDeRue());
-//        adresseClient.setRue(client.getAdresse().getRue());
-//        adresseClient.setCp(client.getAdresse().getCp());
-//        adresseClient.setVille(client.getAdresse().getVille());
-//
-//        dto.setAdresse(adresseClient);
+        //        AdresseClient adresseClient = new AdresseClient();
+        //        adresseClient.setNumeroDeRue(client.getAdresse().getNumeroDeRue());
+        //        adresseClient.setRue(client.getAdresse().getRue());
+        //        adresseClient.setCp(client.getAdresse().getCp());
+        //        adresseClient.setVille(client.getAdresse().getVille());
+        //
+        //        dto.setAdresse(adresseClient);
         
         ClientAdresseDTO clientAdresseDTO = new ClientAdresseDTO();
         clientAdresseDTO.setNumeroDeRue(client.getAdresse().getNumeroDeRue());
         clientAdresseDTO.setRue(client.getAdresse().getRue());
         clientAdresseDTO.setCp(client.getAdresse().getCp());
         clientAdresseDTO.setVille(client.getAdresse().getVille());
-
+        
         dto.setAdresse(clientAdresseDTO);
         dto.setClientStatus(ClientStatusDTO.valueOf(client.getClientStatus().name()));
         

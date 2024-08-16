@@ -12,6 +12,10 @@ import org.springframework.stereotype.Component;
 public class GarageMapperManuel {
    
     public static GarageResponseDTO convertGarageToGarageDTO(Garage garage){
+        if(garage == null){
+            return null;
+        }
+        
         GarageResponseDTO dto = new GarageResponseDTO();
         dto.setId(garage.getIdQuery());
         dto.setNomGarage(garage.getNomGarage());

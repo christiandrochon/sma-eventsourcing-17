@@ -1,7 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.dtos.vehicule.siv;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 public class VehiculeDTOMapper {
@@ -13,6 +12,9 @@ public class VehiculeDTOMapper {
      * @return VehiculeSIVDTO
      */
     public static VehiculeSIVDTO toVehiculeSIVDTO(VehiculeSIVConvertDTO vehiculeSIVConvertDTO) {
+        if(vehiculeSIVConvertDTO == null) {
+            return null;
+        }
         return VehiculeSIVDTO.builder()
                              .immatriculation(vehiculeSIVConvertDTO.getImmatriculation())
                              .dateDeMiseEnCirculation(vehiculeSIVConvertDTO.getDateDeMiseEnCirculation().toString())
@@ -31,7 +33,9 @@ public class VehiculeDTOMapper {
      * @return VehiculeSIVConvertDTO
      */
     public static VehiculeSIVConvertDTO toVehiculeSIVConvertDTO(VehiculeSIVDTO vehiculeSIVDTO) {
-        
+        if(vehiculeSIVDTO == null) {
+            return null;
+        }
         return VehiculeSIVConvertDTO.builder()
                                     .immatriculation(vehiculeSIVDTO.getImmatriculation())
                                     .dateDeMiseEnCirculation(Instant.parse(vehiculeSIVDTO.getDateDeMiseEnCirculation() + "T00:00:00Z"))
