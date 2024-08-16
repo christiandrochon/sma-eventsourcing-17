@@ -70,12 +70,12 @@ public class VehiculeRestController {
                         .collect(Collectors.toList());
     }
     
-    /**
-     * Renvoi un flux de vEHICULEResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
-     *
-     * @param id id du vehicule
-     * @return Flux de VehiculeResponseDTO
-     */
+//    /**
+//     * Renvoi un flux de vEHICULEResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
+//     *
+//     * @param id id du vehicule
+//     * @return Flux de VehiculeResponseDTO
+//     */
     //    @GetMapping(value = "/vehicule/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     //    public Flux<VehiculeResponseDTO> watch(@PathVariable String id) {
     //

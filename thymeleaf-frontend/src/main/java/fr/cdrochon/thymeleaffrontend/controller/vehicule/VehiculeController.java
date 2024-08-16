@@ -1,7 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
