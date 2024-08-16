@@ -44,7 +44,7 @@ public class VehiculeRestController {
      * @param id id du vehicule
      * @return VehiculeResponseDTO
      */
-    @GetMapping("/vehicules/id/{id}")
+    @GetMapping("/vehicules/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
     public VehiculeResponseDTO getVehiculeById(@PathVariable String id) {
