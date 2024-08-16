@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 public class VehiculeMapper {
     
     public static VehiculeResponseDTO convertVehiculeToVehiculeDTO(Vehicule vehicule){
+        if(vehicule == null){
+            return null;
+        }
         VehiculeResponseDTO dto = new VehiculeResponseDTO();
         dto.setIdVehicule(vehicule.getIdVehicule());
         dto.setImmatriculationVehicule(vehicule.getImmatriculationVehicule());

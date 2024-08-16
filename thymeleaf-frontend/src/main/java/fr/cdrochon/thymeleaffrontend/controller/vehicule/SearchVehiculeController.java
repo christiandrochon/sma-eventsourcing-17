@@ -6,6 +6,8 @@ import fr.cdrochon.thymeleaffrontend.exception.InvalidDateFormatException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,50 +48,80 @@ public class SearchVehiculeController {
     }
     
     /**
-     * Recherche asynchrone d'un véhicule dans la bdd grâce à l'utilisation de Mono de Project Reactor et WebClient de Spring WebFlux
+     * Recherche d'un véhicule dans la bdd de manière asynchrone, en utilisant son numéro d'immatriculation sur le service queries/vehicules/immatriculation
      *
-     * @param immatriculation numéro d'immatriculation du véhicule
-     * @param model           Model pour les données à afficher
-     * @return la vue resultSearchVehiculeView
+     * @param getImmatDTO DTO correspondant à l'entité d'un véhicule.
+     * @param result      BindingResult pour la validation des données
+     * @param model       Model pour les données à afficher
+     * @return la vue searchVehiculeForm
      */
     @GetMapping("/searchvehicule")
-    public Mono<String> searchVehiculeAsync(@RequestParam("immatriculation") String immatriculation, Model model) {
+    //        public Mono<String> searchVehiculeAsync(@RequestParam("immatriculation") String immatriculation, Model model) {
+    public Mono<String> searchVehiculeAsync(@Valid @ModelAttribute("getImmatDTO") GetImmatriculationDTO getImmatDTO, BindingResult result,
+                                            Model model) {
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
+            model.addAttribute("getImmatDTO", getImmatDTO);
+            return Mono.just("vehicule/inner/searchVehiculeForm");
+        }
+        
         Mono<VehiculeDTO> vehiculeMono = webClient.get()
-                                                  .uri("/queries/vehicules/immatriculation/" + immatriculation)
+                                                  .uri("/queries/vehicules/immatriculation/" + getImmatDTO.getImmatriculation())
                                                   .accept(MediaType.APPLICATION_JSON)
                                                   .header("Content-Type", "application/json")
                                                   .retrieve()
+                                                  .onStatus(HttpStatus.NOT_FOUND::equals,
+                                                            clientResponse -> Mono.empty())
+                                                  .onStatus(HttpStatusCode::is5xxServerError,
+                                                            clientResponse -> Mono.error(new WebClientResponseException("Erreur interne du serveur",
+                                                                                                                        500,
+                                                                                                                        "Erreur de recherche du véhicule",
+                                                                                                                        null,
+                                                                                                                        null,
+                                                                                                                        null)))
                                                   .bodyToMono(VehiculeDTO.class);
         
         return vehiculeMono
                 .flatMap(vehicule -> {
+                    //Vehicule non trouvé
+                    if(vehicule == null || vehicule.getDateMiseEnCirculationVehicule() == null) {
+                        model.addAttribute("errorMessage", "Données du véhicule manquantes ou incorrectes.");
+                        model.addAttribute("alertClass", "alert-danger");
+                        model.addAttribute("urlRedirection", "/searchvehicule");
+                        return Mono.just("error");
+                    }
+                    if(vehicule.getIdVehicule() == null) {
+                        return Mono.empty();
+                    }
+                    if(vehicule == null) {
+                        return Mono.error(new WebClientResponseException("Erreur de recherche du véhicule", 404, "Véhicule non trouvé", null, null,
+                                                                         null));
+                    }
+                    
                     SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
                     try {
                         Date date = inputFormat.parse(vehicule.getDateMiseEnCirculationVehicule());
                         String dateMiseEnCirculationVehicule = outputFormat.format(date);
                         vehicule.setDateMiseEnCirculationVehicule(dateMiseEnCirculationVehicule);
+                        
                     } catch(ParseException e) {
-                        model.addAttribute("message",
-                                           "Erreur de conversion de date : " + vehicule.getDateMiseEnCirculationVehicule() + ". Le format attendu est de type" +
-                                                   " dd MMM yyy");
-                        model.addAttribute("alertClass", "alert-danger");
-                        model.addAttribute("redirectUrl", "/searchVehicule");
-                        return Mono.just("redirect:/error");
+                        return Mono.error(new InvalidDateFormatException("Erreur de conversion de date. Le format attendu est de type 'dd MMMM yyyy'"));
                     }
                     
                     // Ajout des attributs au modèle en cas de succès
                     model.addAttribute("vehicule", vehicule);
-                    return Mono.just("redirect:/vehicule/inner/resultSearchVehiculeView");
+                    return Mono.just("/vehicule/inner/resultSearchVehiculeView");
                 })
                 .switchIfEmpty(Mono.defer(() -> {
-                    model.addAttribute("errorMessage", "Véhicule non trouvé pour l'immatriculation " + immatriculation);
+                    model.addAttribute("errorMessage", "Véhicule non trouvé pour l'immatriculation '" + getImmatDTO.getImmatriculation() + "'");
                     model.addAttribute("alertClass", "alert-danger");
-                    model.addAttribute("urlRedirection", "/searchvehicule");
+                    model.addAttribute("urlRedirection", "/showvehicule");
                     return Mono.just("error");
                 }))
+                
                 .onErrorResume(e -> {
-                    model.addAttribute("errorMessage", "Erreur lors de la recherche pour l'immatriculation " + immatriculation);
+                    model.addAttribute("errorMessage", e.getMessage());
                     model.addAttribute("alertClass", "alert-danger");
                     model.addAttribute("urlRedirection", "/showvehicule");
                     return Mono.just("error");

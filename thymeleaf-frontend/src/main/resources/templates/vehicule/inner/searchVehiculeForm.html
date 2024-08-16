@@ -31,15 +31,15 @@
             <div class="pt-4 pb-3">
                 <p>Recherchez un véhicule en saisissant son immatriculation</p>
             </div>
-            <form th:action="@{/searchvehicule}" method="get" class="needs-validation" novalidate th:object="${getImmatDTO}">
+            <form th:action="@{/searchvehicule}" method="get" th:object="${getImmatDTO}">
                 <div class="row g-3">
                     <div class="w-100">
                         <label for="immatriculation" class="form-label">Immatriculation</label>
-                        <input type="text" class="form-control" id="immatriculation" name="immatriculation" placeholder="AA-000-AA"
+                        <input type="text" class="form-control" id="immatriculation" name="immatriculation" placeholder="AA-000-AA" th:field="*{immatriculation}"
                                th:classappend="${#fields.hasErrors('immatriculation')} ? 'validation-champ-surimpression'" oninput="formatImmatriculation(this)"
                                required>
-                        <div class="is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('immatriculation')}" th:errors="*{immatriculation}">
-                            Immatriculation incorrecte
+                        <div class="is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('immatriculation')}">
+                            Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
                         </div>
                     </div>
 
