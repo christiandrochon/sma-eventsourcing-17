@@ -2,6 +2,7 @@ package fr.cdrochon.thymeleaffrontend.dtos.vehicule.siv;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 
 public class VehiculeDTOMapper {
     
@@ -36,9 +37,9 @@ public class VehiculeDTOMapper {
                                     .dateDeMiseEnCirculation(Instant.parse(vehiculeSIVDTO.getDateDeMiseEnCirculation() + "T00:00:00Z"))
                                     .dateValiditeControleTechnique(Instant.parse(vehiculeSIVDTO.getDateValiditeControleTechnique() + "T00:00:00Z"))
                                     .modele(vehiculeSIVDTO.getModele())
-                                    .marque(MarqueVehiculeDTO.builder().marques(Arrays.asList(vehiculeSIVDTO.getMarque().toUpperCase())).build())
+                                    .marque(MarqueVehiculeDTO.builder().marques(List.of(vehiculeSIVDTO.getMarque().toUpperCase())).build())
                                     .typeCarburant(TypeCarburantDTO.builder()
-                                                                   .typeCarburant(Arrays.asList(vehiculeSIVDTO.getTypeCarburant().toUpperCase()))
+                                                                   .typeCarburant(List.of(vehiculeSIVDTO.getTypeCarburant().toUpperCase()))
                                                                    .build())
                                     .climatisation(vehiculeSIVDTO.isClimatisation())
                                     .build();

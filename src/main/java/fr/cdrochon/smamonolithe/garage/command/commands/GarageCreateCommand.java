@@ -18,9 +18,9 @@ import java.time.Instant;
 @Getter
 public class GarageCreateCommand extends GarageBaseCommand<String> {
     
-    private String nomGarage;
-    private String mailResp;
-    private AdresseGarage adresse;
+    private final String nomGarage;
+    private final String mailResp;
+    private final AdresseGarage adresse;
     
     /**
      * Copie de l'adresse du garage pour eviter l'exposition de la representation interne

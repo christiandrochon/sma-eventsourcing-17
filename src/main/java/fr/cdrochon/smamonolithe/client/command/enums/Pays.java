@@ -191,7 +191,7 @@ public enum Pays {
     VIETNAM,
     YEMEN,
     ZAMBIE,
-    ZIMBABWE;
+    ZIMBABWE
     
 }
 

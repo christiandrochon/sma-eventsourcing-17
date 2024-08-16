@@ -44,7 +44,7 @@ public class VehiculeCreateCommand extends VehiculeBaseCommand<String> {
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
     
-    private VehiculeStatus vehiculeStatus;
+    private final VehiculeStatus vehiculeStatus;
     
     
     public VehiculeCreateCommand(String id, String immatriculationVehicule, Instant dateMiseEnCirculationVehicule, VehiculeStatus vehiculeStatus) {

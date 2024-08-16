@@ -36,7 +36,8 @@
                 <div class="w-100">
                     <label for="immatriculationVehicule" class="form-label">Immatriculation du véhicule</label>
                     <input type="text" class="form-control" id="immatriculationVehicule" th:field="*{immatriculationVehicule}" placeholder="AA-000-AA"
-                           th:classappend="${#fields.hasErrors('immatriculationVehicule')} ? 'validation-champ-surimpression'" oninput="formatImmatriculation(this)"
+                           th:classappend="${#fields.hasErrors('immatriculationVehicule')} ? 'validation-champ-surimpression'"
+                           oninput="formatImmatriculation(this)"
                            value="" required>
                     <div class="is-invalid" th:if="${#fields.hasErrors('immatriculationVehicule')}" th:errors="*{immatriculationVehicule}">
                         Immatriculation incorrecte
@@ -44,8 +45,9 @@
                 </div>
 
                 <div class="w-100">
-                    <label class="form-label">Date de mise en circulation</label>
-                    <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" th:field="*{dateMiseEnCirculationVehicule}" required>
+                    <label for="dateMiseEnCirculationVehicule" class="form-label">Date de mise en circulation</label>
+                    <input id="dateMiseEnCirculationVehicule" class="form-control" type="date"
+                           th:field="*{dateMiseEnCirculationVehicule}" required>
                     <div class="is-invalid" th:if="${#fields.hasErrors('dateMiseEnCirculationVehicule')}"
                          th:errors="*{dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
                     </div>
