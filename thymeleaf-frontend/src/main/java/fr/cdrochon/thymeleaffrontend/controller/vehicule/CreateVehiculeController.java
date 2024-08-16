@@ -42,13 +42,14 @@ public class CreateVehiculeController {
                                  BindingResult result,
                                  RedirectAttributes redirectAttributes,
                                  Model model) {
+        
         if(result.hasErrors()) {
-            
             result.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
             model.addAttribute("vehiculePostDTO", vehiculePostDTO);
             model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
             return "vehicule/createVehiculeForm";
         }
+        
         try {
             VehiculeDateConvertDTO vehiculeDateConvertDTO = new VehiculeDateConvertDTO();
             
