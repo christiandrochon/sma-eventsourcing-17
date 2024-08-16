@@ -56,7 +56,6 @@ public class SearchVehiculeController {
      * @return la vue searchVehiculeForm
      */
     @GetMapping("/searchvehicule")
-    //        public Mono<String> searchVehiculeAsync(@RequestParam("immatriculation") String immatriculation, Model model) {
     public Mono<String> searchVehiculeAsync(@Valid @ModelAttribute("getImmatDTO") GetImmatriculationDTO getImmatDTO, BindingResult result,
                                             Model model) {
         if(result.hasErrors()) {
@@ -83,20 +82,6 @@ public class SearchVehiculeController {
         
         return vehiculeMono
                 .flatMap(vehicule -> {
-                    //Vehicule non trouvé
-                    if(vehicule == null || vehicule.getDateMiseEnCirculationVehicule() == null) {
-                        model.addAttribute("errorMessage", "Données du véhicule manquantes ou incorrectes.");
-                        model.addAttribute("alertClass", "alert-danger");
-                        model.addAttribute("urlRedirection", "/searchvehicule");
-                        return Mono.just("error");
-                    }
-                    if(vehicule.getIdVehicule() == null) {
-                        return Mono.empty();
-                    }
-                    if(vehicule == null) {
-                        return Mono.error(new WebClientResponseException("Erreur de recherche du véhicule", 404, "Véhicule non trouvé", null, null,
-                                                                         null));
-                    }
                     
                     SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
@@ -162,6 +147,7 @@ public class SearchVehiculeController {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
             try {
+                assert vehicule != null;
                 Date date = inputFormat.parse(vehicule.getDateMiseEnCirculationVehicule());
                 String dateMiseEnCirculationVehicule = outputFormat.format(date);
                 vehicule.setDateMiseEnCirculationVehicule(dateMiseEnCirculationVehicule);
