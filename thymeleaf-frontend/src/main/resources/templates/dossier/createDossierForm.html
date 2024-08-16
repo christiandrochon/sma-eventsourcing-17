@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>Creation Dossier</title>
     <script>
+        // formatte l'immatriculation en ajoutant des tirets en en mettant en majuscule, avec un format particulier
         function formatImmatriculation(input) {
             let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
             if (value.length > 2) {
@@ -13,6 +14,16 @@
             }
             if (value.length > 6) {
                 value = value.slice(0, 6) + '-' + value.slice(6);
+            }
+            input.value = value;
+        }
+
+        //supprime l'affichage d'erreur d'immatriculation
+        function scrollToError(input) {
+            let value = input.value;
+            if (value.length === 0) {
+                input.classList.remove('validation-champ-surimpression');
+                document.getElementById('immatriculationError').remove()
             }
             input.value = value;
         }
@@ -178,7 +189,7 @@
                         <div class="col-md-5">
                             <label for="pays" class="form-label">Pays</label>
                             <select id="pays" name="pays" class="form-select" th:field="*{client.adresse.pays}"
-                                   required>
+                                    required>
                                 <option th:each="pays : ${paysList}"
                                         th:value="${pays}"
                                         th:text="${pays}"
@@ -196,13 +207,16 @@
 
                     <hr class="my-4">
                     <h4 class="mb-3">Véhicule</h4>
-                      <div class="">
-                            <label for="immatriculation" class="form-label">Immatriculation du véhicule</label>
-                            <input id="immatriculation" class="form-control" type="text" th:field="*{vehicule.immatriculationVehicule}"
-                                   th:classappend="${#fields.hasErrors('vehicule.immatriculationVehicule')} ? 'validation-champ-incorrect'"
-                                   placeholder="AA-123-AA" oninput="formatImmatriculation(this)" required>
-                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}" th:errors="*{vehicule.immatriculationVehicule}"></div>
+                    <div class="">
+                        <label for="immatriculation" class="form-label">Immatriculation du véhicule</label>
+                        <input id="immatriculation" class="form-control" type="text" th:field="*{vehicule.immatriculationVehicule}"
+                               th:classappend="${#fields.hasErrors('vehicule.immatriculationVehicule')} ? 'validation-champ-surimpression'"
+                               placeholder="AA-123-AA" oninput="formatImmatriculation(this); scrollToError(this)" required>
+                        <div id="immatriculationError" class="is-invalid validation-champ-incorrect"
+                             th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}">
+                            Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
                         </div>
+                    </div>
 
 
                     <div class="col-md-6">
@@ -233,6 +247,17 @@
         </div>
     </main>
 </div>
+<!--<script>-->
+<!--    document.addEventListener('DOMContentLoaded', function () {-->
+<!--        // Scroll vers le premier champ en erreur-->
+<!--        const errorField = document.querySelector('.validation-champ-surimpression');-->
+<!--        if (errorField) {-->
+<!--            errorField.scrollIntoView({behavior: 'smooth', block: 'center'});-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+
+
 </body>
 </html>
 

@@ -17,6 +17,16 @@
             }
             input.value = value;
         }
+
+        //supprime l'affichage d'erreur d'immatriculation
+        function scrollToError(input) {
+            let value = input.value;
+            if (value.length === 0) {
+                input.classList.remove('validation-champ-surimpression');
+                document.getElementById('immatriculationError').remove()
+            }
+            input.value = value;
+        }
     </script>
 </head>
 <body>
@@ -35,11 +45,11 @@
                 <div class="row g-3">
                     <div class="w-100">
                         <label for="immatriculation" class="form-label">Immatriculation</label>
-                        <input type="text" class="form-control" id="immatriculation" name="immatriculation" placeholder="AA-000-AA"
-                               th:classappend="${#fields.hasErrors('immatriculation')} ? 'validation-champ-surimpression'" oninput="formatImmatriculation(this)"
+                        <input type="text" class="form-control" id="immatriculation" name="immatriculation" placeholder="AA-000-AA" th:field="*{immatriculation}"
+                               th:classappend="${#fields.hasErrors('immatriculation')} ? 'validation-champ-surimpression'" oninput="formatImmatriculation(this); scrollToError(this)"
                                required>
-                        <div class="is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('immatriculation')}" th:errors="*{immatriculation}">
-                            Immatriculation incorrecte
+                        <div id="immatriculationError" class="is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('immatriculation')}">
+                            Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
                         </div>
                     </div>
 
