@@ -10,6 +10,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,9 +32,17 @@ import java.util.List;
 @Controller
 @Slf4j
 public class CreateDossierController {
-    @Autowired
+    
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
+    
     private WebClient webClient;
-    final RestClient restClient = RestClient.create("http://localhost:8092");
+    final RestClient restClient;
+    
+    public CreateDossierController(RestClient restClient, WebClient webClient) {
+        this.restClient = restClient;
+        this.webClient = webClient;
+    }
     
     /**
      * Affiche le formulaire de création d'un dossier
@@ -80,7 +89,6 @@ public class CreateDossierController {
             return "dossier/createDossierForm";
         }
         try {
-            
             if(immatriculationExiste(dossierPostDTO.getVehicule().getImmatriculationVehicule()) && dossierPostDTO.getVehicule()
                                                                                                                  .getImmatriculationVehicule() != null) {
                 // Numéro d'immatriculation déjà existant
@@ -112,7 +120,7 @@ public class CreateDossierController {
             
             //appel du ms dossier pour la création du dossier
             webClient.post()
-                     .uri("/commands/createDossier")
+                     .uri(externalServiceUrl + "/commands/createDossier")
                      .contentType(MediaType.APPLICATION_JSON)
                      .bodyValue(dossierConvertPostDTO)
                      .retrieve()
