@@ -1,13 +1,10 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
-import fr.cdrochon.thymeleaffrontend.dtos.client.AdresseClientDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientStatusDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller

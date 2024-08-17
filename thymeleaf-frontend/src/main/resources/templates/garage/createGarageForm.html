@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div>
-                <label class="form-label">Mail du responsable</label>
+                <label for="mailResp" class="form-label">Mail du responsable</label>
                 <input id="mailResp" class="form-control" type="email" th:field="*{mailResp}" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$" required>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('mailResp')}" th:errors="*{mailResp}">Erreur
                     de mail

@@ -224,7 +224,7 @@
 
 
                     <div class="col-md-6">
-                        <label class="form-label">Date de mise en circulation</label>
+                        <label for="dateMiseEnCirculationVehicule" class="form-label">Date de mise en circulation</label>
                         <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" th:field="*{vehicule.dateMiseEnCirculationVehicule}"
                                required>
                         <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.dateMiseEnCirculationVehicule')}"
