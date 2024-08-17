@@ -20,19 +20,19 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import static org.springframework.http.HttpHeaders.USER_AGENT;
+
 @RestController
 @RequestMapping("/commands")
 public class DossierCommandController {
     
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
     private final EventStore eventStore;
     private final DossierCommandService dossierCommandService;
     private final RestTemplate restTemplate;
-    
-    @Value("${external.service.url}")
-    private String externalServiceUrl;
-    
     public DossierCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore,
                                     DossierCommandService dossierCommandService,
                                     RestTemplate restTemplate) {
@@ -57,7 +57,7 @@ public class DossierCommandController {
      * @param dossierRestDTO DTO contenant les informations du garage a creer
      * @return CompletableFuture<String>
      */
-    @GetMapping(value = "/createDossier")//, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/createDossier", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<CompletableFuture<String>> createDossierGet(@RequestBody DossierRestDTO dossierRestDTO) {
         return CompletableFuture.supplyAsync(() -> {
             ResponseEntity<DossierRestDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createDossier",
@@ -80,7 +80,7 @@ public class DossierCommandController {
      * @param dossierRestDTO DTO contenant les informations du client a creer
      * @return CompletableFuture<String>
      */
-    @PostMapping(value = "/createDossier")//, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/createDossier", consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
 //    public ResponseEntity<?> createDossier(@RequestBody DossierRestDTO dossierRestDTO) {
@@ -101,9 +101,12 @@ public class DossierCommandController {
     public CompletableFuture<String> createDocument(@RequestBody DossierRestDTO dossierRestDTO) {
 
         try {
-
-            String url = "http://localhost:8091/createDossier";
+            String url = externalServiceUrl + "/createDossier";
             HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+            httpClient.setRequestProperty("User-Agent", USER_AGENT);
+            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
+            httpClient.setRequestMethod("GET");
+            
             int responseCode = httpClient.getResponseCode();
             System.out.println("GET Response Code :: " + responseCode);
 

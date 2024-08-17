@@ -2,6 +2,7 @@ package fr.cdrochon.thymeleaffrontend.controller.dossier;
 
 import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentConvertPostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierConvertPostDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +15,18 @@ import java.util.List;
 @Controller
 public class DossierController {
     
-    final RestClient restClient = RestClient.create("http://localhost:8092");
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
+    final RestClient restClient;
+    
+    public DossierController(RestClient restClient) {
+        this.restClient = restClient;
+    }
+    
     @GetMapping("/dossier/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String getDossierById(@PathVariable String id, Model model) {
-        DossierConvertPostDTO dossier = restClient.get().uri("/queries/dossiers/" + id)
+        DossierConvertPostDTO dossier = restClient.get().uri(externalServiceUrl + "/queries/dossiers/" + id)
                                                    //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                                    .retrieve().body(new ParameterizedTypeReference<>() {
                 });
@@ -31,7 +39,7 @@ public class DossierController {
     public String getAllDocuments(Model model) {
         List<DossierConvertPostDTO> dossiers =
                 restClient.get()
-                          .uri("/queries/dossiers")
+                          .uri(externalServiceUrl + "/queries/dossiers")
                           //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                           .retrieve().body(new ParameterizedTypeReference<>() {
                           });
