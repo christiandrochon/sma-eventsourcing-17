@@ -5,6 +5,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,13 @@ import java.util.List;
 @Slf4j
 public class CreateVehiculeController {
     
-    final RestClient restClient = RestClient.create("http://localhost:8092");
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
+    
+    private final RestClient restClient;
+    public CreateVehiculeController(RestClient restClient) {
+        this.restClient = restClient;
+    }
     
     /**
      * Affiche le formulaire de création d'un vehicule
@@ -98,7 +105,7 @@ public class CreateVehiculeController {
             
             //TODO : rendre aync. Attention, lors du debug, la liste des vehicules n'est pas à jour lorsque je cree un nouveau vehicule. Mais en mlode
             // normal, c'est ok
-            restClient.post().uri("/commands/createVehicule")
+            restClient.post().uri(externalServiceUrl + "/commands/createVehicule")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                       //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                       .contentType(MediaType.APPLICATION_JSON)
