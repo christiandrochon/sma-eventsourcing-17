@@ -4,6 +4,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.garage.GarageAdresseDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Slf4j
 public class CreateGarageController {
     
-    final RestClient restClient = RestClient.create("http://localhost:8092");
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
+    private final RestClient restClient;
+    
+    public CreateGarageController(RestClient restClient) {
+        this.restClient = restClient;
+    }
     
     @GetMapping("/createGarage")
     //    @PreAuthorize("hasAuthority('ADMIN')")
@@ -48,12 +55,13 @@ public class CreateGarageController {
         try {
             
             garageDTO.setAdresse(garageDTO.getAdresse());
-            restClient.post().uri("/commands/createGarage")
+            restClient.post().uri(externalServiceUrl + "/commands/createGarage")
                       //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                       //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                       .contentType(MediaType.APPLICATION_JSON)
                       .body(garageDTO).retrieve().toBodilessEntity();
             
+            //TODO : liste des garages non mis à jour après création d'un garage
             //rafraichissement
             redirectAttributes.addFlashAttribute("successMessage", "Garage created successfully");
             return "redirect:/garages";
