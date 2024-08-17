@@ -33,7 +33,7 @@ public class GarageCommandController {
     @Value("${external.service.url}")
     private String externalServiceUrl;
     
-//    RestClient restClient = RestClient.create("http://localhost:8091");
+//    RestClient restClient = RestClient.create("external.service.url");
     
     @Autowired
     public GarageCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore,
@@ -73,7 +73,7 @@ public class GarageCommandController {
     public CompletableFuture<String> createGaragePost(@RequestBody GarageRestPostDTO garageRequestDTO) {
         //TODO: A changer ?
         try {
-            String url = "http://localhost:8091/createGarage";
+            String url = externalServiceUrl + "/createGarage";
             HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
 
             // Optional default is GET
