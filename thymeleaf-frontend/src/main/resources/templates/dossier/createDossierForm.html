@@ -214,11 +214,14 @@
                     <div class="">
                         <label for="immatriculation" class="form-label">Immatriculation du véhicule</label>
                         <input id="immatriculation" class="form-control" type="text" th:field="*{vehicule.immatriculationVehicule}"
-                               th:classappend="${#fields.hasErrors('vehicule.immatriculationVehicule')} ? 'validation-champ-surimpression'"
-                               placeholder="AA-123-AA" oninput="formatImmatriculation(this); checkImmat(this)" required>
+                               th:classappend="${T(fr.cdrochon.thymeleaffrontend.dtos.vehicule.create.ThymeleafImmatriculationUtils).getValidationCssClass(#fields.hasErrors('vehicule.immatriculationVehicule'), immatriculationExisteError != null)}"
+                               placeholder="AA-123-AA" oninput="formatImmatriculation(this); checkImmat(this)" value="" required>
                         <div id="immatriculationError" class="is-invalid validation-champ-incorrect"
                              th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}">
                             Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
+                        </div>
+                        <div id="immatriculationExisteError" th:if="${immatriculationExisteError != null}" class="is-invalid validation-champ-incorrect">
+                            <span th:text="${immatriculationExisteError}"></span>
                         </div>
                     </div>
 

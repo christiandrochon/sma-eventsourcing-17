@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -34,13 +35,15 @@ public class CreateDossierController {
     private WebClient webClient;
     final RestClient restClient = RestClient.create("http://localhost:8092");
     
+    /**
+     * Affiche le formulaire de création d'un dossier
+     *
+     * @param model modèle du dossier: permet de passer des attributs à la vue
+     * @return la vue createDossierForm
+     */
     @GetMapping("/createDossier")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createDossier(Model model) {
-        //initilaisation du client
-        //        ClientPostDTO clientDTO = new ClientPostDTO();
-        //        clientDTO.setAdresse(new AdresseClientDTO());
-        
         
         if(!model.containsAttribute("dossierDTO")) {
             model.addAttribute("dossierDTO", new DossierPostDTO());
@@ -51,28 +54,42 @@ public class CreateDossierController {
         model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
         model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
         model.addAttribute("valeurDossierStatutParDefaut", DossierStatusDTO.valeurDossierStatutParDefaut());
-        
         model.addAttribute("paysList", List.of(PaysDTO.values()));
         model.addAttribute("valeurPaysParDefaut", PaysDTO.valeurPaysParDefaut());
         
         return "dossier/createDossierForm";
     }
     
+    /**
+     * Création d'un dossier.
+     *
+     * @param dossierPostDTO     DTO du dossier : permet de récupérer les données du formulaire
+     * @param result             BindingResult : permet de vérifier les erreurs de validation
+     * @param redirectAttributes RedirectAttributes : permet de passer des attributs à la redirection
+     * @param model              modèle du dossier
+     * @return la vue createDossierForm
+     */
     @PostMapping(value = "/createDossier")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createDocument(@Valid @ModelAttribute("dossierDTO") DossierPostDTO dossierPostDTO, BindingResult result,
                                  RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {
             result.getAllErrors().forEach(err -> log.error("LOG ERROR : {}", err.getDefaultMessage()));
-            // rechargement des listes en cas d'erreur du formulaire de création
-            model.addAttribute("dossierStatuses", List.of(DossierStatusDTO.values()));
-            model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
-            model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
-            model.addAttribute("paysList", List.of(PaysDTO.values()));
-            model.addAttribute("dossierDTO", dossierPostDTO);
+            modelAttributesError(dossierPostDTO, model);
+            //ce return conserve l'etat du form et permet de reafficher les erreurs de validation courantes
             return "dossier/createDossierForm";
         }
         try {
+            
+            if(immatriculationExiste(dossierPostDTO.getVehicule().getImmatriculationVehicule()) && dossierPostDTO.getVehicule()
+                                                                                                                 .getImmatriculationVehicule() != null) {
+                // Numéro d'immatriculation déjà existant
+                modelAttributesError(dossierPostDTO, model);
+                model.addAttribute("immatriculationExisteError",
+                                   "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
+                return "dossier/createDossierForm";
+            }
+            
             //conversion du vehciuel à cause la date de mise en circulation
             VehiculeDateConvertDTO vehiculeDateConvertDTO = new VehiculeDateConvertDTO();
             vehiculeDateConvertDTO.setImmatriculationVehicule(dossierPostDTO.getVehicule().getImmatriculationVehicule());
@@ -101,32 +118,63 @@ public class CreateDossierController {
                      .retrieve()
                      .bodyToMono(String.class)
                      .block();
-
+            
             log.info("Dossier created successfully");
             redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
             redirectAttributes.addFlashAttribute("urlRedirection", "/dossiers");
             redirectAttributes.addFlashAttribute("alertClass", "alert-success");
             return "redirect:/success";
-//            return "redirect:/dossiers";
+            //            return "redirect:/dossiers";
             
         } catch(Exception e) {
+            //redirect : on passe ue url, principalement utilisées après un succès (POST-REDIRECT-GET) pour éviter la répétition de soumissions du formulaire
             redirectAttributes.addFlashAttribute("errorMessage",
                                                  "Erreur de création de dossier. Merci de communiquer le contenu de l'erreur suivante au développeur : '" + e.getMessage() + "'");
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
             redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-            redirectAttributes.addFlashAttribute("dossierDTO", dossierPostDTO); // Re-add garageDTO to the model if there's an error
-//            return "redirect:/createDossier";
+            redirectAttributes.addFlashAttribute("dossierDTO", dossierPostDTO);
+            //            return "redirect:/createDossier";
             return "redirect:/error";
-        
+            
         }
     }
     
     /**
+     * Ajoute les attributs du modèle pour les erreurs de validation.
+     *
+     * @param dossierPostDTO dossier à ajouter
+     * @param model          modèle
+     */
+    private void modelAttributesError(@ModelAttribute("dossierDTO") @Valid DossierPostDTO dossierPostDTO, Model model) {
+        model.addAttribute("dossierStatuses", List.of(DossierStatusDTO.values()));
+        model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
+        model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
+        model.addAttribute("paysList", List.of(PaysDTO.values()));
+        model.addAttribute("dossierDTO", dossierPostDTO);
+    }
+    
+    /**
+     * Empêche la création d'un vehicule si l'immatriculation existe déjà.
+     * Vérifie si un vehicule existe en fonction de son immatriculation.
+     *
+     * @param immatriculation immatriculation du vehicule
+     * @return Boolean
+     */
+    Boolean immatriculationExiste(@PathVariable String immatriculation) {
+        return restClient.get()
+                         .uri("/queries/vehiculeExists/" + immatriculation)
+                         .accept(MediaType.APPLICATION_JSON)
+                         .retrieve()
+                         .body(Boolean.class);
+    }
+    
+    /**
      * Affiche la page de succès
+     *
      * @return la vue success
      */
     @GetMapping("/success")
-    public String showSuccess(){
+    public String showSuccess() {
         return "success";
     }
 }
