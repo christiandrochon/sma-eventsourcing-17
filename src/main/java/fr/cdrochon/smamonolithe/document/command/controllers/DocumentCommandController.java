@@ -19,6 +19,8 @@ import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import static org.springframework.http.HttpHeaders.USER_AGENT;
+
 @RestController
 @RequestMapping("/commands")
 public class DocumentCommandController {
@@ -81,8 +83,10 @@ public class DocumentCommandController {
         
         try {
             System.out.println(documentDTO.toString());
-            String url = "http://localhost:8091/createDocument";
-            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+            String url = externalServiceUrl + "/createDocument";
+            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();httpClient.setRequestProperty("User-Agent", USER_AGENT);
+            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
+            httpClient.setRequestMethod("GET");
             int responseCode = httpClient.getResponseCode();
             System.out.println("GET Response Code :: " + responseCode);
             
@@ -95,23 +99,6 @@ public class DocumentCommandController {
                     response.append(inputLine);
                 }
                 in.close();
-                System.out.println(documentDTO);
-                
-                //            // Ensure the response is not HTML or XML
-                //            if(response.toString().trim().startsWith("<")) {
-                //                throw new IllegalArgumentException("Expected JSON response but received HTML/XML.");
-                //            }
-                //
-                //            // Print result
-                //            String jsonResponse = response.toString();
-                //            System.out.println(jsonResponse);
-                //
-                //            // Parse JSON response to Post object
-                //            ObjectMapper objectMapper = new ObjectMapper();
-                //            ClientRestPostDTO  clientRequestDTO = objectMapper.readValue(jsonResponse, ClientRestPostDTO.class);
-                //
-                //            // Print the post object
-                //            System.out.println(clientRequestDTO);
                 
                 return documentCommandService.createDocument(documentDTO);
             }
