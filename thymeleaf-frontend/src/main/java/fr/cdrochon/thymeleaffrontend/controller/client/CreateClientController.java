@@ -40,7 +40,7 @@ public class CreateClientController {
         }
         model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
         model.addAttribute("paysList", List.of(PaysDTO.values()));
-        model.addAttribute("paysDefaut", PaysDTO.FRANCE);
+        model.addAttribute("valeurPaysParDefaut", PaysDTO.valeurPaysParDefaut());
         return "client/createClientForm";
     }
     
@@ -52,6 +52,7 @@ public class CreateClientController {
             model.addAttribute("clientDTO", clientDTO);
             model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
             model.addAttribute("paysList", List.of(PaysDTO.values()));
+//            model.addAttribute("valeurPaysParDefaut", PaysDTO.valeurPaysParDefaut());
             return "client/createClientForm";
         }
         try {

@@ -37,7 +37,7 @@
             </div>
             <div>
                 <label for="mailClient" class="form-label">Mail du client</label>
-                <input id="mailClient" class="form-control" type="email" th:field="*{mailClient}">
+                <input id="mailClient" class="form-control" type="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$" th:field="*{mailClient}">
                 <div class="is-invalid" th:if="${#fields.hasErrors('mailClient')}" th:errors="*{mailClient}">Erreur
                     de mail
                 </div>
@@ -82,7 +82,7 @@
 
             <div>
                 <label for="cp" class="form-label">Code postal</label>
-                <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" placeholder="00000"  pattern="[0-9]{5}" required>
+                <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" placeholder="00000" pattern="[0-9]{5}" required>
                 <div class="is-invalid" th:if="${#fields.hasErrors('adresse.cp')}" th:errors="*{adresse.cp}">Erreur
                     de code postal
                 </div>
@@ -97,8 +97,17 @@
             <div class="col-md-5">
                 <label for="pays" class="form-label">Pays</label>
                 <select class="form-select" id="pays" th:field="*{adresse.pays}" required>
-                    <option value="">Choose...</option>
-                    <option>France</option>
+                    required>
+                    <option th:each="pays : ${paysList}"
+                            th:value="${pays}"
+                            th:text="${pays}"
+                            th:if="${pays} == ${valeurPaysParDefaut}" selected="selected">
+                    </option>
+                    <option th:each="pays : ${paysList}"
+                            th:value="${pays}"
+                            th:text="${pays}"
+                            th:unless="${pays} == ${valeurPaysParDefaut}">
+                    </option>
                 </select>
                 <!--                            <div class="invalid-feedback">-->
                 <!--                                Selectionnez un pays existant.-->
