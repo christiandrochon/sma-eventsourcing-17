@@ -18,9 +18,13 @@
         }
 
         //supprime l'affichage d'erreur d'immatriculation
-        function scrollToError(input) {
+        function checkImmatError(input) {
             let value = input.value;
             if (value.length === 0) {
+                input.classList.remove('validation-champ-surimpression');
+                document.getElementById('immatriculationError').remove()
+            }
+            if (value.match(/^[A-Z]{2}-[0-9]{3}-[A-Z]{2}$/)) {
                 input.classList.remove('validation-champ-surimpression');
                 document.getElementById('immatriculationError').remove()
             }
@@ -37,15 +41,14 @@
             <h3>Création d'un véhicule</h3>
         </div>
 
-        <form action='#' th:action="@{/createVehicule}" method='post' th:object="${vehiculePostDTO}" >
+        <form action='#' th:action="@{/createVehicule}" method='post' th:object="${vehiculePostDTO}">
             <div class="row g-3">
-
 
                 <div class="w-100">
                     <label for="immatriculationVehicule" class="form-label">Immatriculation du véhicule</label>
                     <input type="text" class="form-control" id="immatriculationVehicule" th:field="*{immatriculationVehicule}" placeholder="AA-000-AA"
                            th:classappend="${#fields.hasErrors('immatriculationVehicule')} ? 'validation-champ-surimpression'"
-                           oninput="formatImmatriculation(this); scrollToError(this)" value="" required>
+                           oninput="formatImmatriculation(this); checkImmatError(this)" value="" required>
                     <div id="immatriculationError" class="is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('immatriculationVehicule')}">
                         Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
                     </div>
@@ -74,8 +77,6 @@
                 <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
             </div>
         </form>
-        <!--            </div>-->
-        <!--        </div>-->
     </main>
 </div>
 </body>

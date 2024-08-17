@@ -19,9 +19,13 @@
         }
 
         //supprime l'affichage d'erreur d'immatriculation
-        function scrollToError(input) {
+        function checkImmat(input) {
             let value = input.value;
             if (value.length === 0) {
+                input.classList.remove('validation-champ-surimpression');
+                document.getElementById('immatriculationError').remove()
+            }
+            if (value.match(/^[A-Z]{2}-[0-9]{3}-[A-Z]{2}$/)) {
                 input.classList.remove('validation-champ-surimpression');
                 document.getElementById('immatriculationError').remove()
             }
@@ -211,7 +215,7 @@
                         <label for="immatriculation" class="form-label">Immatriculation du véhicule</label>
                         <input id="immatriculation" class="form-control" type="text" th:field="*{vehicule.immatriculationVehicule}"
                                th:classappend="${#fields.hasErrors('vehicule.immatriculationVehicule')} ? 'validation-champ-surimpression'"
-                               placeholder="AA-123-AA" oninput="formatImmatriculation(this); scrollToError(this)" required>
+                               placeholder="AA-123-AA" oninput="formatImmatriculation(this); checkImmat(this)" required>
                         <div id="immatriculationError" class="is-invalid validation-champ-incorrect"
                              th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}">
                             Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
