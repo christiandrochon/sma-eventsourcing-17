@@ -162,8 +162,7 @@ public class SearchVehiculeController {
             }
             
             model.addAttribute("vehicule", vehicule);
-            log.info("Vehicule recherché : {}", getImmatDTO.getImmatriculation());
-            return "/vehicule/inner/resultSearchVehiculeView";
+            return "vehicule/inner/resultSearchVehiculeView";
             
             //TODO  si le nombre de vehciules renovyés sont multiples (plusieurs vehicules avec la même immatriculation = grosse erreur!!)
         } catch(WebClientResponseException e) {
