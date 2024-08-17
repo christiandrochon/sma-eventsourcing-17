@@ -14,23 +14,26 @@ import java.util.List;
 public class VehiculeController {
     
     final RestClient restClient = RestClient.create("http://localhost:8092");
+    
     @GetMapping("/vehicule/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String vehiculeById(@PathVariable String id, Model model) {
         VehiculeDateConvertDTO vehicule = restClient.get().uri("/queries/vehicules/" + id)
-                                                    //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
+                                                    //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders
+                                                    //                                      .AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                                     .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("vehicule", vehicule);
         return "vehicule/view";
     }
     
+    //TODO : rendre aync. Attention, lors du debug, la liste des vehicules n'est pas à jour lorsque je cree un nouveau vehicule. Mais en mlode normal, c'est ok
     @GetMapping("/vehicules")
     //    @PreAuthorize("hasAuthority('USER')")
     public String vehicules(Model model) {
         List<VehiculeDateConvertDTO> vehicules = restClient.get().uri("/queries/vehicules")
-                                             //                                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                             .retrieve().body(new ParameterizedTypeReference<>() {
+                                                           //.headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
+                                                           .retrieve().body(new ParameterizedTypeReference<>() {
                 });
         model.addAttribute("vehicules", vehicules);
         return "vehicule/vehicules";
