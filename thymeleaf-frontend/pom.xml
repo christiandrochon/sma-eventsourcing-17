@@ -18,7 +18,7 @@
     </properties>
     <dependencies>
         <!--SPRING-->
-<!--        manifeste-->
+<!--        manifeste -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
@@ -101,7 +101,6 @@
         <!--            <artifactId>spring-web</artifactId>-->
         <!--            <version>6.1.6</version>-->
         <!--        </dependency>-->
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -140,12 +139,6 @@
             <version>3.3.1</version>
             <scope>test</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.mapstruct</groupId>-->
-        <!--            <artifactId>mapstruct</artifactId>-->
-        <!--            <version>1.5.5.Final</version>-->
-        <!--            <scope>compile</scope>-->
-        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -171,7 +164,7 @@
                     <target>17</target>
                 </configuration>
             </plugin>
-            <!-- Ajoutez ces plugins pour configurer le manifeste -->
+            <!-- Configuration du manifeste -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
