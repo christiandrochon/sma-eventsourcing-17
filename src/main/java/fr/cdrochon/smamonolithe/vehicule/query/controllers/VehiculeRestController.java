@@ -27,6 +27,18 @@ public class VehiculeRestController {
     }
     
     /**
+     * Empêche la création d'un vehicule si l'immatriculation existe déjà.
+     * Vérifie si un vehicule existe en fonction de son immatriculation.
+     *
+     * @param immatriculation immatriculation du vehicule
+     * @return Boolean
+     */
+    @GetMapping("/vehiculeExists/{immatriculation}")
+    public Boolean immatriculationExiste(@PathVariable String immatriculation) {
+        return vehiculeRepository.existsByImmatriculationVehicule(immatriculation);
+    }
+    
+    /**
      * Renvoi les informations considérées comme utiles à la partie query lors de la recherche d'un vehicule par son immatriculation.
      *
      * @param immatriculation immatriculation du vehicule
@@ -70,12 +82,12 @@ public class VehiculeRestController {
                         .collect(Collectors.toList());
     }
     
-//    /**
-//     * Renvoi un flux de vEHICULEResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
-//     *
-//     * @param id id du vehicule
-//     * @return Flux de VehiculeResponseDTO
-//     */
+    //    /**
+    //     * Renvoi un flux de vEHICULEResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
+    //     *
+    //     * @param id id du vehicule
+    //     * @return Flux de VehiculeResponseDTO
+    //     */
     //    @GetMapping(value = "/vehicule/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     //    public Flux<VehiculeResponseDTO> watch(@PathVariable String id) {
     //
