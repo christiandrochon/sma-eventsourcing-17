@@ -26,8 +26,6 @@ public class CreateClientController {
     
     @Value("${external.service.url}")
     private String externalServiceUrl;
-    
-    
     private final WebClient webClient;
     private final RestClient restClient;
     
@@ -56,11 +54,11 @@ public class CreateClientController {
     /**
      * Création d'un client via un formulaire.
      *
-     * @param clientDTO
-     * @param result
-     * @param redirectAttributes
-     * @param model
-     * @return
+     * @param clientDTO          le client à créer
+     * @param result             le résultat de la validation du formulaire
+     * @param redirectAttributes attributs de redirection
+     * @param model              modèle du client: permet de passer des attributs à la vue
+     * @return la vue clients si la création a réussi, sinon la vue createClientForm
      */
     @PostMapping(value = "/createClient")
     //    @PreAuthorize("hasAuthority('ADMIN')")
