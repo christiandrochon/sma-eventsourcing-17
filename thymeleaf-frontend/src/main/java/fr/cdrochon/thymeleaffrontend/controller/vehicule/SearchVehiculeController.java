@@ -6,6 +6,7 @@ import fr.cdrochon.thymeleaffrontend.exception.InvalidDateFormatException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -29,6 +30,10 @@ import java.util.Date;
 @Controller
 @Slf4j
 public class SearchVehiculeController {
+    
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
+    
     @Autowired
     private WebClient webClient;
     
