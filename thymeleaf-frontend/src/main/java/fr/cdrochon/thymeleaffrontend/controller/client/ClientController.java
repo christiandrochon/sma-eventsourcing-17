@@ -1,6 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,12 +14,19 @@ import java.util.List;
 @Controller
 public class ClientController {
     
-    final RestClient restClient = RestClient.create("http://localhost:8092");
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
+    
+    private final RestClient restClient;
+    
+    public ClientController(RestClient restClient) {
+        this.restClient = restClient;
+    }
     
     @GetMapping("/client/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String clientById(@PathVariable String id, Model model) {
-        ClientPostDTO client = restClient.get().uri("/queries/clients/" + id)
+        ClientPostDTO client = restClient.get().uri(externalServiceUrl + "/queries/clients/" + id)
                                          //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
                                          //                                  getJwtTokenValue()))
                                          .retrieve().body(new ParameterizedTypeReference<>() {
@@ -32,7 +40,7 @@ public class ClientController {
     public String clients(Model model) {
         List<ClientPostDTO> clients =
                 restClient.get()
-                          .uri("/queries/clients")
+                          .uri(externalServiceUrl + "/queries/clients")
                           //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                           .retrieve().body(new ParameterizedTypeReference<>() {
                           });
