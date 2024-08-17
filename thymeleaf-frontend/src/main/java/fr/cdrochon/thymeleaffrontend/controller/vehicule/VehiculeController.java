@@ -1,6 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,12 +14,18 @@ import java.util.List;
 @Controller
 public class VehiculeController {
     
-    final RestClient restClient = RestClient.create("http://localhost:8092");
+    @Value("${external.service.url}")
+    private String externalServiceUrl;
+    
+    private final RestClient restClient;
+    public VehiculeController(RestClient restClient) {
+        this.restClient = restClient;
+    }
     
     @GetMapping("/vehicule/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String vehiculeById(@PathVariable String id, Model model) {
-        VehiculeDateConvertDTO vehicule = restClient.get().uri("/queries/vehicules/" + id)
+        VehiculeDateConvertDTO vehicule = restClient.get().uri(externalServiceUrl + "/queries/vehicules/" + id)
                                                     //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders
                                                     //                                      .AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                                     .retrieve().body(new ParameterizedTypeReference<>() {
@@ -31,7 +38,7 @@ public class VehiculeController {
     @GetMapping("/vehicules")
     //    @PreAuthorize("hasAuthority('USER')")
     public String vehicules(Model model) {
-        List<VehiculeDateConvertDTO> vehicules = restClient.get().uri("/queries/vehicules")
+        List<VehiculeDateConvertDTO> vehicules = restClient.get().uri(externalServiceUrl + "/queries/vehicules")
                                                            //.headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                                            .retrieve().body(new ParameterizedTypeReference<>() {
                 });

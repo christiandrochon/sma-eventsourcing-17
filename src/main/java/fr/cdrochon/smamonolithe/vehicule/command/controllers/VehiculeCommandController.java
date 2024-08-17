@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.vehicule.command.controllers;
 
 import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeRestPostDTO;
 import fr.cdrochon.smamonolithe.vehicule.command.services.VehiculeCommandService;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.axonframework.queryhandling.QueryGateway;
@@ -17,6 +18,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
+import static org.springframework.http.HttpHeaders.USER_AGENT;
+
+@Slf4j
 @RestController
 @RequestMapping("/commands")
 public class VehiculeCommandController {
@@ -53,7 +57,7 @@ public class VehiculeCommandController {
      */
     @GetMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<CompletableFuture<String>> createGarage(@RequestBody VehiculeRestPostDTO vehiculeRequestDTO) {
-        System.out.println(vehiculeRequestDTO.toString());
+        
         return CompletableFuture.supplyAsync(() -> {
             ResponseEntity<VehiculeRestPostDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createVehicule",
                                                                                             vehiculeRequestDTO,
@@ -84,36 +88,39 @@ public class VehiculeCommandController {
      * @param vehiculeRestPostDTO DTO contenant les informations du vehicule a creer
      * @return CompletableFuture<String>
      */
-        @PostMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
-        //    @PreAuthorize("hasRole('USER')")
-        //    @PreAuthorize("hasAuthority('USER')")
-        public CompletableFuture<String> createVehicule(@RequestBody VehiculeRestPostDTO vehiculeRestPostDTO) {
-            System.out.println( "createVehicule");
-            try {
-                String url = "http://localhost:8091/createVehicule";
-                HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
-                int responseCode = httpClient.getResponseCode();
-                System.out.println("GET Response Code :: " + responseCode);
-
-                if(responseCode == HttpURLConnection.HTTP_OK) { // success
-                    BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-
-                    while((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-                    System.out.println(vehiculeRestPostDTO.toString());
-                    return vehiculeCommandService.createVehicule(vehiculeRestPostDTO);
+    @PostMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
+    //    @PreAuthorize("hasRole('USER')")
+    //    @PreAuthorize("hasAuthority('USER')")
+    public CompletableFuture<String> createVehicule(@RequestBody VehiculeRestPostDTO vehiculeRestPostDTO) {
+        System.out.println("createVehicule");
+        try {
+            String url = externalServiceUrl + "/createVehicule";
+            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();
+            httpClient.setRequestProperty("User-Agent", USER_AGENT);
+            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
+            
+            int responseCode = httpClient.getResponseCode();
+            log.info("response code: " + responseCode);
+            
+            if(responseCode == HttpURLConnection.HTTP_OK) { // success
+                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+                
+                while((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
                 }
-                else {
-                    System.out.println("GET request not worked, response code: " + responseCode);
-                    return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
-                }
-            } catch(Exception e) {
-                e.printStackTrace();
-                return CompletableFuture.completedFuture("Error: " + e.getMessage());
+                in.close();
+                
+                return vehiculeCommandService.createVehicule(vehiculeRestPostDTO);
             }
+            else {
+                System.out.println("GET request not worked, response code: " + responseCode);
+                return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+            return CompletableFuture.completedFuture("Error: " + e.getMessage());
         }
+    }
 }
