@@ -8,17 +8,13 @@ package fr.cdrochon.thymeleaffrontend.controller;
 //import org.springframework.security.oauth2.client.registration.ClientRegistration;
 //import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 //import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
 @Controller
 public class ThymeleafRestController {
-//    private ClientRegistrationRepository clientRegistrationRepository;
-    
-    RestClient restClient = RestClient.create("http://localhost:8092");
-    
-    
     
     /**
      * Path qui permet de recuperer les informations sur la session courante et les users authentifiés
