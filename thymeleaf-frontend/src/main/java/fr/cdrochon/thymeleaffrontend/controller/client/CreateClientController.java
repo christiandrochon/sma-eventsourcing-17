@@ -43,10 +43,7 @@ public class CreateClientController {
      * @return la vue createClientForm
      */
     @GetMapping("/createClient")
-    public String createGarage(@RequestParam(required = false) String message, Model model) {
-        if(message != null) {
-            model.addAttribute("message", message);
-        }
+    public String createGarage(Model model) {
         if(!model.containsAttribute("clientDTO")) {
             model.addAttribute("clientDTO", new ClientPostDTO());
         }
