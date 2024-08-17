@@ -19,7 +19,7 @@ services:
     depends_on:
       - postgres-monolithe
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8092/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://sma-monolithe:8092/actuator/health"]
       interval: 10s
       retries: 5
 
