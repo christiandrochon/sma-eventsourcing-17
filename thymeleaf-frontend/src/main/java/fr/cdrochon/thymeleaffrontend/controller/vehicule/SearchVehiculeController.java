@@ -101,7 +101,7 @@ public class SearchVehiculeController {
                     
                     // Ajout des attributs au modèle en cas de succès
                     model.addAttribute("vehicule", vehicule);
-                    return Mono.just("/vehicule/inner/resultSearchVehiculeView");
+                    return Mono.just("vehicule/inner/resultSearchVehiculeView");
                 })
                 .switchIfEmpty(Mono.defer(() -> {
                     model.addAttribute("errorMessage", "Véhicule non trouvé pour l'immatriculation '" + getImmatDTO.getImmatriculation() + "'");
