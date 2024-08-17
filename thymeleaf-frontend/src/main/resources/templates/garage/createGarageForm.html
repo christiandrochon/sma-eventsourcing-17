@@ -15,76 +15,77 @@
 
         <h6><a th:href="@{/garages}">Retour aux garages</a></h6>
 
-<!--        <div class="d-flex justify-content-center align-items-center">-->
-<!--            <div class="row w-75 mt-lg-5">-->
-                <div class="mt-lg-5">
-                    <h3>Création d'un garage</h3>
+        <!--        <div class="d-flex justify-content-center align-items-center">-->
+        <!--            <div class="row w-75 mt-lg-5">-->
+        <div class="mt-lg-5">
+            <h3>Création d'un garage</h3>
+        </div>
+
+        <form action='#' th:action="@{/createGarage}" method='post' class="box" th:object="${garageDTO}">
+
+            <div>
+                <label for="nomGarage" class="form-label">Nom du garage</label>
+                <input th:classappend="${#fields.hasErrors('nomGarage')} ? 'validation-champ-surimpression'" id="nomGarage" class="form-control" type="text"
+                       th:field="*{nomGarage}" required>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('nomGarage')}" th:errors="*{nomGarage}">Erreur
+                    de nom
                 </div>
+            </div>
+            <div>
+                <label class="form-label">Mail du responsable</label>
+                <input id="mailResp" class="form-control" type="email" th:field="*{mailResp}" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$" required>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('mailResp')}" th:errors="*{mailResp}">Erreur
+                    de mail
+                </div>
+            </div>
 
-                <form action='#' th:action="@{/createGarage}" method='post' class="box" th:object="${garageDTO}">
+            <!--            <hr class="my-4 mt-8">-->
+            <div class="my-3 mt-4">
+                <h5>Adresse du client</h5>
+            </div>
+            <div>
+                <label for="numeroDeRue" class="form-label">N° de rue</label>
+                <input id="numeroDeRue" class="form-control" type="text" th:field="*{adresse.numeroDeRue}" required>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.numeroDeRue')}" th:errors="*{adresse.numeroDeRue}">Erreur
+                    de numéro de rue dans l'adresse
+                </div>
+            </div>
 
-                    <div>
-                        <label for="nomGarage" class="form-label">Nom du garage</label>
-                        <input  th:classappend="${#fields.hasErrors('nomGarage')} ? 'validation-champ-surimpression'"  id="nomGarage" class="form-control" type="text" th:field="*{nomGarage}" required>
-                        <div class="validation-champ-incorrect"th:if="${#fields.hasErrors('nomGarage')}" th:errors="*{nomGarage}">Erreur
-                            de nom
-                        </div>
-                    </div>
-                    <div>
-                        <label class="form-label">Mail du responsable</label>
-                        <input id="mailResp" class="form-control" type="email" th:field="*{mailResp}" required>
-                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('mailResp')}" th:errors="*{mailResp}">Erreur
-                            de mail
-                        </div>
-                    </div>
+            <div>
+                <label for="rue" class="form-label">Nom de la rue</label>
+                <input id="rue" class="form-control" type="text" th:field="*{adresse.rue}" required>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.rue')}" th:errors="*{adresse.rue}">Erreur
+                    du nom de la rue dans l'adresse
+                </div>
+            </div>
 
-                    <!--            <hr class="my-4 mt-8">-->
-                    <div class="my-3 mt-4">
-                        <h5>Adresse du client</h5>
-                    </div>
-                    <div>
-                        <label for="numeroDeRue" class="form-label">N° de rue</label>
-                        <input id="numeroDeRue" class="form-control" type="text" th:field="*{adresse.numeroDeRue}" required>
-                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.numeroDeRue')}" th:errors="*{adresse.numeroDeRue}">Erreur
-                            de numéro de rue dans l'adresse
-                        </div>
-                    </div>
+            <div>
+                <label for="cp" class="form-label">Code postal</label>
+                <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" placeholder="12345" pattern="[0-9]{5}" required>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.cp')}" th:errors="*{adresse.cp}">Erreur
+                    de code postal
+                </div>
+            </div>
 
-                    <div>
-                        <label for="rue" class="form-label">Nom de la rue</label>
-                        <input id="rue" class="form-control" type="text" th:field="*{adresse.rue}" required>
-                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.rue')}" th:errors="*{adresse.rue}">Erreur
-                            du nom de la rue dans l'adresse
-                        </div>
-                    </div>
+            <div>
+                <label for="ville" class="form-label">Ville</label>
+                <input id="ville" class="form-control" type="text" th:field="*{adresse.ville}" required>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.ville')}" th:errors="*{adresse.ville}">Ville inconnue
+                </div>
+            </div>
 
-                    <div>
-                        <label for="cp" class="form-label">Code postal</label>
-                        <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" placeholder="12345"  pattern="[0-9]{5}" required>
-                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.cp')}" th:errors="*{adresse.cp}">Erreur
-                            de code postal
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="ville" class="form-label">Ville</label>
-                        <input id="ville" class="form-control" type="text" th:field="*{adresse.ville}" required>
-                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.ville')}" th:errors="*{adresse.ville}">Ville inconnue
-                        </div>
-                    </div>
-
-<!--                    Alertes-->
-                    <div th:if="${successMessage}" class="alert-success">
-                        <p th:text="${successMessage}">Success</p>
-                    </div>
-                    <div th:if="${errorMessage}" class="alert-danger">
-                        <p th:text="${errorMessage}">Error</p>
-                    </div>
-                    <hr class="my-4 mt-5">
-                    <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
-                </form>
-<!--            </div>-->
-<!--        </div>-->
+            <!--                    Alertes-->
+            <div th:if="${successMessage}" class="alert-success">
+                <p th:text="${successMessage}">Success</p>
+            </div>
+            <div th:if="${errorMessage}" class="alert-danger">
+                <p th:text="${errorMessage}">Error</p>
+            </div>
+            <hr class="my-4 mt-5">
+            <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
+        </form>
+        <!--            </div>-->
+        <!--        </div>-->
 
 
         <!--        &lt;!&ndash;    <div class="container">&ndash;&gt;-->
