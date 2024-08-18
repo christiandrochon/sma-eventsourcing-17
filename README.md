@@ -1,5 +1,4 @@
 ## Automotive Maintenance Application
-<br>
 
 ### The SMA application is an automotive maintenance application.
 
