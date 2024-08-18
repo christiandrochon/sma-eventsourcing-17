@@ -1,19 +1,23 @@
-## Application de Maintenance Automobile (SMA)
+## Automotive Maintenance Application
+<br>
 
-  
-> #### L'application SMA est une solution réactive basée sur Spring WebFlux qui exploite pleinement les avantages des CompletableFuture pour des traitements asynchrones et non-bloquants. Elle implémente les patterns d'architecture Event Sourcing et CQRS, offrant ainsi une grande évolutivité, une résilience accrue, et une maintenance simplifiée.<br><br>
-  
+### The SMA application is an automotive maintenance application.
 
+> SMA is a reactive solution based on Spring WebFlux that fully leverages the advantages of CompletableFuture for asynchronous and non-blocking processing. It implements the Event Sourcing and CQRS architectural patterns, offering high scalability, increased resilience, and simplified maintenance.
 
-Caractéristiques principales :
-  * __Architecture réactive__ : Conçue pour gérer des charges élevées avec une faible latence, grâce à l'approche non-bloquante de _Spring WebFlux_.
-  * __Event Sourcing et CQRS__ : Séparation claire des commandes et des requêtes pour une meilleure évolutivité et cohérence des données, avec une traçabilité complète des événements.
-  * __DevOps et performance__ : Intégration des pratiques DevOps pour assurer des performances optimales, une haute disponibilité, une mise à l'échelle automatique et une tolérance aux pannes grâce à la répartition dynamique des charges entre les serveurs.
+<br>
 
-Déploiement et Infrastructure :
-   * __Containerisation__ : L'application est entièrement dockerisée, facilitant son déploiement et sa gestion.
-   * __Orchestration avec Kubernetes__ : Déploiement automatisé et gestion des conteneurs via _Kubernetes_, assurant la résilience et la scalabilité.
-   * __Infrastructure Cloud__ : Hébergée sur _AWS_ avec des machines virtuelles pour une fiabilité maximale et une flexibilité à grande échelle. 
+### Key Features : 
+**_Reactive Architecture_** : Designed to handle high loads with low latency, thanks to the non-blocking approach of Spring WebFlux.  
+**_Event Sourcing and CQRS_** : Clear separation of commands and queries for better scalability and data consistency, with complete event traceability.  
+**_DevOps and Performance_** : Integration of DevOps practices to ensure optimal performance, high availability, automatic scaling, and fault tolerance through dynamic load balancing across servers.  
+<br>
 
-Accès à l'application :
-   * L'application est accessible à l'adresse : *todo (URL à définir)*.
+### Deployment and Infrastructure :
+**_Containerization_** : The application is fully containerized using Docker, making deployment and management easier.  
+**_Orchestration with Kubernetes_** : Automated deployment and container management via Kubernetes, ensuring resilience and scalability.  
+**_Cloud Infrastructure_** : Hosted on AWS with virtual machines for maximum reliability and large-scale flexibility. 
+<br>
+<br>
+### Application Access :
+The application is accessible at: todo (URL to be defined).
