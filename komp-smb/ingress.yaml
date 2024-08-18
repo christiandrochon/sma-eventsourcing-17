@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sma-monolithe-ingress
+  namespace: smb
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false" # Si vous n'utilisez pas HTTPS
+spec:
+  rules:
+    - host: sma.local   # Remplacez par votre domaine
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: thymeleaf-frontend
+                port:
+                  number: 8091
