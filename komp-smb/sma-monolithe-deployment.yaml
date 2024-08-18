@@ -21,7 +21,8 @@ spec:
         io.kompose.service: sma-monolithe
     spec:
       containers:
-        - image: btrurqnt/sma-monolithe:v1.0
+        - image: sma-monolithe:v1.0
+#        - image: btrurqnt/sma-monolithe:v1.0
           name: sma-monolithe
           livenessProbe:
             httpGet:
