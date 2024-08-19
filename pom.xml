@@ -34,10 +34,11 @@
         </dependency>
 
 
-        <!--        JSON SERIALISATION ET DESERIALISATION  -->
+        <!--        SPRING WEBFLUX REACTIVE  -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webflux</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>2.5.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -52,8 +53,8 @@
                     <artifactId>jackson-core</artifactId>
                 </exclusion>
             </exclusions>
-            <version>5.3.13</version>
         </dependency>
+        <!--        JSON SERIALISATION ET DESERIALISATION  -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
