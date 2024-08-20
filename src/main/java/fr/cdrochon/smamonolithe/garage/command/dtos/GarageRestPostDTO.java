@@ -1,5 +1,7 @@
 package fr.cdrochon.smamonolithe.garage.command.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,12 +17,12 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class GarageRestPostDTO {
-//    private String id;
+
+    //id necessaire si on veut permettre d'afficher les details d'un garage à l'user après sa creation
+    private String id;
     private String nomGarage;
     private String mailResp;
     private GarageAdresseDTO adresse;
-    //    private GarageStatus garageStatus;
-    //    private Instant dateQuery;
     
     /**
      * Copie de l'objet AdresseGarage pour éviter l'exposition de la représentation interne
