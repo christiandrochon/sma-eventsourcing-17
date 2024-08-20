@@ -6,7 +6,6 @@ import fr.cdrochon.thymeleaffrontend.exception.InvalidDateFormatException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -15,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -30,10 +28,7 @@ import java.util.Date;
 @Controller
 @Slf4j
 public class SearchVehiculeThymController {
-    
-    @Value("${external.service.url}")
-    private String externalServiceUrl;
-    
+
     @Autowired
     private WebClient webClient;
     
@@ -95,7 +90,6 @@ public class SearchVehiculeThymController {
                         Date date = inputFormat.parse(vehicule.getDateMiseEnCirculationVehicule());
                         String dateMiseEnCirculationVehicule = outputFormat.format(date);
                         vehicule.setDateMiseEnCirculationVehicule(dateMiseEnCirculationVehicule);
-                        
                     } catch(ParseException e) {
                         return Mono.error(new InvalidDateFormatException("Erreur de conversion de date. Le format attendu est de type 'dd MMMM yyyy'"));
                     }
@@ -108,14 +102,14 @@ public class SearchVehiculeThymController {
                     model.addAttribute("errorMessage", "Véhicule non trouvé pour l'immatriculation '" + getImmatDTO.getImmatriculation() + "'");
                     model.addAttribute("alertClass", "alert-danger");
                     model.addAttribute("urlRedirection", "/showvehicule");
-                    return Mono.just("error");
+                    return Mono.just("redirect:/error");
                 }))
                 
                 .onErrorResume(e -> {
                     model.addAttribute("errorMessage", e.getMessage());
                     model.addAttribute("alertClass", "alert-danger");
                     model.addAttribute("urlRedirection", "/showvehicule");
-                    return Mono.just("error");
+                    return Mono.just("redirect:/error");
                 });
     }
     
@@ -183,26 +177,5 @@ public class SearchVehiculeThymController {
             redirectAttributes.addFlashAttribute("getImmatDTO", getImmatDTO); // Re-add garageDTO to the model if there's an error
             return "redirect:/error";
         }
-    }
-    
-    
-    /**
-     * Affiche un ecran d'erreur dans le cas où le véhicule recherché ne serait pas trouvé dans la bdd
-     *
-     * @param message     message d'erreur
-     * @param alertClass  classe de l'alerte
-     * @param redirectUrl url de redirection
-     * @param model       Model pour les données à afficher
-     * @return la vue error
-     */
-    @GetMapping("/error")
-    public String handleError(@RequestParam("message") String message,
-                              @RequestParam("alertClass") String alertClass,
-                              @RequestParam("redirectUrl") String redirectUrl,
-                              Model model) {
-        model.addAttribute("message", message);
-        model.addAttribute("alertClass", alertClass);
-        model.addAttribute("redirectUrl", redirectUrl);
-        return "error";  // Retourne le nom de la vue (fichier HTML) à afficher
     }
 }

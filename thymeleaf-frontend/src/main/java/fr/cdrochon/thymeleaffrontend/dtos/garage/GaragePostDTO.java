@@ -20,10 +20,10 @@ public class GaragePostDTO{
     @Valid
     private GarageAdresseDTO adresse;
     
-    /**
-     * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
-     * @return GarageAdresseDTO
-     */
+//    /**
+//     * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
+//     * @return GarageAdresseDTO
+//     */
 //    public @Valid GarageAdresseDTO getAdresse() {
 //        return new GarageAdresseDTO(
 //            this.adresse.getNumeroDeRue(),

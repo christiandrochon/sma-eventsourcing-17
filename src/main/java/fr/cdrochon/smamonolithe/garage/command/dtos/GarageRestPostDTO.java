@@ -1,7 +1,5 @@
 package fr.cdrochon.smamonolithe.garage.command.dtos;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
