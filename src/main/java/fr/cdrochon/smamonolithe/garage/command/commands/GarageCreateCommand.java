@@ -7,13 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.time.Instant;
-
 /**
- * Classe immutable. Un event est immutable = une fois qu'il est créé, on ne peut plus le modifier
+ * Classe immutable.
  * <p>
- * Implemente la creation d'un client (regle metier)
- * Chaque command possede un id
+ * Chaque command possède un id
  */
 @Getter
 public class GarageCreateCommand extends GarageBaseCommand<String> {
@@ -21,6 +18,7 @@ public class GarageCreateCommand extends GarageBaseCommand<String> {
     private final String nomGarage;
     private final String mailResp;
     private final AdresseGarage adresse;
+    
     
     /**
      * Copie de l'adresse du garage pour eviter l'exposition de la representation interne
