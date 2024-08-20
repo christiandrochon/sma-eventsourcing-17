@@ -29,7 +29,7 @@ import java.util.Date;
 
 @Controller
 @Slf4j
-public class SearchVehiculeController {
+public class SearchVehiculeThymController {
     
     @Value("${external.service.url}")
     private String externalServiceUrl;
@@ -69,21 +69,22 @@ public class SearchVehiculeController {
             return Mono.just("vehicule/inner/searchVehiculeForm");
         }
         
-        Mono<VehiculeDTO> vehiculeMono = webClient.get()
-                                                  .uri("/queries/vehicules/immatriculation/" + getImmatDTO.getImmatriculation())
-                                                  .accept(MediaType.APPLICATION_JSON)
-                                                  .header("Content-Type", "application/json")
-                                                  .retrieve()
-                                                  .onStatus(HttpStatus.NOT_FOUND::equals,
-                                                            clientResponse -> Mono.empty())
-                                                  .onStatus(HttpStatusCode::is5xxServerError,
-                                                            clientResponse -> Mono.error(new WebClientResponseException("Erreur interne du serveur",
-                                                                                                                        500,
-                                                                                                                        "Erreur de recherche du véhicule",
-                                                                                                                        null,
-                                                                                                                        null,
-                                                                                                                        null)))
-                                                  .bodyToMono(VehiculeDTO.class);
+        Mono<VehiculeDTO> vehiculeMono =
+                webClient.get()
+                         .uri("/queries/vehicules/immatriculation/" + getImmatDTO.getImmatriculation())
+                         .accept(MediaType.APPLICATION_JSON)
+                         .header("Content-Type", "application/json")
+                         .retrieve()
+                         .onStatus(HttpStatus.NOT_FOUND::equals,
+                                   clientResponse -> Mono.empty())
+                         .onStatus(HttpStatusCode::is5xxServerError,
+                                   clientResponse -> Mono.error(new WebClientResponseException("Erreur interne du serveur",
+                                                                                               500,
+                                                                                               "Erreur de recherche du véhicule",
+                                                                                               null,
+                                                                                               null,
+                                                                                               null)))
+                         .bodyToMono(VehiculeDTO.class);
         
         return vehiculeMono
                 .flatMap(vehicule -> {
@@ -140,12 +141,13 @@ public class SearchVehiculeController {
         
         try {
             //appel du ms dossier pour la recherche d'un vehicule
-            Mono<VehiculeDTO> vehiculeMono = webClient.get()
-                                                      .uri("/queries/vehicules/immatriculation/" + getImmatDTO.getImmatriculation())
-                                                      .accept(MediaType.APPLICATION_JSON)
-                                                      .header("Content-Type", "application/json")
-                                                      .retrieve()
-                                                      .bodyToMono(VehiculeDTO.class);
+            Mono<VehiculeDTO> vehiculeMono =
+                    webClient.get()
+                             .uri("/queries/vehicules/immatriculation/" + getImmatDTO.getImmatriculation())
+                             .accept(MediaType.APPLICATION_JSON)
+                             .header("Content-Type", "application/json")
+                             .retrieve()
+                             .bodyToMono(VehiculeDTO.class);
             
             VehiculeDTO vehicule = vehiculeMono.block();
             
