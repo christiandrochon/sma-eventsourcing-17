@@ -1,7 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.dtos.dossier;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
 import lombok.*;
 
@@ -25,7 +25,7 @@ public class DossierConvertPostDTO {
     @JsonProperty("dateModificationDossier")
     private Instant dateModificationDossier;
     @JsonProperty("client")
-    private ClientPostDTO client;
+    private ClientThymDTO client;
     @JsonProperty("vehicule")
     private VehiculeDateConvertDTO vehicule;
     @JsonProperty("dossierStatus")

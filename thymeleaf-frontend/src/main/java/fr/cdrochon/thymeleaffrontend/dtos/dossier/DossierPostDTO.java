@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.dtos.dossier;
 
-import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -22,7 +22,7 @@ public class DossierPostDTO {
     private String dateCreationDossier;
     private String dateModificationDossier;
     @Valid
-    private ClientPostDTO client;
+    private ClientThymDTO client;
     @Valid
     private VehiculePostDTO vehicule;
     @NotNull(message = "Le status du dossier est obligatoire, merci de le renseigner.")
