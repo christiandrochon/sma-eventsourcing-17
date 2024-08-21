@@ -26,7 +26,7 @@ public class GarageEventHandler {
     public void on(GarageCreatedEvent event) {
         // Convertir l'événement en DTO si nécessaire
         log.info("Received event: {}", event);
-        //TODO : utiliser un mapper
+        
         GarageAdresseDTO adresseDTO = new GarageAdresseDTO(
                 event.getAdresseGarage().getNumeroDeRue(),
                 event.getAdresseGarage().getRue(),

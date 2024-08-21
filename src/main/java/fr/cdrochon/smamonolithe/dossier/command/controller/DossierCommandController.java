@@ -1,6 +1,5 @@
 package fr.cdrochon.smamonolithe.dossier.command.controller;
 
-import fr.cdrochon.smamonolithe.client.command.dtos.ClientRestPostDTO;
 import fr.cdrochon.smamonolithe.dossier.command.dtos.DossierRestDTO;
 import fr.cdrochon.smamonolithe.dossier.command.services.DossierCommandService;
 import org.axonframework.commandhandling.gateway.CommandGateway;

@@ -21,7 +21,6 @@ public class GarageCommandService {
     }
     
     /**
-     *
      * @param garageDTO DTO de création d'un garage
      * @return CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu
      */

@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
-import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.convertGarageDTOToJson;
+import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.convertObjectToJson;
 
 @Controller
 @Slf4j
@@ -30,13 +30,9 @@ public class CreateGarageThymController {
     
     @Value("${external.service.url}")
     private String externalServiceUrl;
-    //    private final RestClient restClient;
+
     @Autowired
     private WebClient webClient;
-    
-    //    public CreateGarageThymController(RestClient restClient) {
-    //        this.restClient = restClient;
-    //    }
     
     /**
      * Affiche le formulaire de création d'un garage et recharge le formulaire avec les données déjà saisies en cas d'erreur
@@ -46,7 +42,7 @@ public class CreateGarageThymController {
      */
     @GetMapping("/createGarage")
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String createGarage(Model model) {
+    public String createGarageAsync(Model model) {
         GaragePostDTO garageDTO = new GaragePostDTO();
         garageDTO.setAdresse(new GarageAdresseDTO());
         
@@ -67,8 +63,8 @@ public class CreateGarageThymController {
      * @return la vue garage/createGarageForm en cas d'erreur, la vue garage/view en cas de succès
      */
     @PostMapping(path = "/createGarage")
-    public Mono<String> createGarage(@Valid @ModelAttribute("garageDTO") GaragePostDTO garageDTO, BindingResult result,
-                                     RedirectAttributes redirectAttributes, Model model) {
+    public Mono<String> createGarageAsync(@Valid @ModelAttribute("garageDTO") GaragePostDTO garageDTO, BindingResult result,
+                                          RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {
             model.addAttribute("garageDTO", garageDTO);
             result.getAllErrors().forEach(err -> log.error("LOG ERROR : {}", err.getDefaultMessage()));
@@ -77,14 +73,14 @@ public class CreateGarageThymController {
         }
         //CHECKME : vérifier si le rafraichissement de la liste des garages est nécessaire
         return webClient.post()
-                        .uri(externalServiceUrl + "/commands/createGarage")
+                        .uri("/commands/createGarage")
                         //                        .headers(httpHeaders -> httpHeaders.setBearerAuth("Bearer " + "getJwtTokenValue()"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .bodyValue(convertGarageDTOToJson(garageDTO)) // convertit garage en JSON
+                        .bodyValue(convertObjectToJson(garageDTO)) // convertit garage en JSON
                         .retrieve()
                         .bodyToMono(GaragePostDTO.class)// convertit en objet
-                        .timeout(Duration.ofSeconds(5000))
+                        .timeout(Duration.ofSeconds(5))
                         .flatMap(garagePostDTO -> {
                             if(garagePostDTO == null) {
                                 log.error("Erreur lors de la création du garage");
