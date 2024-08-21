@@ -1,8 +1,8 @@
 ## Automotive Maintenance Application
 
-### The SMA application is an automotive maintenance application.
+### This application is an automotive maintenance application.
 
-> SMA is a reactive solution based on Spring WebFlux that fully leverages the advantages of CompletableFuture for asynchronous and non-blocking processing. It implements the Event Sourcing and CQRS architectural patterns, offering high scalability, increased resilience, and simplified maintenance.
+>  It is an application implements the Event Sourcing and CQRS architectural patterns, offering high scalability, increased resilience, and simplified maintenance. It is based on Spring WebFlux that fully leverages the advantages of CompletableFuture for asynchronous and non-blocking processing
 
 ### Key Features : 
 - **_Reactive Architecture_** : Designed to handle high loads with low latency, thanks to the non-blocking approach of Spring WebFlux.  
