@@ -5,7 +5,7 @@ import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import lombok.*;
 /**
  * Permet de faire le lien entre les services command de l'appli et le monde exteieur
- *
+ *<p>
  * Les noms des attributs doivent correspondre à ceux du dto
  */
 
@@ -25,6 +25,7 @@ public class ClientCommandDTO {
     // Un enum est immutable, pas besoin de le convertir en DTO
     private ClientStatus clientStatus;
     
+    //TODO : copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
     /**
      * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
      * @param adresseClient AdresseClient

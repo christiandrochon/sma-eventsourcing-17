@@ -5,6 +5,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.client.ClientStatusDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,16 +30,8 @@ import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.conve
 @Slf4j
 @Controller
 public class CreateClientThymController {
-    
-    @Value("${external.service.url}")
-    private String externalServiceUrl;
-    private final WebClient webClient;
-    private final RestClient restClient;
-    
-    public CreateClientThymController(WebClient webClient, RestClient restClient) {
-        this.webClient = webClient;
-        this.restClient = restClient;
-    }
+    @Autowired
+    private WebClient webClient;
     
     /**
      * Affiche le formulaire de création d'un client et rempli les champs avec les données saisies par l'utilisateur s'il y a eu une erreur lors de la

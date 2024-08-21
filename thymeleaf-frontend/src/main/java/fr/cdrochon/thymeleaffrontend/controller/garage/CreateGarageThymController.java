@@ -27,9 +27,6 @@ import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.conve
 @Controller
 @Slf4j
 public class CreateGarageThymController {
-    
-    @Value("${external.service.url}")
-    private String externalServiceUrl;
 
     @Autowired
     private WebClient webClient;

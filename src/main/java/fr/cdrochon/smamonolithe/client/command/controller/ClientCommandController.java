@@ -3,16 +3,12 @@ package fr.cdrochon.smamonolithe.client.command.controller;
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
 import fr.cdrochon.smamonolithe.client.command.services.ClientCommandService;
 import lombok.extern.slf4j.Slf4j;
-import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
-import org.axonframework.queryhandling.QueryGateway;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -22,9 +18,6 @@ import java.util.stream.Stream;
 @Slf4j
 @RequestMapping("/commands")
 public class ClientCommandController {
-    
-    @Value("${external.service.url}")
-    private String externalServiceUrl;
     private final ClientCommandService clientCommandService;
     private final EventStore eventStore;
     

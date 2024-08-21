@@ -3,7 +3,6 @@ package fr.cdrochon.thymeleaffrontend.controller.client;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -14,8 +13,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Controller
 @Slf4j
@@ -78,20 +75,7 @@ public class SearchClientThymController {
                         });
         
     }
-//    @GetMapping(value = "/searchclient")
-//    public String searchClient(Model model) {
-//        List<ClientThymDTO> clients =
-//                restClient.get()
-//                          .uri(externalServiceUrl + "/queries/clients")
-//                          //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-//                          .retrieve().body(new ParameterizedTypeReference<>() {
-//                          });
-//        model.addAttribute("clients", clients);
-//        model.addAttribute("clientPostDTO", new ClientThymDTO());
-//
-//        return "client/searchClientForm";
-//    }
-    
+
     /**
      * Recherche un client par son id et affiche ses informations.
      *
@@ -116,17 +100,4 @@ public class SearchClientThymController {
                             return Mono.just("client/view");
                         });
     }
-    
-//    @GetMapping("/searchclient/{id}")
-//    //    @PreAuthorize("hasAuthority('USER')")
-//    public String searchClientById(@PathVariable String id, Model model) {
-//        ClientThymDTO client = restClient.get().uri(externalServiceUrl + "/queries/clients/" + id)
-//                                         //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
-//                                         //                                  getJwtTokenValue()))
-//                                         .retrieve().body(new ParameterizedTypeReference<>() {
-//                });
-//        model.addAttribute("client", client);
-//        return "client/view";
-//    }
-
 }

@@ -22,11 +22,10 @@ import java.util.stream.Collectors;
 public class ClientEventHandlerService {
     
     private final ClientRepository clientRepository;
-    private final ClientMapper clientMapper;
+
     
-    public ClientEventHandlerService(ClientRepository clientRepository, ClientMapper clientMapper) {
+    public ClientEventHandlerService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
-        this.clientMapper = clientMapper;
     }
     
     /**

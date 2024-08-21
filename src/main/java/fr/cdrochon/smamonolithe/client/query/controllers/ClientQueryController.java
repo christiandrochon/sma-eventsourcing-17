@@ -1,10 +1,9 @@
 package fr.cdrochon.smamonolithe.client.query.controllers;
 
-import fr.cdrochon.smamonolithe.client.query.mapper.ClientMapper;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
+import fr.cdrochon.smamonolithe.client.query.mapper.ClientMapper;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
-import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "/queries")
 public class ClientQueryController {
-    
     private final QueryGateway queryGateway;
     private final ClientRepository clientRepository;
     

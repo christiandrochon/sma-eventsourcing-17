@@ -1,32 +1,21 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.garage.GarageGetDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @Controller
 @Slf4j
 public class ClientThymController {
-//
-//    @Value("${external.service.url}")
-//    private String externalServiceUrl;
     
     @Autowired
     private WebClient webClient;
@@ -53,20 +42,6 @@ public class ClientThymController {
                             return Mono.just("client/view");
                         });
     }
-    
-    
-    //    @GetMapping("/client/{id}")
-    //    //    @PreAuthorize("hasAuthority('USER')")
-    //    public String clientById(@PathVariable String id, Model model) {
-    //        ClientThymDTO client = restClient.get().uri(externalServiceUrl + "/queries/clients/" + id)
-    //                                         //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer
-    //                                         " +
-    //                                         //                                  getJwtTokenValue()))
-    //                                         .retrieve().body(new ParameterizedTypeReference<>() {
-    //                });
-    //        model.addAttribute("client", client);
-    //        return "client/view";
-    //    }
     
     /**
      * Affiche la liste des clients
@@ -118,24 +93,7 @@ public class ClientThymController {
                             redirectAttributes.addFlashAttribute("urlRedirection", "/clients");
                             return Mono.just("redirect:/error");
                         });
-        
     }
-    
-    //    @GetMapping("/clients")
-    //    //    @PreAuthorize("hasAuthority('USER')")
-    //    public String clients(Model model) {
-    //        List<ClientThymDTO> clients =
-    //                restClient.get()
-    //                          .uri(externalServiceUrl + "/queries/clients")
-    //                          //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-    //                          .retrieve().body(new ParameterizedTypeReference<>() {
-    //                          });
-    //
-    //        assert clients != null;
-    //        clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
-    //        model.addAttribute("clients", clients);
-    //        return "client/clients";
-    //    }
     
     /**
      * >Formatage du numéro de téléphone, avec un formatage de type "XX XX XX XX XX"
