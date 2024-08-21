@@ -23,9 +23,10 @@ public class SearchClientThymController {
     
     /**
      * Affiche l'ensemble des clients dans la liste déroulante du formulaire de recherche de client.
-     *
+     * <p>
      * Preference d'utiliser l'approche asynchrone pour la fluidité de l'application
-     * @param model model de la vue
+     *
+     * @param model              model de la vue
      * @param redirectAttributes attributs de redirection
      * @return la vue client/searchClientForm
      */
@@ -75,10 +76,10 @@ public class SearchClientThymController {
                         });
         
     }
-
+    
     /**
      * Recherche un client par son id et affiche ses informations.
-     *
+     * <p>
      * Preference d'utiliser l'approche asynchrone pour la fluidité de l'application
      *
      * @param id    id du client
