@@ -1,16 +1,14 @@
 package fr.cdrochon.smamonolithe.client.query.services;
 
-import fr.cdrochon.smamonolithe.client.query.mapper.ClientMapper;
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
-import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
+import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
+import fr.cdrochon.smamonolithe.client.query.mapper.ClientMapper;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
-import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.queryhandling.QueryHandler;
-import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +16,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Service
 @Transactional
 @Slf4j
@@ -33,18 +30,12 @@ public class ClientEventHandlerService {
     }
     
     /**
-     * On fait un subscribe avec @EventHandler = j'ecoute ce que fait le service ClientQueryCreatedEvent
-     * <p>
-     * EventMessage sert à recuperer toutes les informations sur l'event avec la methode payLoad(). Il est donc plus general que l'event créé par moi-meme
+     * Souscrit à l'événement ClientCreatedEvent sur le bus d'évènement pour sauvegarder le client dans la base de données
      *
-     * @param event l'event GarageQueryCreatedEvent
+     * @param event événement de création d'un client
      */
     @EventHandler
-    public void on(ClientCreatedEvent event, EventMessage<ClientCreatedEvent> eventMessage) {
-        log.info("********************************");
-        log.info("ClientQueryCreatedEvent received !!!!!!!!!!!!!!!!!!!!!!");
-        log.info("Identifiant d'evenement : " + event.getId());
-        log.info("Identifiant d'agregat : " + eventMessage.getIdentifier());
+    public void on(ClientCreatedEvent event) {
         
         try {
             Client client = new Client();
@@ -64,12 +55,11 @@ public class ClientEventHandlerService {
     
     /**
      * Recupere un client avec son id
-     *
-     * @param getClientQueryDTO
+     * @param getClientQueryDTO DTO contenant l'id du client à recuperer
      * @return ClientResponseDTO
      */
     @QueryHandler
-    public ClientResponseDTO on(GetClientDTO getClientQueryDTO) {
+    public ClientQueryDTO on(GetClientDTO getClientQueryDTO) {
         return clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO)
                                .orElseThrow(() -> new EntityNotFoundException("Client non trouvé"));
     }
@@ -80,7 +70,7 @@ public class ClientEventHandlerService {
      * @return List<ClientResponseDTO>
      */
     @QueryHandler
-    public List<ClientResponseDTO> on() {
+    public List<ClientQueryDTO> on() {
         List<Client> clients = clientRepository.findAll();
         return clients.stream().map(ClientMapper::convertClientToClientDTO).collect(Collectors.toList());
     }

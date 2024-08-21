@@ -1,8 +1,7 @@
 package fr.cdrochon.smamonolithe.client.query.dtos;
 
+import fr.cdrochon.smamonolithe.client.command.enums.Pays;
 import lombok.*;
-
-import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -16,5 +15,7 @@ public class ClientAdresseDTO {
     private String complementAdresse;
     private String cp;
     private String ville;
-    private PaysDTO pays;
+    // Enum -> immutable, pas besoin de le convertir en DTO
+    private Pays pays;
+    
 }
