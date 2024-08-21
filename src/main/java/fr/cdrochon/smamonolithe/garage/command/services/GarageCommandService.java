@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.garage.command.services;
 
 import fr.cdrochon.smamonolithe.garage.command.commands.GarageCreateCommand;
-import fr.cdrochon.smamonolithe.garage.command.dtos.GarageRestPostDTO;
+import fr.cdrochon.smamonolithe.garage.command.dtos.GarageCommandDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
@@ -13,32 +13,36 @@ public class GarageCommandService {
     
     private final CommandGateway commandGateway;
     
+    //utiliser une CompletableFuture pour synchroniser l'attente du contrôleur jusqu'à ce que l'événement soit reçu et traité
+    private CompletableFuture<GarageCommandDTO> futureGarageDTO;
+    
     public GarageCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
     
     /**
-     * Genere un UUID aleatoirement pour la creation d'un id de garage
      *
-     * @param garageRestPostDTO DTO contenant les informations du garage a creer
-     * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
+     * @param garageDTO DTO de création d'un garage
+     * @return CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu
      */
-    public CompletableFuture<String> createGarage(GarageRestPostDTO garageRestPostDTO) {
-        
-        return commandGateway.send(new GarageCreateCommand(UUID.randomUUID().toString(),
-                                                           garageRestPostDTO.getNomGarage(),
-                                                           garageRestPostDTO.getMailResp(),
-                                                           garageRestPostDTO.getAdresse()
-                                   ));
-        //                                                                createGarageQueryRequestDTO.getDateQuery()));
+    public CompletableFuture<GarageCommandDTO> createGarage(GarageCommandDTO garageDTO) {
+        //CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu.
+        futureGarageDTO = new CompletableFuture<>();
+        //envoyer la commande de création de garage -> @CommandHandler
+        //CHECKME : est ce ici que l'on créé l'id du garage ?
+        commandGateway.send(new GarageCreateCommand(UUID.randomUUID().toString(), garageDTO.getNomGarage(), garageDTO.getMailResp(), garageDTO.getAdresse()));
+        return futureGarageDTO;
     }
     
-//    public CompletableFuture<String> addClientToGarage(ClientRequestDTO createClientRequestDTO) {
-//        return commandGateway.send(new ClientCreateCommand(createClientRequestDTO.getId(), createClientRequestDTO.getNomClient(),
-//                                                           createClientRequestDTO.getPrenomClient()));
-//    }
-    
-    //    public CompletableFuture<String>
-    
+    /**
+     * Compléter la future dans le service. Méthode appelée par @EventHandler
+     *
+     * @param garageDTO DTO de création d'un garage
+     */
+    public void completeGarageCreation(GarageCommandDTO garageDTO) {
+        if(futureGarageDTO != null) {
+            futureGarageDTO.complete(garageDTO);
+        }
+    }
     
 }
