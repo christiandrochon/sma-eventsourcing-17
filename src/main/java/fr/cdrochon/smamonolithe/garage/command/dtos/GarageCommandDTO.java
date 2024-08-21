@@ -7,26 +7,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO pour la création d'un garage
- * Le nom des attributs est identique à ceux de l'entité Garage pour faciliter la conversion entre les deux.
+ * DTO pour la création d'un garage.
+ * <p>
+ * Le nom des attributs est identique à ceux de l'entité Garage pour faciliter la conversion entre les deux. Il n'y a pas de status à ce stade, il sera géré par les events
  */
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
-public class GarageRestPostDTO {
-
-    //id necessaire si on veut permettre d'afficher les details d'un garage à l'user après sa creation
+public class GarageCommandDTO {
+    
+    //id necessaire pour afficher les details d'un garage à l'user après sa creation
     private String id;
     private String nomGarage;
     private String mailResp;
     private GarageAdresseDTO adresse;
+    //le statut n'est utile que pour l'agrégat, pas besoin de le passer à un user
     
     /**
      * Copie de l'objet AdresseGarage pour éviter l'exposition de la représentation interne
+     *
      * @param adresseGarage AdresseGarage
      */
-    public GarageRestPostDTO(GarageAdresseDTO adresseGarage) {
+    public GarageCommandDTO(GarageAdresseDTO adresseGarage) {
         this.adresse = adresseGarage;
     }
 }

@@ -4,7 +4,7 @@ import lombok.*;
 
 @Getter @Setter @Builder
 @AllArgsConstructor @NoArgsConstructor @ToString
-public class GarageResponseDTO {
+public class GarageQueryDTO {
     
     private String id;
     private String nomGarage;
