@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.garage.query.controllers;
 
 import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
-import fr.cdrochon.smamonolithe.garage.query.dto.GarageResponseDTO;
+import fr.cdrochon.smamonolithe.garage.query.dto.GarageQueryDTO;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,15 +40,15 @@ public class GarageQueryServerController {
      */
     @GetMapping(path = "/garages/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
-    public Mono<GarageResponseDTO> getGarageByIdAsync(@PathVariable String id) {
-        CompletableFuture<GarageResponseDTO> future =
+    public Mono<GarageQueryDTO> getGarageByIdAsync(@PathVariable String id) {
+        CompletableFuture<GarageQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
-                    GarageResponseDTO garage = garageRepository.findById(id)
-                                                               .map(GarageMapperManuel::convertGarageToGarageDTO)
-                                                               .orElse(null);
+                    GarageQueryDTO garage = garageRepository.findById(id)
+                                                            .map(GarageMapperManuel::convertGarageToGarageDTO)
+                                                            .orElse(null);
                     return garage;
                 });
-        Mono<GarageResponseDTO> mono = Mono.fromFuture(future);
+        Mono<GarageQueryDTO> mono = Mono.fromFuture(future);
         return mono;
     }
     
@@ -59,17 +59,17 @@ public class GarageQueryServerController {
      */
     @GetMapping(path = "/garages")
     //    @PreAuthorize("hasAuthority('USER')")
-    public Flux<GarageResponseDTO> getGaragesAsyncServer() {
-        CompletableFuture<List<GarageResponseDTO>> future =
+    public Flux<GarageQueryDTO> getGaragesAsyncServer() {
+        CompletableFuture<List<GarageQueryDTO>> future =
                 CompletableFuture.supplyAsync(() -> {
-                    List<GarageResponseDTO> garages =
+                    List<GarageQueryDTO> garages =
                             garageRepository.findAll()
                                             .stream()
                                             .map(GarageMapperManuel::convertGarageToGarageDTO)
                                             .collect(Collectors.toList());
                     return garages;
                 });
-        Flux<GarageResponseDTO> flux = Flux.fromStream(future.join().stream());
+        Flux<GarageQueryDTO> flux = Flux.fromStream(future.join().stream());
         return flux;
     }
     
