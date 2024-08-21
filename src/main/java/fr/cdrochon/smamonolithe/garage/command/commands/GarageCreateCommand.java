@@ -17,8 +17,7 @@ public class GarageCreateCommand extends GarageBaseCommand<String> {
     
     private final String nomGarage;
     private final String mailResp;
-    private final AdresseGarage adresse;
-    
+    private final GarageAdresseDTO adresse;
     
     /**
      * Copie de l'adresse du garage pour eviter l'exposition de la representation interne
@@ -32,7 +31,7 @@ public class GarageCreateCommand extends GarageBaseCommand<String> {
         super(id);
         this.nomGarage = nomGarage;
         this.mailResp = mailResp;
-        this.adresse = new AdresseGarage(adresse);
+        this.adresse = adresse;
     }
     
     /**
