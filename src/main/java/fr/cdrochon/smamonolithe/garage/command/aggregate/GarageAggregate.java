@@ -46,6 +46,7 @@ public class GarageAggregate {
         if(command.getNomGarage() == null) {
             throw new CreatedGarageException("Le nom du garage doit etre renseigné ! ");
         }
+        
         //conversion dto à entity
         AdresseGarage adresseGarage = new AdresseGarage(command.getAdresse().getNumeroDeRue(),
                                                         command.getAdresse().getRue(),
