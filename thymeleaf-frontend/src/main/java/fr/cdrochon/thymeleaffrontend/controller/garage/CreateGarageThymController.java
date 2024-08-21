@@ -78,7 +78,7 @@ public class CreateGarageThymController {
         //CHECKME : vérifier si le rafraichissement de la liste des garages est nécessaire
         return webClient.post()
                         .uri(externalServiceUrl + "/commands/createGarage")
-                        .headers(httpHeaders -> httpHeaders.setBearerAuth("Bearer " + "getJwtTokenValue()"))
+                        //                        .headers(httpHeaders -> httpHeaders.setBearerAuth("Bearer " + "getJwtTokenValue()"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .bodyValue(convertGarageDTOToJson(garageDTO)) // convertit garage en JSON
@@ -87,25 +87,16 @@ public class CreateGarageThymController {
                         .timeout(Duration.ofSeconds(5000))
                         .flatMap(garagePostDTO -> {
                             if(garagePostDTO == null) {
-                                log.error("Error while creating garage");
-                                return Mono.error(new RuntimeException("Error while creating garage"));
+                                log.error("Erreur lors de la création du garage");
+                                return Mono.error(new RuntimeException("Erreur lors de la création du garage"));
                             }
-                            // renvoi le vue avec les details du garage créé
-//                            model.addAttribute("garage", garagePostDTO);
+                            
                             redirectAttributes.addFlashAttribute("successMessage", "Garage créé avec succès");
                             return Mono.just("redirect:/garage/" + garagePostDTO.getId());
                             // redirection vers la liste des garages
                             //                            redirectAttributes.addFlashAttribute("successMessage", "Garage créé avec succès");
                             //                            return Mono.just("redirect:/garages");
                         })
-                        //                        .doOnSuccess(garagePostDTO -> {
-                        //                            if(garagePostDTO == null) {
-                        //                                log.error("Error while creating garage");
-                        //                                throw new RuntimeException("Error while creating garage");
-                        //                            }
-                        //                            model.addAttribute("garage", garagePostDTO);
-                        //                            Mono.just("redirect:/garage/" + garagePostDTO.getId());
-                        //                        })
                         .onErrorResume(TimeoutException.class, e -> {
                             log.error("Timeout occurred: {}", e.getMessage());
                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
@@ -172,34 +163,4 @@ public class CreateGarageThymController {
                             return Mono.just("redirect:/createGarage");
                         });
     }
-    
-    
-    //    public String createGarage(@Valid @ModelAttribute("garageDTO") GaragePostDTO garageDTO, BindingResult result, RedirectAttributes redirectAttributes,
-    //                               Model model) {
-    //        if(result.hasErrors()) {
-    //            model.addAttribute("garageDTO", garageDTO);
-    //            result.getAllErrors().forEach(err -> log.error("LOG ERROR : {}", err.getDefaultMessage()));
-    //            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + result.getAllErrors().get(0).getDefaultMessage());
-    //            return "garage/createGarageForm";
-    //        }
-    //        try {
-    //
-    //            garageDTO.setAdresse(garageDTO.getAdresse());
-    //            restClient.post().uri(externalServiceUrl + "/commands/createGarage")
-    //                      //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-    //                      //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-    //                      .contentType(MediaType.APPLICATION_JSON)
-    //                      .body(garageDTO).retrieve().toBodilessEntity();
-    //
-    //            //TODO : liste des garages non mis à jour après création d'un garage
-    //            //rafraichissement
-    //            redirectAttributes.addFlashAttribute("successMessage", "Garage created successfully");
-    //            return "redirect:/garages";
-    //        } catch(Exception e) {
-    //            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + e.getMessage());
-    //            redirectAttributes.addFlashAttribute("garageDTO", garageDTO);
-    //            return "redirect:/createGarage";
-    //        }
-    //        }
-    
 }
