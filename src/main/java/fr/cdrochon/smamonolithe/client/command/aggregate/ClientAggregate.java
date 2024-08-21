@@ -5,6 +5,8 @@ import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
+import lombok.Getter;
+import lombok.Setter;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -12,6 +14,7 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
 @Aggregate
+@Setter @Getter
 public class ClientAggregate {
     
     @AggregateIdentifier
@@ -50,9 +53,8 @@ public class ClientAggregate {
         if(createClientCommand.getNomClient() == null) {
             throw new CreatedGarageException("Le nom du client doit etre renseigné ! ");
         }
+
         //publication de l'event
-        System.out.println("**************************");
-        System.out.println("Publication de l'evenement = commandHandler dans aggregate");
         AggregateLifecycle.apply(new ClientCreatedEvent(createClientCommand.getId(),
                                                         createClientCommand.getNomClient(),
                                                         createClientCommand.getPrenomClient(),
@@ -82,6 +84,5 @@ public class ClientAggregate {
         this.telClient = event.getTelClient();
         this.adresseClient = event.getAdresseClient();
         this.clientStatus = event.getClientStatus();
-        //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }
 }

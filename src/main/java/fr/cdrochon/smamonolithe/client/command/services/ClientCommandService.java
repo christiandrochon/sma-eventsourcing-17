@@ -1,7 +1,8 @@
 package fr.cdrochon.smamonolithe.client.command.services;
 
 import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
-import fr.cdrochon.smamonolithe.client.command.dtos.ClientRestPostDTO;
+import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
+import fr.cdrochon.smamonolithe.garage.command.dtos.GarageCommandDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,8 @@ import java.util.concurrent.CompletableFuture;
 public class ClientCommandService {
     
     private final CommandGateway commandGateway;
+    //utiliser une CompletableFuture pour synchroniser l'attente du contrôleur jusqu'à ce que l'événement soit reçu et traité
+    private CompletableFuture<ClientCommandDTO> futureDTO;
     
     public ClientCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
@@ -23,14 +26,28 @@ public class ClientCommandService {
      * @param clientrestPostDTO DTO contenant les informations du client a creer
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
-    public CompletableFuture<String> createClient(ClientRestPostDTO clientrestPostDTO) {
-        System.out.println("ClientCommandService.createClient");
-        return commandGateway.send(new ClientCreateCommand(UUID.randomUUID().toString(),
-                                                           clientrestPostDTO.getNomClient(),
-                                                           clientrestPostDTO.getPrenomClient(),
-                                                           clientrestPostDTO.getMailClient(),
-                                                           clientrestPostDTO.getTelClient(),
-                                                           clientrestPostDTO.getAdresse()
-        ));
+    public CompletableFuture<ClientCommandDTO> createClient(ClientCommandDTO clientrestPostDTO) {
+        //CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu.
+        futureDTO = new CompletableFuture<>();
+        //envoyer la commande de création de garage -> @CommandHandler
+        //CHECKME : est ce ici que l'on créé l'id du garage ?
+        commandGateway.send(new ClientCreateCommand(UUID.randomUUID().toString(),
+                                                    clientrestPostDTO.getNomClient(),
+                                                    clientrestPostDTO.getPrenomClient(),
+                                                    clientrestPostDTO.getMailClient(),
+                                                    clientrestPostDTO.getTelClient(),
+                                                    clientrestPostDTO.getAdresse()));
+        return futureDTO;
+    }
+    
+    /**
+     * Compléter la future dans le service. Méthode appelée par @EventHandler
+     *
+     * @param dto DTO de création d'un garage
+     */
+    public void completeClientCreation(ClientCommandDTO dto) {
+        if(futureDTO != null) {
+            futureDTO.complete(dto);
+        }
     }
 }
