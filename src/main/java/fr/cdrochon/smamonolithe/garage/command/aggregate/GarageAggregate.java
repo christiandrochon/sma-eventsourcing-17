@@ -5,6 +5,8 @@ import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
 import fr.cdrochon.smamonolithe.garage.events.GarageCreatedEvent;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -17,6 +19,7 @@ import org.axonframework.spring.stereotype.Aggregate;
  */
 @Aggregate
 @Slf4j
+@Getter @Setter
 public class GarageAggregate {
     
     @AggregateIdentifier

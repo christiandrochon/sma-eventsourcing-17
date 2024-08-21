@@ -2,7 +2,6 @@ package fr.cdrochon.smamonolithe.garage.query.mapper;
 
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageQueryDTO;
-import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
 import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
 import org.springframework.stereotype.Component;
 
@@ -29,26 +28,4 @@ public class GarageMapperManuel {
         
         return dto;
     }
-    
-    public static Garage convertGarageDTOToGarage(GarageQueryDTO dto){
-        if(dto == null){
-            return null;
-        }
-        
-        Garage garage = new Garage();
-        garage.setIdQuery(dto.getId());
-        garage.setNomGarage(dto.getNomGarage());
-        garage.setMailResponsable(dto.getMailResp());
-        
-        AdresseGarage adresse = new AdresseGarage();
-        adresse.setNumeroDeRue(dto.getAdresse().getNumeroDeRue());
-        adresse.setRue(dto.getAdresse().getRue());
-        adresse.setCp(dto.getAdresse().getCp());
-        adresse.setVille(dto.getAdresse().getVille());
-        
-        garage.setAdresseGarage(adresse);
-        
-        return garage;
-    }
-    
 }
