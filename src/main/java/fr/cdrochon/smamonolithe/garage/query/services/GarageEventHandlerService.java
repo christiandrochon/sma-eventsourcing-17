@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class GarageQueryService {
+public class GarageEventHandlerService {
     
     private final GarageRepository garageQueryRepository;
     
-    public GarageQueryService(GarageRepository garageQueryRepository) {
+    public GarageEventHandlerService(GarageRepository garageQueryRepository) {
         this.garageQueryRepository = garageQueryRepository;
     }
     

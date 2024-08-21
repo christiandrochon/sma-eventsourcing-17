@@ -1,6 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
-import fr.cdrochon.thymeleaffrontend.dtos.client.ClientPostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
 
 @Controller
-public class SearchClientController {
+public class SearchClientThymController {
     
     @Value("${external.service.url}")
     private String externalServiceUrl;
@@ -23,7 +23,7 @@ public class SearchClientController {
     private WebClient webClient;
     private final RestClient restClient;
     
-    public SearchClientController(RestClient restClient) {
+    public SearchClientThymController(RestClient restClient) {
         this.restClient = restClient;
     }
     
@@ -34,14 +34,14 @@ public class SearchClientController {
      */
     @GetMapping(value = "/searchclient")
     public String searchClient(Model model) {
-        List<ClientPostDTO> clients =
+        List<ClientThymDTO> clients =
                 restClient.get()
                           .uri(externalServiceUrl + "/queries/clients")
                           //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                           .retrieve().body(new ParameterizedTypeReference<>() {
                           });
         model.addAttribute("clients", clients);
-        model.addAttribute("clientPostDTO", new ClientPostDTO());
+        model.addAttribute("clientPostDTO", new ClientThymDTO());
         
         return "client/searchClientForm";
     }
@@ -55,7 +55,7 @@ public class SearchClientController {
     @GetMapping("/searchclient/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public String searchClientById(@PathVariable String id, Model model) {
-        ClientPostDTO client = restClient.get().uri(externalServiceUrl + "/queries/clients/" + id)
+        ClientThymDTO client = restClient.get().uri(externalServiceUrl + "/queries/clients/" + id)
                                          //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
                                          //                                  getJwtTokenValue()))
                                          .retrieve().body(new ParameterizedTypeReference<>() {

@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.dossier.query.mapper;
 
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
-import fr.cdrochon.smamonolithe.client.query.dtos.ClientResponseDTO;
+import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierResponseDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierStatusDTO;
 import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
@@ -48,11 +48,11 @@ public class DossierMapper {
         return dto;
     }
     
-    public static ClientResponseDTO convertClientToClientDTO(Dossier dossier){
+    public static ClientQueryDTO convertClientToClientDTO(Dossier dossier){
         if(dossier == null){
             return null;
         }
-        ClientResponseDTO dto = new ClientResponseDTO();
+        ClientQueryDTO dto = new ClientQueryDTO();
         dto.setId(dossier.getClient().getId());
         dto.setNomClient(dossier.getClient().getNomClient());
         dto.setPrenomClient(dossier.getClient().getPrenomClient());
