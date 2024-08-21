@@ -10,7 +10,7 @@ public class ConvertObjectToJson {
      * @param obj Objet à convertir
      * @return Chaîne de caractères JSON
      */
-    public static String convertGarageDTOToJson(Object obj) {
+    public static String convertObjectToJson(Object obj) {
         ObjectMapper objectMapper = new ObjectMapper();
         String json;
         try {
