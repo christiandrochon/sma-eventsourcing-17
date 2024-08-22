@@ -23,9 +23,8 @@ spec:
         io.kompose.service: postgres-monolithe
     spec:
       containers:
-        - args:
-            - -p
-            - "50006"
+        - name: postgres-monolithe
+          image: postgres:16.3
           env:
             - name: POSTGRES_DB
               value: monolithe
@@ -33,7 +32,12 @@ spec:
               value: password
             - name: POSTGRES_USER
               value: keycloak
-          image: postgres:16.3
+          args:
+            - -p
+            - "50006"
+          ports:
+            - containerPort: 50006
+              protocol: TCP
           livenessProbe:
             exec:
               command:
@@ -42,10 +46,6 @@ spec:
               - "pg_isready -U keycloak -d monolithe -p 50006"
             failureThreshold: 5
             periodSeconds: 10
-          name: postgres-monolithe
-          ports:
-            - containerPort: 50006
-              protocol: TCP
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: pg-data-monolithe
