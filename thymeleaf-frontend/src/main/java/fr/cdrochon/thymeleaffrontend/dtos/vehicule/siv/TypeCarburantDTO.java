@@ -13,6 +13,7 @@ import java.util.Collection;
 @ToString
 public class TypeCarburantDTO {
     
-    Collection<String> typeCarburant = Arrays.asList("ESSENCE", "DIESEL", "ELECTRIQUE", "HYBRIDE");
+    @Builder.Default
+    private Collection<String> typeCarburant = Arrays.asList("ESSENCE", "DIESEL", "ELECTRIQUE", "HYBRIDE");
     
 }

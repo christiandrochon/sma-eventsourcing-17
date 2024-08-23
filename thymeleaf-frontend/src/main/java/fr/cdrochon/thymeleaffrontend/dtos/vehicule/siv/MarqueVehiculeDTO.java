@@ -9,8 +9,8 @@ import java.util.Collection;
 
 @Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class MarqueVehiculeDTO {
-    
-    Collection<String> marques = Arrays.asList("ABARTH",
+    @Builder.Default
+    private Collection<String> marques = Arrays.asList("ABARTH",
                                                "ADRIA",
                                                "ALFA_ROMEO",
                                                "AUDI",
