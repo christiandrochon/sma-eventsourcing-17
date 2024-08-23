@@ -8,6 +8,7 @@ metadata:
     io.kompose.service: sma-monolithe
   name: sma-monolithe
 spec:
+#  type: LoadBalancer
   ports:
     - name: "8092"
       port: 8092

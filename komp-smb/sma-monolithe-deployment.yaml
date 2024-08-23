@@ -21,8 +21,8 @@ spec:
         io.kompose.service: sma-monolithe
     spec:
       containers:
-        - image: btrurqnt/sma-monolithe:v1.1
-#        - image: sma-monolithe:v1.1
+#        - image: btrurqnt/sma-monolithe:v1.1
+        - image: sma-monolithe:v1.1
           name: sma-monolithe
           livenessProbe:
             httpGet:
@@ -41,4 +41,6 @@ spec:
               value: keycloak
             - name: SPRING_DATASOURCE_PASSWORD
               value: password
+            - name: SPRING_DATASOURCE_PORT
+              value: "50006" # port exposé par le conteneur qui va vers targetPort de postgres-monolithe-service.yaml
       restartPolicy: Always

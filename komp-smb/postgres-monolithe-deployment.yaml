@@ -36,7 +36,8 @@ spec:
             - -p
             - "50006"
           ports:
-            - containerPort: 50006
+#            - containerPort: 5432 # port exposé par le conteneur qui va vers targetPort de postgres-monolithe-service.yaml
+            - containerPort: 50006 # port exposé par le conteneur
               protocol: TCP
           livenessProbe:
             exec:

@@ -7,7 +7,7 @@ metadata:
   labels:
     io.kompose.service: thymeleaf-frontend
   name: thymeleaf-frontend
-  namespace: smb
+#  namespace: smb
 spec:
   type: LoadBalancer
   ports:

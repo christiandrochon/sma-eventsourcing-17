@@ -21,8 +21,8 @@ spec:
         io.kompose.service: thymeleaf-frontend
     spec:
       containers:
-        - image: btrurqnt/sma-thymeleaf:v1.1
-#        - image: sma-thymeleaf:v1.0
+#        - image: btrurqnt/sma-thymeleaf:v1.1
+        - image: sma-thymeleaf:v1.1
           name: thymeleaf-frontend
           ports:
             - containerPort: 8091

@@ -9,8 +9,8 @@ metadata:
   name: postgres-monolithe
 spec:
   ports:
-    - name: "50006"
-      port: 50006
-      targetPort: 50006
+    - protocol: TCP
+      port: 50006 # port exposé par le service
+      targetPort: 50006 # port interne du pod sur lequel Postgres écoute et qui se connecte à containerPOrt:5432 de postgres-monolithe-deployment.yaml
   selector:
     io.kompose.service: postgres-monolithe
