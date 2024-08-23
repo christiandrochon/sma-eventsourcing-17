@@ -19,7 +19,7 @@ public class ClientThymDTO {
     private String nomClient;
     @Size(min = 2, message = "Le prénom du client doit contenir au moins 2 caractères.")
     private String prenomClient;
-    @Email(message = "Email invalide, vérifiez le format de l'adresse mail.")
+
     @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "Adresse mail invalide. Vérifiez le format de l'adresse mail.")
     private String mailClient;
     @Pattern(regexp = "^\\d{10}$", message = "Le numéro de téléphone doit contenir 10 chiffres. Exemple : 0601020304")

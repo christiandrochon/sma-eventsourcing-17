@@ -13,12 +13,9 @@ import lombok.*;
 public class VehiculePostDTO {
     
     private String idVehicule;
-    @NotBlank(message = "L'immatriculation du véhicule est obligatoire, merci de la renseigner.")
+    
     @Pattern(regexp = "^[A-Z]{2}-\\d{3}-[A-Z]{2}$", message = "Le format requis doit etre de type AA-123-AA")
     private String immatriculationVehicule;
-    @NotBlank(message = "La date de mise en circulation est requise, merci de la renseigner.")
-//    @DateTimeFormat(pattern = "yyyy-MM-dd")
-//    @PastOrPresent(message = "la date de mise en circulation doit être passée ou présente")
     private String dateMiseEnCirculationVehicule;
     
     //    private Instant dateDeValiditeControleTechnique;

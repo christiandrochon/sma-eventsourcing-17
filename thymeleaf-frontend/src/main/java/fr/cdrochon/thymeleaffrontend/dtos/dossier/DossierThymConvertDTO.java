@@ -15,7 +15,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DossierConvertPostDTO {
+public class DossierThymConvertDTO {
     
     private String id;
     @JsonProperty("nomDossier")
