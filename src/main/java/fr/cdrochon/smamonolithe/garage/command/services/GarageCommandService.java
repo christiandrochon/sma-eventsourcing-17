@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.garage.command.dtos.GarageCommandDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,6 +25,7 @@ public class GarageCommandService {
      * @param garageDTO DTO de création d'un garage
      * @return CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu
      */
+    @Transactional
     public CompletableFuture<GarageCommandDTO> createGarage(GarageCommandDTO garageDTO) {
         //CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureGarageDTO = new CompletableFuture<>();

@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.document.command.dtos.DocumentRestDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -23,6 +24,7 @@ public class DocumentCommandService {
      * @param documentRestDTO contenant les informations du document a creer
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
+    @Transactional
     public CompletableFuture<String> createDocument(DocumentRestDTO documentRestDTO) {
         System.out.println("DocumentCommandService.createDocument");
         return commandGateway.send(new DocumentCreateCommand(UUID.randomUUID().toString(),

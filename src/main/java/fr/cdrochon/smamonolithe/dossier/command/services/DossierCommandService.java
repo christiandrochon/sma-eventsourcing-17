@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.dossier.command.dtos.DossierRestDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,6 +22,7 @@ public class DossierCommandService {
      * @param dossierRestDTO DTO contenant les informations du dossier a creer
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
+    @Transactional
     public CompletableFuture<String> createDossier(DossierRestDTO dossierRestDTO) {
         System.out.println("ClientCommandService.createClient");
         

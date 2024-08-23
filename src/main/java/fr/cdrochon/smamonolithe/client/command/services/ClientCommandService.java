@@ -4,6 +4,7 @@ import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -25,6 +26,7 @@ public class ClientCommandService {
      * @param clientrestPostDTO DTO contenant les informations du client a creer
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
+    @Transactional
     public CompletableFuture<ClientCommandDTO> createClient(ClientCommandDTO clientrestPostDTO) {
         //CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureDTO = new CompletableFuture<>();
