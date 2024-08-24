@@ -1,7 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +44,8 @@ public class CreateVehiculeController {
     @GetMapping("/createVehicule")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createVehicule(Model model) {
-        if(!model.containsAttribute("vehiculeDTO")) {
-            model.addAttribute("vehiculePostDTO", new VehiculePostDTO());
+        if(!model.containsAttribute("vehiculePostDTO")) {
+            model.addAttribute("vehiculePostDTO", new VehiculeThymDTO());
         }
         //chargement des listes de type de document et de status de vehicule
         model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
@@ -69,7 +69,7 @@ public class CreateVehiculeController {
      */
     @PostMapping(value = "/createVehicule")
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String createVehicule(@Valid @ModelAttribute("vehiculePostDTO") VehiculePostDTO vehiculePostDTO,
+    public String createVehicule(@Valid @ModelAttribute("vehiculePostDTO") VehiculeThymDTO vehiculePostDTO,
                                  BindingResult result,
                                  RedirectAttributes redirectAttributes,
                                  Model model) {
