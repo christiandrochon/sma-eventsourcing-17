@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.client.command.aggregate;
 
 import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
-import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
+import fr.cdrochon.smamonolithe.client.query.entities.ClientStatus;
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;

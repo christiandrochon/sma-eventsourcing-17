@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.client.query.dtos;
 
-import fr.cdrochon.smamonolithe.client.command.enums.ClientStatus;
+import fr.cdrochon.smamonolithe.client.query.entities.ClientStatus;
 import lombok.*;
 
 @Getter
