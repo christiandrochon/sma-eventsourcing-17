@@ -25,8 +25,6 @@ public class DossierEventHandler {
     public void on(DossierCreatedEvent event) {
         
         log.info("Received event: {}", event);
-        
-        Client c = event.getClient();
         //conversion du dto du dossier en entité dossier
         DossierCommandDTO dossierDTO = new DossierCommandDTO(event.getId(),
                                                              event.getNomDossier(),

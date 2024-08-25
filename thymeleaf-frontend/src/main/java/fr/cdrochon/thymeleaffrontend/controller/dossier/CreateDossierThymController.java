@@ -111,7 +111,7 @@ public class CreateDossierThymController {
                                     .bodyValue(jsonPayload)
                                     .retrieve()
                                     .bodyToMono(DossierThymConvertDTO.class)
-                                    .timeout(Duration.ofSeconds(3000))
+                                    .timeout(Duration.ofSeconds(30))
                                     .flatMap(dossier -> {
                                         if(dossier == null) {
                                             log.error("Erreur lors de la création du dossier");
@@ -199,147 +199,6 @@ public class CreateDossierThymController {
                                     });
                 });
     }
-    //    @PostMapping(value = "/createDossier")
-    //    //    @PreAuthorize("hasAuthority('ADMIN')")
-    //    public Mono<String> createDossierAsync(@Valid @ModelAttribute("dossierDTO") DossierThymDTO dossierThymDTO, BindingResult result,
-    //                                           RedirectAttributes redirectAttributes,
-    //                                           Model model) {
-    //        if(result.hasErrors()) {
-    //            result.getAllErrors().forEach(err -> log.error("LOG ERROR : {}", err.getDefaultMessage()));
-    //            model.addAttribute("dossierDTO", dossierThymDTO);
-    //            modelAttributesError(model);
-    //            //                        modelAttributesError(dossierThymDTO, model);
-    //            return Mono.just("dossier/createDossierForm");
-    //        }
-    //        // Numéro d'immatriculation déjà existant
-    //        if(immatriculationExiste(dossierThymDTO.getVehicule().getImmatriculationVehicule())
-    //                && dossierThymDTO.getVehicule().getImmatriculationVehicule() != null) {
-    //            //                        modelAttributesError(dossierThymDTO, model);
-    //            model.addAttribute("dossierDTO", dossierThymDTO);
-    //            modelAttributesError(model);
-    //            model.addAttribute("immatriculationExisteError",
-    //                               "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
-    //            return Mono.just("dossier/createDossierForm");
-    //        }
-    //
-    //        DossierThymConvertDTO dossierConvertThymDTO = convertDossierDTO(dossierThymDTO);
-    //        String jsonPayload = convertObjectToJson(dossierConvertThymDTO);
-    //        log.info("JSON Payload: {}", jsonPayload);
-    //
-    //        return webClient.post()
-    //                        .uri("/commands/createDossier")
-    //                        .contentType(MediaType.APPLICATION_JSON)
-    //                        .accept(MediaType.APPLICATION_JSON)
-    //                        .bodyValue(jsonPayload)
-    //                        //                        .bodyValue(convertObjectToJson(dossierConvertThymDTO)) // convertit obj en JSON
-    //                        .retrieve()
-    //                        .bodyToMono(DossierThymConvertDTO.class)// convertit en objet
-    //                        .timeout(Duration.ofSeconds(5000))
-    //                        .flatMap(dossier -> {
-    //                            if(dossier == null) {
-    //                                log.error("Erreur lors de la création du dossier");
-    //                                return Mono.error(new RuntimeException("Erreur lors de la création du dossier"));
-    //                            }
-    //                            log.info("Response: {}", dossier);
-    //                            log.info("Dossier created successfully");
-    //                            redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
-    //                            return Mono.just("redirect:/dossier/" + dossier.getId());
-    //                            // redirection vers la liste des clients
-    //                            //                            redirectAttributes.addFlashAttribute("successMessage", "Client créé avec succès");
-    //                            //                            return Mono.just("redirect:/dossier/" + dossier.getId());
-    //                        })
-    //                        .onErrorResume(TimeoutException.class, e -> {
-    //                            log.error("Timeout occurred: {}", e.getMessage());
-    //                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                            redirectAttributes.addFlashAttribute("errorMessage", "Tempes de requête dépassé. Veuillez réessayer plus tard.");
-    //                            redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");
-    //                            return Mono.just("redirect:/error");
-    //                        })
-    //                        .onErrorResume(WebClientResponseException.class, e -> {
-    //                            if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-    //                                log.error("400 Bad Request: {}", e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                                redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
-    //                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //                                return Mono.just("redirect:/error");
-    //                            } else if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-    //                                log.error("401 Internal Server Error: {}", e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                                redirectAttributes.addFlashAttribute("errorMessage", "Accès non autorisé. " + e
-    //                                        .getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //                                return Mono.just("redirect:/error");
-    //                            } else if(e.getStatusCode() == HttpStatus.FORBIDDEN) {
-    //                                log.error("403 Forbidden: {}", e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                                redirectAttributes.addFlashAttribute("errorMessage", "Accès interdit. " + e
-    //                                        .getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //                                return Mono.just("redirect:/error");
-    //
-    //                            } else if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
-    //                                log.error("404 Not Found: {}", e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                                redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e
-    //                                        .getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //                                return Mono.just("redirect:/error");
-    //                            } else if(e.getStatusCode() == HttpStatus.UNSUPPORTED_MEDIA_TYPE) {
-    //                                log.error("415 Unsupported Media Type: {}", e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                                redirectAttributes.addFlashAttribute("errorMessage",
-    //                                                                     "Type de média non supporté. " + e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //                                return Mono.just("redirect:/error");
-    //                            } else if(e.getStatusCode() == HttpStatus.LOCKED) {
-    //                                log.error("423 Forbidden: {}", e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                                redirectAttributes.addFlashAttribute("errorMessage",
-    //                                                                     "Ressource verrouillée. " + e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //                                return Mono.just("redirect:/error");
-    //                            } else if(e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
-    //                                log.error("500 Internal Server Error: {}", e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                                redirectAttributes.addFlashAttribute("errorMessage",
-    //                                                                     "Erreur interne de serveur. " + e.getResponseBodyAsString());
-    //                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //                                return Mono.just("redirect:/error");
-    //                            } else if(e.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
-    //                                log.error("503 Internal Server Error: {}", e.getMessage());
-    //                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //                                redirectAttributes.addFlashAttribute("errorMessage", "Service indisponible : " + e.getMessage());
-    //                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //                                return Mono.just("redirect:/error");
-    //                            }
-    //                            //                                             handleWebClientResponseException(e, redirectAttributes,
-    //                            //                                             dossierThymDTO);
-    //                            // reaffiche le formualire de création de client avec les données saisies par l'user
-    //                            redirectAttributes.addFlashAttribute("dossierDTO", dossierThymDTO);
-    //                            return Mono.just("redirect:/createDossier");
-    //                        });
-    //    }
-    
-    private DossierThymDTO convertJsonToDossierThymDTO(String jsonResponse) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            log.info("JSON Response: {}", jsonResponse);
-            return objectMapper.readValue(jsonResponse, DossierThymDTO.class);
-        } catch(JsonProcessingException e) {
-            log.error("Error converting JSON response to DossierThymDTO: {}", e.getMessage());
-            return null;
-        }
-    }
-    
-    private void handleWebClientResponseException(WebClientResponseException e, RedirectAttributes redirectAttributes, DossierThymDTO dossierThymDTO) {
-        //        HttpStatus status = e.getStatus();
-        String responseBody = e.getResponseBodyAsString();
-        //        log.error("{}: {}", statusCode, responseBody);
-        redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-        redirectAttributes.addFlashAttribute("errorMessage", responseBody);
-        redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-        redirectAttributes.addFlashAttribute("dossierDTO", dossierThymDTO);
-    }
     
     /**
      * Ajoute les attributs du modèle pour les erreurs de validation.
@@ -356,86 +215,6 @@ public class CreateDossierThymController {
         model.addAttribute("valeurClientStatutParDefaut", ClientStatusDTO.valeurClientStatutParDefaut());
     }
     
-    
-    //        private void modelAttributesError(@ModelAttribute("dossierDTO") @Valid DossierThymDTO dossierPostDTO, Model model) {
-    //            model.addAttribute("dossierStatuses", List.of(DossierStatusDTO.values()));
-    //            model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
-    //            model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
-    //            model.addAttribute("paysList", List.of(PaysDTO.values()));
-    //            model.addAttribute("dossierDTO", dossierPostDTO);
-    //        }
-    
-    //    @PostMapping(value = "/createDossier")
-    //    //    @PreAuthorize("hasAuthority('ADMIN')")
-    //    public String createDocument(@Valid @ModelAttribute("dossierDTO") DossierThymDTO dossierPostDTO, BindingResult result,
-    //                                 RedirectAttributes redirectAttributes, Model model) {
-    //        if(result.hasErrors()) {
-    //            result.getAllErrors().forEach(err -> log.error("LOG ERROR : {}", err.getDefaultMessage()));
-    //            modelAttributesError(dossierPostDTO, model);
-    //            //ce return conserve l'etat du form et permet de reafficher les erreurs de validation courantes
-    //            return "dossier/createDossierForm";
-    //        }
-    //        try {
-    //            if(immatriculationExiste(dossierPostDTO.getVehicule().getImmatriculationVehicule()) && dossierPostDTO.getVehicule()
-    //                                                                                                                 .getImmatriculationVehicule() != null) {
-    //                // Numéro d'immatriculation déjà existant
-    //                modelAttributesError(dossierPostDTO, model);
-    //                model.addAttribute("immatriculationExisteError",
-    //                                   "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
-    //                return "dossier/createDossierForm";
-    //            }
-    //
-    //            //conversion du vehciuel à cause la date de mise en circulation
-    //            VehiculeDateConvertDTO vehiculeDateConvertDTO = new VehiculeDateConvertDTO();
-    //            vehiculeDateConvertDTO.setImmatriculationVehicule(dossierPostDTO.getVehicule().getImmatriculationVehicule());
-    //            vehiculeDateConvertDTO.setVehiculeStatus(dossierPostDTO.getVehicule().getVehiculeStatus());
-    //            // conversion de la date de mise en circulation du vehicule
-    //            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    //            String dateMiseEnCirculationVehicule = dossierPostDTO.getVehicule().getDateMiseEnCirculationVehicule();
-    //            LocalDate localDate = LocalDate.parse(dateMiseEnCirculationVehicule, formatter);
-    //            Instant date = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-    //            vehiculeDateConvertDTO.setDateMiseEnCirculationVehicule(date);
-    //
-    //            //conversion du dossier
-    //            DossierConvertPostDTO dossierConvertPostDTO = new DossierConvertPostDTO();
-    //            dossierConvertPostDTO.setNomDossier(dossierPostDTO.getNomDossier());
-    //            dossierConvertPostDTO.setDateCreationDossier(Instant.now());
-    //            dossierConvertPostDTO.setDateModificationDossier(Instant.now());
-    //            dossierConvertPostDTO.setDossierStatus(dossierPostDTO.getDossierStatus());
-    //            dossierConvertPostDTO.setClient(dossierPostDTO.getClient());
-    //            dossierConvertPostDTO.setVehicule(vehiculeDateConvertDTO);
-    //
-    //            //appel du ms dossier pour la création du dossier
-    //            webClient.post()
-    //                     .uri(externalServiceUrl + "/commands/createDossier")
-    //                     .contentType(MediaType.APPLICATION_JSON)
-    //                     .bodyValue(dossierConvertPostDTO)
-    //                     .retrieve()
-    //                     .bodyToMono(String.class)
-    //                     .block();
-    //
-    //            log.info("Dossier created successfully");
-    //            redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
-    //            redirectAttributes.addFlashAttribute("urlRedirection", "/dossiers");
-    //            redirectAttributes.addFlashAttribute("alertClass", "alert-success");
-    //            return "redirect:/success";
-    //            //            return "redirect:/dossiers";
-    //
-    //        } catch(Exception e) {
-    //            //redirect : on passe ue url, principalement utilisées après un succès (POST-REDIRECT-GET) pour éviter la répétition de soumissions du
-    //            formulaire
-    //            redirectAttributes.addFlashAttribute("errorMessage",
-    //                                                 "Erreur de création de dossier. Merci de communiquer le contenu de l'erreur suivante au développeur :
-    //                                                 '" + e.getMessage() + "'");
-    //            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-    //            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-    //            redirectAttributes.addFlashAttribute("dossierDTO", dossierPostDTO);
-    //            //            return "redirect:/createDossier";
-    //            return "redirect:/error";
-    //
-    //        }
-    //    }
-    
     /**
      * Conversion de DossierThymDTO en DossierThymConvertDTO
      * <p></p>
@@ -448,20 +227,17 @@ public class CreateDossierThymController {
        
         try {
             
-            //conversion du vehciuel à cause la date de mise en circulation
+            //conversion du vehicule (à cause des dates Instant <> String)
             VehiculeDateConvertDTO vehiculeDateConvertDTO = new VehiculeDateConvertDTO();
             vehiculeDateConvertDTO.setIdVehicule(dossierThymDTO.getVehicule().getIdVehicule());
             vehiculeDateConvertDTO.setImmatriculationVehicule(dossierThymDTO.getVehicule().getImmatriculationVehicule());
             vehiculeDateConvertDTO.setVehiculeStatus(dossierThymDTO.getVehicule().getVehiculeStatus());
+            
             // conversion de la date de mise en circulation du vehicule
             //reconvertir la date de mise en circulation du véhicule en Instant , d'abord en LocalDate de type 'yyyy-MM-dd', puis réellement en Instant
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate localDate = LocalDate.parse(dossierThymDTO.getVehicule().getDateMiseEnCirculationVehicule(), formatter);
             Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-            //        String dateMiseEnCirculationVehicule = dossierThymDTO.getVehicule().getDateMiseEnCirculationVehicule();
-            //        LocalDate localDate = LocalDate.parse(dateMiseEnCirculationVehicule, formatter);
-            //        Instant date = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-
             vehiculeDateConvertDTO.setDateMiseEnCirculationVehicule(instant);
             
             // mapper du client
@@ -478,24 +254,11 @@ public class CreateDossierThymController {
             DossierThymConvertDTO dossierConvertPostDTO = new DossierThymConvertDTO();
             dossierConvertPostDTO.setId(dossierThymDTO.getId());
             dossierConvertPostDTO.setNomDossier(dossierThymDTO.getNomDossier());
+            dossierConvertPostDTO.setDateCreationDossier(Instant.now());
+            dossierConvertPostDTO.setDateModificationDossier(Instant.now());
             dossierConvertPostDTO.setDossierStatus(dossierThymDTO.getDossierStatus());
             dossierConvertPostDTO.setClient(clientThymDTO);
             dossierConvertPostDTO.setVehicule(vehiculeDateConvertDTO);
-            
-            dossierConvertPostDTO.setDateCreationDossier(Instant.now());
-            dossierConvertPostDTO.setDateModificationDossier(Instant.now());
-            
-            //        //conversion de la date de creation du dossier
-            //        String dateCreationDossier = dossierThymDTO.getDateCreationDossier();
-            //        LocalDate localDateCreationDossier = LocalDate.parse(dateCreationDossier, formatter);
-            //        Instant dateCreation = localDateCreationDossier.atStartOfDay().toInstant(ZoneOffset.UTC);
-            //        dossierConvertPostDTO.setDateCreationDossier(dateCreation);
-            //        //conversion de la date de modification du dossier
-            //        String dateModificationDossier = dossierThymDTO.getDateModificationDossier();
-            //        LocalDate localDateModificationDossier = LocalDate.parse(dateModificationDossier, formatter);
-            //        Instant dateModification = localDateModificationDossier.atStartOfDay().toInstant(ZoneOffset.UTC);
-            //        dossierConvertPostDTO.setDateModificationDossier(dateModification);
-            
             
             return dossierConvertPostDTO;
         } catch(Exception e) {
@@ -504,51 +267,7 @@ public class CreateDossierThymController {
         }
     }
     
-    /**
-     * Convertion de DossierThymConvertDTO en DossierThymDTO
-     *
-     * @param dossierConvertDTO DossierThymConvertDTO
-     * @return DossierThymDTO
-     */
-    private DossierThymDTO convertToDossierThymDto(DossierThymConvertDTO dossierConvertDTO) {
-        
-        VehiculeThymDTO vehiculeThymDTO = new VehiculeThymDTO();
-        vehiculeThymDTO.setIdVehicule(dossierConvertDTO.getVehicule().getIdVehicule());
-        vehiculeThymDTO.setImmatriculationVehicule(dossierConvertDTO.getVehicule().getImmatriculationVehicule());
-        vehiculeThymDTO.setVehiculeStatus(dossierConvertDTO.getVehicule().getVehiculeStatus());
-        //date vehicule date de mise en circulation
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
-        Instant dateMiseEnCirculationVehicule = dossierConvertDTO.getVehicule().getDateMiseEnCirculationVehicule();
-        String localDate = dateMiseEnCirculationVehicule.atOffset(ZoneOffset.UTC).toLocalDate().format(formatter);
-        vehiculeThymDTO.setDateMiseEnCirculationVehicule(localDate);
-        
-        ClientThymDTO clientThymDTO = new ClientThymDTO();
-        clientThymDTO.setId(dossierConvertDTO.getClient().getId());
-        clientThymDTO.setNomClient(dossierConvertDTO.getClient().getNomClient());
-        clientThymDTO.setPrenomClient(dossierConvertDTO.getClient().getPrenomClient());
-        clientThymDTO.setMailClient(dossierConvertDTO.getClient().getMailClient());
-        clientThymDTO.setTelClient(dossierConvertDTO.getClient().getTelClient());
-        clientThymDTO.setAdresse(dossierConvertDTO.getClient().getAdresse());
-        clientThymDTO.setClientStatus(dossierConvertDTO.getClient().getClientStatus());
-        
-        
-        DossierThymDTO dossierThymDTO = new DossierThymDTO();
-        dossierThymDTO.setId(dossierConvertDTO.getId());
-        dossierThymDTO.setNomDossier(dossierConvertDTO.getNomDossier());
-        
-        //date de creation du dossier
-        Instant dateCreationDossier = dossierConvertDTO.getDateCreationDossier();
-        String dateCreationDossierLocale = dateCreationDossier.atOffset(ZoneOffset.UTC).toLocalDate().format(formatter);
-        dossierThymDTO.setDateCreationDossier(dateCreationDossierLocale);
-        
-        //dossier date de modification du dossier
-        String dateModificationDossier = dossierConvertDTO.getDateModificationDossier().atOffset(ZoneOffset.UTC).toLocalDate().format(formatter);
-        dossierThymDTO.setDateModificationDossier(dateModificationDossier);
-        dossierThymDTO.setDossierStatus(dossierConvertDTO.getDossierStatus());
-        dossierThymDTO.setClient(clientThymDTO);
-        dossierThymDTO.setVehicule(vehiculeThymDTO);
-        return dossierThymDTO;
-    }
+
     
     /**
      * Empêche la création d'un vehicule si l'immatriculation existe déjà. Vérifie si un vehicule existe en fonction de son immatriculation.

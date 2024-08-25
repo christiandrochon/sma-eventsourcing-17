@@ -1,10 +1,8 @@
 package fr.cdrochon.smamonolithe.dossier.command.dtos;
 
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
-import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.dossier.query.entities.DossierStatus;
 import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
-import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import lombok.*;
 
 import java.time.Instant;

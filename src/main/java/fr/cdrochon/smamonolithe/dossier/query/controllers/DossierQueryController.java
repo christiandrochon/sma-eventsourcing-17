@@ -4,6 +4,7 @@ import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierQueryDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
 import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierQueryMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
+import lombok.val;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
@@ -43,9 +44,9 @@ public class DossierQueryController {
     public Mono<DossierQueryDTO> getDossierByIdAsync(@PathVariable String id) {
         CompletableFuture<DossierQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
-                    DossierQueryDTO dossier = dossierRepository.findById(id)
-                                                               .map(DossierQueryMapper::convertDossierToDossierDTO)
-                                                               .orElse(null);
+                    val dossier = dossierRepository.findById(id)
+                                                   .map(DossierQueryMapper::convertDossierToDossierDTO)
+                                                   .orElse(null);
                     return dossier;
                 });
         Mono<DossierQueryDTO> mono = Mono.fromFuture(future);

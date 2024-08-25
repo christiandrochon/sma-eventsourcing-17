@@ -30,14 +30,11 @@ public class DossierEventHandlerService {
     private final DossierRepository dossierRepository;
     private final ClientRepository clientRepository;
     private final VehiculeRepository vehiculeRepository;
-    private final DossierQueryMapper dossierMapper;
     
-    public DossierEventHandlerService(DossierRepository dossierRepository, ClientRepository clientRepository, VehiculeRepository vehiculeRepository,
-                                      DossierQueryMapper dossierMapper) {
+    public DossierEventHandlerService(DossierRepository dossierRepository, ClientRepository clientRepository, VehiculeRepository vehiculeRepository) {
         this.dossierRepository = dossierRepository;
         this.clientRepository = clientRepository;
         this.vehiculeRepository = vehiculeRepository;
-        this.dossierMapper = dossierMapper;
     }
     
     /**

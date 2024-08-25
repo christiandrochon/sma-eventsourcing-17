@@ -8,13 +8,14 @@ public enum DossierStatusThymDTO {
     
     /**
      * Cree une instance de l'enum à partir de la valeur. Permet egalement de prendre en charge la casse des valeurs.
-     * @param value
-     * @return
+     *
+     * @param value la valeur de l'enum
+     * @return l'enum correspondant à la valeur
      */
     @JsonCreator
     public static DossierStatusThymDTO forValue(String value) {
-        for (DossierStatusThymDTO status : values()) {
-            if (status.name().equalsIgnoreCase(value)) {
+        for(DossierStatusThymDTO status : values()) {
+            if(status.name().equalsIgnoreCase(value)) {
                 return status;
             }
         }
@@ -23,7 +24,8 @@ public enum DossierStatusThymDTO {
     
     /**
      * Permet de retourner le libellé de l'enum
-     * @return
+     *
+     * @return le libellé de l'enum
      */
     @JsonValue
     public String getLabel() {
@@ -32,7 +34,8 @@ public enum DossierStatusThymDTO {
     
     /**
      * Permet de retourner la valeur par défaut
-     * @return
+     *
+     * @return la valeur par défaut
      */
     public static DossierStatusThymDTO valeurDossierStatutParDefaut() {
         return OUVERT; // Retourne la valeur par défaut

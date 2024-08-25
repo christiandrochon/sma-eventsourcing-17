@@ -2,7 +2,6 @@ package fr.cdrochon.smamonolithe.dossier.command.dtos;
 
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
-import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import org.springframework.stereotype.Component;
@@ -54,52 +53,6 @@ public class DossierCommandMapper {
         client.setClientStatus(clientCommandDTO.getClientStatus());
         
         return client;
-    }
-    
-    /**
-     * Convertit le dto du dossier en entité dossier
-     *
-     * @param dossierCommandDTO dto du dossier
-     * @return entité dossier
-     */
-    public static Dossier convertDossierDtoToDossier(DossierCommandDTO dossierCommandDTO) {
-        if(dossierCommandDTO == null) {
-            return null;
-        }
-        
-        Dossier dossier = new Dossier();
-        dossier.setId(dossierCommandDTO.getId());
-        dossier.setNomDossier(dossierCommandDTO.getNomDossier());
-        dossier.setDateCreationDossier(dossierCommandDTO.getDateCreationDossier());
-        dossier.setDateModificationDossier(dossierCommandDTO.getDateModificationDossier());
-        dossier.setClient(convertClientDtoToClient(dossierCommandDTO.getClient()));
-        dossier.setVehicule(convertVehiculeDtoToVehicule(dossierCommandDTO.getVehicule()));
-        dossier.setDossierStatus(dossierCommandDTO.getDossierStatus());
-        
-        return dossier;
-    }
-    
-    /**
-     * Convertit le dossier en dto du dossier
-     *
-     * @param dossier dossier
-     * @return dto du dossier
-     */
-    public static DossierCommandDTO convertDossierToDossierDto(Dossier dossier) {
-        if(dossier == null) {
-            return null;
-        }
-        
-        DossierCommandDTO dossierCommandDTO = new DossierCommandDTO();
-        dossierCommandDTO.setId(dossier.getId());
-        dossierCommandDTO.setNomDossier(dossier.getNomDossier());
-        dossierCommandDTO.setDateCreationDossier(dossier.getDateCreationDossier());
-        dossierCommandDTO.setDateModificationDossier(dossier.getDateModificationDossier());
-        dossierCommandDTO.setClient(convertClientToClientDTO(dossier.getClient()));
-        dossierCommandDTO.setVehicule(convertVehiculeToVehiculeDTO(dossier.getVehicule()));
-        dossierCommandDTO.setDossierStatus(dossier.getDossierStatus());
-        
-        return dossierCommandDTO;
     }
     
     /**

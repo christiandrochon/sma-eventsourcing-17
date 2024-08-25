@@ -22,15 +22,16 @@ public class DossierCreatedEvent extends DossierBaseEvent<String> {
     
     /**
      * Ajout des id de vehicule et de client
-     * @param id
-     * @param nomDossier
-     * @param dateCreationDossier
-     * @param dateModificationDossier
-     * @param client
-     * @param vehicule
-     * @param dossierStatus
-     * @param clientId
-     * @param vehiculeId
+     *
+     * @param id                      id du dossier
+     * @param nomDossier              nom du dossier
+     * @param dateCreationDossier     date de création du dossier
+     * @param dateModificationDossier date de modification du dossier
+     * @param client                  client du dossier
+     * @param vehicule                vehicule du dossier
+     * @param dossierStatus           status du dossier
+     * @param clientId                id du client
+     * @param vehiculeId              id du vehicule
      */
     public DossierCreatedEvent(String id, String nomDossier, Instant dateCreationDossier, Instant dateModificationDossier, Client client, Vehicule vehicule,
                                DossierStatus dossierStatus, String clientId, String vehiculeId) {
