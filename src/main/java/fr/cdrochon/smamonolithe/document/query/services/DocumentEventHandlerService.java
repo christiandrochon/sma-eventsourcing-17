@@ -1,17 +1,16 @@
 package fr.cdrochon.smamonolithe.document.query.services;
 
-import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.document.events.DocumentCreatedEvent;
-import fr.cdrochon.smamonolithe.document.query.dtos.DocumentResponseDTO;
+import fr.cdrochon.smamonolithe.document.query.dtos.DocumentQueryDTO;
 import fr.cdrochon.smamonolithe.document.query.dtos.GetDocumentDTO;
 import fr.cdrochon.smamonolithe.document.query.entities.Document;
-import fr.cdrochon.smamonolithe.document.query.mapper.DocumentMapper;
+import fr.cdrochon.smamonolithe.document.query.mapper.DocumentQueryMapper;
 import fr.cdrochon.smamonolithe.document.query.repositories.DocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.queryhandling.QueryHandler;
-import org.axonframework.queryhandling.QueryUpdateEmitter;
+import org.hibernate.TransactionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @Slf4j
 public class DocumentEventHandlerService {
     
@@ -31,18 +29,17 @@ public class DocumentEventHandlerService {
     }
     
     /**
-     * On fait un subscribe avec @EventHandler = j'ecoute ce que fait le service DocumentCreatedEvent
-     * <p>
-     * EventMessage sert à recuperer toutes les informations sur l'event avec la methode payLoad(). Il est donc plus general que l'event créé par moi-meme
+     * On fait un subscribe avec @EventHandler = j'ecoute ce que fait le service DocumentQueryCreatedEvent
      *
-     * @param event l'event GarageQueryCreatedEvent
+     * @param event        DocumentCreatedEvent event qui est declenché lors de la creation d'un document
+     * @param eventMessage EventMessage<DocumentCreatedEvent> eventMessage
      */
     @EventHandler
-    public void on(DocumentCreatedEvent event, EventMessage<DocumentCreatedEvent> eventMessage) {
+    @Transactional
+    public void on(DocumentCreatedEvent event) {
         log.info("********************************");
-        log.info("DocumentCreatedEvent received !!!!!!!!!!!!!!!!!!!!!!");
-        log.info("Identifiant d'evenement : " + event.getId());
-        log.info("Identifiant d'agregat : " + eventMessage.getIdentifier());
+        log.info("SAUVEGARDE DU DOCUMENT");
+        
         
         try {
             Document document = new Document();
@@ -54,9 +51,12 @@ public class DocumentEventHandlerService {
             document.setDateCreationDocument(event.getDateCreationDocument());
             document.setDateModificationDocument(event.getDateModificationDocument());
             document.setDocumentStatus(event.getDocumentStatus());
+            
             documentRepository.save(document);
+            
         } catch(Exception e) {
             System.out.println("EXTRACT DOCUMENT ERREUR : " + e.getMessage());
+            throw new TransactionException("Erreur lors de la sauvegarde du document");
         }
     }
     
@@ -67,9 +67,9 @@ public class DocumentEventHandlerService {
      * @return DocumentResponseDTO contenant les informations du document
      */
     @QueryHandler
-    public DocumentResponseDTO on(GetDocumentDTO getDocumentDTO) {
+    public DocumentQueryDTO on(GetDocumentDTO getDocumentDTO) {
         return documentRepository.findById(getDocumentDTO.getId())
-                                 .map(DocumentMapper::convertDocumentToDocumentDTO)
+                                 .map(DocumentQueryMapper::convertDocumentToDocumentDTO)
                                  .orElseThrow(() -> new EntityNotFoundException("Document not found"));
     }
     
@@ -79,8 +79,8 @@ public class DocumentEventHandlerService {
      * @return List<DocumentResponseDTO> contenant les informations de tous les documents
      */
     @QueryHandler
-    public List<DocumentResponseDTO> on() {
+    public List<DocumentQueryDTO> on() {
         List<Document> documents = documentRepository.findAll();
-        return documents.stream().map(DocumentMapper::convertDocumentToDocumentDTO).collect(Collectors.toList());
+        return documents.stream().map(DocumentQueryMapper::convertDocumentToDocumentDTO).collect(Collectors.toList());
     }
 }
