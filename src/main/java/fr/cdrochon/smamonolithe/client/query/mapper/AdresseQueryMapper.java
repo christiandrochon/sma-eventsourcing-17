@@ -3,7 +3,7 @@ package fr.cdrochon.smamonolithe.client.query.mapper;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 
-public class AdresseMapper {
+public class AdresseQueryMapper {
 
     public static ClientAdresseDTO convertAdresseToClientAdresseDTO(AdresseClient adresseClient) {
         if(adresseClient == null) {

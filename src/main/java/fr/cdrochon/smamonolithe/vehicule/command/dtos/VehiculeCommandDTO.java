@@ -1,18 +1,19 @@
-package fr.cdrochon.smamonolithe.vehicule.query.dtos;
+package fr.cdrochon.smamonolithe.vehicule.command.dtos;
 
 import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class VehiculeResponseDTO {
-    
-    private String idVehicule;
+@AllArgsConstructor
+@Data
+@Builder
+public class VehiculeCommandDTO {
+
+    private String id;
     private String immatriculationVehicule;
     private Instant dateMiseEnCirculationVehicule;
     //    private Instant dateDeValiditeControleTechnique;

@@ -2,26 +2,39 @@ package fr.cdrochon.thymeleaffrontend.dtos.dossier;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
 
-public enum DossierStatusDTO {
+public enum DossierStatusThymDTO {
     OUVERT, CLOTURE, REOUVERT, ANNULE, REFUSE, MODIFIE, VALIDE, REJET, ACCEPTE, TRAITE, ENVOYE, RECU, RETOURNE, ARCHIVE, DESARCHIVE, SUPPRIME, RESTAURE, PURGE;
     
+    /**
+     * Cree une instance de l'enum à partir de la valeur. Permet egalement de prendre en charge la casse des valeurs.
+     * @param value
+     * @return
+     */
     @JsonCreator
-    public static DossierStatusDTO forValue(String value) {
-        for (DossierStatusDTO status : values()) {
+    public static DossierStatusThymDTO forValue(String value) {
+        for (DossierStatusThymDTO status : values()) {
             if (status.name().equalsIgnoreCase(value)) {
                 return status;
             }
         }
         return OUVERT; // Default value for unknown enum values
     }
+    
+    /**
+     * Permet de retourner le libellé de l'enum
+     * @return
+     */
     @JsonValue
     public String getLabel() {
         return this.name();
     }
     
-    public static DossierStatusDTO valeurDossierStatutParDefaut() {
+    /**
+     * Permet de retourner la valeur par défaut
+     * @return
+     */
+    public static DossierStatusThymDTO valeurDossierStatutParDefaut() {
         return OUVERT; // Retourne la valeur par défaut
     }
 }

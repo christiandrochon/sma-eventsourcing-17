@@ -25,13 +25,13 @@ import java.util.List;
 
 @Controller
 @Slf4j
-public class CreateVehiculeController {
+public class CreateVehiculeThymController {
     
     @Value("${external.service.url}")
     private String externalServiceUrl;
     
     private final RestClient restClient;
-    public CreateVehiculeController(RestClient restClient) {
+    public CreateVehiculeThymController(RestClient restClient) {
         this.restClient = restClient;
     }
     

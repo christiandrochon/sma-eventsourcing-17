@@ -5,10 +5,10 @@ import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import org.springframework.stereotype.Component;
 
-import static fr.cdrochon.smamonolithe.client.query.mapper.AdresseMapper.convertAdresseToClientAdresseDTO;
+import static fr.cdrochon.smamonolithe.client.query.mapper.AdresseQueryMapper.convertAdresseToClientAdresseDTO;
 
 @Component
-public class ClientMapper {
+public class ClientQueryMapper {
     
     public static ClientQueryDTO convertClientToClientDTO(Client client) {
         if(client == null) {
