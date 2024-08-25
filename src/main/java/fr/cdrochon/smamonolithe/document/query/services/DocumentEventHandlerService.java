@@ -8,7 +8,6 @@ import fr.cdrochon.smamonolithe.document.query.mapper.DocumentQueryMapper;
 import fr.cdrochon.smamonolithe.document.query.repositories.DocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
-import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.queryhandling.QueryHandler;
 import org.hibernate.TransactionException;
 import org.springframework.stereotype.Service;
@@ -29,18 +28,16 @@ public class DocumentEventHandlerService {
     }
     
     /**
-     * On fait un subscribe avec @EventHandler = j'ecoute ce que fait le service DocumentQueryCreatedEvent
+     * subscribe sur le service DocumentQueryCreatedEvent
      *
-     * @param event        DocumentCreatedEvent event qui est declenché lors de la creation d'un document
-     * @param eventMessage EventMessage<DocumentCreatedEvent> eventMessage
+     * @param event DocumentCreatedEvent event qui est declenché lors de la creation d'un document
      */
     @EventHandler
     @Transactional
     public void on(DocumentCreatedEvent event) {
+        
         log.info("********************************");
         log.info("SAUVEGARDE DU DOCUMENT");
-        
-        
         try {
             Document document = new Document();
             document.setId(event.getId());
@@ -55,7 +52,7 @@ public class DocumentEventHandlerService {
             documentRepository.save(document);
             
         } catch(Exception e) {
-            System.out.println("EXTRACT DOCUMENT ERREUR : " + e.getMessage());
+            System.out.println("TRANSACTION DOCUMENT ERREUR : " + e.getMessage());
             throw new TransactionException("Erreur lors de la sauvegarde du document");
         }
     }

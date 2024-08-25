@@ -7,8 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class DocumentQueryMapper {
     
-    public static DocumentQueryDTO convertDocumentToDocumentDTO(Document document){
-        if(document == null){
+    /**
+     * Convertit une entité document en DocumentQueryDTO
+     *
+     * @param document Document à convertir
+     * @return DocumentQueryDTO
+     */
+    public static DocumentQueryDTO convertDocumentToDocumentDTO(Document document) {
+        if(document == null) {
             return null;
         }
         DocumentQueryDTO dto = new DocumentQueryDTO();
@@ -24,8 +30,14 @@ public class DocumentQueryMapper {
         return dto;
     }
     
-    public static Document convertDocumentDTOToDocument(DocumentQueryDTO documentDTO){
-        if(documentDTO == null){
+    /**
+     * Convertit un DocumentQueryDTO en une entité Document
+     *
+     * @param documentDTO DocumentQueryDTO à convertir
+     * @return entité Document
+     */
+    public static Document convertDocumentDTOToDocument(DocumentQueryDTO documentDTO) {
+        if(documentDTO == null) {
             return null;
         }
         Document document = new Document();
