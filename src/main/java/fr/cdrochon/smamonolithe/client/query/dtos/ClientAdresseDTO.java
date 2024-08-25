@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString @Builder
 public class ClientAdresseDTO {
     
     private String numeroDeRue;
