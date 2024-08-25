@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class VehiculeDTO {
     
-    private String idVehicule;
+    private String id;
     private String immatriculationVehicule;
     private String dateMiseEnCirculationVehicule;
     private String vehiculeStatus;

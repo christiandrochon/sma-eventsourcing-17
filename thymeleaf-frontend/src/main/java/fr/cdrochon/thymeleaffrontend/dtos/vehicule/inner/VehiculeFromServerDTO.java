@@ -9,7 +9,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehiculeFromServerDTO {
-    private String idVehicule;
+    private String id;
     private String immatriculationVehicule;
     private Instant dateMiseEnCirculationVehicule;
     private VehiculeStatusDTO vehiculeStatus;
