@@ -49,7 +49,7 @@ public class CreateDossierThymController {
      */
     @GetMapping("/createDossier")
     //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String getDossier(Model model) {
+    public Mono<String> getDossier(Model model, RedirectAttributes redirectAttributes) {
         if(!model.containsAttribute("dossierDTO")) {
             model.addAttribute("dossierDTO", new DossierThymDTO());
         }
@@ -63,7 +63,14 @@ public class CreateDossierThymController {
         model.addAttribute("valeurClientStatutParDefaut", ClientStatusDTO.valeurClientStatutParDefaut());
         model.addAttribute("valeurDossierStatutParDefaut", DossierStatusThymDTO.valeurDossierStatutParDefaut());
         model.addAttribute("valeurPaysParDefaut", PaysDTO.valeurPaysParDefaut());
-        return "dossier/createDossierForm";
+        return Mono.just("dossier/createDossierForm")
+                   .onErrorResume(WebClientResponseException.class, e -> {
+                       log.error("400 Bad Request: {}", e.getMessage());
+                       redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                       redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
+                       redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                       return Mono.just("redirect:/error");
+                   });
     }
     
     /**
