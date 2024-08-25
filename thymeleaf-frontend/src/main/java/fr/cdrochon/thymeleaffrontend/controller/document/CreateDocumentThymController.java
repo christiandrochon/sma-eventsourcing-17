@@ -1,11 +1,9 @@
 package fr.cdrochon.thymeleaffrontend.controller.document;
 
 import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentConvertThymDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentStatusDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.document.TypeDocumentDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymConvertDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,28 +35,15 @@ import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.conve
 @Controller
 public class CreateDocumentThymController {
     
-    //    @Value("${external.service.url}")
-    //    private String externalServiceUrl;
-    //    private final RestClient restClient;
-    //
-    //    public CreateDocumentThymController(RestClient restClient) {
-    //        this.restClient = restClient;
-    //    }
     @Autowired
     private WebClient webClient;
     
-    //    @GetMapping("/createDocument")
-    //    //    @PreAuthorize("hasAuthority('ADMIN')")
-    //    public String createDocument(Model model) {
-    //
-    //        if(!model.containsAttribute("documentDTO")) {
-    //            model.addAttribute("documentDTO", new DocumentThymDTO());
-    //        }
-    //        //chargement des listes de type de document et de status de document
-    //        model.addAttribute("typeDocuments", TypeDocumentDTO.PREDEFINED_VALUES);
-    //        model.addAttribute("documentStatuses", List.of(DocumentStatusDTO.values()));
-    //        return "document/createDocumentForm";
-    //    }
+    /**
+     * Affiche le formulaire de création de document, ou réaffiche les données saisies du formulaire en cas d'erreur de validation
+     *
+     * @param model Model contenant les données à afficher dans la vue
+     * @return Vue de création de document
+     */
     @GetMapping("/createDocument")
     //    @PreAuthorize("hasAuthority('ADMIN')")
     public String getDocument(Model model) {
@@ -72,57 +57,15 @@ public class CreateDocumentThymController {
         return "document/createDocumentForm";
     }
     
-    
-    //    @PostMapping(value = "/createDocument")
-    //    //    @PreAuthorize("hasAuthority('ADMIN')")
-    //    public String createDocument(@Valid @ModelAttribute("documentDTO") DocumentThymDTO documentPostDTO, BindingResult result,
-    //                                 RedirectAttributes redirectAttributes, Model model) {
-    //        if(result.hasErrors()) {
-    //            model.addAttribute("documentDTO", documentPostDTO);
-    //            // rechargement des listes en cas d'erreur du formulaire de création
-    //            Collection<TypeDocumentDTO> typeDocuments = TypeDocumentDTO.PREDEFINED_VALUES;
-    //            model.addAttribute("typeDocuments", typeDocuments);
-    //            model.addAttribute("documentStatuses", List.of(DocumentStatusDTO.values()));
-    //            return "document/createDocumentForm";
-    //        }
-    //        try {
-    //            DocumentConvertThymDTO document = new DocumentConvertThymDTO();
-    //            document.setId(documentPostDTO.getId());
-    //            document.setNomDocument(documentPostDTO.getNomDocument());
-    //            document.setTitreDocument(documentPostDTO.getTitreDocument());
-    //            document.setEmetteurDuDocument(documentPostDTO.getEmetteurDuDocument());
-    //            document.setTypeDocument(documentPostDTO.getTypeDocument());
-    //
-    //            //Transformation du String en Instant
-    //            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    //
-    //            String dateCreationDocument = documentPostDTO.getDateCreationDocument();
-    //            LocalDate localDate = LocalDate.parse(dateCreationDocument, formatter);
-    //            Instant dateCreation = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-    //            document.setDateCreationDocument(dateCreation);
-    //
-    //            String dateModificationDocument = documentPostDTO.getDateModificationDocument();
-    //            LocalDate localDate1 = LocalDate.parse(dateModificationDocument, formatter);
-    //            Instant dateModif = localDate1.atStartOfDay().toInstant(ZoneOffset.UTC);
-    //            document.setDateModificationDocument(dateModif);
-    //
-    //            document.setDocumentStatus(documentPostDTO.getDocumentStatus());
-    //            //TODO : requete async
-    //            restClient.post().uri(externalServiceUrl + "/commands/createDocument")
-    //                      //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-    //                      //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-    //                      .contentType(MediaType.APPLICATION_JSON)
-    //                      .body(document).retrieve().toBodilessEntity();
-    //
-    //            redirectAttributes.addFlashAttribute("successMessage", "Document created successfully");
-    //            return "redirect:/documents";
-    //        } catch(Exception e) {
-    //            log.error("An error occurred: {}", e.getMessage());
-    //            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + e.getMessage());
-    //            redirectAttributes.addFlashAttribute("documentDTO", documentPostDTO); // Re-add garageDTO to the model if there's an error
-    //            return "redirect:/createDocument";
-    //        }
-    //    }
+    /**
+     * Création asynchrone d'un document
+     *
+     * @param documentThymDTO    DTO de création de document
+     * @param result             BindingResult contenant les erreurs de validation
+     * @param redirectAttributes RedirectAttributes pour les messages de succès ou d'erreur
+     * @param model              Model contenant les données à afficher dans la vue
+     * @return Vue de création de document ou redirection vers la liste des documents
+     */
     @PostMapping(value = "/createDocument")
     public Mono<String> createDocumentAsync(@Valid @ModelAttribute("documentDTO") DocumentThymDTO documentThymDTO, BindingResult result,
                                             RedirectAttributes redirectAttributes, Model model) {
@@ -136,7 +79,7 @@ public class CreateDocumentThymController {
             return Mono.just("document/createDocumentForm");
         }
         
-        
+        //convertir les date  String > Instant
         DocumentConvertThymDTO documentConvertThymDTO = convertThymDTO(documentThymDTO);
         String jsonPayload = convertObjectToJson(documentConvertThymDTO);
         log.info("JSON Payload: {}", jsonPayload);
@@ -150,9 +93,9 @@ public class CreateDocumentThymController {
                         .bodyToMono(DocumentConvertThymDTO.class)
                         .timeout(Duration.ofSeconds(3000))
                         .flatMap(doc -> {
-                            if(doc == null) {
-                                log.error("Erreur lors de la création du dossier");
-                                return Mono.error(new RuntimeException("Erreur lors de la création du dossier"));
+                            if(doc == null || doc.getId() == null) {
+                                log.error("Erreur lors de la création du document");
+                                return Mono.error(new RuntimeException("Erreur lors de la création du document"));
                             }
                             
                             log.info("Response: {}", doc);
@@ -228,8 +171,6 @@ public class CreateDocumentThymController {
                                 redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
                                 return Mono.just("redirect:/error");
                             }
-                            //                                             handleWebClientResponseException(e, redirectAttributes,
-                            //                                             dossierThymDTO);
                             // reaffiche le formualire de création de client avec les données saisies par l'user
                             redirectAttributes.addFlashAttribute("documentDTO", documentThymDTO);
                             return Mono.just("redirect:/createDocument");
@@ -251,18 +192,15 @@ public class CreateDocumentThymController {
             document.setEmetteurDuDocument(documentThymDTO.getEmetteurDuDocument());
             document.setTypeDocument(documentThymDTO.getTypeDocument());
             
-            //Transformation du String en Instant
+            //reconvertir la date de mise en circulation du véhicule en Instant , d'abord en LocalDate de type 'yyyy-MM-dd', puis réellement en Instant
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.parse(documentThymDTO.getDateCreationDocument(), formatter);
+            Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
+            document.setDateCreationDocument(instant);
             
-            String dateCreationDocument = documentThymDTO.getDateCreationDocument();
-            LocalDate localDate = LocalDate.parse(dateCreationDocument, formatter);
-            Instant dateCreation = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-            document.setDateCreationDocument(dateCreation);
-            
-            String dateModificationDocument = documentThymDTO.getDateModificationDocument();
-            LocalDate localDate1 = LocalDate.parse(dateModificationDocument, formatter);
-            Instant dateModif = localDate1.atStartOfDay().toInstant(ZoneOffset.UTC);
-            document.setDateModificationDocument(dateModif);
+            LocalDate localDate1 = LocalDate.parse(documentThymDTO.getDateModificationDocument(), formatter);
+            Instant instant1 = localDate1.atStartOfDay().toInstant(ZoneOffset.UTC);
+            document.setDateModificationDocument(instant1);
             
             document.setDocumentStatus(documentThymDTO.getDocumentStatus());
             return document;

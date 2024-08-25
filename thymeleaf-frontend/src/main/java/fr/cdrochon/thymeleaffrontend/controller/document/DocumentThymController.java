@@ -1,7 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.document;
 
 import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentConvertThymDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,55 +17,47 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class DocumentThymController {
     
-    //    @Value("${external.service.url}")
-    //    private String externalServiceUrl;
-    //    private final RestClient restClient;
-    //    public DocumentThymController(RestClient restClient) {
-    //        this.restClient = restClient;
-    //    }
     @Autowired
     private WebClient webClient;
     
-    //    @GetMapping("/document/{id}")
-    //    //    @PreAuthorize("hasAuthority('USER')")
-    //    public String getDocById(@PathVariable String id, Model model) {
-    //        DocumentConvertPostDTO document = restClient.get().uri(externalServiceUrl + "/queries/documents/" + id)
-    //                                                    //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders
-    //                                                    .AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-    //                                                    .retrieve().body(new ParameterizedTypeReference<>() {
-    //                });
-    //        model.addAttribute("document", document);
-    //        return "document/view";
-    //    }
+    /**
+     * Affiche la vue de création d'un document, avec eventuellement les details dejà saisis par l'user en cas d'erreur
+     *
+     * @param id                 id du document
+     * @param model              modele de la vue
+     * @param redirectAttributes attributs de redirection
+     * @return la vue de création d'un document
+     */
     @GetMapping(value = "/document/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
-    public Mono<String> getDocumentByIdAsync(@PathVariable String id, Model model) {
+    public Mono<String> getDocumentByIdAsync(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/documents/" + id)
                         //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
                         //                                  getJwtTokenValue()))
                         .retrieve()
                         .bodyToMono(DocumentConvertThymDTO.class)
-                        .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du dossier")))
                         .flatMap(dto -> {
                             assert dto != null;
                             model.addAttribute("document", dto);
                             return Mono.just("document/view");
+                        })
+                        .onErrorResume(WebClientResponseException.class, e -> {
+                            log.error("400 Bad Request: {}", e.getMessage());
+                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                            redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
+                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
+                            return Mono.just("redirect:/error");
                         });
     }
     
-    //    @GetMapping("/documents")
-    //    //    @PreAuthorize("hasAuthority('USER')")
-    //    public String getAllDocuments(Model model) {
-    //        List<DocumentConvertThymDTO> documents =
-    //                restClient.get()
-    //                          .uri(externalServiceUrl + "/queries/documents")
-    //                          //                          .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-    //                          .retrieve().body(new ParameterizedTypeReference<>() {
-    //                          });
-    //        model.addAttribute("documents", documents);
-    //        return "document/documents";
-    //    }
+    /**
+     * Récupère la liste des documents
+     *
+     * @param model              Model
+     * @param redirectAttributes RedirectAttributes
+     * @return la vue des documents
+     */
     @GetMapping(value = "/documents")
     //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getDocumentsAsync(Model model, RedirectAttributes redirectAttributes) {
@@ -75,7 +66,7 @@ public class DocumentThymController {
                         //                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION,
                         //                                         "Bearer " + getJwtTokenValue()))
                         .retrieve()
-                        .bodyToFlux(DocumentThymDTO.class)
+                        .bodyToFlux(DocumentConvertThymDTO.class)
                         .collectList()
                         .flatMap(documents -> {
                             assert documents != null;

@@ -6,12 +6,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TypeDocumentDTO {
-    private String id;
+    
     private String nomTypeDocument;
     
     public static final TypeDocumentDTO DEVIS = new TypeDocumentDTO("DEVIS");
@@ -19,8 +18,4 @@ public class TypeDocumentDTO {
     
     // Liste des valeurs prédéfinies
     public static final Collection<TypeDocumentDTO> PREDEFINED_VALUES = Collections.unmodifiableList(Arrays.asList(DEVIS, FACTURE));
-    
-    public TypeDocumentDTO(String nomTypeDocument) {
-        this.nomTypeDocument = nomTypeDocument;
-    }
 }
