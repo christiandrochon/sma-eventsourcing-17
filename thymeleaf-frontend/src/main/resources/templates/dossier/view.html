@@ -25,7 +25,7 @@
                 <p class="col-md-8 fs-4">Dossier: [[${#strings.capitalize(dossier.nomDossier)}]]</p>
                 <p class="col-md-8 fs-4">Date de création : [[${#temporals.format(dossier.dateCreationDossier, 'dd MMMM yyyy')}]]</p>
                 <p class="col-md-8 fs-4">Date de modification : [[${#temporals.format(dossier.dateModificationDossier, 'dd MMMM yyyy')}]]</p>
-                <p class="col-md-8 fs-4">Status : [[${dossier.dossierStatus}]]</p>
+                <p class="col-md-8 fs-4">Statut du dossier : [[${dossier.dossierStatus}]]</p>
             </div>
         </div>
 
@@ -37,6 +37,7 @@
                     <p class="col-md-8 fs-5">Nom et prénom : [[${dossier.client.nomClient}]] &nbsp; &nbsp; [[${dossier.client.prenomClient}]]</p>
                     <p class="col-md-8 fs-5">Email : [[${dossier.client.mailClient}]]</p>
                     <p class="col-md-8 fs-5">Téléphone : [[${dossier.client.telClient}]]</p>
+                    <p class="col-md-8 fs-5" >Situation  du client : [[${dossier.client.clientStatus}]]</p>
                 </div>
             </div>
         </div>
@@ -48,7 +49,7 @@
                     <hr class="mt-1 mb-3">
                     <p class="col-md-8 fs-5">Immatriculation du véhicule : [[${dossier.vehicule.immatriculationVehicule}]]</p>
                     <p class="col-md-8 fs-5">Date de mise en circulation : [[${#temporals.format(dossier.vehicule.dateMiseEnCirculationVehicule, 'dd MMMM yyyy')}]]</p>
-                    <p class="col-md-8 fs-5">Status du véhicule : [[${dossier.vehicule.vehiculeStatus}]]</p>
+                    <p class="col-md-8 fs-5">Etat du véhicule : [[${dossier.vehicule.vehiculeStatus}]]</p>
                 </div>
             </div>
         </div>
