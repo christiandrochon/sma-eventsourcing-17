@@ -6,6 +6,8 @@ import fr.cdrochon.smamonolithe.dossier.events.DossierCreatedEvent;
 import fr.cdrochon.smamonolithe.dossier.query.entities.DossierStatus;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
+import lombok.Getter;
+import lombok.Setter;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -14,7 +16,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import java.time.Instant;
 
-@Aggregate
+@Aggregate @Getter @Setter
 public class DossierAggregate {
     
     @AggregateIdentifier
@@ -31,19 +33,13 @@ public class DossierAggregate {
     }
     
     /**
-     * FONCTION DE DECISION = regle metier
+     * <str>Fonction de décision</str> = vérifie règle métier
      * <p>
-     * Publiation d'un event via AggregateLifeCycle.apply(). Normalement, cet event devrait etre enregistré dans l'event store
+     * Instancie un nouvel agrégat à chaque requête reçue dans le bus de commande via le @CommandHandler qui subscribe au commandBus.
      * <p>
-     * Prise en charge d'une commande = FONCTION DE DECISION pour la creation d'un dossier
-     * <p>
-     * Instancie un nouvel agregat à chaque requete recue
-     * ici => fonction de decision = verifie regle metier
-     * <p>
-     * @CommandHandler : Subscribe à commandBus -> dès qu'il y a une command, j'instancie un nouvel agregat grace au constructeur par defaut
+     * AggregateLifecycle.apply() = publication de l'event
      *
-     *
-     * @param dossierCreateCommand Commande de creation d'un dossier
+     * @param dossierCreateCommand Commande de création d'un dossier
      */
     @CommandHandler
     public DossierAggregate(DossierCreateCommand dossierCreateCommand) {
@@ -52,6 +48,7 @@ public class DossierAggregate {
         if(dossierCreateCommand.getVehicule() == null || dossierCreateCommand.getClient() == null){
             throw new CreatedGarageException("Le dossier doit contenir un client et un vehicule ! ");
         }
+
         //publication de l'event
         System.out.println("**************************");
         System.out.println("Publication de l'evenement = commandHandler dans aggregate");
@@ -68,11 +65,11 @@ public class DossierAggregate {
     }
     
     /**
-     * FONCTION D'EVOLUTION = Muter l'etat de l'agregat
+     * <str>Fonction de projection</str> = met à jour l'état de l'agrégat
      * <p>
-     * Pour chaque event de type DossierCreatedEvent qui arrive dans l'eventstore, on va muter l'etat de l'application
+     * Met à jour l'état de l'agrégat à chaque événement reçu dans le bus d'événement via le @EventSourcingHandler qui subscribe à l'eventBus.
      *
-     * @param event Event de creation d'un client
+     * @param event Evènement de création d'un dossier
      */
     @EventSourcingHandler
     public void on(DossierCreatedEvent event) {
@@ -86,9 +83,8 @@ public class DossierAggregate {
         this.client = event.getClient();
         this.vehicule = event.getVehicule();
         this.dossierStatus = event.getDossierStatus();
+        
         this.client.setId(event.getClient().getId());
         this.vehicule.setIdVehicule(event.getVehicule().getIdVehicule());
-        
-        //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }
 }
