@@ -29,19 +29,6 @@
             </div>
         </div>
 
-        <div class="row align-items-md-stretch">
-            <div class="w-100">
-                <div class="h-100 p-5 bg-body-tertiary border rounded-3">
-                    <h2 class="pb-2">Propriétaire du véhicule</h2>
-                    <hr class="mt-1 mb-3">
-                    <p class="col-md-8 fs-5">Nom et prénom : [[${dossier.client.nomClient}]] &nbsp; &nbsp; [[${dossier.client.prenomClient}]]</p>
-                    <p class="col-md-8 fs-5">Email : [[${dossier.client.mailClient}]]</p>
-                    <p class="col-md-8 fs-5">Téléphone : [[${dossier.client.telClient}]]</p>
-                    <p class="col-md-8 fs-5" >Situation  du client : [[${dossier.client.clientStatus}]]</p>
-                </div>
-            </div>
-        </div>
-
         <div class="row align-items-md-stretch mt-3">
             <div class="w-100">
                 <div class="h-100 p-5 bg-body-tertiary border rounded-3">
@@ -50,6 +37,26 @@
                     <p class="col-md-8 fs-5">Immatriculation du véhicule : [[${dossier.vehicule.immatriculationVehicule}]]</p>
                     <p class="col-md-8 fs-5">Date de mise en circulation : [[${#temporals.format(dossier.vehicule.dateMiseEnCirculationVehicule, 'dd MMMM yyyy')}]]</p>
                     <p class="col-md-8 fs-5">Etat du véhicule : [[${dossier.vehicule.vehiculeStatus}]]</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row align-items-md-stretch mt-4">
+            <div class="w-100">
+                <div class="h-100 p-5 bg-body-tertiary border rounded-3">
+                    <h2 class="pb-2">Propriétaire du véhicule</h2>
+                    <hr class="mt-1 mb-3">
+                    <p class="col-md-8 fs-5">Nom et prénom : [[${dossier.client.prenomClient}]]&nbsp;[[${#strings.toUpperCase(dossier.client.nomClient)}]]</p>
+                    <p class="col-md-8 fs-5" >Situation  du client : [[${dossier.client.clientStatus}]]</p>
+                    <p class="col-md-8 fs-5">Email : [[${dossier.client.mailClient}]]</p>
+                    <p class="col-md-8 fs-5">Téléphone : [[${dossier.client.telClient}]]</p>
+                    <br>
+                    <h5 class="pb-2 fst-italic">Adresse</h5>
+                    <hr class="mt-1 mb-3">
+                    <p class="col-md-8 fs-5">[[${dossier.client.adresse.numeroDeRue}]], &nbsp; [[${dossier.client.adresse.rue}]]</p>
+                    <p class="col-md-8 fs-5">[[${dossier.client.adresse.complementAdresse}]]</p>
+                    <p class="col-md-8 fs-5">[[${dossier.client.adresse.cp}]]&nbsp; [[${#strings.toUpperCase(dossier.client.adresse.ville)}]]</p>
+                    <p class="col-md-8 fs-5">[[${dossier.client.adresse.pays}]]</p>
                 </div>
             </div>
         </div>
