@@ -20,7 +20,7 @@ public class DossierThymDtoMapper {
     private DossierThymDTO convertToDossierThymDto(DossierThymConvertDTO dossierConvertDTO) {
         
         VehiculeThymDTO vehiculeThymDTO = new VehiculeThymDTO();
-        vehiculeThymDTO.setIdVehicule(dossierConvertDTO.getVehicule().getIdVehicule());
+        vehiculeThymDTO.setId(dossierConvertDTO.getVehicule().getId());
         vehiculeThymDTO.setImmatriculationVehicule(dossierConvertDTO.getVehicule().getImmatriculationVehicule());
         vehiculeThymDTO.setVehiculeStatus(dossierConvertDTO.getVehicule().getVehiculeStatus());
         //date vehicule date de mise en circulation
