@@ -64,7 +64,7 @@ public class DossierEventHandlerService {
             
             
             Vehicule vehicule = new Vehicule();
-            vehicule.setIdVehicule(UUID.randomUUID().toString());
+            vehicule.setId(UUID.randomUUID().toString());
             vehicule.setImmatriculationVehicule(event.getVehicule().getImmatriculationVehicule());
             vehicule.setDateMiseEnCirculationVehicule(event.getVehicule().getDateMiseEnCirculationVehicule());
             vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());

@@ -102,7 +102,7 @@ public class Dossier {
         return "Dossier{" +
                 "id=" + id +
                 ", client=" + (client != null ? "Client[id=" + client.getId() + "]" : "null") +
-                ", vehicule=" + (vehicule != null ? "Vehicule[id=" + vehicule.getIdVehicule() + "]" : "null") +
+                ", vehicule=" + (vehicule != null ? "Vehicule[id=" + vehicule.getId() + "]" : "null") +
                 '}';
     }
 }

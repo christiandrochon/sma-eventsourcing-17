@@ -60,7 +60,7 @@ public class DossierAggregate {
                                                         dossierCreateCommand.getVehicule(),
                                                         dossierCreateCommand.getDossierStatus(),
                                                         dossierCreateCommand.getClient().getId(),
-                                                        dossierCreateCommand.getVehicule().getIdVehicule()
+                                                        dossierCreateCommand.getVehicule().getId()
         ));
     }
     
@@ -85,6 +85,6 @@ public class DossierAggregate {
         this.dossierStatus = event.getDossierStatus();
         
         this.client.setId(event.getClient().getId());
-        this.vehicule.setIdVehicule(event.getVehicule().getIdVehicule());
+        this.vehicule.setId(event.getVehicule().getId());
     }
 }

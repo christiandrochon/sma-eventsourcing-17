@@ -1,28 +1,28 @@
 package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
-import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
+import fr.cdrochon.smamonolithe.document.query.dtos.DocumentQueryDTO;
+import fr.cdrochon.smamonolithe.document.query.mapper.DocumentQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
-import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
+import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
-import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/queries")
-public class VehiculeRestController {
-    
-    private final QueryGateway queryGateway;
+public class VehiculeQueryController {
     private final VehiculeRepository vehiculeRepository;
     
-    public VehiculeRestController(QueryGateway queryGateway, VehiculeRepository vehiculeRepository) {
-        this.queryGateway = queryGateway;
+    public VehiculeQueryController(VehiculeRepository vehiculeRepository) {
         this.vehiculeRepository = vehiculeRepository;
     }
     
@@ -44,10 +44,11 @@ public class VehiculeRestController {
      * @param immatriculation immatriculation du vehicule
      * @return VehiculeResponseDTO
      */
+    
     @GetMapping(value = "/vehicules/immatriculation/{immatriculation}")
     public VehiculeQueryDTO getVehiculeByImmatriculation(@PathVariable String immatriculation) {
         Vehicule vehicule = vehiculeRepository.findByImmatriculationVehicule(immatriculation);
-        return VehiculeMapper.convertVehiculeToVehiculeDTO(vehicule);
+        return VehiculeQueryMapper.convertVehiculeToVehiculeDTO(vehicule);
     }
     
     /**
@@ -59,11 +60,16 @@ public class VehiculeRestController {
     @GetMapping("/vehicules/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
-    public VehiculeQueryDTO getVehiculeById(@PathVariable String id) {
-        
-        GetVehiculeDTO vehiculeDTO = new GetVehiculeDTO();
-        vehiculeDTO.setId(id);
-        return queryGateway.query(vehiculeDTO, VehiculeQueryDTO.class).join();
+    public Mono<VehiculeQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
+        CompletableFuture<VehiculeQueryDTO> future =
+                CompletableFuture.supplyAsync(() -> {
+                    VehiculeQueryDTO dto = vehiculeRepository.findById(id)
+                                                             .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
+                                                             .orElse(null);
+                    return dto;
+                });
+        Mono<VehiculeQueryDTO> mono = Mono.fromFuture(future);
+        return mono;
     }
     
     
@@ -75,28 +81,16 @@ public class VehiculeRestController {
      */
     @GetMapping("/vehicules")
     //    @PreAuthorize("hasAuthority('USER')")
-    public List<VehiculeQueryDTO> getAllVehicules() {
-        List<Vehicule> vehicules = vehiculeRepository.findAll();
-        return vehicules.stream()
-                        .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
-                        .collect(Collectors.toList());
+    public Flux<VehiculeQueryDTO> getDossiersAsync() {
+        CompletableFuture<List<VehiculeQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
+            List<VehiculeQueryDTO> clients =
+                    vehiculeRepository.findAll()
+                                      .stream()
+                                      .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
+                                      .collect(Collectors.toList());
+            return clients;
+        });
+        Flux<VehiculeQueryDTO> flux = Flux.fromStream(future.join().stream());
+        return flux;
     }
-    
-    //    /**
-    //     * Renvoi un flux de vEHICULEResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
-    //     *
-    //     * @param id id du vehicule
-    //     * @return Flux de VehiculeResponseDTO
-    //     */
-    //    @GetMapping(value = "/vehicule/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    //    public Flux<VehiculeResponseDTO> watch(@PathVariable String id) {
-    //
-    //        try(SubscriptionQueryResult<VehiculeResponseDTO, VehiculeResponseDTO> result = queryGateway.subscriptionQuery(
-    //                new GetVehiculeDTO(id),
-    //                ResponseTypes.instanceOf(VehiculeResponseDTO.class),
-    //                ResponseTypes.instanceOf(VehiculeResponseDTO.class)
-    //                                                                                                                     )) {
-    //            return result.initialResult().concatWith(result.updates());
-    //        }
-    //    }
 }

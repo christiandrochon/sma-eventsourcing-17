@@ -15,7 +15,7 @@ public class DossierQueryMapper {
             return null;
         }
         VehiculeQueryDTO dto = new VehiculeQueryDTO();
-        dto.setIdVehicule(dossier.getVehicule().getIdVehicule());
+        dto.setId(dossier.getVehicule().getId());
         dto.setImmatriculationVehicule(dossier.getVehicule().getImmatriculationVehicule());
         dto.setDateMiseEnCirculationVehicule(dossier.getVehicule().getDateMiseEnCirculationVehicule());
 //        dto.setMarque(dossier.getVehicule().getMarque());
@@ -37,7 +37,7 @@ public class DossierQueryMapper {
         }
         //TODO tester ce que je recois pour voir si la conversion est necessaire !!
         VehiculeQueryDTO vehiculeDTO = convertVehiculeToVehiculeDTO(dossier);
-//        vehiculeDTO.setIdVehicule(dossier.getVehicule().getIdVehicule());
+//        vehiculeDTO.setId(dossier.getVehicule().getId());
 //        vehiculeDTO.setImmatriculationVehicule(dossier.getVehicule().getImmatriculationVehicule());
 //        vehiculeDTO.setDateMiseEnCirculationVehicule(dossier.getVehicule().getDateMiseEnCirculationVehicule());
 //        vehiculeDTO.setVehiculeStatus(dossier.getVehicule().getVehiculeStatus());

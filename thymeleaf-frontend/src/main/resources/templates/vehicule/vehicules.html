@@ -36,10 +36,10 @@
                         <tbody>
                         <tr th:each="v:${vehicules}">
 
-                            <!--                            <td th:if="${v.idVehicule != null}">-->
-                            <!--                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.idVehicule}]]</a>-->
+                            <!--                            <td th:if="${v.id != null}">-->
+                            <!--                                <a href="#" th:href="@{/vehicule/{id}(id=${v.id})}" class="text-decoration-none">[[${v.id}]]</a>-->
                             <!--                            </td>-->
-                            <td th:if="${v.idVehicule == null}" class="text-decoration-none">N/A</td>
+                            <td th:if="${v.id == null}" class="text-decoration-none">N/A</td>
                             <td th:if="${v.immatriculationVehicule != null}">
                                 <a href="#" th:href="@{/vehicule/{id}(id=${v.id})}" class="text-decoration-none">[[${v.immatriculationVehicule}]]</a>
                             </td>

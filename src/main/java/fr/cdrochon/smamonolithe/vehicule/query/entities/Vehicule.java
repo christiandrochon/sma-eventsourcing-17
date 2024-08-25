@@ -19,7 +19,7 @@ import java.time.Instant;
 @Builder
 public class Vehicule {
     @Id
-    private String idVehicule;
+    private String id;
     
     private String immatriculationVehicule;
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
@@ -67,7 +67,7 @@ public class Vehicule {
     @Override
     public String toString() {
         return "Vehicule{" +
-                "idVehicule=" + idVehicule +
+                "id=" + id +
                 // Ne pas appeler dossier.toString() pour éviter la récursion
                 ", dossierId=" + (dossier != null ? dossier.getId() : "null") +
                 '}';

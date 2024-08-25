@@ -24,7 +24,7 @@ public class DossierCommandMapper {
         }
         
         Vehicule vehicule = new Vehicule();
-        vehicule.setIdVehicule(vehiculeCommandDTO.getId());
+        vehicule.setId(vehiculeCommandDTO.getId());
         vehicule.setImmatriculationVehicule(vehiculeCommandDTO.getImmatriculationVehicule());
         vehicule.setDateMiseEnCirculationVehicule(vehiculeCommandDTO.getDateMiseEnCirculationVehicule());
         vehicule.setVehiculeStatus(vehiculeCommandDTO.getVehiculeStatus());
@@ -90,7 +90,7 @@ public class DossierCommandMapper {
         }
         
         VehiculeCommandDTO vehiculeCommandDTO = new VehiculeCommandDTO();
-        vehiculeCommandDTO.setId(vehicule.getIdVehicule());
+        vehiculeCommandDTO.setId(vehicule.getId());
         vehiculeCommandDTO.setImmatriculationVehicule(vehicule.getImmatriculationVehicule());
         vehiculeCommandDTO.setDateMiseEnCirculationVehicule(vehicule.getDateMiseEnCirculationVehicule());
         vehiculeCommandDTO.setVehiculeStatus(vehicule.getVehiculeStatus());

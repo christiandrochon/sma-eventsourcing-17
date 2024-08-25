@@ -12,7 +12,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class VehiculeQueryDTO {
     
-    private String idVehicule;
+    private String id;
     private String immatriculationVehicule;
     private Instant dateMiseEnCirculationVehicule;
     //    private Instant dateDeValiditeControleTechnique;
