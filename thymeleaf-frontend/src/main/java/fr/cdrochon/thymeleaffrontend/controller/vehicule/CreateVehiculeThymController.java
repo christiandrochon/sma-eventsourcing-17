@@ -36,36 +36,17 @@ public class CreateVehiculeThymController {
     @Autowired
     private WebClient webClient;
     
-    /**
-     * Affiche le formulaire de création d'un vehicule. Methode syncrhone car elle ne fait pas appel à un service externe et utilise seulement des données pour
-     * la vue.
-     *
-     * @param model modèle du vehicule: permet de passer des attributs à la vue
-     * @return la vue createVehiculeForm
-     */
-    @GetMapping("/createVehicule")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
-    public String getVehicule(Model model, RedirectAttributes redirectAttributes) {
-        if(!model.containsAttribute("vehiculePostDTO")) {
-            model.addAttribute("vehiculePostDTO", new VehiculeThymDTO());
-        }
-        //chargement des listes de type de document et de status de vehicule
-        model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
-        return "vehicule/createVehiculeForm";
-    }
     
-    
-    /**
+    /***
      * Création d'un vehicule via un formulaire.
      * <p></p>
      * Vérifie si l'immatriculation existe déjà. Vérifie si une erreur est survenue lors de la création du vehicule. Vérifie si la date de mise en circulation
      * est valide. Vérifie si le status du vehicule est valide. Vérifie si le vehicule a bien été créé.
-     *
-     * @param vehiculePostDTO    DTO du vehicule à créer : permet de récupérer les données du formulaire
-     * @param result             BindingResult pour la validation du formulaire: permet de tester les erreurs de validation
-     * @param redirectAttributes RedirectAttributes : permet de passer des attributs à la redirection
-     * @param model              modèle pour la vue :   permet de passer des attributs à la vue
-     * @return la vue createVehiculeForm
+     * @param vehiculePostDTO DTO du vehicule à créer
+     * @param result BindingResult pour la validation du DTO
+     * @param redirectAttributes attributs de redirection
+     * @param model model de la vue
+     * @return la vue de création d'un vehicule
      */
     @PostMapping(value = "/createVehicule")
     //    @PreAuthorize("hasAuthority('ADMIN')")

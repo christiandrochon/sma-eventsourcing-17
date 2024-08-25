@@ -13,10 +13,10 @@
         <h6 class="fst-italic">(Cliquez sur une ligne pour accéder aux details d'un véhicule)</h6>
         <div class="card w-100">
             <div class="card-body">
+                <div th:if="${#lists.isEmpty(vehicules)}" class=" text-center alert alert-warning" role="alert">
+                    Aucun véhicule trouvé
+                </div>
                 <table class="table w-100">
-                    <div th:if="${#lists.isEmpty(vehicules)}" class=" text-center alert alert-warning" role="alert">
-                        Aucun véhicule trouvé
-                    </div>
                     <th:block th:unless="${#lists.isEmpty(vehicules)}">
                         <thead>
                         <tr>
