@@ -1,8 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.client;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public enum PaysDTO {
 //    ALBANIE, FRANCE, TOGO;
     
@@ -196,21 +193,6 @@ public enum PaysDTO {
             YEMEN,
             ZAMBIE,
             ZIMBABWE;
-            
-//    @JsonCreator
-//    public static PaysDTO forValue(String value) {
-//        for(PaysDTO status : values()) {
-//            if(status.name().equalsIgnoreCase(value)) {
-//                return status;
-//            }
-//        }
-//        return FRANCE; // Default value for unknown enum values
-//    }
-//
-//    @JsonValue
-//    public String getLabel() {
-//        return this.name();
-//    }
     
     // Méthode pour obtenir la valeur par défaut
     public static PaysDTO valeurPaysParDefaut() {

@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -42,6 +41,7 @@ public class CreateVehiculeThymController {
      * <p></p>
      * Vérifie si l'immatriculation existe déjà. Vérifie si une erreur est survenue lors de la création du vehicule. Vérifie si la date de mise en circulation
      * est valide. Vérifie si le status du vehicule est valide. Vérifie si le vehicule a bien été créé.
+     *
      * @param vehiculePostDTO DTO du vehicule à créer
      * @param result BindingResult pour la validation du DTO
      * @param redirectAttributes attributs de redirection
