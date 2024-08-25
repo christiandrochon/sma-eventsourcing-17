@@ -20,7 +20,7 @@
         <h2>Détails du document</h2>
 
         <div class="p-5 mb-4 bg-body-tertiary rounded-3">
-            <div class="container-fluid ">
+            <div class="container-fluid">
                 <h1 class="display-5 fw-bold text-center pb-4 h1-titre-trop-long">[[${#strings.toUpperCase(document.nomDocument)}]]</h1>
                 <p class="col-md-8 fs-4 fst-italic">id : [[${document.id}]]</p>
                 <p class="col-md-8 fs-4">Nom du document : [[${document.nomDocument}]]</p>
@@ -31,7 +31,7 @@
                     'dd MMMM yyyy')}]]</p>
                 <p class="col-md-8 fs-4">Date de modification : [[${#temporals.format(document.dateModificationDocument,
                     'dd MMMM yyyy')}]]</p>
-                <p class="col-md-8 fs-4">Status : [[${document.documentStatus}]]</p>
+                <p class="col-md-8 fs-4">En-cours du document : [[${document.documentStatus}]]</p>
             </div>
         </div>
     </main>

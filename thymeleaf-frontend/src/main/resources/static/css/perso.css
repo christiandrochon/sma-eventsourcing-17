@@ -36,6 +36,20 @@
     /*background-color: rgb(255, 169, 148, 0.1) !important;*/
 }
 
+/* place le texte sur 2 lignes, notamment au niveau d'ihm des documents, au niveau du status */
+.wrap-text {
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: 200px; /* Adjust the width as needed */
+}
+/* coupe l'affichage du texte lorsqu'il est trop long, notamment au niveau de la vue de la liste des documents */
+.truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Adjust the width as needed */
+}
+
 @media (min-width: 768px) {
     .h1-titre-trop-long {
         font-size: 2rem; /* Taille de police fixe pour les écrans plus larges */

@@ -64,8 +64,8 @@
                                 <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${#temporals.format(d.dateModificationDocument,
                                     'dd MMM yyyy')}]]</a>
                             </td>
-                            <td th:if="${d.documentStatus != null}">
-                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${d.documentStatus}]]</a>
+                            <td class="wrap-text" th:if="${d.documentStatus != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-nonet">[[${d.documentStatus}]]</a>
                             </td>
                         </tr>
                     </th:block>
