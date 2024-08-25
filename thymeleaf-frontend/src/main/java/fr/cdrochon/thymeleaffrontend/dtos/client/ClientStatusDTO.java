@@ -3,6 +3,7 @@ package fr.cdrochon.thymeleaffrontend.dtos.client;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierStatusThymDTO;
 
 public enum ClientStatusDTO {
     ACTIF, INACTIF, HISTORISE;
@@ -19,5 +20,13 @@ public enum ClientStatusDTO {
     @JsonValue
     public String getLabel() {
         return this.name();
+    }
+    
+    /**
+     * Permet de retourner la valeur par défaut
+     * @return
+     */
+    public static ClientStatusDTO valeurClientStatutParDefaut() {
+        return ACTIF; // Retourne la valeur par défaut
     }
 }
