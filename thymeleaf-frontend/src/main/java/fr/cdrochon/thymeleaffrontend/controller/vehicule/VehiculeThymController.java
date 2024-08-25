@@ -63,7 +63,7 @@ public class VehiculeThymController {
                         //                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION,
                         //                                         "Bearer " + getJwtTokenValue()))
                         .retrieve()
-                        .bodyToFlux(VehiculeThymDTO.class)
+                        .bodyToFlux(VehiculeThymConvertDTO.class)
                         .collectList()
                         .flatMap(vehicules -> {
                             assert vehicules != null;
