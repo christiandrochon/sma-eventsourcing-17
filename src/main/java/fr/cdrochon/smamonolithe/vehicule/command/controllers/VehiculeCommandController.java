@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.command.controllers;
 
-import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeRestPostDTO;
+import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
 import fr.cdrochon.smamonolithe.vehicule.command.services.VehiculeCommandService;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -56,13 +56,13 @@ public class VehiculeCommandController {
      * @return CompletableFuture<String>
      */
     @GetMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<CompletableFuture<String>> createGarage(@RequestBody VehiculeRestPostDTO vehiculeRequestDTO) {
+    public CompletableFuture<CompletableFuture<String>> createGarage(@RequestBody VehiculeCommandDTO vehiculeRequestDTO) {
         
         return CompletableFuture.supplyAsync(() -> {
-            ResponseEntity<VehiculeRestPostDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createVehicule",
-                                                                                            vehiculeRequestDTO,
-                                                                                            VehiculeRestPostDTO.class);
-            VehiculeRestPostDTO responseDto = responseEntity.getBody();
+            ResponseEntity<VehiculeCommandDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createVehicule",
+                                                                                           vehiculeRequestDTO,
+                                                                                           VehiculeCommandDTO.class);
+            VehiculeCommandDTO responseDto = responseEntity.getBody();
             assert responseDto != null;
             return vehiculeCommandService.createVehicule(responseDto);
         });
@@ -91,7 +91,7 @@ public class VehiculeCommandController {
     @PostMapping(value = "/createVehicule", consumes = MediaType.APPLICATION_JSON_VALUE)
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
-    public CompletableFuture<String> createVehicule(@RequestBody VehiculeRestPostDTO vehiculeRestPostDTO) {
+    public CompletableFuture<String> createVehicule(@RequestBody VehiculeCommandDTO vehiculeRestPostDTO) {
         System.out.println("createVehicule");
         try {
             String url = externalServiceUrl + "/createVehicule";

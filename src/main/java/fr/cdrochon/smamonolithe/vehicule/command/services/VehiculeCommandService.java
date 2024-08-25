@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.vehicule.command.services;
 
 import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
-import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeRestPostDTO;
+import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class VehiculeCommandService {
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
     @Transactional
-    public CompletableFuture<String> createVehicule(VehiculeRestPostDTO vehiculeRestPostDTO) {
+    public CompletableFuture<String> createVehicule(VehiculeCommandDTO vehiculeRestPostDTO) {
         System.out.println("ClientCommandService.createClient");
         return commandGateway.send(new VehiculeCreateCommand(UUID.randomUUID().toString(),
                                                              vehiculeRestPostDTO.getImmatriculationVehicule(),

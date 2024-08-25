@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
-import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
@@ -45,7 +45,7 @@ public class VehiculeRestController {
      * @return VehiculeResponseDTO
      */
     @GetMapping(value = "/vehicules/immatriculation/{immatriculation}")
-    public VehiculeResponseDTO getVehiculeByImmatriculation(@PathVariable String immatriculation) {
+    public VehiculeQueryDTO getVehiculeByImmatriculation(@PathVariable String immatriculation) {
         Vehicule vehicule = vehiculeRepository.findByImmatriculationVehicule(immatriculation);
         return VehiculeMapper.convertVehiculeToVehiculeDTO(vehicule);
     }
@@ -59,11 +59,11 @@ public class VehiculeRestController {
     @GetMapping("/vehicules/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
-    public VehiculeResponseDTO getVehiculeById(@PathVariable String id) {
+    public VehiculeQueryDTO getVehiculeById(@PathVariable String id) {
         
         GetVehiculeDTO vehiculeDTO = new GetVehiculeDTO();
         vehiculeDTO.setId(id);
-        return queryGateway.query(vehiculeDTO, VehiculeResponseDTO.class).join();
+        return queryGateway.query(vehiculeDTO, VehiculeQueryDTO.class).join();
     }
     
     
@@ -75,7 +75,7 @@ public class VehiculeRestController {
      */
     @GetMapping("/vehicules")
     //    @PreAuthorize("hasAuthority('USER')")
-    public List<VehiculeResponseDTO> getAllVehicules() {
+    public List<VehiculeQueryDTO> getAllVehicules() {
         List<Vehicule> vehicules = vehiculeRepository.findAll();
         return vehicules.stream()
                         .map(VehiculeMapper::convertVehiculeToVehiculeDTO)

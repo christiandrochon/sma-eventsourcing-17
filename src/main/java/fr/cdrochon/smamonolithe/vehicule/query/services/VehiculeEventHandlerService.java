@@ -5,7 +5,7 @@ import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetAllVehiculesDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetImmatDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
-import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
@@ -64,7 +64,7 @@ public class VehiculeEventHandlerService {
      * @return VehiculeResponseDTO contenant les informations du vehicule
      */
     @QueryHandler
-    public VehiculeResponseDTO on(GetVehiculeDTO getVehiculeDTO) {
+    public VehiculeQueryDTO on(GetVehiculeDTO getVehiculeDTO) {
         return vehiculeRepository.findById(getVehiculeDTO.getId())
                                  .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
                                  .orElseThrow(() -> new EntityNotFoundException("Vehicule non trouvé !"));
@@ -77,12 +77,12 @@ public class VehiculeEventHandlerService {
      * @return VehiculeResponseDTO contenant les informations du vehicule
      */
     @QueryHandler
-    public VehiculeResponseDTO on(GetImmatDTO getImmatDTO) {
+    public VehiculeQueryDTO on(GetImmatDTO getImmatDTO) {
         Vehicule vehicule = vehiculeRepository.findByImmatriculationVehicule(getImmatDTO.getImmatriculation());
         if(vehicule == null) {
             throw new EntityNotFoundException("Vehicule non trouvé !");
         }
-        VehiculeResponseDTO vehiculeResponseDTO = VehiculeMapper.convertVehiculeToVehiculeDTO(vehicule);
+        VehiculeQueryDTO vehiculeResponseDTO = VehiculeMapper.convertVehiculeToVehiculeDTO(vehicule);
         return vehiculeResponseDTO;
     }
     
@@ -92,7 +92,7 @@ public class VehiculeEventHandlerService {
      * @return List<VehiculeResponseDTO> contenant les informations de tous les vehicules
      */
     @QueryHandler
-    public List<VehiculeResponseDTO> on(GetAllVehiculesDTO getAllVehiculesDTO) {
+    public List<VehiculeQueryDTO> on(GetAllVehiculesDTO getAllVehiculesDTO) {
         List<Vehicule> vehicules = vehiculeRepository.findAll();
         return vehicules.stream().map(VehiculeMapper::convertVehiculeToVehiculeDTO).collect(Collectors.toList());
     }

@@ -4,15 +4,14 @@ import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import fr.cdrochon.smamonolithe.dossier.events.DossierCreatedEvent;
-import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierResponseDTO;
+import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierQueryDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
-import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierMapper;
+import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierQueryMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
-import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.queryhandling.QueryHandler;
 import org.hibernate.TransactionException;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,10 +30,10 @@ public class DossierEventHandlerService {
     private final DossierRepository dossierRepository;
     private final ClientRepository clientRepository;
     private final VehiculeRepository vehiculeRepository;
-    private final DossierMapper dossierMapper;
+    private final DossierQueryMapper dossierMapper;
     
     public DossierEventHandlerService(DossierRepository dossierRepository, ClientRepository clientRepository, VehiculeRepository vehiculeRepository,
-                                      DossierMapper dossierMapper) {
+                                      DossierQueryMapper dossierMapper) {
         this.dossierRepository = dossierRepository;
         this.clientRepository = clientRepository;
         this.vehiculeRepository = vehiculeRepository;
@@ -48,46 +48,46 @@ public class DossierEventHandlerService {
      * @param event DossierCreatedEvent event qui est declenché lors de la creation d'un dossier
      */
     @EventHandler
-    public void on(DossierCreatedEvent event, EventMessage<DossierCreatedEvent> eventMessage) {
+    public void on(DossierCreatedEvent event) {
         log.info("********************************");
-        log.info("DossierCreatedEvent received !!!!!!!!!!!!!!!!!!!!!!");
-        log.info("Identifiant d'evenement : " + event.getId());
-        log.info("Identifiant d'agregat : " + eventMessage.getIdentifier());
+        log.info("SAUVEGARDE DU DOSSIER !!!!!!!!!!!!!!!!!!!!!!");
         
         try {
             Dossier dossier = new Dossier();
             
-            dossier.setId(event.getId());
-            dossier.setNomDossier(event.getNomDossier());
-            dossier.setDateCreationDossier(event.getDateCreationDossier());
-            dossier.setDateModificationDossier(event.getDateModificationDossier());
-            dossier.setDossierStatus(event.getDossierStatus());
-            dossier.setClient(event.getClient());
-            dossier.setVehicule(event.getVehicule());
             
             Client client = new Client();
-            client.setId(event.getClientId());
+            client.setId(UUID.randomUUID().toString());
             client.setNomClient(event.getClient().getNomClient());
             client.setPrenomClient(event.getClient().getPrenomClient());
             client.setAdresse(event.getClient().getAdresse());
             client.setTelClient(event.getClient().getTelClient());
             client.setMailClient(event.getClient().getMailClient());
             client.setClientStatus(event.getClient().getClientStatus());
-            clientRepository.save(client);
+            
             
             Vehicule vehicule = new Vehicule();
-            vehicule.setIdVehicule(event.getVehiculeId());
+            vehicule.setIdVehicule(UUID.randomUUID().toString());
             vehicule.setImmatriculationVehicule(event.getVehicule().getImmatriculationVehicule());
             vehicule.setDateMiseEnCirculationVehicule(event.getVehicule().getDateMiseEnCirculationVehicule());
             vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());
-            vehiculeRepository.save(vehicule);
             
-            //            vehiculeRepository.save(event.getVehicule());
-            //            clientRepository.save(event.getClient());
+            
+            dossier.setId(event.getId());
+            dossier.setNomDossier(event.getNomDossier());
+            dossier.setDateCreationDossier(event.getDateCreationDossier());
+            dossier.setDateModificationDossier(event.getDateModificationDossier());
+            dossier.setDossierStatus(event.getDossierStatus());
+            dossier.setClient(client);
+            dossier.setVehicule(vehicule);
+            
+            
+            clientRepository.save(client);
+            vehiculeRepository.save(vehicule);
             dossierRepository.save(dossier);
             
         } catch(Exception e) {
-            System.out.println("ERRRRRROOR : " + e.getMessage());
+            System.out.println("ERREUR DE SAVE EN BDD : " + e.getMessage());
             throw new TransactionException("Erreur lors de la creation du dossier : " + e.getMessage());
         }
     }
@@ -99,8 +99,8 @@ public class DossierEventHandlerService {
      * @return DossierResponseDTO contenant les informations du dossier
      */
     @QueryHandler
-    public DossierResponseDTO on(GetDossierDTO getDossierDTO) {
-        return dossierRepository.findById(getDossierDTO.getId()).map(DossierMapper::convertDossierToDossierDTO)
+    public DossierQueryDTO on(GetDossierDTO getDossierDTO) {
+        return dossierRepository.findById(getDossierDTO.getId()).map(DossierQueryMapper::convertDossierToDossierDTO)
                                 .orElseThrow(() -> new EntityNotFoundException("Dossier non trouvé"));
     }
     
@@ -110,8 +110,8 @@ public class DossierEventHandlerService {
      * @return List<DossierResponseDTO> contenant les informations de tous les dossiers
      */
     @QueryHandler
-    public List<DossierResponseDTO> on() {
+    public List<DossierQueryDTO> on() {
         List<Dossier> dossiers = dossierRepository.findAll();
-        return dossiers.stream().map(DossierMapper::convertDossierToDossierDTO).collect(Collectors.toList());
+        return dossiers.stream().map(DossierQueryMapper::convertDossierToDossierDTO).collect(Collectors.toList());
     }
 }

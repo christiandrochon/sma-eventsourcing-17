@@ -2,7 +2,7 @@ package fr.cdrochon.smamonolithe.client.query.controllers;
 
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
-import fr.cdrochon.smamonolithe.client.query.mapper.ClientMapper;
+import fr.cdrochon.smamonolithe.client.query.mapper.ClientQueryMapper;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -43,7 +43,7 @@ public class ClientQueryController {
         CompletableFuture<ClientQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
                     ClientQueryDTO client = clientRepository.findById(id)
-                                                            .map(ClientMapper::convertClientToClientDTO)
+                                                            .map(ClientQueryMapper::convertClientToClientDTO)
                                                             .orElse(null);
                     return client;
                 });
@@ -63,7 +63,7 @@ public class ClientQueryController {
             List<ClientQueryDTO> clients =
                     clientRepository.findAll()
                                     .stream()
-                                    .map(ClientMapper::convertClientToClientDTO)
+                                    .map(ClientQueryMapper::convertClientToClientDTO)
                                     .collect(Collectors.toList());
             return clients;
         });

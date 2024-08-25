@@ -4,7 +4,7 @@ import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
-import fr.cdrochon.smamonolithe.client.query.mapper.ClientMapper;
+import fr.cdrochon.smamonolithe.client.query.mapper.ClientQueryMapper;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ClientEventHandlerService {
     
     private final ClientRepository clientRepository;
-
+    
     
     public ClientEventHandlerService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
@@ -54,12 +54,13 @@ public class ClientEventHandlerService {
     
     /**
      * Recupere un client avec son id
+     *
      * @param getClientQueryDTO DTO contenant l'id du client à recuperer
      * @return ClientResponseDTO
      */
     @QueryHandler
     public ClientQueryDTO on(GetClientDTO getClientQueryDTO) {
-        return clientRepository.findById(getClientQueryDTO.getId()).map(ClientMapper::convertClientToClientDTO)
+        return clientRepository.findById(getClientQueryDTO.getId()).map(ClientQueryMapper::convertClientToClientDTO)
                                .orElseThrow(() -> new EntityNotFoundException("Client non trouvé"));
     }
     
@@ -71,6 +72,6 @@ public class ClientEventHandlerService {
     @QueryHandler
     public List<ClientQueryDTO> on() {
         List<Client> clients = clientRepository.findAll();
-        return clients.stream().map(ClientMapper::convertClientToClientDTO).collect(Collectors.toList());
+        return clients.stream().map(ClientQueryMapper::convertClientToClientDTO).collect(Collectors.toList());
     }
 }

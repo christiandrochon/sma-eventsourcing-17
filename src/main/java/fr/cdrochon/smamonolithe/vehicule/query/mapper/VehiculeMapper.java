@@ -1,17 +1,17 @@
 package fr.cdrochon.smamonolithe.vehicule.query.mapper;
 
-import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeResponseDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import org.springframework.stereotype.Component;
 
 @Component
 public class VehiculeMapper {
     
-    public static VehiculeResponseDTO convertVehiculeToVehiculeDTO(Vehicule vehicule){
-        if(vehicule == null){
+    public static VehiculeQueryDTO convertVehiculeToVehiculeDTO(Vehicule vehicule) {
+        if(vehicule == null) {
             return null;
         }
-        VehiculeResponseDTO dto = new VehiculeResponseDTO();
+        VehiculeQueryDTO dto = new VehiculeQueryDTO();
         dto.setIdVehicule(vehicule.getIdVehicule());
         dto.setImmatriculationVehicule(vehicule.getImmatriculationVehicule());
         dto.setDateMiseEnCirculationVehicule(vehicule.getDateMiseEnCirculationVehicule());

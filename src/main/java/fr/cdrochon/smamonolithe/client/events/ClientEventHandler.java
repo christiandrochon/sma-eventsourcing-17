@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
 
-import static fr.cdrochon.smamonolithe.client.query.mapper.AdresseMapper.convertAdresseToClientAdresseDTO;
+import static fr.cdrochon.smamonolithe.client.query.mapper.AdresseQueryMapper.convertAdresseToClientAdresseDTO;
 
 @Component
 @Slf4j
