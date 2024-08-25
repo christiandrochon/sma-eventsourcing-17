@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.client.command.dtos;
 
-import fr.cdrochon.smamonolithe.client.query.entities.ClientStatus;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
+import fr.cdrochon.smamonolithe.client.query.entities.ClientStatus;
 import lombok.*;
 /**
  * Permet de faire le lien entre les services command de l'appli et le monde exteieur
@@ -33,5 +33,4 @@ public class ClientCommandDTO {
     public ClientCommandDTO(ClientAdresseDTO adresseClient) {
         this.adresse = adresseClient;
     }
-
 }

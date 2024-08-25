@@ -1,7 +1,6 @@
 package fr.cdrochon.smamonolithe.client.query.entities;
 
 
-import fr.cdrochon.smamonolithe.client.command.enums.Pays;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import lombok.*;
 
