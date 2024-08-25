@@ -6,8 +6,8 @@ import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierStatusThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -269,18 +269,12 @@ public class CreateDossierThymController {
      * @param immatriculation immatriculation du vehicule
      * @return Boolean
      */
-    Mono<Boolean> immatriculationExiste(String immatriculation) {
+    private Mono<Boolean> immatriculationExiste(String immatriculation) {
         return webClient.get()
                         .uri("/queries/vehiculeExists/" + immatriculation)
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .bodyToMono(Boolean.class);
-        //                        .block();
-        //        return restClient.get()
-        //                         .uri("/queries/vehiculeExists/" + immatriculation)
-        //                         .accept(MediaType.APPLICATION_JSON)
-        //                         .retrieve()
-        //                         .body(Boolean.class);
     }
     
     
