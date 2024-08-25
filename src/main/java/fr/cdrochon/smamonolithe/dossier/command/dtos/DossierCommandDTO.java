@@ -9,7 +9,7 @@ import java.time.Instant;
 
 /**
  * Permet de faire le lien entre les services command de l'appli et le monde exteieur
- *
+ *<p>
  * Les noms des attributs doivent correspondre à ceux du dto
  */
 @NoArgsConstructor

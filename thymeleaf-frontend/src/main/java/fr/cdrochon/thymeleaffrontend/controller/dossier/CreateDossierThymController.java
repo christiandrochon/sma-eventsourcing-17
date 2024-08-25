@@ -1,7 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.controller.dossier;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientStatusDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
@@ -10,7 +8,6 @@ import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +40,6 @@ public class CreateDossierThymController {
     
     @Autowired
     private WebClient webClient;
-    //    @Autowired
-    //    private RestClient restClient;
     
     /**
      * Affiche le formulaire de création d'un dossier
@@ -224,7 +219,7 @@ public class CreateDossierThymController {
      * @return DossierThymConvertDTO
      */
     private DossierThymConvertDTO convertDossierDTO(DossierThymDTO dossierThymDTO) {
-       
+        
         try {
             
             //conversion du vehicule (à cause des dates Instant <> String)
@@ -267,7 +262,6 @@ public class CreateDossierThymController {
         }
     }
     
-
     
     /**
      * Empêche la création d'un vehicule si l'immatriculation existe déjà. Vérifie si un vehicule existe en fonction de son immatriculation.
