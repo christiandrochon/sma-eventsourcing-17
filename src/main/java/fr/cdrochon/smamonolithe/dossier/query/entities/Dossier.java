@@ -1,16 +1,15 @@
 package fr.cdrochon.smamonolithe.dossier.query.entities;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.List;
 
 @Entity
 @Data
@@ -19,6 +18,7 @@ import java.util.List;
 @Builder
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Dossier {
+    
     @Id
     private String id;
     private String nomDossier;
@@ -29,18 +29,18 @@ public class Dossier {
     @JoinColumn(name = "client_id")
     //relation qui doit etre serialisée
     @JsonManagedReference("dossier-client")
-//    @JsonManagedReference("dossier-client")
-//    @JsonManagedReference("client-dossier")
-//    @JsonIgnore
+    //    @JsonManagedReference("dossier-client")
+    //    @JsonManagedReference("client-dossier")
+    //    @JsonIgnore
     private Client client;
-
+    
     @OneToOne
     @JoinColumn(name = "vehicule_id")
     //relation qui doit etre serialisée
     @JsonManagedReference("dossier-vehicule")
-//    @JsonManagedReference("dossier-vehicule")
-//    @JsonManagedReference("vehicule-dossier")
-//    @JsonIgnore
+    //    @JsonManagedReference("dossier-vehicule")
+    //    @JsonManagedReference("vehicule-dossier")
+    //    @JsonIgnore
     private Vehicule vehicule;
     @Enumerated
     private DossierStatus dossierStatus;

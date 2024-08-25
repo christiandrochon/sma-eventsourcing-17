@@ -1,7 +1,5 @@
 package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
-import fr.cdrochon.smamonolithe.document.query.dtos.DocumentQueryDTO;
-import fr.cdrochon.smamonolithe.document.query.mapper.DocumentQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
@@ -20,6 +18,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path = "/queries")
 public class VehiculeQueryController {
+    
     private final VehiculeRepository vehiculeRepository;
     
     public VehiculeQueryController(VehiculeRepository vehiculeRepository) {
@@ -27,8 +26,7 @@ public class VehiculeQueryController {
     }
     
     /**
-     * Empêche la création d'un vehicule si l'immatriculation existe déjà.
-     * Vérifie si un vehicule existe en fonction de son immatriculation.
+     * Empêche la création d'un vehicule si l'immatriculation existe déjà. Vérifie si un vehicule existe en fonction de son immatriculation.
      *
      * @param immatriculation immatriculation du vehicule
      * @return Boolean
@@ -74,8 +72,8 @@ public class VehiculeQueryController {
     
     
     /**
-     * Renvoi tous les vehicules.
-     * On n'utilise pas l'interface Repository usuelle, mais on créé une classe destinée à ca, qui renvoi le type de DTO sous forme de multiples instances
+     * Renvoi tous les vehicules. On n'utilise pas l'interface Repository usuelle, mais on créé une classe destinée à ca, qui renvoi le type de DTO sous forme
+     * de multiples instances
      *
      * @return List<VehiculeResponseDTO> comprenant l'adresse sous forme de DTO
      */

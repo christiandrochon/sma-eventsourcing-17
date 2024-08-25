@@ -33,13 +33,6 @@ import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.conve
 @Slf4j
 public class CreateVehiculeThymController {
     
-    //    @Value("${external.service.url}")
-    //    private String externalServiceUrl;
-    //
-    //    private final RestClient restClient;
-    //    public CreateVehiculeThymController(RestClient restClient) {
-    //        this.restClient = restClient;
-    //    }
     @Autowired
     private WebClient webClient;
     
@@ -243,73 +236,4 @@ public class CreateVehiculeThymController {
                         .retrieve()
                         .bodyToMono(Boolean.class);
     }
-    
-    
-    //    public String createVehicule(@Valid @ModelAttribute("vehiculePostDTO") VehiculeThymDTO vehiculePostDTO,
-    //                                 BindingResult result,
-    //                                 RedirectAttributes redirectAttributes,
-    //                                 Model model) {
-    //
-    //        if(result.hasErrors()) {
-    //            log.error("LOG ERROR : {}", result.getAllErrors());
-    //            model.addAttribute("vehiculePostDTO", vehiculePostDTO);
-    //            model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
-    //            //ce return conserve l'etat du form et permet de reafficher les erreurs de validation courantes
-    //            return "vehicule/createVehiculeForm";
-    //        }
-    //        try {
-    //
-    //            if(immatriculationExiste(vehiculePostDTO.getImmatriculationVehicule()) && vehiculePostDTO.getImmatriculationVehicule() != null) {
-    //                // Numéro d'immatriculation déjà existant
-    //                model.addAttribute("vehiculePostDTO", vehiculePostDTO);
-    //                model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
-    //                model.addAttribute("immatriculationExisteError",
-    //                                   "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
-    //                return "vehicule/createVehiculeForm";
-    //            }
-    //
-    //            VehiculeThymConvertDTO vehiculeDateConvertDTO = new VehiculeThymConvertDTO();
-    //
-    //            vehiculeDateConvertDTO.setImmatriculationVehicule(vehiculePostDTO.getImmatriculationVehicule());
-    //            //Transformation du String en Instant
-    //            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    //            LocalDate localDate = LocalDate.parse(vehiculePostDTO.getDateMiseEnCirculationVehicule(), formatter);
-    //            Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-    //            vehiculeDateConvertDTO.setDateMiseEnCirculationVehicule(instant);
-    //
-    //            vehiculeDateConvertDTO.setVehiculeStatus(vehiculePostDTO.getVehiculeStatus());
-    //
-    //            //TODO : rendre aync. Attention, lors du debug, la liste des vehicules n'est pas à jour lorsque je cree un nouveau vehicule. Mais en mlode
-    //            // normal, c'est ok
-    //            restClient.post().uri(externalServiceUrl + "/commands/createVehicule")
-    //                      //                             .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-    //                      //                      .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-    //                      .contentType(MediaType.APPLICATION_JSON)
-    //                      .body(vehiculeDateConvertDTO)
-    //                      .retrieve()
-    //                      .toBodilessEntity();
-    //
-    //            redirectAttributes.addFlashAttribute("successMessage", "Vehicule créé !");
-    //            return "redirect:/vehicules";
-    //        } catch(Exception e) {
-    //            log.error("An error occurred: {}", e.getMessage());
-    //            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred: " + e.getMessage());
-    //            redirectAttributes.addFlashAttribute("vehiculePostDTO", vehiculePostDTO); // Re-add vehiculeDTO to the model if there's an error
-    //            return "redirect:/createVehicule";
-    //        }
-    //    }
-    
-    //    /**
-    //     * Empêche la création d'un vehicule si l'immatriculation existe déjà.
-    //     *
-    //     * @param immatriculation immatriculation du vehicule
-    //     * @return Boolean
-    //     */
-    //    Boolean immatriculationExiste(@PathVariable String immatriculation) {
-    //        return restClient.get()
-    //                         .uri("/queries/vehiculeExists/" + immatriculation)
-    //                         .accept(MediaType.APPLICATION_JSON)
-    //                         .retrieve()
-    //                         .body(Boolean.class);
-    //    }
 }

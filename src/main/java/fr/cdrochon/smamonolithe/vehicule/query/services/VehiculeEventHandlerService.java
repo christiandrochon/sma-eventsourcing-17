@@ -78,8 +78,7 @@ public class VehiculeEventHandlerService {
         if(vehicule == null) {
             throw new EntityNotFoundException("Vehicule non trouvé !");
         }
-        VehiculeQueryDTO vehiculeResponseDTO = VehiculeQueryMapper.convertVehiculeToVehiculeDTO(vehicule);
-        return vehiculeResponseDTO;
+        return VehiculeQueryMapper.convertVehiculeToVehiculeDTO(vehicule);
     }
     
     /**

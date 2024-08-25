@@ -16,9 +16,6 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class GarageThymController {
     
-    @Value("${external.service.url}")
-    private String externalServiceUrl;
-    
     @Autowired
     private WebClient webClient;
     
@@ -33,7 +30,7 @@ public class GarageThymController {
     //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getGarageByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
-                        .uri(externalServiceUrl + "/queries/garages/" + id)
+                        .uri("/queries/garages/" + id)
                         //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
                         //                                  getJwtTokenValue()))
                         .retrieve()
@@ -55,7 +52,7 @@ public class GarageThymController {
     //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getGaragesAsyncClient(Model model) {
         return webClient.get()
-                        .uri(externalServiceUrl + "/queries/garages")
+                        .uri("/queries/garages")
                         //                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION,
                         //                                         "Bearer " + getJwtTokenValue()))
                         .retrieve()

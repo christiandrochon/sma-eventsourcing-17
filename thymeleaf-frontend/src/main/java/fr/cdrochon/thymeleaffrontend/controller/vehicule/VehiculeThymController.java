@@ -1,7 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +20,14 @@ public class VehiculeThymController {
     @Autowired
     private WebClient webClient;
     
+    /**
+     * Affiche les détails d'un vehicule spécifique, ou renvoi les informations saisies par l'utilisateur en cas d'erreur
+     *
+     * @param id                 id du vehicule
+     * @param model              model de la vue vehicule/view
+     * @param redirectAttributes attributs de redirection
+     * @return la vue vehicule/view
+     */
     @GetMapping("/vehicule/{id}")
     //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getVehiculeByIdAsync(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
@@ -43,18 +50,14 @@ public class VehiculeThymController {
                 });
     }
     
-    //    //    @PreAuthorize("hasAuthority('USER')")
-    //    public String vehiculeById(@PathVariable String id, Model model) {
-    //        VehiculeDateConvertDTO vehicule = restClient.get().uri(externalServiceUrl + "/queries/vehicules/" + id)
-    //                                                    //                                      .headers(httpHeaders -> httpHeaders.set(HttpHeaders
-    //                                                    //                                      .AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-    //                                                    .retrieve().body(new ParameterizedTypeReference<>() {
-    //                });
-    //        model.addAttribute("vehicule", vehicule);
-    //        return "vehicule/view";
-    //    }
     
-    //TODO : rendre aync. Attention, lors du debug, la liste des vehicules n'est pas à jour lorsque je cree un nouveau vehicule. Mais en mlode normal, c'est ok
+    /**
+     * Affiche la liste de tous les vehicules enregistrés
+     *
+     * @param model              model de la vue vehicule/vehicules
+     * @param redirectAttributes attributs de redirection
+     * @return la vue vehicule/vehicules
+     */
     @GetMapping("/vehicules")
     //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getVehiculesAsync(Model model, RedirectAttributes redirectAttributes) {
@@ -98,13 +101,4 @@ public class VehiculeThymController {
                             return Mono.just("redirect:/error");
                         });
     }
-    //    public String vehicules(Model model) {
-    //        List<VehiculeThymConvertDTO> vehicules = restClient.get().uri(externalServiceUrl + "/queries/vehicules")
-    //                                                           //.headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
-    //                                                           getJwtTokenValue()))
-    //                                                           .retrieve().body(new ParameterizedTypeReference<>() {
-    //                });
-    //        model.addAttribute("vehicules", vehicules);
-    //        return "vehicule/vehicules";
-    //    }
 }
