@@ -1,120 +1,55 @@
 package fr.cdrochon.smamonolithe.document.command.controllers;
 
-import fr.cdrochon.smamonolithe.document.command.dtos.DocumentRestDTO;
+import fr.cdrochon.smamonolithe.document.command.dtos.DocumentCommandDTO;
 import fr.cdrochon.smamonolithe.document.command.services.DocumentCommandService;
-import org.axonframework.commandhandling.gateway.CommandGateway;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventsourcing.eventstore.EventStore;
-import org.axonframework.queryhandling.QueryGateway;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import reactor.core.publisher.Mono;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-import static org.springframework.http.HttpHeaders.USER_AGENT;
-
 @RestController
+@Slf4j
 @RequestMapping("/commands")
 public class DocumentCommandController {
     
-    @Value("${external.service.url}")
-    private String externalServiceUrl;
-    private final CommandGateway commandGateway;
-    private final QueryGateway queryGateway;
     private final EventStore eventStore;
-    private final RestTemplate restTemplate;
+    
     private final DocumentCommandService documentCommandService;
     
-    public DocumentCommandController(CommandGateway commandGateway, QueryGateway queryGateway, EventStore eventStore, RestTemplate restTemplate,
-                                     DocumentCommandService documentCommandService) {
-        this.commandGateway = commandGateway;
-        this.queryGateway = queryGateway;
+    public DocumentCommandController(DocumentCommandService documentCommandService, EventStore eventStore) {
         this.eventStore = eventStore;
-        this.restTemplate = restTemplate;
         this.documentCommandService = documentCommandService;
     }
     
     /**
-     * Recoit les informations du dto, et renvoi une commande avec les attributs du dto
-     * <p>
-     * Les attributs de la command doivent correspondre au dto. Le controller ne fait que retourner le dto et c'est le command handler qui va se charger
-     * d'executer cette commande
-     * <p>
-     * L'id ne peut pas etre negatif
+     * Création d'un document de manière asynchrone
      *
-     * @param documentRestDTO DTO contenant les informations du garage a creer
-     * @return CompletableFuture<String>
+     * @param documentCommandDTO DTO de création d'un document
+     * @return ResponseEntity<DocumentCommandDTO> DTO de création d'un document
      */
-    @GetMapping(value = "/createDocument", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public CompletableFuture<CompletableFuture<String>> createDocumentGet(@RequestBody DocumentRestDTO documentRestDTO) {
-        return CompletableFuture.supplyAsync(() -> {
-            ResponseEntity<DocumentRestDTO> responseEntity = restTemplate.postForEntity(externalServiceUrl + "/createDocument",
-                                                                                          documentRestDTO,
-                                                                                          DocumentRestDTO.class);
-            DocumentRestDTO responseDto = responseEntity.getBody();
-            assert responseDto != null;
-            return documentCommandService.createDocument(responseDto);
-        });
-    }
-    
-    /**
-     * Recoit les informations du dto, et renvoi un une commande avec les attributs du dto
-     * <p>
-     * Les attributs de la command doivcent correspondre au dto. Le controller ne fait que retourner le dto et c'est le command handler qui va se charger
-     * d'executer cette commande
-     * <p>
-     * L'id ne peut pas etre negatif
-     *
-     * @param documentDTO DTO contenant les informations du document a creer
-     * @return CompletableFuture<String>
-     */
-    @PostMapping(value = "/createDocument", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/createDocument")
     //    @PreAuthorize("hasRole('USER')")
     //    @PreAuthorize("hasAuthority('USER')")
-    public CompletableFuture<String> createDocumentPost(@RequestBody DocumentRestDTO documentDTO) {
-        
-        try {
-            System.out.println(documentDTO.toString());
-            String url = externalServiceUrl + "/createDocument";
-            HttpURLConnection httpClient = (HttpURLConnection) new URL(url).openConnection();httpClient.setRequestProperty("User-Agent", USER_AGENT);
-            //            httpClient.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue());
-            httpClient.setRequestMethod("GET");
-            int responseCode = httpClient.getResponseCode();
-            System.out.println("GET Response Code :: " + responseCode);
-            
-            if(responseCode == HttpURLConnection.HTTP_OK) { // success
-                BufferedReader in = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                
-                while((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-                
-                return documentCommandService.createDocument(documentDTO);
-            }
-            else {
-                System.out.println("GET request not worked, response code: " + responseCode);
-                return CompletableFuture.completedFuture("Error: Unexpected response code " + responseCode);
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-            return CompletableFuture.completedFuture("Error: " + e.getMessage());
-        }
+    public Mono<ResponseEntity<DocumentCommandDTO>> createClientAsync(@RequestBody DocumentCommandDTO documentCommandDTO) {
+        return Mono.fromFuture(documentCommandService.createDocument(documentCommandDTO))
+                   .flatMap(document -> {
+                       log.info("Garage créé : " + document.getId());
+                       return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(document));
+                   })
+                   .onErrorResume(ex -> {
+                       log.error("Erreur lors de la création du garage : " + ex.getMessage());
+                       return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                   });
     }
     
+    
     /**
-     * Tester les events du store. On utilise l'id de l'agregat pour consulter l'etat de l'eventstore (json avec tous les events enregistrés)
-     * Le format renvoyé est du json dans swagger
+     * Tester les events du store. On utilise l'id de l'agregat pour consulter l'etat de l'eventstore (json avec tous les events enregistrés) Le format renvoyé
+     * est du json dans swagger
      *
      * @param id id de l'agregat
      * @return Stream
