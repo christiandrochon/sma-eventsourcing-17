@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.document.command.enums;
 
-public enum DocumentStatus {
+public enum DocumentStatusDTO {
     CREATED,
     SENT,
     PAID,

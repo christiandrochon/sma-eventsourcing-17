@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.document.query.dtos;
 
-import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
+import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DocumentResponseDTO {
+public class DocumentQueryDTO {
     
     private String id;
     private String nomDocument;
@@ -19,5 +19,5 @@ public class DocumentResponseDTO {
     private TypeDocument typeDocument;
     private Instant dateCreationDocument;
     private Instant dateModificationDocument;
-    private DocumentStatus documentStatus;
+    private DocumentStatusDTO documentStatus;
 }

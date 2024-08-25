@@ -1,6 +1,6 @@
 package fr.cdrochon.smamonolithe.document.events;
 
-import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
+import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import lombok.Getter;
 
@@ -21,10 +21,10 @@ public class DocumentCreatedEvent extends DocumentBaseEvent<String> {
     private final TypeDocument typeDocument;
     private final Instant dateCreationDocument;
     private final Instant dateModificationDocument;
-    private final DocumentStatus documentStatus;
+    private final DocumentStatusDTO documentStatus;
     
     public DocumentCreatedEvent(String id, String nomDocument, String titreDocument, String emetteurDuDocument, TypeDocument typeDocument,
-                                Instant dateCreationDocument, Instant  dateModificationDocument, DocumentStatus documentStatus) {
+                                Instant dateCreationDocument, Instant  dateModificationDocument, DocumentStatusDTO documentStatus) {
         super(id);
         this.nomDocument = nomDocument;
         this.titreDocument = titreDocument;

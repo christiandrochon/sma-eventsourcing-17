@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.document.query.entities;
 
 
-import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
+import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -30,7 +30,7 @@ public class Document {
     @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant dateModificationDocument;
     @Enumerated
-    private DocumentStatus documentStatus;
+    private DocumentStatusDTO documentStatus;
     //communication inter ms
     //    @Transient
     //    private Vehicule vehicule;

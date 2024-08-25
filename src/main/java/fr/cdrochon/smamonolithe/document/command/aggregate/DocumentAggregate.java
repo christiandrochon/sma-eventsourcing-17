@@ -1,10 +1,13 @@
 package fr.cdrochon.smamonolithe.document.command.aggregate;
 
 import fr.cdrochon.smamonolithe.document.command.commands.DocumentCreateCommand;
-import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatus;
+import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
 import fr.cdrochon.smamonolithe.document.events.DocumentCreatedEvent;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -14,7 +17,11 @@ import org.axonframework.spring.stereotype.Aggregate;
 import java.time.Instant;
 
 @Aggregate
+@Getter
+@Setter
+@Slf4j
 public class DocumentAggregate {
+    
     @AggregateIdentifier
     private String idDocument;
     private String nomDocument;
@@ -23,18 +30,20 @@ public class DocumentAggregate {
     private TypeDocument typeDocument;
     private Instant dateCreationDocument;
     private Instant dateModificationDocument;
-    private DocumentStatus documentStatus;
+    private DocumentStatusDTO documentStatus;
     
     public DocumentAggregate() {
         //requis par Axon
     }
     
     /**
-     * FONCTION DE DECISION (regle metier)
+     * <str>Fonction de décision</str> = vérifie règle métier
      * <p>
-     * Publiation d'un event via AggregateLifeCycle.apply() et l'enregistre dans l'event store
+     * Instancie un nouvel agrégat à chaque requête reçue dans le bus de commande via le @CommandHandler qui subscribe au commandBus.
+     * <p>
+     * AggregateLifecycle.apply() = publication de l'event
      *
-     * @param createDocumentCommand command
+     * @param createDocumentCommand Commande de création d'un document
      */
     @CommandHandler
     public DocumentAggregate(DocumentCreateCommand createDocumentCommand) {
@@ -44,8 +53,8 @@ public class DocumentAggregate {
             throw new CreatedGarageException("Le document doit exister ! ");
         }
         
-        System.out.println("**************************");
-        System.out.println("Publication de l'evenement = commandHandler dans aggregate");
+        
+        log.info("Publication de l'evenement = commandHandler dans aggregate");
         AggregateLifecycle.apply(new DocumentCreatedEvent(createDocumentCommand.getId(),
                                                           createDocumentCommand.getNomDocument(),
                                                           createDocumentCommand.getTitreDocument(),
@@ -55,21 +64,17 @@ public class DocumentAggregate {
                                                           createDocumentCommand.getDateModificationDocument(),
                                                           createDocumentCommand.getDocumentStatus()
         ));
-        System.out.println("**************************");
     }
     
     /**
-     * FONCTION D'EVOLUTION (muter l'etat de l'agregat)
-     * <p>
-     * Pour chaque event de type DocumentCreatedEvent qui arrive dans l'eventstore, on va muter l'etat de l'application
+     * <str>Fonction de projection</str> = met à jour l'état de l'agrégat
      *
-     * @param event DocumentCreatedEvent
+     * @param event l'event DocumentCreatedEvent
      */
     @EventSourcingHandler
     public void on(DocumentCreatedEvent event) {
         
-        System.out.println("**********************");
-        System.out.println("Agregat Enventsourcinghandler ");
+        log.info("Agregat Enventsourcinghandler ");
         this.idDocument = event.getId();
         this.nomDocument = event.getNomDocument();
         this.titreDocument = event.getTitreDocument();
@@ -78,6 +83,5 @@ public class DocumentAggregate {
         this.dateCreationDocument = event.getDateCreationDocument();
         this.dateModificationDocument = event.getDateModificationDocument();
         this.documentStatus = event.getDocumentStatus();
-        //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }
 }
