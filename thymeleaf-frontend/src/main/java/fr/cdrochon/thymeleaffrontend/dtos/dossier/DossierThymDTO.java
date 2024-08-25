@@ -1,10 +1,8 @@
 package fr.cdrochon.thymeleaffrontend.dtos.dossier;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculePostDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -24,7 +22,6 @@ public class DossierThymDTO {
     @Valid
     private ClientThymDTO client;
     @Valid
-    private VehiculePostDTO vehicule;
-    @NotNull(message = "Le status du dossier est obligatoire, merci de le renseigner.")
-    private DossierStatusDTO dossierStatus;
+    private VehiculeThymDTO vehicule;
+    private DossierStatusThymDTO dossierStatus;
 }

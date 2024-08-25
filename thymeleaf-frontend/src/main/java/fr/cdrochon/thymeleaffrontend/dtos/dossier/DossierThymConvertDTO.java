@@ -1,6 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.dossier;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
 import lombok.*;
@@ -18,16 +17,10 @@ import java.time.Instant;
 public class DossierThymConvertDTO {
     
     private String id;
-    @JsonProperty("nomDossier")
     private String nomDossier;
-    @JsonProperty("dateCreationDossier")
     private Instant dateCreationDossier;
-    @JsonProperty("dateModificationDossier")
     private Instant dateModificationDossier;
-    @JsonProperty("client")
     private ClientThymDTO client;
-    @JsonProperty("vehicule")
     private VehiculeDateConvertDTO vehicule;
-    @JsonProperty("dossierStatus")
-    private DossierStatusDTO dossierStatus;
+    private DossierStatusThymDTO dossierStatus;
 }
