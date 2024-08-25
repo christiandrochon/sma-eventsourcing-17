@@ -1,18 +1,17 @@
 package fr.cdrochon.smamonolithe.vehicule.query.services;
 
-import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetAllVehiculesDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetImmatDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.GetVehiculeDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
-import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeMapper;
+import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
-import org.axonframework.eventhandling.EventMessage;
 import org.axonframework.queryhandling.QueryHandler;
+import org.hibernate.TransactionException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @Slf4j
 public class VehiculeEventHandlerService {
     
@@ -32,28 +30,26 @@ public class VehiculeEventHandlerService {
     }
     
     /**
-     * On fait un subscribe avec @EventHandler = j'ecoute ce que fait le service VehiculeCreatedEvent
-     * <p>
-     * EventMessage sert à recuperer toutes les informations sur l'event avec la methode payLoad(). Il est donc plus general que l'event créé par moi-meme
+     * On fait un subscribe avec @EventHandler sur le service VehiculeCreatedEvent
      *
-     * @param event l'event GarageQueryCreatedEvent
+     * @param event l'event VehiculeCreatedEvent est declenché lors de la creation d'un document
      */
     @EventHandler
-    public void on(VehiculeCreatedEvent event, EventMessage<ClientCreatedEvent> eventMessage) {
+    @Transactional
+    public void on(VehiculeCreatedEvent event) {
         log.info("********************************");
-        log.info("ClientQueryCreatedEvent received !!!!!!!!!!!!!!!!!!!!!!");
-        log.info("Identifiant d'evenement : " + event.getId());
-        log.info("Identifiant d'agregat : " + eventMessage.getIdentifier());
+        log.info("SAUVEGARDE DE VEHICULE !!!!!!!!!!!!!!!!!!!!!!");
         
         try {
             Vehicule vehicule = new Vehicule();
-            vehicule.setIdVehicule(event.getId());
+            vehicule.setId(event.getId());
             vehicule.setImmatriculationVehicule(event.getImmatriculationVehicule());
             vehicule.setDateMiseEnCirculationVehicule(event.getDateMiseEnCirculationVehicule());
             vehicule.setVehiculeStatus(event.getVehiculeStatus());
             vehiculeRepository.save(vehicule);
         } catch(Exception e) {
-            System.out.println("EXTRACTTTTTTTTTTTTTTTTTTTTTT VEHICULE ERRRRRRRRRRRRRRRRRRRROOR : " + e.getMessage());
+            log.info("Transaction vehicule Erreur : " + e.getMessage());
+            throw new TransactionException("Erreur lors de la sauvegarde du vehicule");
         }
     }
     
@@ -66,7 +62,7 @@ public class VehiculeEventHandlerService {
     @QueryHandler
     public VehiculeQueryDTO on(GetVehiculeDTO getVehiculeDTO) {
         return vehiculeRepository.findById(getVehiculeDTO.getId())
-                                 .map(VehiculeMapper::convertVehiculeToVehiculeDTO)
+                                 .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
                                  .orElseThrow(() -> new EntityNotFoundException("Vehicule non trouvé !"));
     }
     
@@ -82,7 +78,7 @@ public class VehiculeEventHandlerService {
         if(vehicule == null) {
             throw new EntityNotFoundException("Vehicule non trouvé !");
         }
-        VehiculeQueryDTO vehiculeResponseDTO = VehiculeMapper.convertVehiculeToVehiculeDTO(vehicule);
+        VehiculeQueryDTO vehiculeResponseDTO = VehiculeQueryMapper.convertVehiculeToVehiculeDTO(vehicule);
         return vehiculeResponseDTO;
     }
     
@@ -94,6 +90,6 @@ public class VehiculeEventHandlerService {
     @QueryHandler
     public List<VehiculeQueryDTO> on(GetAllVehiculesDTO getAllVehiculesDTO) {
         List<Vehicule> vehicules = vehiculeRepository.findAll();
-        return vehicules.stream().map(VehiculeMapper::convertVehiculeToVehiculeDTO).collect(Collectors.toList());
+        return vehicules.stream().map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO).collect(Collectors.toList());
     }
 }
