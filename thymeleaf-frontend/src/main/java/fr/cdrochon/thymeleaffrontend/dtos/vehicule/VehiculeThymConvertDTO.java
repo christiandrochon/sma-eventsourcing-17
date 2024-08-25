@@ -1,6 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.vehicule;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.Instant;
@@ -10,9 +9,9 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehiculeDateConvertDTO {
+public class VehiculeThymConvertDTO {
     
-    private String idVehicule;
+    private String id;
     private String immatriculationVehicule;
     private Instant dateMiseEnCirculationVehicule;
     private VehiculeStatusDTO vehiculeStatus;

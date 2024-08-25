@@ -1,7 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.dtos.dossier;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import lombok.*;
 
 import java.time.Instant;
@@ -21,6 +21,6 @@ public class DossierThymConvertDTO {
     private Instant dateCreationDossier;
     private Instant dateModificationDossier;
     private ClientThymDTO client;
-    private VehiculeDateConvertDTO vehicule;
+    private VehiculeThymConvertDTO vehicule;
     private DossierStatusThymDTO dossierStatus;
 }

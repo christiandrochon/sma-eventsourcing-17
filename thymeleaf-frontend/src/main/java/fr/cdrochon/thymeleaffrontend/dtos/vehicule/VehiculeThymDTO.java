@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class VehiculeThymDTO {
     
-    private String idVehicule;
+    private String id;
     
     @Pattern(regexp = "^[A-Z]{2}-\\d{3}-[A-Z]{2}$", message = "Le format requis doit etre de type AA-123-AA")
     private String immatriculationVehicule;
@@ -41,7 +41,7 @@ public class VehiculeThymDTO {
     //    private String couleurVehicule;
     //    private String urlPhotoVehicule;
     //    private boolean climatisationVehicule;
-    @NotNull(message = "Le statut du véhicule est obligatoire, merci de le renseigner.")
+//    @NotNull(message = "Le statut du véhicule est obligatoire, merci de le renseigner.")
     private VehiculeStatusDTO vehiculeStatus;
 
 }

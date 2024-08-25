@@ -6,7 +6,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierStatusThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeDateConvertDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeStatusDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -223,8 +223,8 @@ public class CreateDossierThymController {
         try {
             
             //conversion du vehicule (à cause des dates Instant <> String)
-            VehiculeDateConvertDTO vehiculeDateConvertDTO = new VehiculeDateConvertDTO();
-            vehiculeDateConvertDTO.setIdVehicule(dossierThymDTO.getVehicule().getIdVehicule());
+            VehiculeThymConvertDTO vehiculeDateConvertDTO = new VehiculeThymConvertDTO();
+            vehiculeDateConvertDTO.setId(dossierThymDTO.getVehicule().getId());
             vehiculeDateConvertDTO.setImmatriculationVehicule(dossierThymDTO.getVehicule().getImmatriculationVehicule());
             vehiculeDateConvertDTO.setVehiculeStatus(dossierThymDTO.getVehicule().getVehiculeStatus());
             
