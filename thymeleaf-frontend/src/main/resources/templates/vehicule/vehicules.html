@@ -41,14 +41,14 @@
                             <!--                            </td>-->
                             <td th:if="${v.idVehicule == null}" class="text-decoration-none">N/A</td>
                             <td th:if="${v.immatriculationVehicule != null}">
-                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.immatriculationVehicule}]]</a>
+                                <a href="#" th:href="@{/vehicule/{id}(id=${v.id})}" class="text-decoration-none">[[${v.immatriculationVehicule}]]</a>
                             </td>
                             <td th:if="${v.dateMiseEnCirculationVehicule != null}">
-                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${#temporals.format(v.dateMiseEnCirculationVehicule,
+                                <a href="#" th:href="@{/vehicule/{id}(id=${v.id})}" class="text-decoration-none">[[${#temporals.format(v.dateMiseEnCirculationVehicule,
                                     'dd MMM yyyy')}]]</a>
                             </td>
                             <td th:if="${v.vehiculeStatus != null}">
-                                <a href="#" th:href="@{/vehicule/{id}(id=${v.idVehicule})}" class="text-decoration-none">[[${v.vehiculeStatus}]]</a>
+                                <a href="#" th:href="@{/vehicule/{id}(id=${v.id})}" class="text-decoration-none">[[${v.vehiculeStatus}]]</a>
                             </td>
 
 
