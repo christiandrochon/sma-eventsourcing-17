@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.command.services;
 
+import fr.cdrochon.smamonolithe.document.command.dtos.DocumentCommandDTO;
 import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
 import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -11,7 +12,10 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class VehiculeCommandService {
+    
     private final CommandGateway commandGateway;
+    //utiliser une CompletableFuture pour synchroniser l'attente du contrôleur jusqu'à ce que l'événement soit reçu et traité
+    private CompletableFuture<VehiculeCommandDTO> futureDTO;
     
     public VehiculeCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
@@ -24,13 +28,25 @@ public class VehiculeCommandService {
      * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
      */
     @Transactional
-    public CompletableFuture<String> createVehicule(VehiculeCommandDTO vehiculeRestPostDTO) {
-        System.out.println("ClientCommandService.createClient");
-        return commandGateway.send(new VehiculeCreateCommand(UUID.randomUUID().toString(),
-                                                             vehiculeRestPostDTO.getImmatriculationVehicule(),
-                                                             vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
-                                                                vehiculeRestPostDTO.getVehiculeStatus()
+    public CompletableFuture<VehiculeCommandDTO> createVehicule(VehiculeCommandDTO vehiculeRestPostDTO) {
+        //CompletableFuture<DossierCommandDTO> sera complétée lorsque l'événement sera reçu.
+        futureDTO = new CompletableFuture<>();
+        commandGateway.send(new VehiculeCreateCommand(UUID.randomUUID().toString(),
+                                                      vehiculeRestPostDTO.getImmatriculationVehicule(),
+                                                      vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
+                                                      vehiculeRestPostDTO.getVehiculeStatus()
         ));
-        
+        return futureDTO;
+    }
+    
+    /**
+     * Compléter la future dans le service. Méthode appelée par @EventHandler
+     *
+     * @param dto DTO de création d'un garage
+     */
+    public void completeVehiculeCreation(VehiculeCommandDTO dto) {
+        if(futureDTO != null) {
+            futureDTO.complete(dto);
+        }
     }
 }

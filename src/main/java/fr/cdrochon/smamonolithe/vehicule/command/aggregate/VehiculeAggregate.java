@@ -4,6 +4,8 @@ import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException
 import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
 import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
+import lombok.Getter;
+import lombok.Setter;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -12,7 +14,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import java.time.Instant;
 
-@Aggregate
+@Aggregate @Getter @Setter
 public class VehiculeAggregate {
     
     @AggregateIdentifier
@@ -95,6 +97,5 @@ public class VehiculeAggregate {
         this.immatriculationVehicule = event.getImmatriculationVehicule();
         this.dateMiseEnCirculationVehicule = event.getDateMiseEnCirculationVehicule();
         this.vehiculeStatus = event.getVehiculeStatus();
-        //AggregateLifecycle.apply(new GarageQueryCreatedEvent(id, nomGarage, mailResponsable, status, date));
     }
 }
