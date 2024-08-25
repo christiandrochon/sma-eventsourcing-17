@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div>
-                <label for="typeDocument" class="form-label">Type de Document:</label>
+                <label for="typeDocument" class="form-label">Type de Document</label>
                 <select id="typeDocument" class="form-select" th:field="*{typeDocument}">
                     <option th:each="typeDocument : ${typeDocuments}" th:value="${typeDocument.nomTypeDocument}" th:text="${typeDocument.nomTypeDocument}">
                         Type de document
@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div>
-                <label for="status" class="form-label">Status:</label>
+                <label for="status" class="form-label">Etat du document</label>
                 <select id="status" class="form-select" th:field="*{documentStatus}">
                     <option th:each="status : ${documentStatuses}" th:value="${status}" th:text="${status}">Status</option>
                 </select>

@@ -1,8 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.dtos.document;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.Instant;
@@ -12,7 +9,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentConvertPostDTO {
+public class DocumentConvertThymDTO {
     private String id;
 
     private String nomDocument;
