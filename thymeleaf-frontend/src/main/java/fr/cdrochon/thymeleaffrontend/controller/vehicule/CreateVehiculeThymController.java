@@ -94,7 +94,7 @@ public class CreateVehiculeThymController {
                                         log.info("type de valeur : {}", vehicule.getDateMiseEnCirculationVehicule().getClass());
                                         log.info("Vehicule created successfully");
                                         redirectAttributes.addFlashAttribute("successMessage", "Vehicule créé avec succès");
-                                        return Mono.just("redirect:/vehicule/" + vehicule.getId());
+                                        return Mono.just("redirect:/vehicules/" + vehicule.getId());
                                         // redirection vers la liste des clients
                                         //                            redirectAttributes.addFlashAttribute("successMessage", "Client créé avec succès");
                                         //                            return Mono.just("redirect:/dossier/" + dossier.getId());
@@ -166,7 +166,7 @@ public class CreateVehiculeThymController {
                                         log.error("Error: {}", e.getMessage());
                                         redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                         redirectAttributes.addFlashAttribute("errorMessage", "Service indisponible : " + e.getMessage());
-                                        redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                        redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
                                         return Mono.just("redirect:/error");
                                     });
                 });
