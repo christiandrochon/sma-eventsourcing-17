@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.client.query.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
+import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,11 +26,13 @@ public class Client {
     @Enumerated
     private ClientStatus clientStatus;
     
-    //relation qui ne doit pas etre serialisée
     @OneToOne(mappedBy = "client")
-    @JsonBackReference("dossier-client")
-//    @JsonIgnore
+    @JsonBackReference("dossier-client") //relation qui ne doit pas etre serialisée
     private Dossier dossier;
+    
+    @ManyToOne
+    @JoinColumn(name = "vehicule_id")
+    private Vehicule vehicule;
     
     /**
      * Au lieu d'inclure l'objet Dossier complet dans le toString(), on inclut uniquement l'identifiant du Dossier. Cela évite la récursion infinie tout en

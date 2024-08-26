@@ -23,7 +23,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @Slf4j
 public class DossierEventHandlerService {
     
@@ -45,6 +44,7 @@ public class DossierEventHandlerService {
      * @param event DossierCreatedEvent event qui est declenché lors de la creation d'un dossier
      */
     @EventHandler
+    @Transactional
     public void on(DossierCreatedEvent event) {
         log.info("********************************");
         log.info("SAUVEGARDE DU DOSSIER !!!!!!!!!!!!!!!!!!!!!!");
@@ -52,6 +52,14 @@ public class DossierEventHandlerService {
         try {
             Dossier dossier = new Dossier();
             
+            
+            Vehicule vehicule = new Vehicule();
+            vehicule.setId(UUID.randomUUID().toString());
+            vehicule.setImmatriculationVehicule(event.getVehicule().getImmatriculationVehicule());
+            vehicule.setDateMiseEnCirculationVehicule(event.getVehicule().getDateMiseEnCirculationVehicule());
+            vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());
+            //SAVE vehicule en premier
+            vehiculeRepository.save(vehicule);
             
             Client client = new Client();
             client.setId(UUID.randomUUID().toString());
@@ -61,14 +69,15 @@ public class DossierEventHandlerService {
             client.setTelClient(event.getClient().getTelClient());
             client.setMailClient(event.getClient().getMailClient());
             client.setClientStatus(event.getClient().getClientStatus());
+            // lie le client avec le vehicule, mais celui-ci doit d'abord etre enregistré avant de pouvoir etre lié à un client (cle etrangere)
+            client.setVehicule(vehicule);
+            // SAVE
+            clientRepository.save(client);
             
-            
-            Vehicule vehicule = new Vehicule();
-            vehicule.setId(UUID.randomUUID().toString());
-            vehicule.setImmatriculationVehicule(event.getVehicule().getImmatriculationVehicule());
-            vehicule.setDateMiseEnCirculationVehicule(event.getVehicule().getDateMiseEnCirculationVehicule());
-            vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());
-            
+            // save les relations entre client et vehicule, mais le vehicule doit d'abord etre enregistré avant de pouvoir etre lié à un client (cle etrangere),
+            // -> UPDATE le vehicule avec desormais le nouveau client qui vient d'etre enregistré
+            vehicule.setClient(client);
+            vehiculeRepository.save(vehicule);
             
             dossier.setId(event.getId());
             dossier.setNomDossier(event.getNomDossier());
@@ -78,10 +87,9 @@ public class DossierEventHandlerService {
             dossier.setClient(client);
             dossier.setVehicule(vehicule);
             
-            
-            clientRepository.save(client);
-            vehiculeRepository.save(vehicule);
+            //SAVE le dossier en final
             dossierRepository.save(dossier);
+            
             
         } catch(Exception e) {
             System.out.println("ERREUR DE SAVE EN BDD : " + e.getMessage());
