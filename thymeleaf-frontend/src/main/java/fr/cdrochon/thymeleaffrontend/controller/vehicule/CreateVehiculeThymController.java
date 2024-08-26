@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -35,6 +36,22 @@ public class CreateVehiculeThymController {
     @Autowired
     private WebClient webClient;
     
+    /**
+     * Affiche le formulaire de création d'un vehicule
+     *
+     * @param model modèle du vehicule: permet de passer des attributs à la vue
+     * @return la vue createVehiculeForm
+     */
+    @GetMapping("/createVehicule")
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    public String createVehicule(Model model) {
+        if(!model.containsAttribute("vehiculePostDTO")) {
+            model.addAttribute("vehiculePostDTO", new VehiculeThymDTO());
+        }
+        //chargement des listes de type de document et de status de vehicule
+        model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
+        return "vehicule/createVehiculeForm";
+    }
     
     /***
      * Création d'un vehicule via un formulaire.
