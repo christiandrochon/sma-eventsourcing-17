@@ -20,5 +20,4 @@ public class VehiculeSIVConvertDTO {
     private TypeCarburantDTO typeCarburant;
     private boolean climatisation;
     
-    
 }

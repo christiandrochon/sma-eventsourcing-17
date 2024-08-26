@@ -8,7 +8,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehiculeFromServerDTO {
+public class VehiculeThymConvertDTO {
     private String id;
     private String immatriculationVehicule;
     private Instant dateMiseEnCirculationVehicule;
