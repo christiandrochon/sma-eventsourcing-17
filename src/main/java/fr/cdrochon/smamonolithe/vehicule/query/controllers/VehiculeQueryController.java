@@ -1,7 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
-import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,30 +22,6 @@ public class VehiculeQueryController {
     
     public VehiculeQueryController(VehiculeRepository vehiculeRepository) {
         this.vehiculeRepository = vehiculeRepository;
-    }
-    
-    /**
-     * Empêche la création d'un vehicule si l'immatriculation existe déjà. Vérifie si un vehicule existe en fonction de son immatriculation.
-     *
-     * @param immatriculation immatriculation du vehicule
-     * @return Boolean
-     */
-    @GetMapping("/vehiculeExists/{immatriculation}")
-    public Boolean immatriculationExiste(@PathVariable String immatriculation) {
-        return vehiculeRepository.existsByImmatriculationVehicule(immatriculation);
-    }
-    
-    /**
-     * Renvoi les informations considérées comme utiles à la partie query lors de la recherche d'un vehicule par son immatriculation.
-     *
-     * @param immatriculation immatriculation du vehicule
-     * @return VehiculeResponseDTO
-     */
-    
-    @GetMapping(value = "/vehicules/immatriculation/{immatriculation}")
-    public VehiculeQueryDTO getVehiculeByImmatriculation(@PathVariable String immatriculation) {
-        Vehicule vehicule = vehiculeRepository.findByImmatriculationVehicule(immatriculation);
-        return VehiculeQueryMapper.convertVehiculeToVehiculeDTO(vehicule);
     }
     
     /**
