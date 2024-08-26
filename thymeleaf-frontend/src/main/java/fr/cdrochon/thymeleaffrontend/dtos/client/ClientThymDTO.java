@@ -1,5 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.dtos.client;
 
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -27,6 +29,8 @@ public class ClientThymDTO {
     @Valid
     private AdresseClientDTO adresse;
     private ClientStatusDTO clientStatus;
+    @Valid
+    private VehiculeThymDTO vehicule;
     
     //TODO : copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne ?
 //    /**

@@ -1,5 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.dtos.vehicule;
 
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import lombok.*;
 
 import java.time.Instant;
@@ -15,4 +16,5 @@ public class VehiculeThymConvertDTO {
     private String immatriculationVehicule;
     private Instant dateMiseEnCirculationVehicule;
     private VehiculeStatusDTO vehiculeStatus;
+    private ClientThymDTO client;
 }
