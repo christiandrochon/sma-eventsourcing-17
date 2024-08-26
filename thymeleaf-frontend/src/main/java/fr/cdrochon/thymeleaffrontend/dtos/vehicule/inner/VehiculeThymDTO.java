@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehiculeDTO {
+public class VehiculeThymDTO {
     
     private String id;
     private String immatriculationVehicule;
