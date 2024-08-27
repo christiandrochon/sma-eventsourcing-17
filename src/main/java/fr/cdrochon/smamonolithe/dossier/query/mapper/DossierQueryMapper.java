@@ -11,57 +11,6 @@ import org.springframework.stereotype.Component;
 public class DossierQueryMapper {
     
     /**
-     * Ajoute le contenu d'un dossier dans un VehiculeQueryDTO.
-     *
-     * @param dossier Dossier à ajouter
-     * @return VehiculeQueryDTO contenant les informations du dossier
-     */
-    public static VehiculeQueryDTO convertVehiculeToVehiculeDTO(Dossier dossier) {
-        if(dossier == null) {
-            return null;
-        }
-        VehiculeQueryDTO dto = new VehiculeQueryDTO();
-        dto.setId(dossier.getVehicule().getId());
-        dto.setImmatriculationVehicule(dossier.getVehicule().getImmatriculationVehicule());
-        dto.setDateMiseEnCirculationVehicule(dossier.getVehicule().getDateMiseEnCirculationVehicule());
-        dto.setVehiculeStatus(dossier.getVehicule().getVehiculeStatus());
-        dto.setClient(convertClientToClientDTO(dossier));
-        
-        return dto;
-    }
-    
-    /**
-     * Ajoute le contenu d'un dossier dans un ClientQueryDTO.
-     *
-     * @param dossier Dossier à ajouter
-     * @return ClientQueryDTO contenant les informations du dossier
-     */
-    public static ClientQueryDTO convertClientToClientDTO(Dossier dossier) {
-        if(dossier == null) {
-            return null;
-        }
-        ClientQueryDTO dto = new ClientQueryDTO();
-        dto.setId(dossier.getClient().getId());
-        dto.setNomClient(dossier.getClient().getNomClient());
-        dto.setPrenomClient(dossier.getClient().getPrenomClient());
-        dto.setMailClient(dossier.getClient().getMailClient());
-        dto.setTelClient(dossier.getClient().getTelClient());
-        dto.setClientStatus(dossier.getClient().getClientStatus());
-        dto.setVehicule(convertVehiculeToVehiculeDTO(dossier));
-        
-        ClientAdresseDTO adresseClientDTO = new ClientAdresseDTO();
-        adresseClientDTO.setNumeroDeRue(dossier.getClient().getAdresse().getNumeroDeRue());
-        adresseClientDTO.setRue(dossier.getClient().getAdresse().getRue());
-        adresseClientDTO.setCp(dossier.getClient().getAdresse().getCp());
-        adresseClientDTO.setVille(dossier.getClient().getAdresse().getVille());
-        adresseClientDTO.setComplementAdresse(dossier.getClient().getAdresse().getComplementAdresse());
-        
-        dto.setAdresse(adresseClientDTO);
-        
-        return dto;
-    }
-    
-    /**
      * Convertit une entité Dossier en DossierQueryDTO.
      *
      * @param dossier Dossier à convertir
@@ -72,19 +21,68 @@ public class DossierQueryMapper {
             return null;
         }
         
-        VehiculeQueryDTO vehiculeDTO = convertVehiculeToVehiculeDTO(dossier);
-        
-        ClientQueryDTO clientDTO = convertClientToClientDTO(dossier);
-        
         DossierQueryDTO dto = new DossierQueryDTO();
         dto.setId(dossier.getId());
         dto.setNomDossier(dossier.getNomDossier());
         dto.setDateCreationDossier(dossier.getDateCreationDossier());
         dto.setDateModificationDossier(dossier.getDateModificationDossier());
-        dto.setClient(clientDTO);
-        dto.setVehicule(vehiculeDTO);
         dto.setDossierStatus(dossier.getDossierStatus());
         
+        dto.setClient(creeClientDepuisDossier(dossier));
+        dto.setVehicule(creeVehiculeDtoDepuisDossier(dossier));
+        
         return dto;
+    }
+    
+    /**
+     * Ajoute le contenu d'un dossier dans un VehiculeQueryDTO.
+     *
+     * @param dossier Dossier à ajouter
+     * @return VehiculeQueryDTO contenant les informations du dossier
+     */
+    public static VehiculeQueryDTO creeVehiculeDtoDepuisDossier(Dossier dossier) {
+        if(dossier == null) {
+            return null;
+        }
+        VehiculeQueryDTO vehicule = new VehiculeQueryDTO();
+        vehicule.setId(dossier.getVehicule().getId());
+        vehicule.setImmatriculationVehicule(dossier.getVehicule().getImmatriculationVehicule());
+        vehicule.setDateMiseEnCirculationVehicule(dossier.getVehicule().getDateMiseEnCirculationVehicule());
+        vehicule.setVehiculeStatus(dossier.getVehicule().getVehiculeStatus());
+        vehicule.setClient(null);
+        
+        
+        return vehicule;
+    }
+    
+    /**
+     * Ajoute le contenu d'un dossier dans un ClientQueryDTO.
+     *
+     * @param dossier Dossier à ajouter
+     * @return ClientQueryDTO contenant les informations du dossier
+     */
+    public static ClientQueryDTO creeClientDepuisDossier(Dossier dossier) {
+        if(dossier == null) {
+            return null;
+        }
+        
+        ClientAdresseDTO adresseClientDTO = new ClientAdresseDTO();
+        adresseClientDTO.setNumeroDeRue(dossier.getClient().getAdresse().getNumeroDeRue());
+        adresseClientDTO.setRue(dossier.getClient().getAdresse().getRue());
+        adresseClientDTO.setCp(dossier.getClient().getAdresse().getCp());
+        adresseClientDTO.setVille(dossier.getClient().getAdresse().getVille());
+        adresseClientDTO.setComplementAdresse(dossier.getClient().getAdresse().getComplementAdresse());
+        
+        ClientQueryDTO client = new ClientQueryDTO();
+        client.setId(dossier.getClient().getId());
+        client.setNomClient(dossier.getClient().getNomClient());
+        client.setPrenomClient(dossier.getClient().getPrenomClient());
+        client.setMailClient(dossier.getClient().getMailClient());
+        client.setTelClient(dossier.getClient().getTelClient());
+        client.setClientStatus(dossier.getClient().getClientStatus());
+        client.setAdresse(adresseClientDTO);
+        client.setVehicule(null);
+        
+        return client;
     }
 }
