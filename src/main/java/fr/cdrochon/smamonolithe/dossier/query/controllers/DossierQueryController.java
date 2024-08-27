@@ -52,13 +52,6 @@ public class DossierQueryController {
         Mono<DossierQueryDTO> mono = Mono.fromFuture(future);
         return mono;
     }
-    //    @GetMapping(path = "/dossiers/{id}")
-    //    //    @PreAuthorize("hasAuthority('USER')")
-    //    public DossierQueryDTO getDossier(@PathVariable String id) {
-    //        GetDossierDTO dossierDTO = new GetDossierDTO();
-    //        dossierDTO.setId(id);
-    //        return queryGateway.query(dossierDTO, DossierQueryDTO.class).join();
-    //    }
     
     /**
      * Pur trouver tous les dossiers, on n'utilise pas l'interface Repository usuelle, mais on créé une classe destinée à ca, qui renvoi le type de DTO sous
@@ -80,20 +73,6 @@ public class DossierQueryController {
         Flux<DossierQueryDTO> flux = Flux.fromStream(future.join().stream());
         return flux;
     }
-    //    @GetMapping(path = "/dossiers")
-    //    //    @PreAuthorize("hasAuthority('USER')")
-    //    public List<DossierResponseDTO> getAll() {
-    //
-    //        List<Dossier> dossiers = dossierRepository.findAll();
-    //        List<DossierResponseDTO> dossiersResponseDTO = dossiers.stream()
-    //                                                               .map(DossierMapper::convertDossierToDossierDTO)
-    //                                                               .collect(Collectors.toList());
-    //        System.out.println("dossiersResponseDTO = " + dossiersResponseDTO);
-    //        return dossiers.stream()
-    //                       .map(DossierMapper::convertDossierToDossierDTO)
-    //                       .collect(Collectors.toList());
-    //    }
-    
     
     /**
      * Renvoi un flux de DossierResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
