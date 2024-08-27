@@ -29,6 +29,26 @@
                 <p class="col-md-8 fs-4">Status du vehicule : [[${vehicule.vehiculeStatus}]]</p>
             </div>
         </div>
+
+        <div class="row align-items-md-stretch mt-4">
+            <div class="w-100">
+                <div class="h-100 p-5 bg-body-tertiary border rounded-3">
+                    <h2 class="pb-2">Propriétaire du véhicule</h2>
+                    <hr class="mt-1 mb-3">
+                    <p class="col-md-8 fs-5">Nom et prénom : [[${vehicule.client.prenomClient}]]&nbsp;[[${#strings.toUpperCase(vehicule.client.nomClient)}]]</p>
+                    <p class="col-md-8 fs-5" >Situation  du client : [[${vehicule.client.clientStatus}]]</p>
+                    <p class="col-md-8 fs-5">Email : [[${vehicule.client.mailClient}]]</p>
+                    <p class="col-md-8 fs-5">Téléphone : [[${vehicule.client.telClient}]]</p>
+                    <br>
+                    <h5 class="pb-2 fst-italic">Adresse</h5>
+                    <hr class="mt-1 mb-3">
+                    <p class="col-md-8 fs-5">[[${vehicule.client.adresse.numeroDeRue}]], &nbsp; [[${vehicule.client.adresse.rue}]]</p>
+                    <p class="col-md-8 fs-5">[[${vehicule.client.adresse.complementAdresse}]]</p>
+                    <p class="col-md-8 fs-5">[[${vehicule.client.adresse.cp}]]&nbsp; [[${#strings.toUpperCase(vehicule.client.adresse.ville)}]]</p>
+                    <p class="col-md-8 fs-5">[[${vehicule.client.adresse.pays}]]</p>
+                </div>
+            </div>
+        </div>
     </main>
 </div>
 </body>

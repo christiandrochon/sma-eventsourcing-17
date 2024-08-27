@@ -27,18 +27,24 @@
                 <p class="col-md-8 fs-4">Prénom : [[${#strings.capitalize(client.prenomClient)}]]</p>
                 <p class="col-md-8 fs-4">Mail : [[${client.mailClient}]]</p>
                 <p class="col-md-8 fs-4">Téléphone : [[${client.telClient}]]</p>
+                <br>
+                <h5 class="pb-2 fst-italic">Adresse</h5>
+                <hr class="mt-1 mb-3">
+                <p class="col-md-8 fs-5">[[${client.adresse.numeroDeRue}]], &nbsp; [[${client.adresse.rue}]]</p>
+                <p class="col-md-8 fs-5">[[${client.adresse.cp}]] - [[${#strings.toUpperCase(client.adresse.ville)}]]</p>
+                <p class="col-md-8 fs-5">[[${#strings.toUpperCase(client.adresse.pays)}]]</p>
             </div>
         </div>
 
-        <div class="row align-items-md-stretch">
-            <div class="w-100">
-                <div class="h-100 p-5 bg-body-tertiary border rounded-3">
-                    <h2 class="pb-2">Adresse</h2>
-                    <hr class="mt-1 mb-3">
-                    <p class="col-md-8 fs-5">[[${client.adresse.numeroDeRue}]], &nbsp; [[${client.adresse.rue}]]</p>
-                    <p class="col-md-8 fs-5">[[${client.adresse.cp}]] - [[${#strings.toUpperCase(client.adresse.ville)}]]</p>
-                    <p class="col-md-8 fs-5">[[${#strings.toUpperCase(client.adresse.pays)}]]</p>
-                </div>
+        <div class="p-5 mb-4 bg-body-tertiary rounded-3 mt-3">
+            <div class="container-fluid ">
+                <h5 class="pb-2 text-end fst-italic">Véhicule du propriétaire</h5>
+                <h1 class="display-5 fw-bold text-center pb-4 h1-titre-trop-long">[[${#strings.toUpperCase(client.vehicule.immatriculationVehicule)}]]</h1>
+                <p class="col-md-8 fs-4 fst-italic">id : [[${client.vehicule.id}]]</p>
+                <p class="col-md-8 fs-4">Immatriculation : [[${client.vehicule.immatriculationVehicule}]]</p>
+                <p class="col-md-8 fs-4">Date de mise en circulation : [[${#temporals.format(client.vehicule.dateMiseEnCirculationVehicule,
+                    'dd MMMM yyyy')}]]</p>
+                <p class="col-md-8 fs-4">Status du vehicule : [[${client.vehicule.vehiculeStatus}]]</p>
             </div>
         </div>
     </main>

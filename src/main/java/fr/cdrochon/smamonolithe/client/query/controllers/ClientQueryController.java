@@ -4,6 +4,7 @@ import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.mapper.ClientQueryMapper;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
@@ -21,7 +22,9 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/queries")
+@Slf4j
 public class ClientQueryController {
+    
     private final QueryGateway queryGateway;
     private final ClientRepository clientRepository;
     
@@ -31,6 +34,7 @@ public class ClientQueryController {
     }
     
     //FIXME: 2021-08-25 - CDROCHON - A REVOIR -> VALIDATION DU FORMULAIRE PAS TERRIBLE au niveau des animations et des messages d'erreurs
+    
     /**
      * Méthode asynchrone qui renvoi un client dto.
      *
@@ -42,10 +46,14 @@ public class ClientQueryController {
     public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id) {
         CompletableFuture<ClientQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
-                    ClientQueryDTO client = clientRepository.findById(id)
-                                                            .map(ClientQueryMapper::convertClientToClientDTO)
-                                                            .orElse(null);
-                    return client;
+                    try {
+                        return clientRepository.findById(id)
+                                               .map(ClientQueryMapper::convertClientToClientDTO)
+                                               .orElseThrow(() -> new RuntimeException("Client not found"));
+                    } catch(Exception e) {
+                        log.error("Error retrieving client with id {}: {}", id, e.getMessage(), e);
+                        throw new RuntimeException("Error retrieving client", e);
+                    }
                 });
         Mono<ClientQueryDTO> mono = Mono.fromFuture(future);
         return mono;

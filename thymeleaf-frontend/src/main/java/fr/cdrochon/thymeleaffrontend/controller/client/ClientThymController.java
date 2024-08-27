@@ -1,5 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class ClientThymController {
                         //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
                         //                                  getJwtTokenValue()))
                         .retrieve()
-                        .bodyToMono(ClientThymDTO.class)
+                        .bodyToMono(ClientThymConvertDTO.class)
                         .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du client")))
                         .flatMap(clientThymDTO -> {
                             model.addAttribute("client", clientThymDTO);
