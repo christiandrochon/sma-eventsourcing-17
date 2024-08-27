@@ -15,6 +15,6 @@ public class ClientQueryMapper extends RecursiveConversionClientVehicule {
      * @return ClientQueryDTO converti
      */
     public static ClientQueryDTO convertClientToClientDTO(Client client) {
-        return addClientQueryMapper(client);
+        return convertClientToClientQueryDTO(client);
     }
 }

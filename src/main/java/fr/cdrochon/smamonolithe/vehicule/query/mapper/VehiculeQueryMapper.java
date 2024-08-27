@@ -16,7 +16,7 @@ public class VehiculeQueryMapper extends RecursiveConversionClientVehicule {
      */
     public static VehiculeQueryDTO convertVehiculeToVehiculeDTO(Vehicule vehicule) {
         
-        return addVehiculeQueryMapper(vehicule);
+        return convertVehiculeToVehiculeQueryDTO(vehicule);
         
     }
 }
