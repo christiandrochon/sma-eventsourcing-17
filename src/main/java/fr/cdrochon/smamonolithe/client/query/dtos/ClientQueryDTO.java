@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.client.query.dtos;
 
 import fr.cdrochon.smamonolithe.client.query.entities.ClientStatus;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import lombok.*;
 
 @Getter
@@ -18,4 +19,6 @@ public class ClientQueryDTO {
     private String telClient;
     private ClientAdresseDTO adresse;
     private ClientStatus clientStatus;
+    private VehiculeQueryDTO vehicule;
+    
 }

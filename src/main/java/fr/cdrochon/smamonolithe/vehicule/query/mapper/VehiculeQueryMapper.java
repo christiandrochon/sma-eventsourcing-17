@@ -4,25 +4,19 @@ import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import org.springframework.stereotype.Component;
 
+
 @Component
-public class VehiculeQueryMapper {
+public class VehiculeQueryMapper extends RecursiveConversionClientVehicule {
     
     /**
-     * Convertit une entité vehicule en VehiculeQueryDTO
+     * Convertit une entité vehicule en VehiculeQueryDTO. Pour eviter les appels recursifs, on etends la classes RecursiveConversionClientVehicule
      *
      * @param vehicule Vehicule à convertir
-     * @return VehiculeQueryDTO
+     * @return VehiculeQueryDTO converti
      */
     public static VehiculeQueryDTO convertVehiculeToVehiculeDTO(Vehicule vehicule) {
-        if(vehicule == null) {
-            return null;
-        }
-        VehiculeQueryDTO dto = new VehiculeQueryDTO();
-        dto.setId(vehicule.getId());
-        dto.setImmatriculationVehicule(vehicule.getImmatriculationVehicule());
-        dto.setDateMiseEnCirculationVehicule(vehicule.getDateMiseEnCirculationVehicule());
-        dto.setVehiculeStatus(vehicule.getVehiculeStatus());
         
-        return dto;
+        return addVehiculeQueryMapper(vehicule);
+        
     }
 }
