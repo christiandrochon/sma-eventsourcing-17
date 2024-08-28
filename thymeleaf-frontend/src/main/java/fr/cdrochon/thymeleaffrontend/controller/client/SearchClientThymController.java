@@ -1,8 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymConvertDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

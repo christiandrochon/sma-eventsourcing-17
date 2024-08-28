@@ -1,6 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
-import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
