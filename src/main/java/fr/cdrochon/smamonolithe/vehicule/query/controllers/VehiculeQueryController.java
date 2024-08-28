@@ -1,5 +1,7 @@
 package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.cdrochon.smamonolithe.json.Views;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
@@ -31,6 +33,7 @@ public class VehiculeQueryController {
      * @return VehiculeResponseDTO
      */
     @GetMapping("/vehicules/{id}")
+    @JsonView(Views.VehiculeView.class)
     //    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
     public Mono<VehiculeQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
@@ -53,6 +56,7 @@ public class VehiculeQueryController {
      * @return List<VehiculeResponseDTO> comprenant l'adresse sous forme de DTO
      */
     @GetMapping("/vehicules")
+    @JsonView(Views.VehiculeView.class)
     //    @PreAuthorize("hasAuthority('USER')")
     public Flux<VehiculeQueryDTO> getDossiersAsync() {
         CompletableFuture<List<VehiculeQueryDTO>> future = CompletableFuture.supplyAsync(() -> {

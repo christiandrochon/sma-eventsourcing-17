@@ -1,9 +1,11 @@
 package fr.cdrochon.smamonolithe.client.query.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.mapper.ClientQueryMapper;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
+import fr.cdrochon.smamonolithe.json.Views;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -42,6 +44,7 @@ public class ClientQueryController {
      * @return Mono de ClientResponseDTO
      */
     @GetMapping(path = "/clients/{id}")
+    @JsonView(Views.ClientView.class)
     //    @PreAuthorize("hasAuthority('USER')")
     public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id) {
         CompletableFuture<ClientQueryDTO> future =
@@ -65,6 +68,7 @@ public class ClientQueryController {
      * @return Flux de ClientResponseDTO
      */
     @GetMapping(path = "/clients")
+    @JsonView(Views.ClientView.class)
     //    @PreAuthorize("hasAuthority('USER')")
     public Flux<ClientQueryDTO> getClientsAsync() {
         CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
