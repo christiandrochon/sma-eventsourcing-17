@@ -1,5 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner;
 
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import lombok.*;
 
 @Getter
@@ -13,4 +14,5 @@ public class VehiculeThymDTO {
     private String immatriculationVehicule;
     private String dateMiseEnCirculationVehicule;
     private String vehiculeStatus;
+    private ClientThymDTO client;
 }
