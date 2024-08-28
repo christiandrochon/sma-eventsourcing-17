@@ -1,7 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymConvertDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,9 +58,11 @@ public class ClientThymController {
                         //                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION,
                         //                                         "Bearer " + getJwtTokenValue()))
                         .retrieve()
-                        .bodyToFlux(ClientThymDTO.class)
+                        .bodyToFlux(ClientThymConvertDTO.class)
                         .collectList()
                         .flatMap(clients -> {
+                            
+                            
                             assert clients != null;
                             clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
                             model.addAttribute("clients", clients);
@@ -89,6 +90,7 @@ public class ClientThymController {
                                 return Mono.just("redirect:/error");
                             }
                             log.error("ERREUR: {}", e.getResponseBodyAsString());
+                            
                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                             redirectAttributes.addFlashAttribute("errorMessage", "Erreur non reconnue. " + e.getResponseBodyAsString());
                             redirectAttributes.addFlashAttribute("urlRedirection", "/clients");
@@ -103,6 +105,9 @@ public class ClientThymController {
      * @return le numéro de téléphone formaté
      */
     public String formaterNumeroTelephone(String numero) {
+        if(numero == null) {
+            return "";
+        }
         return numero.replaceAll("(\\d{2})(?=(\\d{2})+(?!\\d))", "$1 ");
     }
 }
