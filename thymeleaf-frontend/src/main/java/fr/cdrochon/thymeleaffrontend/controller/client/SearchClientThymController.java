@@ -1,5 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.controller.client;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +41,12 @@ public class SearchClientThymController {
                         //                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION,
                         //                                         "Bearer " + getJwtTokenValue()))
                         .retrieve()
-                        .bodyToFlux(ClientThymDTO.class)
+                        .bodyToFlux(ClientThymConvertDTO.class)
                         .collectList()
                         .flatMap(clients -> {
                             assert clients != null;
                             model.addAttribute("clients", clients);
-                            model.addAttribute("clientPostDTO", new ClientThymDTO());
+                            model.addAttribute("clientPostDTO", new ClientThymConvertDTO());
                             return Mono.just("client/searchClientForm");
                         })
                         .onErrorResume(WebClientResponseException.class, e -> {
@@ -94,7 +96,7 @@ public class SearchClientThymController {
                         //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
                         //                                  getJwtTokenValue()))
                         .retrieve()
-                        .bodyToMono(ClientThymDTO.class)
+                        .bodyToMono(ClientThymConvertDTO.class)
                         .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du client")))
                         .flatMap(clientThymDTO -> {
                             model.addAttribute("client", clientThymDTO);

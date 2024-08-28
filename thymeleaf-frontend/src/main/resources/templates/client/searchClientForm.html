@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title>Recherche Client</title>
 
-<!--    Mise en forme de l'url telle que définie dans le fichier de configuration WebConfig.java-->
+    <!--    Mise en forme de l'url telle que définie dans le fichier de configuration WebConfig.java-->
     <script type="text/javascript">
         function redirectToClientDetails() {
             var clientId = document.getElementById("clientID").value;
@@ -34,7 +34,8 @@
                     <div>
                         <label for="clientID" class="form-label">Liste des clients</label>
                         <select id="clientID" class="form-select" th:field="*{id}">
-                            <option th:each="client : ${clients}" th:value="${client.id}" th:text="${client.nomClient} + ' ' + ${client.prenomClient}"> >Client
+                            <option th:each="client : ${clients}" th:value="${client.id}"
+                                    th:utext="'<span>' + ${#strings.capitalize(client.prenomClient)} + '</span> <span>' +  ${#strings.toUpperCase(client.nomClient)} + '</span> <span><i>&emsp;&emsp;&emsp;(véhicule immatriculé ' + ${client.vehicule.immatriculationVehicule} + ')</i></span>'">
                             </option>
                         </select>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('id')}" th:errors="*{id}">Erreur du client sélectionné</div>
