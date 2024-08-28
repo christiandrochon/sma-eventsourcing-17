@@ -23,7 +23,7 @@ public class RecursiveConversionClientVehicule {
      * @param client Client à ajouter dans le DTO
      * @return ClientQueryDTO contenant les informations du client
      */
-    public static ClientQueryDTO convertClientToClientQueryDTO(Client client) {
+    public static ClientQueryDTO addClientQueryMapper(Client client) {
         
         if(clientMap.containsKey(client.getId())) {
             return clientMap.get(client.getId());
@@ -45,8 +45,21 @@ public class RecursiveConversionClientVehicule {
         clientQueryDTO.setAdresse(clientAdresseDTO);
         
         // control de l'appel recursif de l'objet vehicule
-        if(client.getVehicule() != null && !vehiculeMap.containsKey(client.getVehicule().getId())) {
-            clientQueryDTO.setVehicule(convertVehiculeToVehiculeQueryDTO(client.getVehicule()));
+        //                if(client.getVehicule() != null && !vehiculeMap.containsKey(client.getVehicule().getId())) {
+        //                    clientQueryDTO.setVehicule(addVehiculeQueryMapper(client.getVehicule()));
+        //                }
+        if(client.getVehicule() != null) {
+            VehiculeQueryDTO vehiculeQueryDTO = vehiculeMap.get(client.getVehicule().getId());
+            if(vehiculeQueryDTO == null) {
+                vehiculeQueryDTO = addVehiculeQueryMapper(client.getVehicule());
+            }
+            
+            // Si le vehicule DTO existe et n'a pas encore de client associé
+            if(vehiculeQueryDTO.getClient() == null) {
+                vehiculeQueryDTO.setClient(clientQueryDTO);
+            }
+            
+            clientQueryDTO.setVehicule(vehiculeQueryDTO);
         }
         
         return clientQueryDTO;
@@ -59,7 +72,7 @@ public class RecursiveConversionClientVehicule {
      * @param vehicule Vehicule à ajouter dans le DTO
      * @return VehiculeQueryDTO contenant les informations du vehicule
      */
-    public static VehiculeQueryDTO convertVehiculeToVehiculeQueryDTO(Vehicule vehicule) {
+    public static VehiculeQueryDTO addVehiculeQueryMapper(Vehicule vehicule) {
         if(vehiculeMap.containsKey(vehicule.getId())) {
             return vehiculeMap.get(vehicule.getId());
         }
@@ -72,9 +85,25 @@ public class RecursiveConversionClientVehicule {
         vehiculeQueryDTO.setDateMiseEnCirculationVehicule(vehicule.getDateMiseEnCirculationVehicule());
         vehiculeQueryDTO.setVehiculeStatus(vehicule.getVehiculeStatus());
         
-        // control de l'appel recursif de l'objet client
-        if(vehicule.getClient() != null && !clientMap.containsKey(vehicule.getClient().getId())) {
-            vehiculeQueryDTO.setClient(convertClientToClientQueryDTO(vehicule.getClient()));
+        // control de la creation recursive du client dans le vehicule
+        //                if(vehicule.getClient() != null && !clientMap.containsKey(vehicule.getClient().getId())) {
+        //                    vehiculeQueryDTO.setClient(addClientQueryMapper(vehicule.getClient()));
+        //                }
+        if(vehicule.getClient() != null) {
+            ClientQueryDTO clientQueryDTO = clientMap.get(vehicule.getClient().getId());
+            
+            if(clientQueryDTO == null) {
+                // Première conversion du client
+                clientQueryDTO = addClientQueryMapper(vehicule.getClient());
+            }
+            
+            // Si le client DTO existe et n'a pas encore de véhicule associé
+            if(clientQueryDTO.getVehicule() == null) {
+                clientQueryDTO.setVehicule(vehiculeQueryDTO);
+            }
+            
+            // Établir la relation véhicule -> client
+            vehiculeQueryDTO.setClient(clientQueryDTO);
         }
         
         return vehiculeQueryDTO;

@@ -2,11 +2,12 @@ package fr.cdrochon.smamonolithe.client.query.mapper;
 
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
-import fr.cdrochon.smamonolithe.vehicule.query.mapper.RecursiveConversionClientVehicule;
 import org.springframework.stereotype.Component;
 
+import static fr.cdrochon.smamonolithe.vehicule.query.mapper.RecursiveConversionClientVehicule.addClientQueryMapper;
+
 @Component
-public class ClientQueryMapper extends RecursiveConversionClientVehicule {
+public class ClientQueryMapper {
     
     /**
      * Convertit une entité client en ClientQueryDTO. Pour eviter les appels recursifs, on etends la classes RecursiveConversionClientVehicule
@@ -15,6 +16,6 @@ public class ClientQueryMapper extends RecursiveConversionClientVehicule {
      * @return ClientQueryDTO converti
      */
     public static ClientQueryDTO convertClientToClientDTO(Client client) {
-        return convertClientToClientQueryDTO(client);
+        return addClientQueryMapper(client);
     }
 }
