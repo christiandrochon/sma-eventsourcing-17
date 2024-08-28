@@ -58,22 +58,6 @@
                     <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/documents}">Documents</a></li>
 
 
-                    <!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createGarage}">Creation Garage</a></li>-->
-                    <!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createClient}">Creation Client</a></li>-->
-                    <!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createVehicule}">Creation Vehicule</a></li>-->
-                    <!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createDocument}">Creation Document</a></li>-->
-                    <!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/createDossier}">Creation Dossier</a></li>-->
-
-                    <!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/searchclient}">Recherche Client</a></li>-->
-                    <!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/searchvehiculesiv}">SIV</a></li>-->
-                    <!--                    <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/showvehicule}">Recherche Véhicule</a></li>-->
-
-
-                    <!--                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">-->
-                    <!--                    <input type="search" class="form-control" placeholder="Search..." aria-label="Search">-->
-                    <!--                </form>-->
-
-
 <!--                    <div class="dropdown text-end">-->
 <!--                        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">-->
 <!--                            <p class="text-body-emphasis">Rechercher</p>-->
@@ -101,8 +85,8 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li><a class="dropdown-item" th:href="@{/createGarage}">Créer un garage</a></li>
-                            <li><a class="dropdown-item" th:href="@{/createClient}">Créer un client</a></li>
-                            <li><a class="dropdown-item" th:href="@{/createVehicule}">Créer un véhicule</a></li>
+<!--                            <li><a class="dropdown-item" th:href="@{/createClient}">Créer un client</a></li>-->
+<!--                            <li><a class="dropdown-item" th:href="@{/createVehicule}">Créer un véhicule</a></li>-->
                             <li><a class="dropdown-item" th:href="@{/createDocument}">Créer un document</a></li>
                             <li><a class="dropdown-item" th:href="@{/createDossier}">Créer un dossier</a></li>
                         </ul>
@@ -116,8 +100,9 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <li><a class="dropdown-item" th:href="@{/searchclient}">Recherche d'un client</a></li>
-                            <li><a class="dropdown-item" th:href="@{/searchvehiculesiv}">Recherche d'un véhicule par le SIV</a></li>
-                            <li><a class="dropdown-item" th:href="@{/showvehicule}">Recherche d'un véhicule enregistré</a></li>
+                            <li><a class="dropdown-item" th:href="@{/searchvehiculesiv}">Recherche d'un véhicule (SIV)</a></li>
+                            <li><a class="dropdown-item" th:href="@{/showvehicule}">Recherche d'un véhicule (saisie manuelle)</a></li>
+                            <li><a class="dropdown-item" th:href="@{/searchvehiculelist}">Recherche d'un véhicule (liste déroulante)</a></li>
                         </ul>
                     </li>
                 </ul>
