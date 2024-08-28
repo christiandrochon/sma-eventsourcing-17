@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Recherche Véhicule</title>
+
+    <!--    Mise en forme de l'url telle que définie dans le fichier de configuration WebConfig.java-->
+    <script type="text/javascript">
+        function redirectToClientDetails() {
+            var clientId = document.getElementById("clientID").value;
+            // document.getElementById("searchForm").action = "/searchclient/" + clientId;
+            window.location.href = "/searchvehiculelist/" + clientId;
+            return false; //empeche la submit du formulaire par defaut
+        }
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <main class="container mt-5">
+        <h6><a th:href="@{/vehicules}"> Retour à la liste des clients</a></h6>
+
+        <div class="mt-lg-5">
+            <h3>Rechercher un véhicule</h3>
+        </div>
+
+        <div class="card w-100">
+            <div class="card-body">
+                <form id="searchForm" action="#" method='get' th:object="${vehiculeConvertDTO}" onsubmit="return redirectToClientDetails()">
+                    <div>
+                        <label for="clientID" class="form-label">Liste des véhicules</label>
+                        <select id="clientID" class="form-select" th:field="*{id}">
+                            <option th:each="vehicule : ${vehicules}" th:value="${vehicule.id}"
+                            th:utext="'<span>Immatriculation : ' + ${vehicule.immatriculationVehicule} + '</span> <span>&emsp;(Statut : ' + ${vehicule.vehiculeStatus} + ')</span> <span><i>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;Propriétaire : ' + ${#strings.capitalize(vehicule.client.prenomClient)} + ' ' + ${#strings.toUpperCase(vehicule.client.nomClient)} + '</i></span>'">
+                            </option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('id')}" th:errors="*{id}">Erreur de selection du véhicule</div>
+                    </div>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary mt-3">Rechercher</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
