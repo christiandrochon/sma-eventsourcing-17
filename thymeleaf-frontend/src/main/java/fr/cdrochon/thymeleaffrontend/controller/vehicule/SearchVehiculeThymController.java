@@ -1,9 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.GetImmatriculationDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.VehiculeThymConvertDTO;
-import fr.cdrochon.thymeleaffrontend.exception.InvalidDateFormatException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +16,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 @Controller
@@ -67,8 +61,7 @@ public class SearchVehiculeThymController {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Content-Type", "application/json")
                         .retrieve()
-                        .onStatus(HttpStatus.NOT_FOUND::equals,
-                                  clientResponse -> Mono.error(new RuntimeException("Véhicule non trouvé pour l'immatriculation '" + getImmatDTO.getImmatriculation() + "'")))
+                        .onStatus(HttpStatus.NOT_FOUND::equals, e -> Mono.empty())
                         .onStatus(HttpStatusCode::is5xxServerError,
                                   clientResponse -> Mono.error(new WebClientResponseException("Erreur interne du serveur",
                                                                                               500,
