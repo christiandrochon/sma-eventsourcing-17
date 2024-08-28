@@ -5,18 +5,18 @@ import fr.cdrochon.smamonolithe.client.query.entities.Pays;
 import fr.cdrochon.smamonolithe.json.Views;
 import lombok.*;
 
+/**
+ * DTO pour l'adresse d'un client.
+ * <p></p>
+ * Les annotations JsonView permettent de définir les vues dans lesquelles les attributs de l'objet seront sérialisés. Grace à l'heritage dans la classe Views,
+ * tous les attributs ci-dessous seront sérialisés dans la vue VehiculeView, et donc dans la vue ClientView.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Builder
-/**
- * DTO pour l'adresse d'un client.
- * <p></p>
- * Les annotations JsonView permettent de définir les vues dans lesquelles les attributs de l'objet seront sérialisés. Grace à l'heritage dans la classe
- * Views, tous les attributs ci-dessous seront sérialisés dans la vue VehiculeView, et donc dans la vue ClientView.
- */
 public class ClientAdresseDTO {
     
     @JsonView(Views.VehiculeView.class)

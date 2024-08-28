@@ -8,6 +8,11 @@ import fr.cdrochon.smamonolithe.json.Views;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import lombok.*;
 
+/**
+ * DTO pour la requête d'un client.
+ * <p></p>
+ * Les annotations JsonView permettent de définir les vues dans lesquelles les attributs de l'objet seront sérialisés.
+ */
 @Getter
 @Setter
 @Builder
@@ -15,11 +20,6 @@ import lombok.*;
 @NoArgsConstructor
 //evite les boucles infinies dans le json dues aux relations bidirectionnelles
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-/**
- * DTO pour la requête d'un client.
- * <p></p>
- * Les annotations JsonView permettent de définir les vues dans lesquelles les attributs de l'objet seront sérialisés.
- */
 public class ClientQueryDTO {
     
     @JsonView(Views.VehiculeView.class)

@@ -13,18 +13,18 @@ import lombok.Setter;
 
 import java.time.Instant;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-//evite les boucles infinies dans le json dues aux relations bidirectionnelles
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 /**
  * DTO pour la requête d'un véhicule.
  * <p></p>
  * Les annotations JsonView permettent de définir les vues dans lesquelles les attributs de l'objet seront sérialisés. Grace à l'heritage dans la classe Views,
  * tous les attributs de la vue VehiculeView seront sérialisés dans la vue ClientView.
  */
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+//evite les boucles infinies dans le json dues aux relations bidirectionnelles
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class VehiculeQueryDTO {
     
     @JsonView(Views.VehiculeView.class)
