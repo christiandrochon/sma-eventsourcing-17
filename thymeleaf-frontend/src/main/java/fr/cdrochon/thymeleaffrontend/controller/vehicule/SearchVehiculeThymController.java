@@ -1,7 +1,8 @@
 package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.GetImmatriculationDTO;
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.VehiculeThymDTO;
+import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.VehiculeThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.exception.InvalidDateFormatException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +68,7 @@ public class SearchVehiculeThymController {
                         .header("Content-Type", "application/json")
                         .retrieve()
                         .onStatus(HttpStatus.NOT_FOUND::equals,
-                                  clientResponse -> Mono.empty())
+                                  clientResponse -> Mono.error(new RuntimeException("Véhicule non trouvé pour l'immatriculation '" + getImmatDTO.getImmatriculation() + "'")))
                         .onStatus(HttpStatusCode::is5xxServerError,
                                   clientResponse -> Mono.error(new WebClientResponseException("Erreur interne du serveur",
                                                                                               500,
@@ -75,23 +76,11 @@ public class SearchVehiculeThymController {
                                                                                               null,
                                                                                               null,
                                                                                               null)))
-                        .bodyToMono(VehiculeThymDTO.class)
+                        .bodyToMono(VehiculeThymConvertDTO.class)
                         .flatMap(vehicule -> {
-                            
-                            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-                            SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
-                            try {
-                                Date date = inputFormat.parse(vehicule.getDateMiseEnCirculationVehicule());
-                                String dateMiseEnCirculationVehicule = outputFormat.format(date);
-                                vehicule.setDateMiseEnCirculationVehicule(dateMiseEnCirculationVehicule);
-                            } catch(ParseException e) {
-                                return Mono.error(new InvalidDateFormatException("Erreur de conversion de date. Le format attendu est de type 'dd MMMM " +
-                                                                                         "yyyy'"));
-                            }
-                            
                             // Ajout des attributs au modèle en cas de succès
                             model.addAttribute("vehicule", vehicule);
-                            return Mono.just("vehicule/inner/resultSearchVehiculeView");
+                            return Mono.just("vehicule/view");
                         })
                         .switchIfEmpty(Mono.defer(() -> {
                             model.addAttribute("errorMessage", "Véhicule non trouvé pour l'immatriculation '" + getImmatDTO.getImmatriculation() + "'");
@@ -99,7 +88,6 @@ public class SearchVehiculeThymController {
                             model.addAttribute("urlRedirection", "/showvehicule");
                             return Mono.just("error");
                         }))
-                        
                         .onErrorResume(e -> {
                             model.addAttribute("errorMessage", e.getMessage());
                             model.addAttribute("alertClass", "alert-danger");
