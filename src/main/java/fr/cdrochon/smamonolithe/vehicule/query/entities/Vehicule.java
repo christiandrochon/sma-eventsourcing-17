@@ -6,6 +6,7 @@ import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -19,6 +20,7 @@ import java.time.Instant;
 public class Vehicule {
     
     @Id
+    @Column(name = "id_vehicule")
     private String id;
     
     private String immatriculationVehicule;
