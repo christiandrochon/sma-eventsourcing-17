@@ -51,7 +51,7 @@
 
             <div>
                 <label for="rue" class="form-label">Nom de la rue</label>
-                <input id="rue" class="form-control" type="text" th:field="*{adresse.rue}" required>
+                <input id="rue" class="form-control" type="text" th:field="*{adresse.rue}" th:classappend="${#fields.hasErrors('adresse.rue')} ? 'validation-champ-surimpression'" required>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.rue')}" th:errors="*{adresse.rue}">Erreur
                     du nom de la rue dans l'adresse
                 </div>
@@ -67,7 +67,7 @@
 
             <div>
                 <label for="ville" class="form-label">Ville</label>
-                <input id="ville" class="form-control" type="text" th:field="*{adresse.ville}" required>
+                <input id="ville" class="form-control" type="text" th:field="*{adresse.ville}" th:classappend="${#fields.hasErrors('adresse.ville')} ? 'validation-champ-surimpression'" required>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.ville')}" th:errors="*{adresse.ville}">Ville inconnue
                 </div>
             </div>

@@ -5,6 +5,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Creation Document</title>
+    <script>
+        // grisage ou non des champs en fonction de la date de création
+        document.addEventListener('DOMContentLoaded', function () {
+            const creationDateInput = document.getElementById('dateCreationDocument');
+            const modificationDateInput = document.getElementById('dateModificationDocument');
+            const today = new Date().toISOString().split('T')[0];
+            creationDateInput.value = today;
+            creationDateInput.readOnly = true;
+
+            function updateModificationDate() {
+                if (creationDateInput.value === today) {
+                    modificationDateInput.value = today;
+                    modificationDateInput.readOnly = true;
+                } else {
+                    modificationDateInput.readOnly = false;
+                }
+                validateDocumentDates();
+            }
+
+            creationDateInput.addEventListener('input', updateModificationDate);
+            updateModificationDate();
+        });
+
+        // FONCTION POUR LA MAJ A VENIR
+        // Une date de modification ne peut etre changée que si la date de creation n'est poas la date du jour ET que la date de modification est supérieure
+        // à la date de création ET la date de modification ne doit jamais etre superieure à la date du jour
+        function validateDocumentDates() {
+            const creationDateInput = document.getElementById('dateCreationDocument');
+            const modificationDateInput = document.getElementById('dateModificationDocument');
+            const creationDate = new Date(creationDateInput.value);
+            const modificationDate = new Date(modificationDateInput.value);
+            const maxDate = new Date();
+
+            // Check if both dates are valid before performing validation
+            if (creationDateInput.value && modificationDateInput.value) {
+                // Validate creation date
+                if (creationDate > maxDate) {
+                    creationDateInput.setCustomValidity('La date de création doit être entre 1970 et aujourd\'hui.');
+                } else {
+                    creationDateInput.setCustomValidity('');
+                }
+
+                // Validate modification date
+                if (modificationDate > maxDate) {
+                    modificationDateInput.setCustomValidity('La date de modification doit être entre 1970 et aujourd\'hui.');
+                } else if (modificationDate < creationDate) {
+                    modificationDateInput.setCustomValidity('La date de modification doit être la m��me ou après la date de création.');
+                } else {
+                    modificationDateInput.setCustomValidity('');
+                }
+
+                // Applique les changements au formulaire
+                creationDateInput.reportValidity();
+                modificationDateInput.reportValidity();
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -20,8 +77,9 @@
 
             <div class="">
                 <label for="nomDocument" class="form-label">Nom du document</label>
-                <input type="text" id="nomDocument" class="form-control" th:field="*{nomDocument}"/>
-                <div class="is-invalid bg-light-subtle" th:if="${#fields.hasErrors('nomDocument')}" th:errors="*{nomDocument}">Erreur
+                <input type="text" id="nomDocument" class="form-control" th:field="*{nomDocument}"
+                       th:classappend="${#fields.hasErrors('nomDocument')} ? 'validation-champ-surimpression'"/>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('nomDocument')}" th:errors="*{nomDocument}">Erreur
                     dans le nom du document
                 </div>
             </div>
@@ -29,52 +87,56 @@
             <div>
                 <label class="form-label">Titre du document</label>
                 <div class="control">
-                    <input id="titreDocument" class="form-control" type="text" th:field="*{titreDocument}">
+                    <input id="titreDocument" class="form-control" type="text" th:field="*{titreDocument}"
+                           th:classappend="${#fields.hasErrors('titreDocument')} ? 'validation-champ-surimpression'"/>
                 </div>
-                <div class="is-invalid-input bg-warning" th:if="${#fields.hasErrors('titreDocument')}"
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('titreDocument')}"
                      th:errors="*{titreDocument}">Erreur de titre du document
                 </div>
             </div>
             <div>
-                <label>Emetteur du document</label>
+                <label>Provenance du document</label>
                 <div class="form-label">
-                    <input type="text" id="emetteurDuDocument" class="form-control" th:field="*{emetteurDuDocument}"/>
+                    <input type="text" id="emetteurDuDocument" class="form-control" th:field="*{emetteurDuDocument}"
+                           th:classappend="${#fields.hasErrors('emetteurDuDocument')} ? 'validation-champ-surimpression'"/>
                 </div>
-                <div class="is-invalid bg-danger-subtle" th:if="${#fields.hasErrors('emetteurDuDocument')}" th:errors="*{emetteurDuDocument}">Erreur
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('emetteurDuDocument')}" th:errors="*{emetteurDuDocument}">Erreur
                     dans l'emetteur du document
                 </div>
             </div>
             <div>
-                <label for="typeDocument" class="form-label">Type de Document</label>
+                <label for="typeDocument" class="form-label">Nature du document</label>
                 <select id="typeDocument" class="form-select" th:field="*{typeDocument}">
                     <option th:each="typeDocument : ${typeDocuments}" th:value="${typeDocument.nomTypeDocument}" th:text="${typeDocument.nomTypeDocument}">
                         Type de document
                     </option>
                 </select>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('typeDocument')}"
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('typeDocument')}"
                      th:errors="*{typeDocument}">Erreur de type du document
                 </div>
             </div>
             <div>
                 <label for="dateCreationDocument" class="form-label">Date de création du document</label>
-                <input class="form-control" type="date" id="dateCreationDocument" th:field="*{dateCreationDocument}" oninput="validateDocumentDates()" required/>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateCreationDocument')}" th:errors="*{dateCreationDocument}">Erreur
+                <input class="form-control" type="date" id="dateCreationDocument" th:field="*{dateCreationDocument}" oninput="validateDocumentDates()"
+                       th:classappend="${#fields.hasErrors('dateCreationDocument')} ? 'validation-champ-surimpression'" required/>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('dateCreationDocument')}" th:errors="*{dateCreationDocument}">Erreur
                     de date de création du document
                 </div>
             </div>
             <div>
                 <label for="dateModificationDocument" class="form-label">Date de modification du document</label>
-                <input id="dateModificationDocument" class="form-control" type="date" th:field="*{dateModificationDocument}" oninput="validateDocumentDates()" required>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('dateModificationDocument')}"
+                <input id="dateModificationDocument" class="form-control" type="date" th:field="*{dateModificationDocument}" oninput="validateDocumentDates()"
+                       th:classappend="${#fields.hasErrors('dateModificationDocument')} ? 'validation-champ-surimpression'" required>
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('dateModificationDocument')}"
                      th:errors="*{dateModificationDocument}">Erreur de date de modification du document
                 </div>
             </div>
             <div>
-                <label for="status" class="form-label">Etat du document</label>
+                <label for="status" class="form-label">Statut du document</label>
                 <select id="status" class="form-select" th:field="*{documentStatus}">
-                    <option th:each="status : ${documentStatuses}" th:value="${status}" th:text="${status}">Status</option>
+                    <option th:each="status : ${documentStatuses}" th:value="${status}" th:text="${status}">Statut</option>
                 </select>
-                <div class="invalid-feedback" th:if="${#fields.hasErrors('documentStatus')}" th:errors="*{documentStatus}">Erreur
+                <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('documentStatus')}" th:errors="*{documentStatus}">Erreur
                     du status du document
                 </div>
             </div>
@@ -85,37 +147,6 @@
     </main>
 </div>
 </body>
-<script>
-    function validateDocumentDates() {
-        const creationDateInput = document.getElementById('dateCreationDocument');
-        const modificationDateInput = document.getElementById('dateModificationDocument');
-        const creationDate = new Date(creationDateInput.value);
-        const modificationDate = new Date(modificationDateInput.value);
-        const minDate = new Date('1970-01-01');
-        const maxDate = new Date();
-
-        // Validate creation date
-        if (creationDate < minDate || creationDate > maxDate) {
-            creationDateInput.setCustomValidity('La date de création doit être entre 1970 et aujourd\'hui.');
-        } else {
-            creationDateInput.setCustomValidity('');
-        }
-
-        // Validate modification date
-        if (modificationDate < minDate || modificationDate > maxDate) {
-            modificationDateInput.setCustomValidity('La date de modification doit être entre 1970 et aujourd\'hui.');
-        } else {
-            modificationDateInput.setCustomValidity('');
-        }
-
-        // Validate date coherence
-        if (creationDate > modificationDate) {
-            modificationDateInput.setCustomValidity('La date de modification doit être la même ou après la date de création.');
-        } else {
-            modificationDateInput.setCustomValidity('');
-        }
-    }
-</script>
 
 </html>
 
