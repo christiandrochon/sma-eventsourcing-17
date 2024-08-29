@@ -60,6 +60,7 @@ public class DossierEventHandlerService {
             vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());
             //SAVE vehicule en premier
             vehiculeRepository.save(vehicule);
+            log.info("Vehicule sauvegardé avec ID: {}", vehicule.getId());
             
             Client client = new Client();
             client.setId(UUID.randomUUID().toString());
@@ -73,11 +74,13 @@ public class DossierEventHandlerService {
             client.setVehicule(vehicule);
             // SAVE
             clientRepository.save(client);
+            log.info("Client sauvegardé avec ID: {}", client.getId());
             
             // save les relations entre client et vehicule, mais le vehicule doit d'abord etre enregistré avant de pouvoir etre lié à un client (cle etrangere),
             // -> UPDATE le vehicule avec desormais le nouveau client qui vient d'etre enregistré
             vehicule.setClient(client);
             vehiculeRepository.save(vehicule);
+            log.info("Vehicule mis à jour avec Client ID: {}", client.getId());
             
             dossier.setId(event.getId());
             dossier.setNomDossier(event.getNomDossier());
@@ -89,7 +92,7 @@ public class DossierEventHandlerService {
             
             //SAVE le dossier en final
             dossierRepository.save(dossier);
-            
+            log.info("Dossier sauvegardé avec ID: {}", dossier.getId());
             
         } catch(Exception e) {
             System.out.println("ERREUR DE SAVE EN BDD : " + e.getMessage());
