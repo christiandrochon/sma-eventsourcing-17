@@ -1,9 +1,7 @@
 package fr.cdrochon.thymeleaffrontend.dtos.client;
 
-import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
