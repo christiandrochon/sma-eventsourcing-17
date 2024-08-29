@@ -9,32 +9,32 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
+
 public class CSPConfig {
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // desative la CSP
-                .headers(headers -> {}
-//                                 .defaultsDisabled()
+                // desactive la CSP
+//                .headers(headers -> {})
+                // active la CSP
+                .headers(headers -> headers
+                                 .contentSecurityPolicy(csp -> csp
+                                                                .policyDirectives("default-src 'self' http://sma.local; " +
+                                                                                          "script-src 'self' 'unsafe-inline' http://sma.local; " +
+                                                                                          "script-src-elem 'self' 'unsafe-inline' http://sma.local; " +
+                                                                                          "script-src-attr 'self' 'unsafe-inline' http://sma.local; " +
+                                                                                          "style-src 'self' 'unsafe-inline' http://sma.local; " +
+                                                                                          "img-src 'self' data: http://sma.local; " +
+                                                                                          "media-src 'self' data: http://sma.local; " +
+                                                                                          "font-src 'self' http://sma.local; " +
+                                                                                          "connect-src 'self' http://sma.local; " +
+                                                                                          "frame-src 'self' http://sma.local; " +
+                                                                                          "object-src 'self' http://sma.local; " +
+                                                                                          "child-src 'self' http://sma.local; " +
+                                                                                          "form-action 'self' http://sma.local;")
+                                                       )
                         )
-//                .headers(headers -> headers
-//                                 .contentSecurityPolicy(csp -> csp
-//                                                                .policyDirectives("default-src 'self' http://sma.local; " +
-//                                                                                          "script-src 'self' 'unsafe-inline' http://sma.local; " +
-//                                                                                          "script-src-elem 'self' 'unsafe-inline' http://sma.local; " +
-//                                                                                          "script-src-attr 'self' 'unsafe-inline' http://sma.local; " +
-//                                                                                          "style-src 'self' 'unsafe-inline' http://sma.local; " +
-//                                                                                          "img-src 'self' data: http://sma.local; " +
-//                                                                                          "media-src 'self' data: http://sma.local; " +
-//                                                                                          "font-src 'self' http://sma.local; " +
-//                                                                                          "connect-src 'self' http://sma.local; " +
-//                                                                                          "frame-src 'self' http://sma.local; " +
-//                                                                                          "object-src 'self' http://sma.local; " +
-//                                                                                          "child-src 'self' http://sma.local; " +
-//                                                                                          "form-action 'self' http://sma.local;")
-//                                                       )
-//                        )
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                                                .anyRequest().permitAll()
                                       )
