@@ -90,3 +90,22 @@ function formatCp(input) {
     }
     input.value = cleaned;
 }
+
+//force les lettres en minuscule  pour les emails
+function forcerminuscule(input) {
+    input.value = input.value.toLowerCase();
+}
+
+// A n'utiliser que si le formulaire ne contient qu'une seule date à valider
+function validationDeDate(input) {
+    const saisieDate = new Date(input.value);
+    const minDate = new Date('1950-01-01');
+    const maxDate = new Date();
+
+    // Validate creation date
+    if (saisieDate < minDate || saisieDate > maxDate) {
+        input.setCustomValidity('La date doit être comprise entre 1950 et aujourd\'hui.');
+    } else {
+        input.setCustomValidity('');
+    }
+}

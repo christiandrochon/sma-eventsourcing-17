@@ -5,128 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Creation Dossier</title>
-    <script>
-        // formatte l'immatriculation en ajoutant des tirets en en mettant en majuscule, avec un format particulier
-        function formatImmatriculation(input) {
-            let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-            if (value.length > 2) {
-                value = value.slice(0, 2) + '-' + value.slice(2);
-            }
-            if (value.length > 6) {
-                value = value.slice(0, 6) + '-' + value.slice(6);
-            }
-            if (value.length > 8) {
-                value = value.slice(0, 9);
-            }
-            input.value = value;
-        }
-
-        //verifie dynamiquement l'affichage d'erreur d'immatriculation et en empeche la saisie
-        function checkImmat(input) {
-            let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-            let isValid = true;
-
-            if (value.length > 2) {
-                value = value.slice(0, 2) + '-' + value.slice(2);
-            }
-            if (value.length > 6) {
-                value = value.slice(0, 6) + '-' + value.slice(6);
-            }
-            if (value.length > 8) {
-                value = value.slice(0, 9);
-            }
-//check erreur de lettre
-            for (let i = 0; i < value.length; i++) {
-                if (i < 2 || (i > 6 && i <= 9)) {
-                    if (!/[A-Z]/.test(value[i])) {
-                        isValid = false;
-                        break;
-                    }
-                    //check erreur de chiffre
-                } else if (i > 2 && i < 6) {
-                    if (!/[0-9]/.test(value[i])) {
-                        isValid = false;
-                        break;
-                    }
-                }
-            }
-
-            if (isValid) {
-                input.classList.remove('validation-champ-surimpression');
-                let errorElement = document.getElementById('immatriculationError');
-                if (errorElement) {
-                    errorElement.remove();
-                    //bouton validation
-                    // document.getElementById('immatriculationExisteError').style.display = 'none';
-                    // document.getElementById('submitButton').disabled = false;
-                }
-            } else {
-                input.classList.add('validation-champ-surimpression');
-                if (!document.getElementById('immatriculationError')) {
-                    let errorDiv = document.createElement('div');
-                    errorDiv.id = 'immatriculationError';
-                    errorDiv.className = 'is-invalid validation-champ-incorrect';
-                    errorDiv.textContent = "Le format requis doit être de type 'AA-123-AA'. Merci de vérifier l'immatriculation saisie.";
-                    input.parentNode.appendChild(errorDiv);
-//bouton validation
-//                     document.getElementById('immatriculationExisteError').style.display = 'block';
-//                     document.getElementById('submitButton').disabled = true;
-                }
-            }
-
-            input.value = value;
-        }
-// grise le bouton de validation si l'immat existe
-        function checkImmatExists(input) {
-            let immatriculation = input.value;
-            fetch(`/queries/vehiculeExists/${immatriculation}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data) {
-                        document.getElementById('immatriculationExisteError').style.display = 'block';
-                        document.getElementById('submitButton').disabled = true;
-                    } else {
-                        document.getElementById('immatriculationExisteError').style.display = 'none';
-                        document.getElementById('submitButton').disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-        // formatte le numero de tel
-        function formatTel(input) {
-            // Remove all non-digit characters
-            let cleaned = input.value.replace(/\D/g, '');
-
-            // Limite à 10 vhiffres pouvant etre saisis
-            if (cleaned.length > 10) {
-                cleaned = cleaned.substring(0, 10);
-            }
-
-            // Formatte le numéro de téléphone de 2x5 chiffres
-            // let formatted = cleaned.match(/.{1,2}/g)?.join(' ') || '';
-
-            input.value = cleaned;
-        }
-
-        //formatte le code postal
-        function formatCp(input) {
-            // Remove all non-digit characters
-            let cleaned = input.value.replace(/\D/g, '');
-
-            // Limite à 5 chiffres pouvant etre saisis
-            if (cleaned.length > 5) {
-                cleaned = cleaned.substring(0, 5);
-            }
-            input.value = cleaned;
-        }
-
-        function forcerminuscule(input) {
-            input.value = input.value.toLowerCase();
-        }
-    </script>
 </head>
 
 <body>
@@ -153,23 +31,6 @@
                                 de nom dossier
                             </div>
                         </div>
-                        <!--                        Test des erreurs de date. A Garder!-->
-                        <!--                        <div class="col-sm-6">-->
-                        <!--                            <label class="form-label">Date de mise en circulation</label>-->
-                        <!--                            <input id="dateCreationDossier" class="form-control" type="date" th:field="*{dateCreationDossier}"-->
-                        <!--                                   required>-->
-                        <!--                            <div class="is-invalid" th:if="${#fields.hasErrors('dateCreationDossier')}"-->
-                        <!--                                 th:errors="*{dateCreationDossier}">Erreur de date de création de dossier-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
-                        <!--                        <div class="col-sm-6">-->
-                        <!--                            <label class="form-label">Date de mise en circulation</label>-->
-                        <!--                            <input id="dateModificationDossier" class="form-control" type="date" th:field="*{dateModificationDossier}"-->
-                        <!--                                   required>-->
-                        <!--                            <div class="is-invalid" th:if="${#fields.hasErrors('dateModificationDossier')}"-->
-                        <!--                                 th:errors="*{dateModificationDossier}">Erreur de date de création de dossier-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
                         <div class="col-sm-3">
                             <label for="dossierStatus" class="form-label">Etat du dossier</label>
                             <select id="dossierStatus" class="form-select" th:field="*{dossierStatus}" required>
@@ -187,7 +48,6 @@
                     <h4 class="mb-3">Client</h4>
 
                     <div class="row g-3">
-
                         <div class="col-sm-6">
                             <label for="nomClient" class="form-label">Nom du client</label>
                             <input id="nomClient" class="form-control" type="text" th:field="*{client.nomClient}"
@@ -207,8 +67,8 @@
                         </div>
                         <div class="col-sm-5">
                             <label for="mailClient" class="form-label">Email du client </label>
-                            <input id="mailClient" class="form-control" type="email" th:field="*{client.mailClient}"
-                                   th:classappend="${#fields.hasErrors('client.mailClient')} ? 'validation-champ-surimpression'" placeholder="you@example.com"
+                            <input id="mailClient" class="form-control" type="email" th:field="*{client.mailClient}" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$"
+                                   th:classappend="${#fields.hasErrors('client.mailClient')} ? 'validation-champ-surimpression'" placeholder="maël@gmail.com"
                                    oninput="forcerminuscule(this)" required>
                             <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.mailClient')}" th:errors="*{client.mailClient}">Entrez un
                                 email valide
@@ -324,7 +184,7 @@
                     <div class="col-md-6">
                         <label for="dateMiseEnCirculationVehicule" class="form-label">Date de mise en circulation</label>
                         <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" th:field="*{vehicule.dateMiseEnCirculationVehicule}"
-                               required>
+                               oninput="validationDeDate(this)" required>
                         <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.dateMiseEnCirculationVehicule')}"
                              th:errors="*{vehicule.dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
                         </div>

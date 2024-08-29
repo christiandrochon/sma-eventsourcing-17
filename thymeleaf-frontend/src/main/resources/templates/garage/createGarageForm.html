@@ -15,8 +15,6 @@
 
         <h6><a th:href="@{/garages}">Retour aux garages</a></h6>
 
-        <!--        <div class="d-flex justify-content-center align-items-center">-->
-        <!--            <div class="row w-75 mt-lg-5">-->
         <div class="mt-lg-5">
             <h3>Création d'un garage</h3>
         </div>
@@ -33,7 +31,7 @@
             </div>
             <div>
                 <label for="mailResp" class="form-label">Mail du responsable</label>
-                <input id="mailResp" class="form-control" type="email" th:field="*{mailResp}" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$" required>
+                <input id="mailResp" class="form-control" type="email" th:field="*{mailResp}" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$" oninput="forcerminuscule(this)" required>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('mailResp')}" th:errors="*{mailResp}">Erreur
                     de mail
                 </div>
@@ -61,7 +59,7 @@
 
             <div>
                 <label for="cp" class="form-label">Code postal</label>
-                <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" placeholder="12345" pattern="[0-9]{5}" required>
+                <input id="cp" class="form-control" type="text" th:field="*{adresse.cp}" placeholder="12345" pattern="[0-9]{5}" oninput="formatCp(this)" required>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.cp')}" th:errors="*{adresse.cp}">Erreur
                     de code postal
                 </div>
@@ -84,65 +82,6 @@
             <hr class="my-4 mt-5">
             <button class="w-100 btn btn-primary btn-lg " type="submit">Valider</button>
         </form>
-        <!--            </div>-->
-        <!--        </div>-->
-
-
-        <!--        &lt;!&ndash;    <div class="container">&ndash;&gt;-->
-        <!--        <h4><a th:href="@{/garages}"> Retour à la liste des garages</a></h4>-->
-
-        <!--        <form action='#' th:action="@{/createGarage}" method='post' class="box" th:object="${garageDTO}">-->
-
-        <!--            <div class="field">-->
-        <!--                <label class="label">nom garage</label>-->
-        <!--                <div class="control">-->
-        <!--                    <input id="nomGarage" class="input" type="text" th:field="*{nomGarage}">-->
-        <!--                    <div class="bg-danger-subtle" th:if="${#fields.hasErrors('nomGarage')}" th:errors="*{nomGarage}">Erreur-->
-        <!--                        de nom-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--            <div class="field">-->
-        <!--                <label class="label">mail</label>-->
-        <!--                <div class="control">-->
-        <!--                    <input id="mailResp" class="input" type="email" th:field="*{mailResp}">-->
-        <!--                    <div class="bg-danger-subtle" th:if="${#fields.hasErrors('mailResp')}" th:errors="*{mailResp}">Erreur-->
-        <!--                        de nom-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--            <div class="field">-->
-        <!--                <label class="label">N° de rue</label>-->
-        <!--                <div class="control">-->
-        <!--                    <input class="input" type="text" th:field="*{adresse.numeroDeRue}">-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--            <div class="field">-->
-        <!--                <label class="label">Nom de rue</label>-->
-        <!--                <div class="control">-->
-        <!--                    <input class="input" type="text" th:field="*{adresse.rue}">-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--            <div class="field">-->
-        <!--                <label class="label">CP</label>-->
-        <!--                <div class="control">-->
-        <!--                    <input class="input" type="text" th:field="*{adresse.cp}">-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--            <div class="field">-->
-        <!--                <label class="label">Ville</label>-->
-        <!--                <div class="control">-->
-        <!--                    <input class="input" type="text" th:field="*{adresse.ville}">-->
-        <!--                </div>-->
-        <!--            </div>-->
-
-        <!--            <div class="field is-grouped">-->
-        <!--                <div class="control">-->
-        <!--                    <button class="button is-link">Submit</button>-->
-        <!--                </div>-->
-        <!--            </div>-->
-
-        <!--        </form>-->
     </main>
 </div>
 </body>

@@ -2,7 +2,6 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="template">
-
 <head>
     <meta charset="UTF-8">
     <title>Creation Document</title>
@@ -58,14 +57,14 @@
             </div>
             <div>
                 <label for="dateCreationDocument" class="form-label">Date de création du document</label>
-                <input class="form-control" type="date" id="dateCreationDocument" th:field="*{dateCreationDocument}"/>
+                <input class="form-control" type="date" id="dateCreationDocument" th:field="*{dateCreationDocument}" oninput="validateDocumentDates()" required/>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('dateCreationDocument')}" th:errors="*{dateCreationDocument}">Erreur
                     de date de création du document
                 </div>
             </div>
             <div>
                 <label for="dateModificationDocument" class="form-label">Date de modification du document</label>
-                <input id="dateModificationDocument" class="form-control" type="date" th:field="*{dateModificationDocument}">
+                <input id="dateModificationDocument" class="form-control" type="date" th:field="*{dateModificationDocument}" oninput="validateDocumentDates()" required>
                 <div class="invalid-feedback" th:if="${#fields.hasErrors('dateModificationDocument')}"
                      th:errors="*{dateModificationDocument}">Erreur de date de modification du document
                 </div>
@@ -86,7 +85,37 @@
     </main>
 </div>
 </body>
+<script>
+    function validateDocumentDates() {
+        const creationDateInput = document.getElementById('dateCreationDocument');
+        const modificationDateInput = document.getElementById('dateModificationDocument');
+        const creationDate = new Date(creationDateInput.value);
+        const modificationDate = new Date(modificationDateInput.value);
+        const minDate = new Date('1970-01-01');
+        const maxDate = new Date();
 
+        // Validate creation date
+        if (creationDate < minDate || creationDate > maxDate) {
+            creationDateInput.setCustomValidity('La date de création doit être entre 1970 et aujourd\'hui.');
+        } else {
+            creationDateInput.setCustomValidity('');
+        }
+
+        // Validate modification date
+        if (modificationDate < minDate || modificationDate > maxDate) {
+            modificationDateInput.setCustomValidity('La date de modification doit être entre 1970 et aujourd\'hui.');
+        } else {
+            modificationDateInput.setCustomValidity('');
+        }
+
+        // Validate date coherence
+        if (creationDate > modificationDate) {
+            modificationDateInput.setCustomValidity('La date de modification doit être la même ou après la date de création.');
+        } else {
+            modificationDateInput.setCustomValidity('');
+        }
+    }
+</script>
 
 </html>
 

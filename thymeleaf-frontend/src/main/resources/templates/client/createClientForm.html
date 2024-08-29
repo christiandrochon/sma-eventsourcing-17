@@ -5,37 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Creation Client</title>
-    <script>
-    function formatTel(input) {
-        // Remove all non-digit characters
-        let cleaned = input.value.replace(/\D/g, '');
-
-        // Limite à 10 vhiffres pouvant etre saisis
-        if (cleaned.length > 10) {
-            cleaned = cleaned.substring(0, 10);
-        }
-
-        // Formatte le numéro de téléphone de 2x5 chiffres
-        // let formatted = cleaned.match(/.{1,2}/g)?.join(' ') || '';
-
-        input.value = cleaned;
-    }
-
-    function formatCp(input) {
-        // Remove all non-digit characters
-        let cleaned = input.value.replace(/\D/g, '');
-
-        // Limite à 5 chiffres pouvant etre saisis
-        if (cleaned.length > 5) {
-            cleaned = cleaned.substring(0, 5);
-        }
-        input.value = cleaned;
-    }
-
-    function forcerminuscule(input) {
-        input.value = input.value.toLowerCase();
-    }
-</script>
 </head>
 
 <body>
@@ -67,7 +36,6 @@
             <div>
                 <label for="mailClient" class="form-label">Mail du client</label>
                 <input id="mailClient" class="form-control" type="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$" th:field="*{mailClient}"
-
                        th:classappend="${#fields.hasErrors('mailClient')} ? 'validation-champ-surimpression'" oninput="forcerminuscule(this)" required>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('mailClient')}" th:errors="*{mailClient}">Erreur
                     de mail

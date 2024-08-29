@@ -124,7 +124,7 @@
 
                 <div class="w-100">
                     <label for="dateMiseEnCirculationVehicule" class="form-label">Date de mise en circulation</label>
-                    <input id="dateMiseEnCirculationVehicule" class="form-control" type="date"
+                    <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" oninput="validationDeDate(this)"
                            th:field="*{dateMiseEnCirculationVehicule}" required>
                     <div class="is-invalid" th:if="${#fields.hasErrors('dateMiseEnCirculationVehicule')}"
                          th:errors="*{dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
