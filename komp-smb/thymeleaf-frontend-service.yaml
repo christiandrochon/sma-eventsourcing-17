@@ -9,7 +9,7 @@ metadata:
   name: thymeleaf-frontend
 #  namespace: smb
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - name: "8091"
       port: 8091
