@@ -31,6 +31,10 @@
         }
         input.value = cleaned;
     }
+
+    function forcerminuscule(input) {
+        input.value = input.value.toLowerCase();
+    }
 </script>
 </head>
 
@@ -64,7 +68,7 @@
                 <label for="mailClient" class="form-label">Mail du client</label>
                 <input id="mailClient" class="form-control" type="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$" th:field="*{mailClient}"
 
-                       th:classappend="${#fields.hasErrors('mailClient')} ? 'validation-champ-surimpression'" required>
+                       th:classappend="${#fields.hasErrors('mailClient')} ? 'validation-champ-surimpression'" oninput="forcerminuscule(this)" required>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('mailClient')}" th:errors="*{mailClient}">Erreur
                     de mail
                 </div>
