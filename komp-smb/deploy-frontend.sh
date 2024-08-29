@@ -12,7 +12,7 @@ cd thymeleaf-frontend
 
 # Construire le projet Maven et créer l'image Docker pour sma-thymeleaf
 mvn clean package
-docker build --no-cache . -t sma-thymeleaf:v1.1
+docker build --no-cache . -t btrurqnt/sma-thymeleaf:v1.1
 docker tag sma-thymeleaf:v1.1 btrurqnt/sma-thymeleaf:v1.1
 
 echo $DOCKER_PASSWORD | docker login -u btrurqnt --password-stdin
@@ -25,11 +25,11 @@ docker push btrurqnt/sma-thymeleaf:v1.1
 ## Supprimer toutes les images sma-thymeleaf
 #docker images -q btrurqnt/sma-thymeleaf:v1.1 | xargs -r docker rmi -f
 ## En cas de changement du code source via la jar, suppression de l'ancienne image
-#minikube ssh -- docker image rmi -f btrurqnt/sma-thymeleaf:v1.1
+minikube ssh -- docker image rmi -f btrurqnt/sma-thymeleaf:v1.1
 
 minikube image load btrurqnt/sma-thymeleaf:v1.1
 
 cd ..
 # Appliquer les fichiers de déploiement Kubernetes
 cd komp-smb
-kubectl apply -f thymeleaf-frontend-deployment.yaml -n smb
+kubectl apply -f thymeleaf-frontend-deployment.yaml -n sma

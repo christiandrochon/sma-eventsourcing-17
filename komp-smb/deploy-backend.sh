@@ -4,7 +4,7 @@
 cd "$(dirname "$0")/.."
 
 mvn clean package -DskipTests
-docker build --no-cache . -t sma-monolithe:v1.1
+docker build --no-cache . -t btrurqnt/sma-monolithe:v1.1
 docker tag sma-monolithe:v1.1 btrurqnt/sma-monolithe:v1.1
 
 echo $DOCKER_PASSWORD | docker login -u btrurqnt --password-stdin
@@ -20,7 +20,7 @@ minikube image load btrurqnt/sma-monolithe:v1.1
 
 # Déploiement
 cd komp-smb
-kubectl apply -f sma-monolithe-deployment.yaml -n smb
+kubectl apply -f sma-monolithe-deployment.yaml -n sma
 
 
 
