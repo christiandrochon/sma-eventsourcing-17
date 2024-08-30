@@ -20,4 +20,5 @@
    * __Infrastructure Cloud__ : Hébergée sur _AWS_ avec des machines virtuelles pour une fiabilité maximale et une flexibilité à grande échelle. 
 
 #### Accès à l'application :
-   * L'application est accessible à l'adresse : *todo (URL à définir)*.
+   * Si vous avez téléchargé le code source depuis la branche 'master', à la racine du projet, executez 'docker compose -f compose.yaml up -d'. L'application sera accessible sur l'url 'http://localhost:8091'.
+   * Si vous avez téléchargé le code source depuis la branche 'keycloak', à la racine du projet, executez 'docker compose -f compose.yaml up -d'. L'application sera également accessible  à l'url 'http://localhost:8091', mais vous aurez besoin d'identifiants de connexion.
