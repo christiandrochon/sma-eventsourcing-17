@@ -65,7 +65,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_DB: postgres
+      KC_DB: postgres # type de bdd que keycloak doit utiliser
       KC_DB_URL_PORT: 50007
       KC_DB_URL_HOST: postgres-keycloak
       KC_DB_URL_DATABASE: keycloak
