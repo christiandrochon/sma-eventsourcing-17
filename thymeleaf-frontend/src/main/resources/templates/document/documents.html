@@ -18,7 +18,7 @@
         <h6 class="fst-italic">(Cliquez sur une ligne pour accéder aux details d'un document)</h6>
         <div class="card w-100">
             <div class="card-body">
-                <table class="table w-100">
+                <table class="table">
                     <div th:if="${#lists.isEmpty(documents)}" class="text-center alert alert-warning" role="alert">
                         Aucun document trouvé
                     </div>
@@ -28,11 +28,11 @@
                             <!--                            <th>ID</th>-->
                             <th>Nom du document</th>
                             <th>Titre</th>
-                            <th>Emetteur</th>
+                            <th>Provenance</th>
                             <th>Type</th>
                             <th>Date de création</th>
                             <th>Date de modification</th>
-                            <th>Status du document</th>
+                            <th>Nature du document</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -64,8 +64,8 @@
                                 <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-none">[[${#temporals.format(d.dateModificationDocument,
                                     'dd MMM yyyy')}]]</a>
                             </td>
-                            <td class="wrap-text" th:if="${d.documentStatus != null}">
-                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="text-decoration-nonet">[[${d.documentStatus}]]</a>
+                            <td class="truncate-text" th:if="${d.documentStatus != null}">
+                                <a href="#" th:href="@{/document/{id}(id=${d.id})}" class="">[[${d.documentStatus}]]</a>
                             </td>
                         </tr>
                     </th:block>
