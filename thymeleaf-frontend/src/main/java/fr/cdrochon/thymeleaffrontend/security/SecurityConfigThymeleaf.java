@@ -55,7 +55,7 @@ public class SecurityConfigThymeleaf {
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/").permitAll())
                 // type MIME et ressources statiques
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/assets/**", "/css/**", "/img/**", "/js/**", "templates/**").permitAll())
-                .authorizeHttpRequests(ar -> ar.requestMatchers("/auth").permitAll())
+                .authorizeHttpRequests(ar -> ar.requestMatchers("/auth", "/smalogin").permitAll())
                 .authorizeHttpRequests(ar -> ar.requestMatchers(HttpMethod.POST, "/commands/createDocument").hasAnyAuthority("USER", "ADMIN"))
                 //                .authorizeHttpRequests(ar -> ar.requestMatchers("/", "/index", "/oauth2Login/**", "/webjars/**", "/h2-console/**")
                 //                .permitAll())
@@ -65,8 +65,8 @@ public class SecurityConfigThymeleaf {
                 .authorizeHttpRequests(ar -> ar.anyRequest().authenticated())
                 // authentification avec oauth2
                 //personnalisation de la page d'authentification
-                .oauth2Login(Customizer.withDefaults())
-                
+//                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(login -> login.loginPage("/smalogin").defaultSuccessUrl("/"))
                 //                .oauth2ResourceServer(o2 -> o2.jwt(token -> token.jwtAuthenticationConverter(jwtAuthConverter)))
                 //
                 //                //                .oauth2Login(oauth2Login -> oauth2Login.loginPage("/oauth2Login"))
