@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-<!--    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https://*; child-src 'none';">-->
-<!--    Serveur Nginx = Content-Security-Policy "default-src 'self'; script-src 'self' https://trusted.com; style-src 'self' 'unsafe-inline';";-->
-<!--    Serveur Apache = Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://trusted.com; style-src 'self' 'unsafe-inline';"-->
+    <!--    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https://*; child-src 'none';">-->
+    <!--    Serveur Nginx = Content-Security-Policy "default-src 'self'; script-src 'self' https://trusted.com; style-src 'self' 'unsafe-inline';";-->
+    <!--    Serveur Apache = Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://trusted.com; style-src 'self' 'unsafe-inline';"-->
 
     <title>Suivi de Maintenace Auto</title>
 
-<!--    Animation du bouton dark/light en bas à droite-->
+    <!--    Animation du bouton dark/light en bas à droite-->
     <script th:src="@{/assets/js/color-modes.js}"></script>
     <!--Bootstrap-->
     <link rel="stylesheet" th:href="@{/assets/dist/css/bootstrap.min.css}">
@@ -96,18 +96,13 @@
     <header class="mb-auto">
         <div>
             <h3 class="mt-3 text-center">Votre application de maintenance automobile</h3>
-<!--            <nav class="nav nav-masthead justify-content-center float-md-end">-->
-<!--                <a class="text-end">-->
-<!--                    <button type="button" class="btn btn-outline-secondary me-2">Login</button>-->
-<!--                    <button type="button" class="btn btn-bd-primary">Sign-up</button>-->
-<!--                </a>-->
-<!--            </nav>-->
         </div>
     </header>
 
     <main class="px-3">
         <h1>Suivi de Maintenance Automobile</h1>
-        <p class="lead">Optimisez la durée de vie de votre voiture en un clic grâce à notre application de maintenance automobile intelligente et personnalisée</p>
+        <p class="lead">Optimisez la durée de vie de votre voiture en un clic grâce à notre application de maintenance automobile intelligente et
+            personnalisée</p>
         <p class="lead">
             <a href="#" th:href="@{/dossiers}" class="btn btn-lg btn-light fw-bold border-white bg-white">Entrez</a>
         </p>
