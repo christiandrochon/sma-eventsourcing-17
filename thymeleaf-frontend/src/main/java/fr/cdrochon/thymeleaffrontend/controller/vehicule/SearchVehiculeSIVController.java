@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,6 +44,7 @@ public class SearchVehiculeSIVController {
      * @return la vue searchVehiculeSIVForm
      */
     @GetMapping("/searchvehiculesiv")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String searchVehiculeSIVForm(Model model) {
         if(!model.containsAttribute("getImmatDTO")) {
             model.addAttribute("getImmatDTO", new GetImmatriculationDTO());
@@ -60,6 +62,7 @@ public class SearchVehiculeSIVController {
      * @return la vue resultSIVForm
      */
     @PostMapping("/searchvehiculesiv")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String searchVehicule(@Valid @ModelAttribute("getImmatDTO") GetImmatriculationDTO getImmatriculationDTO, BindingResult result,
                                  RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,7 +46,7 @@ public class CreateDocumentThymController {
      * @return Vue de création de document
      */
     @GetMapping("/createDocument")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER')")
     public String getDocument(Model model) {
         if(!model.containsAttribute("documentDTO")) {
             model.addAttribute("documentDTO", new DocumentThymDTO());
@@ -67,6 +68,7 @@ public class CreateDocumentThymController {
      * @return Vue de création de document ou redirection vers la liste des documents
      */
     @PostMapping(value = "/createDocument")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> createDocumentAsync(@Valid @ModelAttribute("documentDTO") DocumentThymDTO documentThymDTO, BindingResult result,
                                             RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {

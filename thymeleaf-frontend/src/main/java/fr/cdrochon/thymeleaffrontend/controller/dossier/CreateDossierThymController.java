@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -48,7 +49,7 @@ public class CreateDossierThymController {
      * @return la vue createDossierForm
      */
     @GetMapping("/createDossier")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
+        @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> getDossier(Model model, RedirectAttributes redirectAttributes) {
         if(!model.containsAttribute("dossierDTO")) {
             model.addAttribute("dossierDTO", new DossierThymDTO());
@@ -83,6 +84,7 @@ public class CreateDossierThymController {
      * @return la vue createDossierForm si erreur, la vue dossier/{id} si succès
      */
     @PostMapping(value = "/createDossier")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> createDossierAsync(@Valid @ModelAttribute("dossierDTO") DossierThymDTO dossierThymDTO, BindingResult result,
                                            RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {

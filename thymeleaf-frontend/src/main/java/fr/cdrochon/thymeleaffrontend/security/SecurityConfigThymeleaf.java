@@ -56,6 +56,7 @@ public class SecurityConfigThymeleaf {
                 // type MIME et ressources statiques
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/assets/**", "/css/**", "/img/**", "/js/**", "templates/**").permitAll())
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/auth").permitAll())
+                .authorizeHttpRequests(ar -> ar.requestMatchers(HttpMethod.POST, "/commands/createDocument").hasAnyAuthority("USER", "ADMIN"))
                 //                .authorizeHttpRequests(ar -> ar.requestMatchers("/", "/index", "/oauth2Login/**", "/webjars/**", "/h2-console/**")
                 //                .permitAll())
                 //                .authorizeHttpRequests(ar -> ar.requestMatchers(HttpMethod.GET, "/queries/**").permitAll())
@@ -65,11 +66,13 @@ public class SecurityConfigThymeleaf {
                 // authentification avec oauth2
                 //personnalisation de la page d'authentification
                 .oauth2Login(Customizer.withDefaults())
+                
                 //                .oauth2ResourceServer(o2 -> o2.jwt(token -> token.jwtAuthenticationConverter(jwtAuthConverter)))
                 //
                 //                //                .oauth2Login(oauth2Login -> oauth2Login.loginPage("/oauth2Login"))
-                // A la deconnection, on retourne à la page d'accueil
+                // A la deconnection du provider, on retourne à la page d'accueil
                 .logout(logout -> logout
+                        .logoutSuccessHandler(oidcLogoutSuccessHandler())
                         .logoutSuccessUrl("/").permitAll()
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID"))
@@ -80,7 +83,7 @@ public class SecurityConfigThymeleaf {
                 //                            )
                 
                 //renvoi vers la page notAuthorized lorsque user n'as pas de droit.
-                .exceptionHandling(eh -> eh.accessDeniedPage("/notAutorized"))
+                .exceptionHandling(eh -> eh.accessDeniedPage("/accesinterdit"))
                 .build();
     }
     

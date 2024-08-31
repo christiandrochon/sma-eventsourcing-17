@@ -1,27 +1,12 @@
 package fr.cdrochon.thymeleaffrontend.controller;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Controller
 public class ThymeleafRestController {
@@ -50,13 +35,13 @@ public class ThymeleafRestController {
     }
     
     /**
-     * Renvoi l'user vers la page notAuthorized.html lorsqu'il tente de se rendre sur une url du site dont il n'a pas les droits
+     * Renvoi l'user vers la page accesinterdit.html lorsqu'il tente de se rendre sur une url du site dont il n'a pas les droits
      *
-     * @return page notAuthorized.html
+     * @return page accesinterdit.html
      */
-    @GetMapping("/notAutorized")
+    @GetMapping("/accesinterdit")
     public String nonAutorise() {
-        return "notAuthorized";
+        return "accesinterdit";
     }
     
     /**

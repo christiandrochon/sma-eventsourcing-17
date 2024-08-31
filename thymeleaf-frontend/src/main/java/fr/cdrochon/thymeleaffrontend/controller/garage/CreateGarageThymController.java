@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,7 +27,7 @@ import static fr.cdrochon.thymeleaffrontend.json.ConvertObjectToJson.convertObje
 @Controller
 @Slf4j
 public class CreateGarageThymController {
-
+    
     @Autowired
     private WebClient webClient;
     
@@ -37,7 +38,7 @@ public class CreateGarageThymController {
      * @return la vue garage/createGarageForm
      */
     @GetMapping("/createGarage")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String createGarageAsync(Model model) {
         GaragePostDTO garageDTO = new GaragePostDTO();
         garageDTO.setAdresse(new GarageAdresseDTO());
@@ -59,6 +60,7 @@ public class CreateGarageThymController {
      * @return la vue garage/createGarageForm en cas d'erreur, la vue garage/view en cas de succès
      */
     @PostMapping(path = "/createGarage")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> createGarageAsync(@Valid @ModelAttribute("garageDTO") GaragePostDTO garageDTO, BindingResult result,
                                           RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {

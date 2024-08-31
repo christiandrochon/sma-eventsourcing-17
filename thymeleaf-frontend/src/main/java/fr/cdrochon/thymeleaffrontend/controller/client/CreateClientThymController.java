@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +29,7 @@ import static fr.cdrochon.thymeleaffrontend.json.ConvertObjectToJson.convertObje
 @Slf4j
 @Controller
 public class CreateClientThymController {
+    
     @Autowired
     private WebClient webClient;
     
@@ -39,6 +41,7 @@ public class CreateClientThymController {
      * @return la vue createClientForm
      */
     @GetMapping("/createClient")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String createClient(Model model) {
         if(!model.containsAttribute("clientDTO")) {
             model.addAttribute("clientDTO", new ClientThymDTO());
@@ -59,7 +62,7 @@ public class CreateClientThymController {
      * @return la vue clients si la création a réussi, sinon la vue createClientForm
      */
     @PostMapping(value = "/createClient")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> createClient(@Valid @ModelAttribute("clientDTO") ClientThymDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes,
                                      Model model) {
         if(result.hasErrors()) {

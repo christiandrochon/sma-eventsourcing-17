@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,7 +44,7 @@ public class CreateVehiculeThymController {
      * @return la vue createVehiculeForm
      */
     @GetMapping("/createVehicule")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String createVehicule(Model model) {
         if(!model.containsAttribute("vehiculePostDTO")) {
             model.addAttribute("vehiculePostDTO", new VehiculeThymDTO());
@@ -66,7 +67,7 @@ public class CreateVehiculeThymController {
      * @return la vue de création d'un vehicule
      */
     @PostMapping(value = "/createVehicule")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> createDossierAsync(@Valid @ModelAttribute("vehiculePostDTO") VehiculeThymDTO vehiculePostDTO, BindingResult result,
                                            RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {

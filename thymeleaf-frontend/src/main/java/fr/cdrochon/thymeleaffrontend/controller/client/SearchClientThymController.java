@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,7 @@ public class SearchClientThymController {
      * @return la vue client/searchClientForm
      */
     @GetMapping(value = "/searchclient")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> searchClientsAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/clients")
@@ -87,7 +88,7 @@ public class SearchClientThymController {
      * @return la vue client/view
      */
     @GetMapping(value = "/searchclient/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> searchClientByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/clients/" + id)

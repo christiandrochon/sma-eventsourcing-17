@@ -4,6 +4,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentConvertThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class DocumentThymController {
      * @return la vue de création d'un document
      */
     @GetMapping(value = "/document/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getDocumentByIdAsync(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/documents/" + id)
@@ -59,7 +60,7 @@ public class DocumentThymController {
      * @return la vue des documents
      */
     @GetMapping(value = "/documents")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getDocumentsAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/documents")

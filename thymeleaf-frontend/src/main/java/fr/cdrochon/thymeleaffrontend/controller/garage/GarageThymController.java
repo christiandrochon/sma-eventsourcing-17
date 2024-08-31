@@ -4,6 +4,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.garage.GarageGetDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.garage.GaragePostDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ public class GarageThymController {
      * @return la vue garage/view
      */
     @GetMapping(value = "/garage/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getGarageByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/garages/" + id)
@@ -48,7 +49,7 @@ public class GarageThymController {
      * @return la vue garage/garages
      */
     @GetMapping("/garages")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getGaragesAsyncClient(Model model) {
         return webClient.get()
                         .uri("/queries/garages")

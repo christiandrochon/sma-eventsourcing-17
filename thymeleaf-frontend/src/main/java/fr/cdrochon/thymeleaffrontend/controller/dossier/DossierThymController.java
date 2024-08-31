@@ -5,6 +5,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class DossierThymController {
      * @return la vue dossier/view
      */
     @GetMapping(value = "/dossier/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getClientByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/dossiers/" + id)
@@ -53,7 +54,7 @@ public class DossierThymController {
      * @return la vue dossier/dossiers
      */
     @GetMapping(value = "/dossiers")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getDossiersAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/dossiers")
