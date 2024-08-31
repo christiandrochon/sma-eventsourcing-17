@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
-import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.convertObjectToJson;
+import static fr.cdrochon.thymeleaffrontend.json.ConvertObjectToJson.convertObjectToJson;
 
 @Controller
 @Slf4j

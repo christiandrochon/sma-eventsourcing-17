@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.convertObjectToJson;
+import static fr.cdrochon.thymeleaffrontend.json.ConvertObjectToJson.convertObjectToJson;
 
 @Slf4j
 @Controller
