@@ -11,6 +11,7 @@ import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,8 +36,6 @@ public class ClientQueryController {
         this.clientRepository = clientRepository;
     }
     
-    //FIXME: 2021-08-25 - CDROCHON - A REVOIR -> VALIDATION DU FORMULAIRE PAS TERRIBLE au niveau des animations et des messages d'erreurs
-    
     /**
      * Méthode asynchrone qui renvoi un client dto.
      *
@@ -45,7 +44,7 @@ public class ClientQueryController {
      */
     @GetMapping(path = "/clients/{id}")
     @JsonView(Views.ClientView.class)
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id) {
         CompletableFuture<ClientQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -69,7 +68,7 @@ public class ClientQueryController {
      */
     @GetMapping(path = "/clients")
     @JsonView(Views.ClientView.class)
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Flux<ClientQueryDTO> getClientsAsync() {
         CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<ClientQueryDTO> clients =
@@ -91,6 +90,7 @@ public class ClientQueryController {
      * @return Flux de GarageResponseDTO
      */
     @GetMapping(value = "/client/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PreAuthorize("hasAuthority('USER')")
     public Flux<ClientQueryDTO> watch(@PathVariable String id) {
         
         try(SubscriptionQueryResult<ClientQueryDTO, ClientQueryDTO> result = queryGateway.subscriptionQuery(
