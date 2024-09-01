@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 @Slf4j
 @RestController
@@ -24,7 +26,10 @@ public class GarageCommandServerController {
     }
     
     /**
-     * Création d'un garage de manière asynchrone
+     * Création d'un garage de manière asynchrone.
+     * <p>
+     * Le Schedulers.boundElastic() va permettre de prendre en charge d'eventuels taches bloquantes
+     * (commandGateway.send() est non bloquante).
      *
      * @param garageRestPostDTO DTO de création d'un garage
      * @return ResponseEntity<GarageCommandDTO> DTO de création d'un garage
@@ -32,7 +37,8 @@ public class GarageCommandServerController {
     @PostMapping("/{createGarage}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<ResponseEntity<GarageCommandDTO>> createGarage(@RequestBody GarageCommandDTO garageRestPostDTO) {
-        return Mono.fromFuture(garageCommandService.createGarage(garageRestPostDTO))
+//        return Mono.fromFuture(garageCommandService.createGarage(garageRestPostDTO))
+        return Mono.fromFuture(() -> garageCommandService.createGarage(garageRestPostDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(garageDTO -> {
                        log.info("Garage créé : " + garageDTO);
                        return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(garageDTO));

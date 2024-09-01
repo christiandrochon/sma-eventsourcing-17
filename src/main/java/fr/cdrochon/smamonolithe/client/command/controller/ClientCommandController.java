@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.stream.Stream;
 
@@ -28,7 +29,10 @@ public class ClientCommandController {
     
     
     /**
-     * Création d'un client de manière asynchrone
+     * Création d'un client de manière asynchrone.
+     * <p>
+     * Le Schedulers.boundElastic() va permettre de prendre en charge d'eventuelles taches bloquantes sur =une requete POST. A noter que la tache
+     * commandGateway. send() est une methode non bloquante.
      *
      * @param clientCommandDTO DTO de création d'un client
      * @return ResponseEntity<ClientCommandDTO> DTO de création d'un client
@@ -36,7 +40,7 @@ public class ClientCommandController {
     @PostMapping("/createClient")
     @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<ResponseEntity<ClientCommandDTO>> createClientAsync(@RequestBody ClientCommandDTO clientCommandDTO) {
-        return Mono.fromFuture(clientCommandService.createClient(clientCommandDTO))
+        return Mono.fromFuture(() -> clientCommandService.createClient(clientCommandDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(client -> {
                        log.info("Garage créé : " + client);
                        return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(client));
@@ -57,7 +61,7 @@ public class ClientCommandController {
      */
     @GetMapping(path = "/eventStoreClient/{id}") //consumes = MediaType.TEXT_EVENT_STREAM_VALUE
     @PreAuthorize("hasAuthority('USER')")
-    public Stream readClientsInEventStore(@PathVariable String id) {
+    public Stream<?> readClientsInEventStore(@PathVariable String id) {
         return eventStore.readEvents(id).asStream();
     }
     

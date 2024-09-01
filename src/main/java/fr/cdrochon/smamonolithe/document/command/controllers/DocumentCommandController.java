@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.stream.Stream;
 
@@ -27,7 +28,10 @@ public class DocumentCommandController {
     }
     
     /**
-     * Création d'un document de manière asynchrone
+     * Création d'un document de manière asynchrone.
+     * <p>
+     * Le Schedulers.boundElastic() va permettre de prendre en charge d'eventuelles taches bloquantes sur =une requete POST. A noter que la tache
+     * commandGateway. send() est une methode non bloquante.
      *
      * @param documentCommandDTO DTO de création d'un document
      * @return ResponseEntity<DocumentCommandDTO> DTO de création d'un document
@@ -35,7 +39,7 @@ public class DocumentCommandController {
     @PostMapping(value = "/createDocument")
     @PreAuthorize("hasAuthority('USER')")
     public Mono<ResponseEntity<DocumentCommandDTO>> createClientAsync(@RequestBody DocumentCommandDTO documentCommandDTO) {
-        return Mono.fromFuture(documentCommandService.createDocument(documentCommandDTO))
+        return Mono.fromFuture(() -> documentCommandService.createDocument(documentCommandDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(document -> {
                        log.info("Garage créé : " + document.getId());
                        return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(document));
