@@ -52,7 +52,7 @@ Class-Path: axon-spring-boot-starter-4.4.3.jar axon-spring-boot-autoco
  8.0.jar webjars-locator-core-0.46.jar jakarta.xml.bind-api-2.3.3.jar 
  jakarta.activation-api-1.2.2.jar
 Spring-Boot-Version: 2.5.2
-Main-Class: org.springframework.boot.loader.JarLauncher
+Main-Class: fr.cdrochon.smamonolithe.SmaMonolitheApplication
 Spring-Boot-Classpath-Index: BOOT-INF/classpath.idx
 Start-Class: fr.cdrochon.smamonolithe.SmaMonolitheApplication
 Spring-Boot-Classes: BOOT-INF/classes/
