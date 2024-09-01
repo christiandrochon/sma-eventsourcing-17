@@ -4,6 +4,7 @@ package fr.cdrochon.smamonolithe.document.query.controllers;
 import fr.cdrochon.smamonolithe.document.query.dtos.DocumentQueryDTO;
 import fr.cdrochon.smamonolithe.document.query.mapper.DocumentQueryMapper;
 import fr.cdrochon.smamonolithe.document.query.repositories.DocumentRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +34,7 @@ public class DocumentQueryController {
      * @return document
      */
     @GetMapping(path = "/documents/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<DocumentQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
         CompletableFuture<DocumentQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -52,7 +53,7 @@ public class DocumentQueryController {
      * @return liste de documents
      */
     @GetMapping(path = "/documents")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Flux<DocumentQueryDTO> getDossiersAsync() {
         CompletableFuture<List<DocumentQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<DocumentQueryDTO> clients =

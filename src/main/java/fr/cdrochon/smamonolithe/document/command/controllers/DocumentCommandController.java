@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -32,8 +33,7 @@ public class DocumentCommandController {
      * @return ResponseEntity<DocumentCommandDTO> DTO de création d'un document
      */
     @PostMapping(value = "/createDocument")
-    //    @PreAuthorize("hasRole('USER')")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<ResponseEntity<DocumentCommandDTO>> createClientAsync(@RequestBody DocumentCommandDTO documentCommandDTO) {
         return Mono.fromFuture(documentCommandService.createDocument(documentCommandDTO))
                    .flatMap(document -> {
@@ -55,7 +55,7 @@ public class DocumentCommandController {
      * @return Stream
      */
     @GetMapping(path = "/eventStoreDocument/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Stream readDocumentsInEventStore(@PathVariable String id) {
         return eventStore.readEvents(id).asStream();
     }

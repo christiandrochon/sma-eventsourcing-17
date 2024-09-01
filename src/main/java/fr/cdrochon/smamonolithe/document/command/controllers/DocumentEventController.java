@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.document.command.controllers;
 
 import fr.cdrochon.smamonolithe.document.query.services.DocumentEventSourcingService;
 import org.axonframework.eventsourcing.eventstore.DomainEventStream;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,12 +20,13 @@ public class DocumentEventController {
     
     /**
      * Recupere un event identifié par son id
+     *
      * @param id id du document
      * @return DomainEventStream
      */
     @GetMapping("/documentEvents/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
-    public DomainEventStream eventsById(@PathVariable String id){
+    @PreAuthorize("hasAuthority('USER')")
+    public DomainEventStream eventsById(@PathVariable String id) {
         return eventSourcingService.eventsByDocumentId(id);
     }
 }

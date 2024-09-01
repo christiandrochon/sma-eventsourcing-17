@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.document.query.controllers;
 
 import fr.cdrochon.smamonolithe.document.query.services.DocumentEventSourcingService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class DocumentEventSourcingRestController {
      * @return Stream
      */
     @GetMapping("/documentQueries/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Stream eventsByDocumentId(@PathVariable String id) {
         return eventSourcingService.eventsByDocumentId(id).asStream();
     }
