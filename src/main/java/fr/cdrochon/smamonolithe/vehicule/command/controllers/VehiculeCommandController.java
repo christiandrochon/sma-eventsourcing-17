@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.vehicule.command.services.VehiculeCommandService
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +31,7 @@ public class VehiculeCommandController {
      * @return ResponseEntity<VehiculeCommandDTO> DTO de création d'un vehicule
      */
     @PostMapping(value = "/createVehicule")
-    //    @PreAuthorize("hasRole('USER')")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<ResponseEntity<VehiculeCommandDTO>> createClientAsync(@RequestBody VehiculeCommandDTO vehiculeRequestDTO) {
         return Mono.fromFuture(vehiculeCommandService.createVehicule(vehiculeRequestDTO))
                    .flatMap(vehicule -> {

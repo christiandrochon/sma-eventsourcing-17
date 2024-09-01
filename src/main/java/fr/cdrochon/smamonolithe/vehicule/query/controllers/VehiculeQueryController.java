@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.json.Views;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,7 @@ public class VehiculeQueryController {
      */
     @GetMapping("/vehicules/{id}")
     @JsonView(Views.VehiculeView.class)
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
     public Mono<VehiculeQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
         CompletableFuture<VehiculeQueryDTO> future =
@@ -57,7 +58,7 @@ public class VehiculeQueryController {
      */
     @GetMapping("/vehicules")
     @JsonView(Views.VehiculeView.class)
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Flux<VehiculeQueryDTO> getDossiersAsync() {
         CompletableFuture<List<VehiculeQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<VehiculeQueryDTO> clients =

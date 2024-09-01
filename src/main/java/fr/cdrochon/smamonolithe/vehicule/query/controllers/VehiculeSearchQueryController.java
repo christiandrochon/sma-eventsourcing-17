@@ -9,6 +9,7 @@ import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,15 +36,13 @@ public class VehiculeSearchQueryController {
      * @return Boolean
      */
     @GetMapping("/vehiculeExists/{immatriculation}")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<Boolean> immatriculationExiste(@PathVariable String immatriculation) {
         CompletableFuture<Boolean> future =
                 CompletableFuture.supplyAsync(() -> vehiculeRepository.existsByImmatriculationVehicule(immatriculation));
         Mono<Boolean> mono = Mono.fromFuture(future);
         return mono;
     }
-    //    public Boolean immatriculationExiste(@PathVariable String immatriculation) {
-    //        return vehiculeRepository.existsByImmatriculationVehicule(immatriculation);
-    //    }
     
     /**
      * Renvoi les informations considérées comme utiles à la partie query lors de la recherche d'un vehicule par son immatriculation.
@@ -52,6 +51,7 @@ public class VehiculeSearchQueryController {
      * @return VehiculeResponseDTO
      */
     @GetMapping(value = "/vehicules/immatriculation/{immatriculation}")
+    @PreAuthorize("hasAuthority('USER')")
     @JsonView(Views.VehiculeView.class)
     public Mono<ResponseEntity<?>> getVehiculeByImmatriculationAsync(@PathVariable String immatriculation) {
         return Mono.fromSupplier(() -> {
