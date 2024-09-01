@@ -27,10 +27,10 @@ public class SecurityConfigServer {
      * authorizeRequests. Les mises à jour pourront etre problematiques.
      * </p>
      *
-     * @param httpSecurity
-     * @return
+     * @param httpSecurity httpSecurity à configurer
+     * @return SecurityFilterChain
      *
-     * @throws Exception
+     * @throws Exception exception
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

@@ -14,7 +14,7 @@ public class CorsConfig {
     /**
      * Politique de CORS origin par Spring Security
      *
-     * @return
+     * @return CorsConfigurationSource configuration de CORS origin
      */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

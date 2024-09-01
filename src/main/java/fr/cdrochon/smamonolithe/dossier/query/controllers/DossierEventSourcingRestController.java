@@ -22,7 +22,7 @@ public class DossierEventSourcingRestController {
     /**
      * Renvoi l'ensemble des events pour un dossier recupéré avec son id
      *
-     * @param id
+     * @param id id du dossier
      * @return Stream
      */
     @GetMapping("/dossierQueries/{id}")

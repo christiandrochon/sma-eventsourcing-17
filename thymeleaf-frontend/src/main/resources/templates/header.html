@@ -52,7 +52,7 @@
                         </ul>
                     </li>
 
-                    <div class="dropdown text-end">
+                    <li class="dropdown text-end">
                         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
                         </a>
@@ -65,30 +65,13 @@
                                 <form id="logoutForm" th:action="@{/logout}" method="post">
 
                                     <!-- Jeton CSRF unique pour la session, sinon CSRF rejette la requete POST et Spring genere une erreur -->
-                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                                     <!-- Bouton de déconnexion -->
                                     <button type="submit" class="dropdown-item">Déconnexion</button>
                                 </form>
                             </li>
-
-                            <!--                            <li>-->
-<!--                                <form id="logoutForm" th:action="@{/logout}" method="post">-->
-<!--                                    <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">Déconnexion</a>-->
-<!--                                </form>-->
-<!--                            </li>-->
-<!--                            <li>-->
-<!--                                <form id="logoutForm" th:action="@{/logout}" method="post" style="display: none;"></form>-->
-<!--                                <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">Déconnexion</a>-->
-<!--                            </li>-->
-<!--                            <li>-->
-<!--                                <form id="logoutForm" action="/logout" method="post">-->
-<!--                                    <button type="submit" class="dropdown-item">Déconnexion</button>-->
-<!--                                </form>-->
-<!--                            </li>-->
-
-
                         </ul>
-                    </div>
+                    </li>
                 </ul>
             </div>
         </div>

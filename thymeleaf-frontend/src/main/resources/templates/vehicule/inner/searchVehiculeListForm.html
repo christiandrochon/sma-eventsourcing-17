@@ -10,7 +10,7 @@
     <!--    Mise en forme de l'url telle que définie dans le fichier de configuration WebConfig.java-->
     <script type="text/javascript">
         function redirectToClientDetails() {
-            var clientId = document.getElementById("clientID").value;
+            let clientId = document.getElementById("clientID").value;
             // document.getElementById("searchForm").action = "/searchclient/" + clientId;
             window.location.href = "/searchvehiculelist/" + clientId;
             return false; //empeche la submit du formulaire par defaut
