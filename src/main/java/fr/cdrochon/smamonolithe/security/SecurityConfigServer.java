@@ -38,8 +38,6 @@ public class SecurityConfigServer {
                 .csrf(Customizer.withDefaults())
                 //                .csrf().disable()
                 .cors(Customizer.withDefaults())
-                .headers(headers -> {
-                })
                 .headers(h -> h.frameOptions(fo -> fo.disable()))
                 .csrf(crsf -> crsf.ignoringAntMatchers("/h2-console"))
                 .authorizeRequests(ar -> ar.antMatchers("/swagger-ui/**", "/v3/**").permitAll()
