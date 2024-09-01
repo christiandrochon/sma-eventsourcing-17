@@ -1,5 +1,10 @@
 package fr.cdrochon.thymeleaffrontend.controller;
 
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -7,6 +12,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
+@Slf4j
 public class ThymeleafRestController {
     
     private final ClientRegistrationRepository clientRegistrationRepository;
@@ -30,6 +37,7 @@ public class ThymeleafRestController {
      * @return objet authentication (au format json avec @ResponseBody)
      */
     @GetMapping("/auth")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseBody
     public Authentication authentication(Authentication authentication) {
         return authentication;
@@ -41,6 +49,7 @@ public class ThymeleafRestController {
      * @return page index.html
      */
     @GetMapping("/")
+    @PreAuthorize("permitAll()")
     public String index() {
         
         return "index";
@@ -57,25 +66,37 @@ public class ThymeleafRestController {
     }
     
     /**
-     * Personnalisation de la page d'authentification en affichant la liste des providers, mais avec la possibilité d'ajouter du css ou autre, dont images,
-     * etc.
+     * Renvoi vers une page d'authentification personnalisée affichant la liste des providers oauth2 disponibles
      *
      * @param model model de la page
      * @return page smalogin.html
      */
     @GetMapping("/smalogin")
     public String oauth2Login(Model model) {
-        String authorizationRequestBaseUri = "oauth2/authorization";
+        // toutes les urls commencent par oauth2/authorization
+        String authorizationRequestBaseUri = "oauth2/authorization/";
         Map<String, String> oauth2AuthenticationUrls = new HashMap();
         Iterable<ClientRegistration> clientRegistrations = (Iterable<ClientRegistration>) clientRegistrationRepository;
         ;
         clientRegistrations.forEach(registration -> {
             oauth2AuthenticationUrls.put(registration.getClientName(),
-                                         authorizationRequestBaseUri + "/" + registration.getRegistrationId());
+                                         authorizationRequestBaseUri + registration.getRegistrationId());
         });
         model.addAttribute("urls", oauth2AuthenticationUrls);
+        log.info("oauth2AuthenticationUrls = " + oauth2AuthenticationUrls);
+        
         return "smalogin";
     }
+    
+    @GetMapping("/test-csrf")
+    public String testCsrf(HttpServletResponse response) {
+        Cookie cookie = new Cookie("test", "testValue");
+        cookie.setPath("/");
+        cookie.setHttpOnly(false); // Dépend de votre configuration
+        response.addCookie(cookie);
+        return "test";
+    }
+    
     
     /**
      * Recupere le token jwt de l'user qui s'est authentifié
