@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.dossier.command.controller;
 
 import fr.cdrochon.smamonolithe.dossier.query.services.DossierEventSourcingService;
 import org.axonframework.eventsourcing.eventstore.DomainEventStream;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ public class DossierEventController {
      * @return DomainEventStream
      */
     @GetMapping("/dossierEvents/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public DomainEventStream eventsById(@PathVariable String id) {
         return eventSourcingService.eventsByDossierId(id);
     }

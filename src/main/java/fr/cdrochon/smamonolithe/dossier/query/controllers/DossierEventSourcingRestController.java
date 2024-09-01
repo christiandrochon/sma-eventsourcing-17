@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.dossier.query.controllers;
 
 import fr.cdrochon.smamonolithe.dossier.query.services.DossierEventSourcingService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class DossierEventSourcingRestController {
      * @return Stream
      */
     @GetMapping("/dossierQueries/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Stream eventsByAccountId(@PathVariable String id) {
         return eventSourcingService.eventsByDossierId(id).asStream();
     }

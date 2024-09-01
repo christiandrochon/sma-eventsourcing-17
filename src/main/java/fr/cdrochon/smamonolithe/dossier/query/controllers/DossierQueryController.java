@@ -4,11 +4,11 @@ import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierQueryDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
 import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierQueryMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
-import lombok.val;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,13 +40,13 @@ public class DossierQueryController {
      * @return DossierResponseDTO avec les informations utiles pour la partie query
      */
     @GetMapping(path = "/dossiers/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<DossierQueryDTO> getDossierByIdAsync(@PathVariable String id) {
         CompletableFuture<DossierQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
-                    val dossier = dossierRepository.findById(id)
-                                                   .map(DossierQueryMapper::convertDossierToDossierDTO)
-                                                   .orElse(null);
+                    DossierQueryDTO dossier = dossierRepository.findById(id)
+                                                               .map(DossierQueryMapper::convertDossierToDossierDTO)
+                                                               .orElse(null);
                     return dossier;
                 });
         Mono<DossierQueryDTO> mono = Mono.fromFuture(future);
@@ -60,7 +60,7 @@ public class DossierQueryController {
      * @return List<DossierResponseDTO> liste des dossiers sous forme de DTO
      */
     @GetMapping(path = "/dossiers")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Flux<DossierQueryDTO> getDossiersAsync() {
         CompletableFuture<List<DossierQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<DossierQueryDTO> clients =
@@ -81,6 +81,7 @@ public class DossierQueryController {
      * @return Flux de DossierResponseDTO
      */
     @GetMapping(value = "/dossier/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PreAuthorize("hasAuthority('USER')")
     public Flux<DossierQueryDTO> watch(@PathVariable String id) {
         
         try(SubscriptionQueryResult<DossierQueryDTO, DossierQueryDTO> result = queryGateway.subscriptionQuery(
