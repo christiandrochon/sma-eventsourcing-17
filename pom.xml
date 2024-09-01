@@ -55,6 +55,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>io.projectreactor.netty</groupId>
+            <artifactId>reactor-netty</artifactId>
+            <version>1.1.21</version>
+        </dependency>
+
+
         <!--        JSON SERIALISATION ET DESERIALISATION  -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -82,22 +89,8 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>2.13.0</version>
         </dependency>
-        <!--        WebClient-->
-        <dependency>
-            <groupId>io.projectreactor.netty</groupId>
-            <artifactId>reactor-netty</artifactId>
-            <version>1.1.21</version>
-        </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>com.fasterxml.jackson.module</groupId>-->
-        <!--            <artifactId>jackson-module-kotlin</artifactId>-->
-        <!--            <version>2.13.0</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter</artifactId>-->
-        <!--        </dependency>-->
+
 
         <!--        SPRING-->
         <!--        manifest-->
@@ -145,10 +138,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-security</artifactId>-->
-<!--        </dependency>-->
 
 
         <!--SWAGGER-->
@@ -158,30 +147,6 @@
             <version>1.5.2</version>
         </dependency>
 
-
-        <!--        ObjectMapper et serialisation/deserialisation (garder ces versions pour java 1.8!!), classe Instant-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.fasterxml.jackson.core</groupId>-->
-        <!--            <artifactId>jackson-databind</artifactId>-->
-        <!--            <version>2.16.0</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.fasterxml.jackson.core</groupId>-->
-        <!--            <artifactId>jackson-core</artifactId>-->
-        <!--            <version>2.17.2</version>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash;        Pour supporter la classe Instant&ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.fasterxml.jackson.datatype</groupId>-->
-        <!--            <artifactId>jackson-datatype-jsr310</artifactId>-->
-        <!--            <version>2.15.4</version>-->
-        <!--        </dependency>-->
-        <!--        Securité des fichiers xstream. Inutile si utilisation de jckson dans application.properties -->
-        <!--        <dependency>-->
-        <!--            <groupId>com.thoughtworks.xstream</groupId>-->
-        <!--            <artifactId>xstream</artifactId>-->
-        <!--            <version>1.4.18</version> &lt;!&ndash; Remplacez par la dernière version disponible &ndash;&gt;-->
-        <!--        </dependency>-->
 
         <!--DIVERS-->
         <dependency>
@@ -202,11 +167,6 @@
             <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.mapstruct</groupId>-->
-        <!--            <artifactId>mapstruct</artifactId>-->
-        <!--            <version>1.4.2.Final</version>-->
-        <!--        </dependency>-->
 
 
         <!--        TEST-->
@@ -215,22 +175,16 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+        </dependency>
 
 
     </dependencies>
 
     <build>
         <plugins>
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-compiler-plugin</artifactId>-->
-            <!--                <version>3.8.1</version>-->
-            <!--                <configuration>-->
-            <!--                    <source>17</source> &lt;!&ndash; Ensure this matches the Java version installed &ndash;&gt;-->
-            <!--                    <target>17</target>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
