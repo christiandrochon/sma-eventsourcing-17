@@ -71,7 +71,7 @@ public class ThymeleafRestController {
     public String oauth2Login(Model model) {
         // toutes les urls commencent par oauth2/authorization
         String authorizationRequestBaseUri = "oauth2/authorization/";
-        Map<String, String> oauth2AuthenticationUrls = new HashMap();
+        Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
         Iterable<ClientRegistration> clientRegistrations = (Iterable<ClientRegistration>) clientRegistrationRepository;
         ;
         clientRegistrations.forEach(registration -> {
