@@ -1,9 +1,10 @@
 package fr.cdrochon.smamonolithe.garage.query.controllers;
 
-import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageQueryDTO;
+import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
 import org.axonframework.queryhandling.QueryGateway;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +40,7 @@ public class GarageQueryServerController {
      * @return Mono de GarageResponseDTO
      */
     @GetMapping(path = "/garages/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Mono<GarageQueryDTO> getGarageByIdAsync(@PathVariable String id) {
         CompletableFuture<GarageQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -58,7 +59,7 @@ public class GarageQueryServerController {
      * @return Flux de GarageResponseDTO
      */
     @GetMapping(path = "/garages")
-    //    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     public Flux<GarageQueryDTO> getGaragesAsyncServer() {
         CompletableFuture<List<GarageQueryDTO>> future =
                 CompletableFuture.supplyAsync(() -> {
