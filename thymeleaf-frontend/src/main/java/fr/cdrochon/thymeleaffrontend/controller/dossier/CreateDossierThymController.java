@@ -11,6 +11,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import static fr.cdrochon.thymeleaffrontend.json.ConvertObjectToJson.convertObjectToJson;
+import static fr.cdrochon.thymeleaffrontend.security.SecurityConfigThymeleaf.getJwtTokenValue;
 
 @Controller
 @Slf4j
@@ -49,7 +51,7 @@ public class CreateDossierThymController {
      * @return la vue createDossierForm
      */
     @GetMapping("/createDossier")
-        @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> getDossier(Model model, RedirectAttributes redirectAttributes) {
         if(!model.containsAttribute("dossierDTO")) {
             model.addAttribute("dossierDTO", new DossierThymDTO());
@@ -110,6 +112,7 @@ public class CreateDossierThymController {
                     
                     return webClient.post()
                                     .uri("/commands/createDossier")
+                                    .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .accept(MediaType.APPLICATION_JSON)
                                     .bodyValue(jsonPayload)

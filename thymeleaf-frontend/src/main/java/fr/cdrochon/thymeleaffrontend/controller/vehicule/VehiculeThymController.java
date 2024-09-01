@@ -3,6 +3,7 @@ package fr.cdrochon.thymeleaffrontend.controller.vehicule;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import reactor.core.publisher.Mono;
+
+import static fr.cdrochon.thymeleaffrontend.security.SecurityConfigThymeleaf.getJwtTokenValue;
 
 @Controller
 @Slf4j
@@ -34,8 +37,7 @@ public class VehiculeThymController {
     public Mono<String> getVehiculeByIdAsync(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/vehicules/" + id)
-                        //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
-                        //                                  getJwtTokenValue()))
+                        .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                         .retrieve()
                         .bodyToMono(VehiculeThymConvertDTO.class)
                         .flatMap(dto -> {
@@ -64,8 +66,7 @@ public class VehiculeThymController {
     public Mono<String> getVehiculesAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/vehicules")
-                        //                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION,
-                        //                                         "Bearer " + getJwtTokenValue()))
+                        .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                         .retrieve()
                         .bodyToFlux(VehiculeThymConvertDTO.class)
                         .collectList()

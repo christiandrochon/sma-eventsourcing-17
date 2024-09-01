@@ -7,6 +7,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.document.TypeDocumentDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import static fr.cdrochon.thymeleaffrontend.json.ConvertObjectToJson.convertObjectToJson;
+import static fr.cdrochon.thymeleaffrontend.security.SecurityConfigThymeleaf.getJwtTokenValue;
 
 @Slf4j
 @Controller
@@ -88,6 +90,7 @@ public class CreateDocumentThymController {
         
         return webClient.post()
                         .uri("/commands/createDocument")
+                        .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .bodyValue(jsonPayload)
@@ -143,7 +146,7 @@ public class CreateDocumentThymController {
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e
                                         .getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
                                 return Mono.just("redirect:/error");
                             } else if(e.getStatusCode() == HttpStatus.UNSUPPORTED_MEDIA_TYPE) {
                                 log.error("415 Unsupported Media Type: {}", e.getResponseBodyAsString());
@@ -164,7 +167,7 @@ public class CreateDocumentThymController {
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage",
                                                                      "Erreur interne de serveur. " + e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
                                 return Mono.just("redirect:/error");
                             } else if(e.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
                                 log.error("503 Internal Server Error: {}", e.getMessage());

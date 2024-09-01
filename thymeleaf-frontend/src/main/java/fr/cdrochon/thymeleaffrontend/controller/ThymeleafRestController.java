@@ -57,7 +57,7 @@ public class ThymeleafRestController {
      * @return page accesinterdit.html
      */
     @GetMapping("/accesinterdit")
-    public String nonAutorise() {
+    public String smalogin() {
         return "accesinterdit";
     }
     

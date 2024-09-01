@@ -5,6 +5,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.vehicule.inner.VehiculeThymConvertDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+
+import static fr.cdrochon.thymeleaffrontend.security.SecurityConfigThymeleaf.getJwtTokenValue;
 
 
 @Controller
@@ -61,6 +64,7 @@ public class SearchVehiculeThymController {
         
         return webClient.get()
                         .uri("/queries/vehicules/immatriculation/" + getImmatDTO.getImmatriculation())
+                        .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Content-Type", "application/json")
                         .retrieve()

@@ -6,6 +6,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import static fr.cdrochon.thymeleaffrontend.json.ConvertObjectToJson.convertObjectToJson;
+import static fr.cdrochon.thymeleaffrontend.security.SecurityConfigThymeleaf.getJwtTokenValue;
 
 @Controller
 @Slf4j
@@ -96,6 +98,7 @@ public class CreateVehiculeThymController {
                     
                     return webClient.post()
                                     .uri("/commands/createVehicule")
+                                    .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .accept(MediaType.APPLICATION_JSON)
                                     .bodyValue(jsonPayload)
@@ -231,6 +234,7 @@ public class CreateVehiculeThymController {
     private Mono<Boolean> immatriculationExiste(String immatriculation) {
         return webClient.get()
                         .uri("/queries/vehiculeExists/" + immatriculation)
+                        .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
                         .bodyToMono(Boolean.class);
