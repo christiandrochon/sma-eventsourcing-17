@@ -1,9 +1,5 @@
 package fr.cdrochon.thymeleaffrontend.security;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,20 +7,16 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-
-import java.util.*;
 
 @Configuration
 @EnableWebSecurity
@@ -65,17 +57,18 @@ public class SecurityConfigThymeleaf {
         hfe.setSessionAttributeName("MY-CSRF-SESSION-ATTR");
         
         return http
-//                                .csrf(Customizer.withDefaults())
+                //                                .csrf(Customizer.withDefaults())
                 //                .csrf(csrf -> csrf.disable())
                 //                .csrf(csrf -> csrf.ignoringRequestMatchers("/smalogin").csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 // exclue la page de login de la protection CSRF
-//                                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())) //stocke le jeton dans un cookie
-                                .csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository())) //stoke le jeton dans la session
-//                .csrf(csrf -> csrf.csrfTokenRepository(hfe)) //stoke le jeton dans la session
-//                                .csrf(csrf -> csrf.csrfTokenRepository(csrfTokenRepository))
+                //                                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())) //stocke le jeton
+                //                                dans un cookie
+                .csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository())) //stoke le jeton dans la session
+                //                .csrf(csrf -> csrf.csrfTokenRepository(hfe)) //stoke le jeton dans la session
+                //                                .csrf(csrf -> csrf.csrfTokenRepository(csrfTokenRepository))
                 .cors(Customizer.withDefaults())
                 .headers(h -> {
-                    h.frameOptions(fo -> fo.disable());
+                    //                    h.frameOptions(fo -> fo.disable());
                     //                    h.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self' http://sma.local; " +
                     //                                                                       "script-src 'self' 'unsafe-inline' http://sma.local; " +
                     //                                                                       "script-src-elem 'self' 'unsafe-inline' http://sma.local; " +
@@ -93,12 +86,12 @@ public class SecurityConfigThymeleaf {
                     
                 })
                 
-                .authorizeHttpRequests(ar -> ar.requestMatchers("/").permitAll())
+                
                 // type MIME et ressources statiques
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/", "/assets/**", "/css/**", "/img/**", "/js/**", "templates/**").permitAll())
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/smalogin").permitAll())
                 .authorizeHttpRequests(ar -> ar.requestMatchers("/auth").permitAll())
-                                .authorizeHttpRequests(ar -> ar.requestMatchers(HttpMethod.POST, "/logout").permitAll())
+                .authorizeHttpRequests(ar -> ar.requestMatchers(HttpMethod.POST, "/logout").permitAll())
                 .authorizeHttpRequests(ar -> ar.requestMatchers(HttpMethod.POST, "/commands/createDocument").hasAnyAuthority("USER", "ADMIN"))
                 //                .authorizeHttpRequests(ar -> ar.requestMatchers("/", "/index", "/oauth2Login/**", "/webjars/**", "/h2-console/**")
                 //                .permitAll())
@@ -115,28 +108,28 @@ public class SecurityConfigThymeleaf {
                 //                //                .oauth2Login(oauth2Login -> oauth2Login.loginPage("/oauth2Login"))
                 // A la deconnection du provider, on retourne à la page d'accueil
                 .logout(logout -> logout
-                        .logoutSuccessHandler(oidcLogoutSuccessHandler())
-                        .logoutSuccessUrl("/").permitAll()
-                        .clearAuthentication(true)
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-//                        .deleteCookies("JSESSIONID", "MY_CUSTOM_CSRF_COOKIE", "AUTH_SESSION_ID_LEGACY", "AUTH_SESSION_ID")
-//                        .addLogoutHandler((request, response, authentication) -> {
-//                            Cookie[] cookies = request.getCookies();
-//                            if(cookies != null) {
-//                                for(Cookie cookie : cookies) {
-//                                    if("JSESSIONID".equals(cookie.getName()) ||
-//                                            "XSRF-TOKEN".equals(cookie.getName()) ||
-//                                            "test".equals(cookie.getName()) ||
-//                                            "testtest".equals(cookie.getName()) ||
-//                                            "MY_CUSTOM_CSRF_COOKIE".equals(cookie.getName())) {
-//                                        cookie.setMaxAge(0);
-//                                        cookie.setPath("/");
-//                                        response.addCookie(cookie);
-//                                    }
-//                                }
-//                            }
-//                        })
+                                .logoutSuccessHandler(oidcLogoutSuccessHandler())
+                                .logoutSuccessUrl("/").permitAll()
+                                .clearAuthentication(true)
+                                .invalidateHttpSession(true)
+                                .deleteCookies("JSESSIONID", "AUTH_SESSION_ID_LEGACY", "AUTH_SESSION_ID")
+                        //                        .deleteCookies("JSESSIONID", "MY_CUSTOM_CSRF_COOKIE", "AUTH_SESSION_ID_LEGACY", "AUTH_SESSION_ID")
+                        //                        .addLogoutHandler((request, response, authentication) -> {
+                        //                            Cookie[] cookies = request.getCookies();
+                        //                            if(cookies != null) {
+                        //                                for(Cookie cookie : cookies) {
+                        //                                    if("JSESSIONID".equals(cookie.getName()) ||
+                        //                                            "XSRF-TOKEN".equals(cookie.getName()) ||
+                        //                                            "test".equals(cookie.getName()) ||
+                        //                                            "testtest".equals(cookie.getName()) ||
+                        //                                            "MY_CUSTOM_CSRF_COOKIE".equals(cookie.getName())) {
+                        //                                        cookie.setMaxAge(0);
+                        //                                        cookie.setPath("/");
+                        //                                        response.addCookie(cookie);
+                        //                                    }
+                        //                                }
+                        //                            }
+                        //                        })
                        )
                 //
                 //                //                .oauth2Login(al ->
@@ -160,6 +153,26 @@ public class SecurityConfigThymeleaf {
                 new OidcClientInitiatedLogoutSuccessHandler(this.clientRegistrationRepository);
         oidcLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}?logoutsuccess=true");
         return oidcLogoutSuccessHandler;
+    }
+    
+    
+    /**
+     * Recupere le token jwt de l'user qui s'est authentifié.
+     * <p>
+     * L'objet OAuth2AuthenticationToken suppose qu'on a fait l'authentification avec un provider qui supporte OpenID (keycloak ou google)
+     * <p>
+     * on doit importer la dependance oauth2-client pour la methode OAuth2AuhtenticationToken
+     *
+     * @return token jwt
+     */
+    public static String getJwtTokenValue() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = context.getAuthentication();
+        OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
+        DefaultOidcUser oidcUser = (DefaultOidcUser) oAuth2AuthenticationToken.getPrincipal();
+        String jwtTokenValue = oidcUser.getIdToken()
+                                       .getTokenValue();
+        return jwtTokenValue;
     }
     
 }
