@@ -21,4 +21,4 @@
 
 #### Accès à l'application :
    * Si vous avez téléchargé le code source depuis la branche 'master', à la racine du projet, executez 'docker compose -f compose.yaml up -d'. L'application sera accessible sur l'url 'http://localhost:8091'.
-   * Si vous avez téléchargé le code source depuis la branche 'keycloak', à la racine du projet, executez 'docker compose -f compose.yaml up -d'. L'application sera également accessible  à l'url 'http://localhost:8091', mais vous aurez besoin d'identifiants de connexion.
+   * Si vous avez téléchargé le code source depuis la branche 'keycloak', l'application sera accessible  à l'url 'http://localhost:8094', mais vous aurez besoin de creer un compte depuis le formulaire d'authentification.
