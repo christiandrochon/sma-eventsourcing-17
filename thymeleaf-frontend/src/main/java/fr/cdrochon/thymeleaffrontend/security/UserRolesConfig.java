@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import java.util.*;
 
 @Configuration
-public class AuthoritiesConfig {
+public class UserRolesConfig {
     
     
     /**
