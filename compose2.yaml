@@ -1,0 +1,110 @@
+services:
+  postgres_db:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./scripts_db/initdb_postgres.sh:/docker-entrypoint-initdb.d/initdb_postgres.sh
+    environment:
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: -eX4mP13p455w0Rd
+      POSTGRES_DB: monolithe
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-eX4mP13p455w0Rd}
+    ports:
+        - '5432:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 20s
+      retries: 5
+
+  keycloak-custom:
+    container_name: keycloak-custom
+#    build: .
+    image: keycloak-custom
+    restart: on-failure:5
+#    image: quay.io/keycloak/keycloak:25.0.1
+    environment:
+      KC_LOG_LEVEL: warn
+      KC_DB: postgres #type de bd à utiliser
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_HOST: postgres_db #Définit le nom ou l'adresse IP du serveur de base de données auquel Keycloak doit se connecter.
+      KC_DB_URL_DATABASE: keycloak # specifie uniquement le nom de lbdd à utiliser
+      KC_HOSTNAME: localhost # nom d'hote sous lequel keycloak sera accessible. Utile pour configurer le nom d'hote public de keycloak
+#      KC_DB_URL: 'jdbc:postgresql://postgres_db:5432/keycloak'
+      KC_DB_USERNAME: ${POSTGRES_USER:-postgres}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-eX4mP13p455w0Rd}
+      KC_DB_SCHEMA: public
+#      KC_HTTP_PORT: 8082
+      KC_HTTP_ENABLED: true
+      HTTP_ADDRESS_FORWARDING: true
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      # KC_PROXY_HEADERS: xforwarded
+    command: start --optimized
+#      - start-dev
+#      - --import-realm
+#      - start --optimized
+    volumes:
+      #      - ./scripts_db/verif-keycloak.sh:/opt/keycloak/verif-keycloak.sh
+      #      - ./scripts_db/wait-for-it.sh:/opt/keycloak/wait-for-it.sh
+      #      - ./scripts_db/keycloak-ready.sh:/opt/keycloak/bin/keycloak-ready.sh
+      - ./scripts_db/realm-export.json:/opt/keycloak/data/import/sma-realm.json
+    #      - pg_keycloak:/var/lib/postgresql/data
+    #    entrypoint: [ "/opt/keycloak/verif-keycloak.sh" ]
+    #    entrypoint: ["/opt/keycloak/wait-for-it.sh", "postgres-monolithe", "/opt/keycloak/bin/kc.sh start-dev"]
+    ports:
+      - '8080:8080'
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/realms/sma-realm || exit 1" ]
+      start_period: 30s
+      interval: 30s
+      timeout: 5s
+      retries: 50
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+
+  sma-monolithe:
+    build: .
+    container_name: sma-monolithe
+    ports:
+      - '8092:8092'
+    expose:
+      - '8092'
+    environment:
+      POSTGRES_HOST: postgres_db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: monolithe
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: -eX4mP13p455w0Rd
+    depends_on:
+#      postgres_db:
+#        condition: service_started
+      keycloak-custom:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl -f http://sma-monolithe:8092/actuator/health || exit 1" ]
+      interval: 2m
+      retries: 100
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "6002:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pg@pg.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+
+volumes:
+    postgres:
+    pgadmin:
