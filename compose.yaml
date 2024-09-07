@@ -1,6 +1,3 @@
-networks:
-  app-network:
-
 services:
 #  thymeleaf-frontend:
 #    build:
@@ -8,39 +5,57 @@ services:
 #      dockerfile: Dockerfile
 #    container_name: thymeleaf-frontend
 #    ports:
-#      - '8091:8091'
+#      - '8094:8094'
 #    expose:
-#      - '8091'
+#      - '8094'
+#    command: bash -c "sleep 90 && java -jar /app.jar"
+##    environment:
+##      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/sma-realm
+##      KEYCLOAK_JWT_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
 #    depends_on:
-#      - sma-monolithe
+#      keycloak:
+#        condition: service_healthy
+#      sma-monolithe:
+#        condition: service_healthy
+#    healthcheck:
+#        test: [ "CMD", "curl -f http://thymeleaf-frontend:8094/actuator/health || curl -f http://localhost:8094/actuator/health || exit 1" ]
+#        interval: 30s
+#        retries: 10
+#        start_period: 5s
 #    networks:
-#      - app-network
+#      - keycloak-network
+#
 #
 #  sma-monolithe:
 #    build: .
 #    container_name: sma-monolithe
 #    ports:
 #      - '8092:8092'
-#    expose:
-#      - '8092'
 #    environment:
 #      POSTGRES_HOST: postgres-monolithe
 #      POSTGRES_PORT: 5432
 #      POSTGRES_DB: monolithe
-#      POSTGRES_USER: keycloak
+#      POSTGRES_USER: postgres
 #      POSTGRES_PASSWORD: password
+#      external_url: http://thymeleaf-frontend:8094
+##    command: bash -c "sleep 70 && java -jar /app.jar"
 #    depends_on:
 #      postgres-monolithe:
 #        condition: service_healthy
+#      keycloak:
+#        condition: service_healthy
 #    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://sma-monolithe:8092/actuator/health" ]
-#      interval: 10s
+#      test: [ "CMD", "curl -f http://localhost:8092/actuator/health || curl -f http://sma-monolithe:8092/actuator/health || exit 1" ]
+#      interval: 30s
 #      retries: 5
+#      timeout: 10s
+#      start_period: 30s
 #    networks:
-#      - app-network
+#      - keycloak-network
+
 
   postgres-monolithe:
-    image: postgres
+    image: postgres:latest
     container_name: postgres-monolithe
     volumes:
       - postgres:/var/lib/postgresql/data
@@ -55,38 +70,60 @@ services:
     ports:
       - '5432:5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keycloak"]
-      interval: 10s
-      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+    restart: always
     networks:
-      - app-network
+     - keycloak-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak
+    image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB_SCHEMA: public
       KC_DB: postgres #type de bd à utiliser
+#      KC_DB_URL: 'jdbc:postgresql://postgres-monolithe:5432/keycloak'
       KC_DB_URL_PORT: 5432
-      KC_DB_URL_HOST: postgres-monolithe #nom du service
-      KC_DB_URL_DATABASE: keycloak
+      KC_DB_URL_HOST: postgres-monolithe #Définit le nom ou l'adresse IP du serveur de base de données auquel Keycloak doit se connecter.
+      KC_DB_URL_DATABASE: keycloak  # specifie uniquement le nom de la bdd à utiliser
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
-    command:
-      - start-dev
-      - --import-realm
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
+      KC_HTTP_ENABLED: true
+      KC_LOG_LEVEL: error
+      KC_HOSTNAME: keycloak # nom d'hote sous lequel keycloak sera accessible. utiliser pour générer les URL de redirection pour les clients. Ici, keycloak est utilisé pour les services internes Docker.
+      KC_HOSTNAME_STRICT: 'false' # Keycloak acceptera les requêtes pour ce hostname, même si elles sont faites à partir d'autres hôtes
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
+      KC_HOSTNAME_ADMIN: http://keycloak:8080 # configurer un autre hostname pour accéder à l'interface d'administration. localhost permet d'accéder à l'interface via http://localhost:8080.
+      KC_HOSTNAME_URL: http://keycloak:8080 # configure l'URL complète à utiliser par Keycloak pour les redirections. En interne dans Docker, http://keycloak:8080 sera utilisé.
+    command: >
+      start-dev
+      --import-realm
+#      --hostname-strict=false
     volumes:
       - ./scripts_db/realm-export.json:/opt/keycloak/data/import/sma-realm.json
-      - pg_keycloak:/var/lib/postgresql/data
     restart: always
     ports:
       - '8080:8080'
+    expose:
+      - '8080'
+    healthcheck:
+#      test: [ "CMD-SHELL", "curl -f http://keycloak:8080/realms/sma-realm || curl -f http://localhost:8080/realms/sma-realm || exit 1" ]
+      test: ["CMD-SHELL", "echo 'Healthcheck always passes'"]
+      start_period: 2m
+      interval: 30s
+      timeout: 5s
+      retries: 50
     depends_on:
       postgres-monolithe:
         condition: service_healthy
     networks:
-      - app-network
+      - keycloak-network
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -100,9 +137,13 @@ services:
     volumes:
       - pgadmin:/var/lib/pgadmin
     networks:
-      - app-network
+      - keycloak-network
+
 
 volumes:
   postgres:
   pgadmin:
-  pg_keycloak:
+
+networks:
+  keycloak-network:
+    driver: bridge

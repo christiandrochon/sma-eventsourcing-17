@@ -10,8 +10,7 @@ done
 echo "debut de ce putain script de merde !!!!!"
 
 
-
-
+# 1
 # Vérifier que les variables d'environnement sont définies
 if [ -z "$POSTGRES_USER" ] || [ -z "$POSTGRES_PASSWORD" ]; then
   echo "Les variables d'environnement POSTGRES_USER et POSTGRES_PASSWORD doivent être définies."
@@ -49,6 +48,8 @@ done
 echo "Granting privileges on application database..."
 psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO ${POSTGRES_USER};"
 
+
+#### 2
 ## Créer l'utilisateur PostgreSQL
 #echo "Création de l'utilisateur PostgreSQL si non existant..."
 #psql -U postgres -tc "SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}'" | grep -q 1 || \
@@ -69,17 +70,31 @@ psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO ${POSTGR
 
 
 
-# Create the user with a password for Keycloak
-echo "Création de l'utilisateur keycloak..."
-psql -U postgres -tc "SELECT 1 FROM pg_roles WHERE rolname = '${KC_DB_USERNAME}'" | grep -q 1 || \
-psql -U postgres -c "CREATE USER ${KC_DB_USERNAME} WITH ENCRYPTED PASSWORD '${KC_DB_PASSWORD}';"
-# Create the database for Keycloak if it doesn't exist
+
+
+echo " creation du user keycloak"
+# Check if the 'KC_DB_USERNAME' role exists
+echo "Création du role keycloak..."
+psql -U postgres -tc "SELECT 1 FROM pg_roles WHERE rolname = 'keycloak'" | grep -q 1 || \
+psql -U postgres -c "CREATE USER keycloak WITH PASSWORD 'password';"
 echo "Création de la bd keyclaok..."
-psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${KC_DB_URL_DATABASE}'" | grep -q 1 || \
-psql -U postgres -c "CREATE DATABASE ${KC_DB_URL_DATABASE} WITH OWNER ${KC_DB_USERNAME};"
+psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'keycloak'" | grep -q 1 || \
+psql -U postgres -c "CREATE DATABASE keycloak WITH OWNER keycloak;"
 # Grant all privileges on the Keycloak database to the user
 echo "Création des privileges keycloak..."
-psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${KC_DB_URL_DATABASE} TO ${KC_DB_USERNAME};"
+psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak"
+
+## Create the user with a password for Keycloak
+#echo "Création de l'utilisateur keycloak..."
+#psql -U postgres -tc "SELECT 1 FROM pg_roles WHERE rolname = '${KC_DB_USERNAME}'" | grep -q 1 || \
+#psql -U postgres -c "CREATE USER ${KC_DB_USERNAME} WITH ENCRYPTED PASSWORD '${KC_DB_PASSWORD}';"
+# Create the database for Keycloak if it doesn't exist
+#echo "Création de la bd keyclaok..."
+#psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${KC_DB_URL_DATABASE}'" | grep -q 1 || \
+#psql -U postgres -c "CREATE DATABASE ${KC_DB_URL_DATABASE} WITH OWNER ${KC_DB_USERNAME};"
+## Grant all privileges on the Keycloak database to the user
+#echo "Création des privileges keycloak..."
+#psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${KC_DB_URL_DATABASE} TO ${KC_DB_USERNAME};"
 
 
 echo "Script d'initialisation terminé."
