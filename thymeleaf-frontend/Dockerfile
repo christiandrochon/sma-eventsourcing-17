@@ -1,5 +1,10 @@
 FROM openjdk:21-oracle
+
+# Install netcat
+RUN microdnf install -y nc curl
+
+
 VOLUME /tmp
 COPY target/*.jar app.jar
-EXPOSE 8091
+EXPOSE 8094
 ENTRYPOINT ["java", "-jar", "app.jar"]
