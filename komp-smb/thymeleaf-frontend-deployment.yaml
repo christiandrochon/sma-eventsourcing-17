@@ -25,6 +25,6 @@ spec:
         - image: sma-thymeleaf:v1.1
           name: thymeleaf-frontend
           ports:
-            - containerPort: 8091
+            - containerPort: 8094
               protocol: TCP
       restartPolicy: Always

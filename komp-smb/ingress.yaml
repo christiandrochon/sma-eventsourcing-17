@@ -17,5 +17,5 @@ spec:
               service:
                 name: thymeleaf-frontend
                 port:
-                  number: 8091
+                  number: 8094
 

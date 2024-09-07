@@ -20,7 +20,7 @@ services:
 #      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/sma-realm
 #      KEYCLOAK_JWT_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
 #    depends_on:
-#      postgres-keycloak:
+#      postgres-monolithe:
 #        condition: service_healthy
 #      postgres-garage:
 #        condition: service_healthy
@@ -49,9 +49,9 @@ services:
 #    build: ./../../sma-monolithe/thymeleaf-frontend
 #    container_name: thymeleaf-frontend
 #    ports:
-#      - '8091:8091'
+#      - '8094:8094'
 #    expose:
-#      - '8091'
+#      - '8094'
 #    environment:
 #      KEYCLOAK_ISSUER_URL: http://keycloak:8080/realms/sma-realm
 #      KEYCLOAK_JWT_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
@@ -67,7 +67,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_DB: postgres # type de bdd que keycloak doit utiliser
       KC_DB_URL_PORT: 50007
-      KC_DB_URL_HOST: postgres-keycloak
+      KC_DB_URL_HOST: postgres-monolithe
       KC_DB_URL_DATABASE: keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
@@ -76,19 +76,20 @@ services:
       - --import-realm
     volumes:
       - ./realm-export.json:/opt/keycloak/data/import/sma-realm.json
-#      - /home/christiandrochon/Documents/sma-realm-export.json:/opt/keycloak/data/import/sma-realm.json
     restart: always
     ports:
       - '8080:8080'
     expose:
       - '8080'
     depends_on:
-      postgres-keycloak:
+      postgres-monolithe:
         condition: service_healthy
-  postgres-keycloak:
+
+
+  postgres-monolithe:
     image: postgres
     restart: always
-    container_name: postgres-keycloak
+    container_name: postgres-monolithe
     volumes:
       - pg_data_keycloak:/var/lib/postgresql/data
 #      - ./initdb_f.sh:/docker-entrypoint-initdb.d/initdb_f.sh
