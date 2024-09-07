@@ -1,16 +1,38 @@
-#!/usr/bin/env bash
-# wait-for-it.sh
+#!/bin/bash
 
-set -e
+# Wait for the specified host and port to be available
+HOST=$1
+PORT=$2
+TIMEOUT=${3:-60}
 
-host="$1"
-shift
-cmd="$@"
+echo "Waiting for $HOST:$PORT to be available..."
 
-until pg_isready -h "$host"; do
-  >&2 echo "Postgres is unavailable - sleeping"
+for ((i=1; i<=TIMEOUT; i++)); do
+  if nc -z $HOST $PORT; then
+    echo "$HOST:$PORT is available."
+    exit 0
+  fi
+  echo "Waiting for $HOST:$PORT... ($i/$TIMEOUT)"
   sleep 1
 done
 
->&2 echo "Postgres is up - executing command"
-exec $cmd
+echo "$HOST:$PORT did not become available in time."
+exit 1
+
+
+
+
+
+
+#./wait-for-it.sh keycloak:8081 --timeout=60 -- echo "Keycloak port is open"
+#
+## Now, check if Keycloak is really ready by pinging its health or realm endpoint
+#until $(curl --output /dev/null --silent --head --fail http://keycloak:8081/realms/sma-realm); do
+#    echo "Waiting for Keycloak to be fully available..."
+#    sleep 5
+#done
+#
+#echo "Keycloak is ready!"
+## Now you can start your application
+#./start-my-app.sh
+
