@@ -47,6 +47,7 @@ public class SecurityConfigServer {
                 //        Keycloak : Keycloak gère l'authentification et l'autorisation, et les JWT sont utilisés pour sécuriser les API.
                 // .csrf(csrf -> csrf.csrfTokenRepository(new CustomCsrfTokenRepository()))
                 .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .cors().disable()
                 .authorizeRequests(ar -> {
                     ar.antMatchers("/actuator/**", "/public/**", "/swagger-ui/**", "/v3/**").permitAll()
                       // Toute autre requête nécessite une authentification
