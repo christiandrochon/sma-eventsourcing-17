@@ -19,6 +19,3 @@
    * __Orchestration avec Kubernetes__ : Déploiement automatisé et gestion des conteneurs via _Kubernetes_, assurant la résilience et la scalabilité.
    * __Infrastructure Cloud__ : Hébergée sur _AWS_ avec des machines virtuelles pour une fiabilité maximale et une flexibilité à grande échelle. 
 
-#### Accès à l'application :
-   * Si vous avez téléchargé le code source depuis la branche 'master', à la racine du projet, executez 'docker compose -f compose.yaml up -d'. L'application sera accessible sur l'url 'http://localhost:8091'.
-   * Si vous avez téléchargé le code source depuis la branche 'keycloak', l'application sera accessible  à l'url 'http://localhost:8094', mais vous aurez besoin de creer un compte depuis le formulaire d'authentification.
