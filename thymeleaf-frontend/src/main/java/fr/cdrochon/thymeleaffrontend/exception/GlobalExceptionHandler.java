@@ -25,7 +25,8 @@ public class GlobalExceptionHandler {
     
     /**
      * Prise en charge des erreurs globales en line avec l'auth keycloak
-     * @return
+     *
+     * @return redirection vers la page de login
      */
     @ExceptionHandler(OAuth2AuthenticationException.class)
     public String handleAuthenticationException() {
