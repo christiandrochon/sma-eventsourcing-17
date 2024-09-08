@@ -96,116 +96,243 @@ public class CreateDossierThymController {
             return Mono.just("dossier/createDossierForm");
         }
         
-        return immatriculationExiste(dossierThymDTO.getVehicule().getImmatriculationVehicule())
-                .flatMap(exists -> {
-                    if(exists) {
-                        model.addAttribute("dossierDTO", dossierThymDTO);
-                        modelAttributesError(model);
-                        model.addAttribute("immatriculationExisteError",
-                                           "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
-                        return Mono.just("dossier/createDossierForm");
-                    }
-                    
-                    DossierThymConvertDTO dossierConvertThymDTO = convertDossierDTO(dossierThymDTO);
-                    String jsonPayload = convertObjectToJson(dossierConvertThymDTO);
-                    log.info("JSON Payload: {}", jsonPayload);
-                    
-                    return webClient.post()
-                                    .uri("/commands/createDossier")
-                                    .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + getJwtTokenValue()))
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .accept(MediaType.APPLICATION_JSON)
-                                    .bodyValue(jsonPayload)
-                                    .retrieve()
-                                    .bodyToMono(DossierThymConvertDTO.class)
-                                    .timeout(Duration.ofSeconds(30))
-                                    .flatMap(dossier -> {
-                                        if(dossier == null) {
-                                            log.error("Erreur lors de la création du dossier");
-                                            return Mono.error(new RuntimeException("Erreur lors de la création du dossier"));
-                                        }
-                                        
-                                        log.info("Response: {}", dossier);
-                                        log.info("type de valeur : {}", dossier.getDateCreationDossier().getClass());
-                                        log.info("Dossier created successfully");
-                                        redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
-                                        return Mono.just("redirect:/dossier/" + dossier.getId());
-                                        // redirection vers la liste des clients
-                                        //                            redirectAttributes.addFlashAttribute("successMessage", "Client créé avec succès");
-                                        //                            return Mono.just("redirect:/dossier/" + dossier.getId());
-                                    })
-                                    .onErrorResume(TimeoutException.class, e -> {
-                                        log.error("Timeout occurred: {}", e.getMessage());
-                                        redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                        redirectAttributes.addFlashAttribute("errorMessage", "Tempes de requête dépassé. Veuillez réessayer plus tard.");
-                                        redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");
-                                        return Mono.just("redirect:/error");
-                                    })
-                                    .onErrorResume(WebClientResponseException.class, e -> {
-                                        if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                                            log.error("400 Bad Request: {}", e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                            redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
-                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                                            return Mono.just("redirect:/error");
-                                        } else if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                                            log.error("401 Internal Server Error: {}", e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                            redirectAttributes.addFlashAttribute("errorMessage", "Accès non autorisé. " + e
-                                                    .getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                                            return Mono.just("redirect:/error");
-                                        } else if(e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                                            log.error("403 Forbidden: {}", e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                            redirectAttributes.addFlashAttribute("errorMessage", "Accès interdit. " + e
-                                                    .getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                                            return Mono.just("redirect:/error");
-                                            
-                                        } else if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                                            log.error("404 Not Found: {}", e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                            redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e
-                                                    .getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                                            return Mono.just("redirect:/error");
-                                        } else if(e.getStatusCode() == HttpStatus.UNSUPPORTED_MEDIA_TYPE) {
-                                            log.error("415 Unsupported Media Type: {}", e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                            redirectAttributes.addFlashAttribute("errorMessage",
-                                                                                 "Type de média non supporté. " + e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                                            return Mono.just("redirect:/error");
-                                        } else if(e.getStatusCode() == HttpStatus.LOCKED) {
-                                            log.error("423 Forbidden: {}", e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                            redirectAttributes.addFlashAttribute("errorMessage",
-                                                                                 "Ressource verrouillée. " + e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                                            return Mono.just("redirect:/error");
-                                        } else if(e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
-                                            log.error("500 Internal Server Error: {}", e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                            redirectAttributes.addFlashAttribute("errorMessage",
-                                                                                 "Erreur interne de serveur. " + e.getResponseBodyAsString());
-                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                                            return Mono.just("redirect:/error");
-                                        } else if(e.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
-                                            log.error("503 Internal Server Error: {}", e.getMessage());
-                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                            redirectAttributes.addFlashAttribute("errorMessage", "Service indisponible : " + e.getMessage());
-                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                                            return Mono.just("redirect:/error");
-                                        }
-                                        //                                             handleWebClientResponseException(e, redirectAttributes,
-                                        //                                             dossierThymDTO);
-                                        // reaffiche le formualire de création de client avec les données saisies par l'user
-                                        redirectAttributes.addFlashAttribute("dossierDTO", dossierThymDTO);
-                                        return Mono.just("redirect:/createDossier");
-                                    });
-                });
+        String jwtToken = getJwtTokenValue();
+        if(jwtToken == null || jwtToken.isEmpty()) {
+            log.error("Utilisateur non authentifié");
+            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+            redirectAttributes.addFlashAttribute("errorMessage", "Vous devez être authentifié pour effectuer cette action.");
+            return Mono.just("redirect:/login");
+        }
+        
+        DossierThymConvertDTO dossierConvertThymDTO = convertDossierDTO(dossierThymDTO);
+        String jsonPayload = convertObjectToJson(dossierConvertThymDTO);
+        log.info("JSON Payload: {}", jsonPayload);
+        
+        log.info("token auth : {}", jwtToken);
+        //TODO verif immat
+        return webClient.post()
+                        .uri("/commands/createDossier")
+                        .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .bodyValue(jsonPayload)
+                        .retrieve()
+                        .bodyToMono(DossierThymConvertDTO.class)
+                        .timeout(Duration.ofSeconds(300))
+                        .flatMap(dossier -> {
+                            if(dossier == null) {
+                                log.error("Erreur lors de la création du dossier");
+                                return Mono.error(new RuntimeException("Erreur lors de la création du dossier"));
+                            }
+                            
+                            log.info("token auth : {}", jwtToken);
+                            
+                            log.info("Response: {}", dossier);
+                            log.info("type de valeur : {}", dossier.getDateCreationDossier().getClass());
+                            log.info("Dossier created successfully");
+                            redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
+                            return Mono.just("redirect:/dossier/" + dossier.getId());
+                        })
+                        .onErrorResume(TimeoutException.class, e -> {
+                            log.error("Timeout occurred: {}", e.getMessage());
+                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                            redirectAttributes.addFlashAttribute("errorMessage", "Tempes de requête dépassé. Veuillez réessayer plus tard.");
+                            redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");
+                            return Mono.just("redirect:/error");
+                        })
+                        .onErrorResume(WebClientResponseException.class, e -> {
+                            if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                                log.error("400 Bad Request: {}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                                log.error("401 Internal Server Error: {}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Accès non autorisé. " + e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                                log.error("403 Forbidden: {}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Accès interdit. " + e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                                log.error("404 Not Found: {}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.UNSUPPORTED_MEDIA_TYPE) {
+                                log.error("415 Unsupported Media Type: {}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Type de média non supporté. " + e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.LOCKED) {
+                                log.error("423 Forbidden: {}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Ressource verrouillée. " + e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
+                                log.error("500 Internal Server Error: {}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Erreur interne de serveur. " + e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
+                                log.error("503 Internal Server Error: {}", e.getMessage());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Service indisponible : " + e.getMessage());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                return Mono.just("redirect:/error");
+                            }
+                            log.info("token auth : {}", jwtToken);
+                            
+                            model.addAttribute("dossierDTO", dossierThymDTO);
+                            modelAttributesError(model);
+                            return Mono.just("dossier/createDossierForm");
+                        });
     }
+    //    @PostMapping(value = "/createDossier")
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    //    public Mono<String> createDossierAsync(@Valid @ModelAttribute("dossierDTO") DossierThymDTO dossierThymDTO, BindingResult result,
+    //                                           RedirectAttributes redirectAttributes, Model model) {
+    //        if(result.hasErrors()) {
+    //            result.getAllErrors().forEach(err -> log.error("LOG ERROR : {}", err.getDefaultMessage()));
+    //            model.addAttribute("dossierDTO", dossierThymDTO);
+    //            modelAttributesError(model);
+    //            return Mono.just("dossier/createDossierForm");
+    //        }
+    //
+    //        String jwtToken = getJwtTokenValue();
+    //        if (jwtToken == null || jwtToken.isEmpty()) {
+    //            log.error("Utilisateur non authentifié");
+    //            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //            redirectAttributes.addFlashAttribute("errorMessage", "Vous devez être authentifié pour effectuer cette action.");
+    //            return Mono.just("redirect:/login");
+    //        }
+    //
+    //        return immatriculationExiste(dossierThymDTO.getVehicule().getImmatriculationVehicule())
+    //                .flatMap(exists -> {
+    //                    if(exists) {
+    //                        model.addAttribute("dossierDTO", dossierThymDTO);
+    //                        modelAttributesError(model);
+    //                        model.addAttribute("immatriculationExisteError",
+    //                                           "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
+    //                        return Mono.just("dossier/createDossierForm");
+    //                    }
+    //
+    //                    DossierThymConvertDTO dossierConvertThymDTO = convertDossierDTO(dossierThymDTO);
+    //                    String jsonPayload = convertObjectToJson(dossierConvertThymDTO);
+    //                    log.info("JSON Payload: {}", jsonPayload);
+    //
+    //                    log.info("token auth : {}", jwtToken);
+    //
+    //                    return webClient.post()
+    //                                    .uri("/commands/createDossier")
+    //                                    .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+    //                                    .contentType(MediaType.APPLICATION_JSON)
+    //                                    .accept(MediaType.APPLICATION_JSON)
+    //                                    .bodyValue(jsonPayload)
+    //                                    .retrieve()
+    //                                    .bodyToMono(DossierThymConvertDTO.class)
+    //                                    .timeout(Duration.ofSeconds(300))
+    //                                    .flatMap(dossier -> {
+    //                                        if(dossier == null) {
+    //                                            log.error("Erreur lors de la création du dossier");
+    //                                            return Mono.error(new RuntimeException("Erreur lors de la création du dossier"));
+    //                                        }
+    //
+    //                                        log.info("token auth : {}", jwtToken);
+    //
+    //                                        log.info("Response: {}", dossier);
+    //                                        log.info("type de valeur : {}", dossier.getDateCreationDossier().getClass());
+    //                                        log.info("Dossier created successfully");
+    //                                        redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
+    //                                        return Mono.just("redirect:/dossier/" + dossier.getId());
+    //                                        // redirection vers la liste des clients
+    //                                        //                            redirectAttributes.addFlashAttribute("successMessage", "Client créé avec succès");
+    //                                        //                            return Mono.just("redirect:/dossier/" + dossier.getId());
+    //                                    })
+    //                                    .onErrorResume(TimeoutException.class, e -> {
+    //                                        log.error("Timeout occurred: {}", e.getMessage());
+    //                                        redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                        redirectAttributes.addFlashAttribute("errorMessage", "Tempes de requête dépassé. Veuillez réessayer plus tard.");
+    //                                        redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");
+    //                                        return Mono.just("redirect:/error");
+    //                                    })
+    //                                    .onErrorResume(WebClientResponseException.class, e -> {
+    //                                        if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+    //                                            log.error("400 Bad Request: {}", e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                            redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
+    //                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+    //                                            return Mono.just("redirect:/error");
+    //                                        } else if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+    //                                            log.error("401 Internal Server Error: {}", e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                            redirectAttributes.addFlashAttribute("errorMessage", "Accès non autorisé. " + e
+    //                                                    .getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+    //                                            return Mono.just("redirect:/error");
+    //                                        } else if(e.getStatusCode() == HttpStatus.FORBIDDEN) {
+    //                                            log.error("403 Forbidden: {}", e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                            redirectAttributes.addFlashAttribute("errorMessage", "Accès interdit. " + e
+    //                                                    .getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+    //                                            return Mono.just("redirect:/error");
+    //
+    //                                        } else if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
+    //                                            log.error("404 Not Found: {}", e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                            redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e
+    //                                                    .getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+    //                                            return Mono.just("redirect:/error");
+    //                                        } else if(e.getStatusCode() == HttpStatus.UNSUPPORTED_MEDIA_TYPE) {
+    //                                            log.error("415 Unsupported Media Type: {}", e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                            redirectAttributes.addFlashAttribute("errorMessage",
+    //                                                                                 "Type de média non supporté. " + e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+    //                                            return Mono.just("redirect:/error");
+    //                                        } else if(e.getStatusCode() == HttpStatus.LOCKED) {
+    //                                            log.error("423 Forbidden: {}", e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                            redirectAttributes.addFlashAttribute("errorMessage",
+    //                                                                                 "Ressource verrouillée. " + e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+    //                                            return Mono.just("redirect:/error");
+    //                                        } else if(e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
+    //                                            log.error("500 Internal Server Error: {}", e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                            redirectAttributes.addFlashAttribute("errorMessage",
+    //                                                                                 "Erreur interne de serveur. " + e.getResponseBodyAsString());
+    //                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+    //                                            return Mono.just("redirect:/error");
+    //                                        } else if(e.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
+    //                                            log.error("503 Internal Server Error: {}", e.getMessage());
+    //                                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+    //                                            redirectAttributes.addFlashAttribute("errorMessage", "Service indisponible : " + e.getMessage());
+    //                                            redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+    //                                            return Mono.just("redirect:/error");
+    //                                        }
+    //                                        log.info("token auth : {}", jwtToken);
+    //
+    //                                        //                                             handleWebClientResponseException(e, redirectAttributes,
+    //                                        //                                             dossierThymDTO);
+    //                                        // reaffiche le formualire de création de client avec les données saisies par l'user
+    //                                        model.addAttribute("dossierDTO", dossierThymDTO);
+    //                                        modelAttributesError(model);
+    //                                        return Mono.just("dossier/createDossierForm");
+    //                                    });
+    //                });
+    //    }
     
     /**
      * Ajoute les attributs du modèle pour les erreurs de validation.
@@ -282,11 +409,19 @@ public class CreateDossierThymController {
      * @return Boolean
      */
     private Mono<Boolean> immatriculationExiste(String immatriculation) {
+        String jwtToken = getJwtTokenValue();
+        if(jwtToken == null || jwtToken.isEmpty()) {
+            log.error("Jeton JWT manquant ou invalide");
+            return Mono.error(new RuntimeException("Jeton JWT manquant ou invalide"));
+        }
+        
         return webClient.get()
                         .uri("/queries/vehiculeExists/" + immatriculation)
+                        .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
                         .accept(MediaType.APPLICATION_JSON)
                         .retrieve()
-                        .bodyToMono(Boolean.class);
+                        .bodyToMono(Boolean.class)
+                        .doOnError(e -> log.error("Erreur lors de la vérification de l'immatriculation: {}", e.getMessage()));
     }
     
     
