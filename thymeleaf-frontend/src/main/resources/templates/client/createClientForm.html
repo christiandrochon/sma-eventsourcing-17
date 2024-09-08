@@ -17,6 +17,9 @@
         </div>
 
         <form action='#' th:action="@{/createClient}" method='post' th:object="${clientDTO}">
+            <!-- csrf-->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
             <div>
                 <label for="nomClient" class="form-label">Nom du client</label>
                 <input id="nomClient" class="form-control" type="text" th:field="*{nomClient}"

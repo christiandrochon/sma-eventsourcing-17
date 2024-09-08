@@ -74,6 +74,8 @@
         </div>
 
         <form action='#' th:action="@{/createDocument}" method='post' class="box" th:object="${documentDTO}">
+            <!-- csrf-->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
             <div class="">
                 <label for="nomDocument" class="form-label">Nom du document</label>

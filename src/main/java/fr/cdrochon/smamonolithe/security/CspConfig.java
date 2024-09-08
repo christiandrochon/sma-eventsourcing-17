@@ -9,7 +9,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 public class CspConfig {
     
-    @Bean
+//    @Bean
     public SecurityFilterChain securityFilterChainCsp(HttpSecurity http) throws Exception {
         http
                 // desactive la CSP
@@ -17,19 +17,20 @@ public class CspConfig {
                 // active la CSP
                 .headers(headers -> headers
                                  .contentSecurityPolicy(csp -> csp
-                                                                .policyDirectives("default-src 'self' http://sma.local; " +
+                                                                .policyDirectives("default-src 'self' http://sma.local; http://localhost; " +
                                                                                           "script-src 'self' 'unsafe-inline' http://sma.local; " +
-                                                                                          "script-src-elem 'self' 'unsafe-inline' http://sma.local; " +
-                                                                                          "script-src-attr 'self' 'unsafe-inline' http://sma.local; " +
-                                                                                          "style-src 'self' 'unsafe-inline' http://sma.local; " +
-                                                                                          "img-src 'self' data: http://sma.local; " +
-                                                                                          "media-src 'self' data: http://sma.local; " +
-                                                                                          "font-src 'self' http://sma.local; " +
-                                                                                          "connect-src 'self' http://sma.local; " +
-                                                                                          "frame-src 'self' http://sma.local; " +
-                                                                                          "object-src 'self' http://sma.local; " +
-                                                                                          "child-src 'self' http://sma.local; " +
-                                                                                          "form-action 'self' http://sma.local;")
+                                                                                          "http://localhost; " +
+                                                                                          "script-src-elem 'self' 'unsafe-inline' http://sma.local; http://localhost; " +
+                                                                                          "script-src-attr 'self' 'unsafe-inline' http://sma.local; http://localhost; " +
+                                                                                          "style-src 'self' 'unsafe-inline' http://sma.local; http://localhost; " +
+                                                                                          "img-src 'self' data: http://sma.local; http://localhost; " +
+                                                                                          "media-src 'self' data: http://sma.local; http://localhost; " +
+                                                                                          "font-src 'self' http://sma.local; http://localhost; " +
+                                                                                          "connect-src 'self' http://sma.local; http://localhost; " +
+                                                                                          "frame-src 'self' http://sma.local; http://localhost; " +
+                                                                                          "object-src 'self' http://sma.local; http://localhost; " +
+                                                                                          "child-src 'self' http://sma.local; http://localhost; " +
+                                                                                          "form-action 'self' http://sma.local; http://localhost; ")
                                                        )
                         );
         return http.build();
