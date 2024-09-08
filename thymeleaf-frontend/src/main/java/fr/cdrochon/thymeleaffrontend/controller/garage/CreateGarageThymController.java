@@ -80,7 +80,7 @@ public class CreateGarageThymController {
                         .bodyValue(convertObjectToJson(garageDTO)) // convertit garage en JSON
                         .retrieve()
                         .bodyToMono(GaragePostDTO.class)// convertit en objet
-                        .timeout(Duration.ofSeconds(5))
+                        .timeout(Duration.ofSeconds(30))
                         .flatMap(garagePostDTO -> {
                             if(garagePostDTO == null) {
                                 log.error("Erreur lors de la création du garage");
