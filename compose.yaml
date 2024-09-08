@@ -1,7 +1,7 @@
 services:
   thymeleaf-frontend:
     build:
-      context: thymeleaf-frontend
+      context: ./thymeleaf-frontend
       dockerfile: Dockerfile
     container_name: thymeleaf-frontend
     ports:
@@ -15,7 +15,9 @@ services:
         - monolithe-network
 
   sma-monolithe:
-    build: .
+    build:
+        context: .
+        dockerfile: Dockerfile
     container_name: sma-monolithe
     ports:
       - '8092:8092'
