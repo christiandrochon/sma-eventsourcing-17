@@ -8,10 +8,9 @@ package fr.cdrochon.thymeleaffrontend.controller;
 //import org.springframework.security.oauth2.client.registration.ClientRegistration;
 //import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 //import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class ThymeleafRestController {
@@ -43,10 +42,10 @@ public class ThymeleafRestController {
      *
      * @return page notAuthorized.html
      */
-    @GetMapping("/notAutorized")
-    public String notAutorized() {
-        return "notAuthorized";
-    }
+//    @GetMapping("/notAutorized")
+//    public String notAutorized() {
+//        return "notAuthorized";
+//    }
     
     /**
      * Personnalisation de la page d'authentification en affichant la liste des providers, mais avec la possibilité
