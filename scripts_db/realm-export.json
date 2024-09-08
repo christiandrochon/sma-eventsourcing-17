@@ -1,7 +1,9 @@
 {
   "id": "96b9ff3d-767c-4951-84e2-09151f95102e",
   "realm": "sma-realm",
-  "notBefore": 0,
+  "displayName": "",
+  "displayNameHtml": "",
+  "notBefore": 1725737683,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
@@ -26,15 +28,15 @@
   "oauth2DeviceCodeLifespan": 600,
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
-  "sslRequired": "external",
+  "sslRequired": "none",
   "registrationAllowed": true,
   "registrationEmailAsUsername": false,
-  "rememberMe": true,
+  "rememberMe": false,
   "verifyEmail": false,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": true,
-  "editUsernameAllowed": false,
+  "editUsernameAllowed": true,
   "bruteForceProtected": false,
   "permanentLockout": false,
   "maxTemporaryLockouts": 0,
@@ -81,7 +83,12 @@
         "id": "48058d4d-e752-493f-a352-16d064fd0bf1",
         "name": "ADMIN",
         "description": "",
-        "composite": false,
+        "composite": true,
+        "composites": {
+          "realm": [
+            "USER"
+          ]
+        },
         "clientRole": false,
         "containerId": "96b9ff3d-767c-4951-84e2-09151f95102e",
         "attributes": {}
@@ -1267,6 +1274,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
+      "secret": "**********",
       "redirectUris": [
         "http://localhost:8094/*"
       ],
@@ -1280,11 +1288,12 @@
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
-      "publicClient": true,
+      "publicClient": false,
       "frontchannelLogout": true,
       "protocol": "openid-connect",
       "attributes": {
         "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1725732634",
         "backchannel.logout.session.required": "true",
         "post.logout.redirect.uris": "+",
         "oauth2.device.authorization.grant.enabled": "false",
@@ -1886,8 +1895,9 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "AUTH_TIME",
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "auth_time",
             "jsonType.label": "long"
@@ -1940,7 +1950,27 @@
   "enabledEventTypes": [],
   "adminEventsEnabled": false,
   "adminEventsDetailsEnabled": false,
-  "identityProviders": [],
+  "identityProviders": [
+    {
+      "alias": "google",
+      "internalId": "a2236d4b-1b88-4433-a17d-6122ee92a549",
+      "providerId": "google",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "trustEmail": false,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "config": {
+        "offlineAccess": "false",
+        "syncMode": "LEGACY",
+        "userIp": "false",
+        "clientSecret": "**********",
+        "clientId": "782329702620-feq7hnq8scsh09socq04dhornaias4bj.apps.googleusercontent.com"
+      }
+    }
+  ],
   "identityProviderMappers": [],
   "components": {
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
@@ -1985,12 +2015,12 @@
         "config": {
           "allowed-protocol-mapper-types": [
             "oidc-full-name-mapper",
+            "saml-role-list-mapper",
             "oidc-usermodel-property-mapper",
-            "oidc-address-mapper",
+            "saml-user-property-mapper",
             "oidc-sha256-pairwise-sub-mapper",
             "saml-user-attribute-mapper",
-            "saml-user-property-mapper",
-            "saml-role-list-mapper",
+            "oidc-address-mapper",
             "oidc-usermodel-attribute-mapper"
           ]
         }
@@ -2011,13 +2041,13 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-usermodel-attribute-mapper",
-            "oidc-address-mapper",
-            "saml-user-attribute-mapper",
             "saml-role-list-mapper",
             "oidc-full-name-mapper",
-            "saml-user-property-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "oidc-address-mapper",
             "oidc-sha256-pairwise-sub-mapper",
+            "saml-user-attribute-mapper",
+            "saml-user-property-mapper",
             "oidc-usermodel-property-mapper"
           ]
         }
@@ -2195,7 +2225,7 @@
         {
           "authenticator": "conditional-user-configured",
           "authenticatorFlow": false,
-          "requirement": "REQUIRED",
+          "requirement": "DISABLED",
           "priority": 10,
           "autheticatorFlow": false,
           "userSetupAllowed": false
@@ -2701,7 +2731,7 @@
       "alias": "VERIFY_EMAIL",
       "name": "Verify Email",
       "providerId": "VERIFY_EMAIL",
-      "enabled": true,
+      "enabled": false,
       "defaultAction": false,
       "priority": 50,
       "config": {}
@@ -2728,7 +2758,7 @@
       "alias": "webauthn-register-passwordless",
       "name": "Webauthn Register Passwordless",
       "providerId": "webauthn-register-passwordless",
-      "enabled": true,
+      "enabled": false,
       "defaultAction": false,
       "priority": 80,
       "config": {}
@@ -2737,7 +2767,7 @@
       "alias": "delete_credential",
       "name": "Delete Credential",
       "providerId": "delete_credential",
-      "enabled": true,
+      "enabled": false,
       "defaultAction": false,
       "priority": 100,
       "config": {}
@@ -2761,17 +2791,20 @@
   "firstBrokerLoginFlow": "first broker login",
   "attributes": {
     "cibaBackchannelTokenDeliveryMode": "poll",
-    "cibaExpiresIn": "120",
     "cibaAuthRequestedUserHint": "login_hint",
-    "oauth2DeviceCodeLifespan": "600",
     "clientOfflineSessionMaxLifespan": "0",
     "oauth2DevicePollingInterval": "5",
     "clientSessionIdleTimeout": "0",
-    "parRequestUriLifespan": "60",
-    "clientSessionMaxLifespan": "0",
     "clientOfflineSessionIdleTimeout": "0",
     "cibaInterval": "5",
-    "realmReusableOtpCode": "false"
+    "realmReusableOtpCode": "false",
+    "cibaExpiresIn": "120",
+    "oauth2DeviceCodeLifespan": "600",
+    "parRequestUriLifespan": "60",
+    "clientSessionMaxLifespan": "0",
+    "frontendUrl": "",
+    "organizationsEnabled": "false",
+    "acr.loa.map": "{}"
   },
   "keycloakVersion": "25.0.4",
   "userManagedAccessAllowed": false,
