@@ -8,6 +8,11 @@ services:
       - '8091:8091'
     expose:
       - '8091'
+    depends_on:
+      sma-monolithe:
+        condition: service_healthy
+    networks:
+        - monolithe-network
 
   sma-monolithe:
     build: .
@@ -17,7 +22,8 @@ services:
     expose:
       - '8092'
     depends_on:
-      - postgres-monolithe
+      postgres-monolithe:
+        condition: service_healthy
     environment:
       POSTGRES_HOST: postgres-monolithe
       POSTGRES_PORT: 5432
@@ -25,9 +31,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     healthcheck:
+      start_period: 30s
       test: ["CMD", "curl", "-f", "http://sma-monolithe:8092/actuator/health"]
-      interval: 10s
+      interval: 20s
       retries: 5
+    networks:
+        - monolithe-network
 
   postgres-monolithe:
     image: postgres
@@ -51,6 +60,8 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       retries: 5
+    networks:
+        - monolithe-network
 
   pgadmin4:
     image: dpage/pgadmin4
@@ -63,8 +74,13 @@ services:
       PGADMIN_DEFAULT_PASSWORD: password
     volumes:
       - pgadmin_data_monolithe:/var/lib/pgadmin
-
+    networks:
+        - monolithe-network
 
 volumes:
   pg_monolithe:
   pgadmin_data_monolithe:
+
+networks:
+  monolithe-network:
+    driver: bridge
