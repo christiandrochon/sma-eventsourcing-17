@@ -107,6 +107,10 @@ public class SecurityConfigThymeleaf {
         SecurityContext context = SecurityContextHolder.getContext();
         Authentication authentication = context.getAuthentication();
         OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
+        if (oAuth2AuthenticationToken == null) {
+            //TODO
+            throw new IllegalStateException("No authentication token found in security context");
+        }
         DefaultOidcUser oidcUser = (DefaultOidcUser) oAuth2AuthenticationToken.getPrincipal();
         String jwtTokenValue = oidcUser.getIdToken()
                                        .getTokenValue();
