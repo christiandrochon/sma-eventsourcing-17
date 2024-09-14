@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.stream.Stream;
 
@@ -34,7 +35,7 @@ public class ClientCommandController {
      */
     @PostMapping("/createClient")
     public Mono<ResponseEntity<ClientCommandDTO>> createClientAsync(@RequestBody ClientCommandDTO clientCommandDTO) {
-        return Mono.fromFuture(clientCommandService.createClient(clientCommandDTO))
+        return Mono.fromFuture(clientCommandService.createClient(clientCommandDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(client -> {
                        log.info("Garage créé : " + client);
                        return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(client));

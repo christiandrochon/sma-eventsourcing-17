@@ -3,7 +3,6 @@ package fr.cdrochon.smamonolithe.garage.query.controllers;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageQueryDTO;
 import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
-import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +19,9 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/queries")
 public class GarageQueryServerController {
     
-    private final QueryGateway queryGateway;
     private final GarageRepository garageRepository;
     
-    public GarageQueryServerController(QueryGateway queryGateway, GarageRepository garageRepository) {
-        this.queryGateway = queryGateway;
+    public GarageQueryServerController(GarageRepository garageRepository) {
         this.garageRepository = garageRepository;
     }
     

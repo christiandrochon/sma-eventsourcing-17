@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Slf4j
 @RestController
@@ -31,7 +32,7 @@ public class VehiculeCommandController {
      */
     @PostMapping(value = "/createVehicule")
     public Mono<ResponseEntity<VehiculeCommandDTO>> createClientAsync(@RequestBody VehiculeCommandDTO vehiculeRequestDTO) {
-        return Mono.fromFuture(vehiculeCommandService.createVehicule(vehiculeRequestDTO))
+        return Mono.fromFuture(vehiculeCommandService.createVehicule(vehiculeRequestDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(vehicule -> {
                        log.info("Garage créé : " + vehicule);
                        return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(vehicule));
