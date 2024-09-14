@@ -30,8 +30,6 @@ public class VehiculeCommandController {
      * @return ResponseEntity<VehiculeCommandDTO> DTO de création d'un vehicule
      */
     @PostMapping(value = "/createVehicule")
-    //    @PreAuthorize("hasRole('USER')")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<ResponseEntity<VehiculeCommandDTO>> createClientAsync(@RequestBody VehiculeCommandDTO vehiculeRequestDTO) {
         return Mono.fromFuture(vehiculeCommandService.createVehicule(vehiculeRequestDTO))
                    .flatMap(vehicule -> {

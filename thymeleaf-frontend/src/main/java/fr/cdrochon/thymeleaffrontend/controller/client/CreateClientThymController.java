@@ -59,7 +59,6 @@ public class CreateClientThymController {
      * @return la vue clients si la création a réussi, sinon la vue createClientForm
      */
     @PostMapping(value = "/createClient")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> createClient(@Valid @ModelAttribute("clientDTO") ClientThymDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes,
                                      Model model) {
         if(result.hasErrors()) {

@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class ClientWebConfig {
     
-    @Value("external.service.url")
+    @Value("${external.service.url}")
     private String externalServiceUrl;
     @Bean
     public RestTemplate restTemplate() {

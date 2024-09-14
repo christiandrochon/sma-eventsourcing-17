@@ -43,7 +43,6 @@ public class CreateVehiculeThymController {
      * @return la vue createVehiculeForm
      */
     @GetMapping("/createVehicule")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createVehicule(Model model) {
         if(!model.containsAttribute("vehiculePostDTO")) {
             model.addAttribute("vehiculePostDTO", new VehiculeThymDTO());
@@ -66,7 +65,6 @@ public class CreateVehiculeThymController {
      * @return la vue de création d'un vehicule
      */
     @PostMapping(value = "/createVehicule")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> createDossierAsync(@Valid @ModelAttribute("vehiculePostDTO") VehiculeThymDTO vehiculePostDTO, BindingResult result,
                                            RedirectAttributes redirectAttributes, Model model) {
         if(result.hasErrors()) {

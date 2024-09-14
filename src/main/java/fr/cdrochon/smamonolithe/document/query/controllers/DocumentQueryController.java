@@ -33,7 +33,6 @@ public class DocumentQueryController {
      * @return document
      */
     @GetMapping(path = "/documents/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<DocumentQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
         CompletableFuture<DocumentQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -52,7 +51,6 @@ public class DocumentQueryController {
      * @return liste de documents
      */
     @GetMapping(path = "/documents")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Flux<DocumentQueryDTO> getDossiersAsync() {
         CompletableFuture<List<DocumentQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<DocumentQueryDTO> clients =

@@ -26,7 +26,6 @@ public class GarageThymController {
      * @return la vue garage/view
      */
     @GetMapping(value = "/garage/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getGarageByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/garages/" + id)
@@ -48,7 +47,6 @@ public class GarageThymController {
      * @return la vue garage/garages
      */
     @GetMapping("/garages")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getGaragesAsyncClient(Model model) {
         return webClient.get()
                         .uri("/queries/garages")

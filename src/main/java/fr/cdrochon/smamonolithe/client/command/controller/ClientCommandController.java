@@ -4,11 +4,9 @@ import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
 import fr.cdrochon.smamonolithe.client.command.services.ClientCommandService;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventsourcing.eventstore.EventStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.stream.Stream;
@@ -17,11 +15,9 @@ import java.util.stream.Stream;
 @Slf4j
 @RequestMapping("/commands")
 public class ClientCommandController {
+    
     private final ClientCommandService clientCommandService;
     private final EventStore eventStore;
-    
-    @Autowired
-    private WebClient webClient;
     
     
     public ClientCommandController(ClientCommandService clientCommandService, EventStore eventStore) {
@@ -58,7 +54,6 @@ public class ClientCommandController {
      * @return Stream
      */
     @GetMapping(path = "/eventStoreClient/{id}") //consumes = MediaType.TEXT_EVENT_STREAM_VALUE
-    //    @PreAuthorize("hasAuthority('USER')")
     public Stream readClientsInEventStore(@PathVariable String id) {
         return eventStore.readEvents(id).asStream();
     }

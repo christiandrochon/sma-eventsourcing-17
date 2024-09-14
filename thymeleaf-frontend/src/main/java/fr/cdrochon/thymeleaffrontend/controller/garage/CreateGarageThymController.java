@@ -26,7 +26,7 @@ import static fr.cdrochon.thymeleaffrontend.formatdata.ConvertObjectToJson.conve
 @Controller
 @Slf4j
 public class CreateGarageThymController {
-
+    
     @Autowired
     private WebClient webClient;
     
@@ -37,7 +37,6 @@ public class CreateGarageThymController {
      * @return la vue garage/createGarageForm
      */
     @GetMapping("/createGarage")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
     public String createGarageAsync(Model model) {
         GaragePostDTO garageDTO = new GaragePostDTO();
         garageDTO.setAdresse(new GarageAdresseDTO());

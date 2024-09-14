@@ -29,7 +29,6 @@ public class VehiculeThymController {
      * @return la vue vehicule/view
      */
     @GetMapping("/vehicule/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getVehiculeByIdAsync(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/vehicules/" + id)
@@ -59,7 +58,6 @@ public class VehiculeThymController {
      * @return la vue vehicule/vehicules
      */
     @GetMapping("/vehicules")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getVehiculesAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/vehicules")

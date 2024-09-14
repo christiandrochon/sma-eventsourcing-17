@@ -19,12 +19,12 @@ public class VehiculeEventController {
     
     /**
      * Recupere un event identifié par son id
+     *
      * @param id id du vehicule
      * @return DomainEventStream
      */
     @GetMapping("/vehiculeEvents/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
-    public DomainEventStream eventsById(@PathVariable String id){
+    public DomainEventStream eventsById(@PathVariable String id) {
         return eventSourcingService.eventsByVehiculeId(id);
     }
 }

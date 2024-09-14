@@ -48,7 +48,6 @@ public class CreateDossierThymController {
      * @return la vue createDossierForm
      */
     @GetMapping("/createDossier")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
     public Mono<String> getDossier(Model model, RedirectAttributes redirectAttributes) {
         if(!model.containsAttribute("dossierDTO")) {
             model.addAttribute("dossierDTO", new DossierThymDTO());

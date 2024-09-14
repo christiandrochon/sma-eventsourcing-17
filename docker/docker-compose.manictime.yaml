@@ -1,0 +1,24 @@
+services:
+  manictimeserver:
+    image: manictime/manictimeserver
+    container_name: manictime
+    restart: unless-stopped
+    volumes:
+      - /var/lib/manictimeserver/Data:/app/Data
+    ports:
+      - 8080:8080
+#    ports:
+#      - 7001:7001
+#    expose:
+#      - 7001
+#    command: -p 7001
+#    command: bash -c "sleep 90 && java -jar /app/ManicTimeServer.jar"
+#    docker run -v /var/lib/manictimeserver/Data:/app/Data -p 8080:8080 --rm --entrypoint dotnet manictime/manictimeserver Setup.dll -publicurl
+    networks:
+      - manictime-network
+volumes:
+  Data:
+
+networks:
+  manictime-network:
+    driver: bridge

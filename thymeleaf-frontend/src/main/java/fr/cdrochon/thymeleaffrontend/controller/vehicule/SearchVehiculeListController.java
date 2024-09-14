@@ -31,7 +31,6 @@ public class SearchVehiculeListController {
      * @return la vue vehicule/searchVehiculeList
      */
     @GetMapping(value = "/searchvehiculelist")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> searchClientsAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/vehicules")
@@ -87,7 +86,6 @@ public class SearchVehiculeListController {
      * @return la vue vehicule/view
      */
     @GetMapping(value = "/searchvehiculelist/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> searchClientByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/vehicules/" + id)

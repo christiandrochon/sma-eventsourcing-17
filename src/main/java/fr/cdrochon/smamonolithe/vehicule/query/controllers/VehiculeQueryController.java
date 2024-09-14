@@ -34,7 +34,6 @@ public class VehiculeQueryController {
      */
     @GetMapping("/vehicules/{id}")
     @JsonView(Views.VehiculeView.class)
-    //    @PreAuthorize("hasAuthority('USER')")
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
     public Mono<VehiculeQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
         CompletableFuture<VehiculeQueryDTO> future =
@@ -57,7 +56,6 @@ public class VehiculeQueryController {
      */
     @GetMapping("/vehicules")
     @JsonView(Views.VehiculeView.class)
-    //    @PreAuthorize("hasAuthority('USER')")
     public Flux<VehiculeQueryDTO> getDossiersAsync() {
         CompletableFuture<List<VehiculeQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<VehiculeQueryDTO> clients =

@@ -33,8 +33,6 @@ public class DossierCommandController {
      * @return ResponseEntity<DossierCommandDTO> DTO de création d'un dossier
      */
     @PostMapping(value = "/createDossier")
-    //    @PreAuthorize("hasRole('USER')")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<ResponseEntity<DossierCommandDTO>> createClientAsync(@RequestBody DossierCommandDTO dossierCommandDTO) {
         return Mono.fromFuture(dossierCommandService.createDossier(dossierCommandDTO))
                    .flatMap(dossier -> {
@@ -55,7 +53,6 @@ public class DossierCommandController {
      * @return Stream
      */
     @GetMapping(path = "/eventStoreDossier/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Stream readDossiersInEventStore(@PathVariable String id) {
         return eventStore.readEvents(id).asStream();
     }

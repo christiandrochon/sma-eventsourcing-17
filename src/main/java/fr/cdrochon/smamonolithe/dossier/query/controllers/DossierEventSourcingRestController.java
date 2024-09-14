@@ -25,7 +25,6 @@ public class DossierEventSourcingRestController {
      * @return Stream
      */
     @GetMapping("/dossierQueries/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Stream eventsByAccountId(@PathVariable String id) {
         return eventSourcingService.eventsByDossierId(id).asStream();
     }

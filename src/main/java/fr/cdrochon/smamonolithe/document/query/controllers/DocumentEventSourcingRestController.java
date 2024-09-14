@@ -25,7 +25,6 @@ public class DocumentEventSourcingRestController {
      * @return Stream
      */
     @GetMapping("/documentQueries/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Stream eventsByDocumentId(@PathVariable String id) {
         return eventSourcingService.eventsByDocumentId(id).asStream();
     }

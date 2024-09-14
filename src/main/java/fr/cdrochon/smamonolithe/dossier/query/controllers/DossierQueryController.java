@@ -40,7 +40,6 @@ public class DossierQueryController {
      * @return DossierResponseDTO avec les informations utiles pour la partie query
      */
     @GetMapping(path = "/dossiers/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<DossierQueryDTO> getDossierByIdAsync(@PathVariable String id) {
         CompletableFuture<DossierQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -60,7 +59,6 @@ public class DossierQueryController {
      * @return List<DossierResponseDTO> liste des dossiers sous forme de DTO
      */
     @GetMapping(path = "/dossiers")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Flux<DossierQueryDTO> getDossiersAsync() {
         CompletableFuture<List<DossierQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<DossierQueryDTO> clients =

@@ -2,7 +2,6 @@ package fr.cdrochon.smamonolithe.garage.command.controller;
 
 import fr.cdrochon.smamonolithe.garage.query.services.GarageEventSourcingService;
 import org.axonframework.eventsourcing.eventstore.DomainEventStream;
-//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +23,6 @@ public class GarageEventController {
      * @return DomainEventStream
      */
     @GetMapping("/garageEvents/{id}")
-//    @PreAuthorize("hasAuthority('USER')")
     public DomainEventStream eventsById(@PathVariable String id){
         return eventSourcingService.eventsByGarageId(id);
     }

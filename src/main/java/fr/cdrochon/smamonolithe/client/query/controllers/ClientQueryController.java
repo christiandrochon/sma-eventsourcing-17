@@ -45,7 +45,6 @@ public class ClientQueryController {
      */
     @GetMapping(path = "/clients/{id}")
     @JsonView(Views.ClientView.class)
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id) {
         CompletableFuture<ClientQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -69,7 +68,6 @@ public class ClientQueryController {
      */
     @GetMapping(path = "/clients")
     @JsonView(Views.ClientView.class)
-    //    @PreAuthorize("hasAuthority('USER')")
     public Flux<ClientQueryDTO> getClientsAsync() {
         CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<ClientQueryDTO> clients =

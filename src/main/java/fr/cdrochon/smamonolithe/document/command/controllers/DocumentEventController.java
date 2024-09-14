@@ -19,12 +19,12 @@ public class DocumentEventController {
     
     /**
      * Recupere un event identifié par son id
+     *
      * @param id id du document
      * @return DomainEventStream
      */
     @GetMapping("/documentEvents/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
-    public DomainEventStream eventsById(@PathVariable String id){
+    public DomainEventStream eventsById(@PathVariable String id) {
         return eventSourcingService.eventsByDocumentId(id);
     }
 }

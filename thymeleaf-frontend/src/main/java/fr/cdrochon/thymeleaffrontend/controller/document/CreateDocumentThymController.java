@@ -45,7 +45,6 @@ public class CreateDocumentThymController {
      * @return Vue de création de document
      */
     @GetMapping("/createDocument")
-    //    @PreAuthorize("hasAuthority('ADMIN')")
     public String getDocument(Model model) {
         if(!model.containsAttribute("documentDTO")) {
             model.addAttribute("documentDTO", new DocumentThymDTO());

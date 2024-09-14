@@ -31,7 +31,6 @@ public class SearchClientThymController {
      * @return la vue client/searchClientForm
      */
     @GetMapping(value = "/searchclient")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> searchClientsAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/clients")
@@ -87,7 +86,6 @@ public class SearchClientThymController {
      * @return la vue client/view
      */
     @GetMapping(value = "/searchclient/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> searchClientByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/clients/" + id)

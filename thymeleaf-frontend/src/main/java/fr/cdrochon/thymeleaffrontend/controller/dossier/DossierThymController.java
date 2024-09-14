@@ -29,7 +29,6 @@ public class DossierThymController {
      * @return la vue dossier/view
      */
     @GetMapping(value = "/dossier/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getClientByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/dossiers/" + id)
@@ -53,7 +52,6 @@ public class DossierThymController {
      * @return la vue dossier/dossiers
      */
     @GetMapping(value = "/dossiers")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getDossiersAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/dossiers")

@@ -25,7 +25,6 @@ public class VehiculeEventSourcingRestController {
      * @return Stream
      */
     @GetMapping("/vehiculeQueries/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Stream eventsByAccountId(@PathVariable String id) {
         return eventSourcingService.eventsByClientId(id).asStream();
     }

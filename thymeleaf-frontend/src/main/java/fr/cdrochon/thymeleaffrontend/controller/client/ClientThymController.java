@@ -28,7 +28,6 @@ public class ClientThymController {
      * @return la vue client/view
      */
     @GetMapping(value = "/client/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getClientByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/clients/" + id)
@@ -51,7 +50,6 @@ public class ClientThymController {
      * @return la vue client/clients
      */
     @GetMapping(value = "/clients")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getClientsAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/clients")

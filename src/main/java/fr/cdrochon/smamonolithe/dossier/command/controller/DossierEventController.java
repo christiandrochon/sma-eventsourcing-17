@@ -24,7 +24,6 @@ public class DossierEventController {
      * @return DomainEventStream
      */
     @GetMapping("/dossierEvents/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public DomainEventStream eventsById(@PathVariable String id) {
         return eventSourcingService.eventsByDossierId(id);
     }

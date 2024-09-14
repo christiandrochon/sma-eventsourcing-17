@@ -29,7 +29,6 @@ public class DocumentThymController {
      * @return la vue de création d'un document
      */
     @GetMapping(value = "/document/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getDocumentByIdAsync(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/documents/" + id)
@@ -59,7 +58,6 @@ public class DocumentThymController {
      * @return la vue des documents
      */
     @GetMapping(value = "/documents")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<String> getDocumentsAsync(Model model, RedirectAttributes redirectAttributes) {
         return webClient.get()
                         .uri("/queries/documents")

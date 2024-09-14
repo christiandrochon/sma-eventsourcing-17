@@ -1,7 +1,7 @@
 package fr.cdrochon.smamonolithe.garage.query.controllers;
 
-import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageQueryDTO;
+import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +14,10 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-//import reactor.core.publisher.Flux;
 
 
 @RestController
 @RequestMapping(path = "/queries")
-//@PreAuthorize("hasAuthority('USER')")
 public class GarageQueryServerController {
     
     private final QueryGateway queryGateway;
@@ -39,7 +37,6 @@ public class GarageQueryServerController {
      * @return Mono de GarageResponseDTO
      */
     @GetMapping(path = "/garages/{id}")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Mono<GarageQueryDTO> getGarageByIdAsync(@PathVariable String id) {
         CompletableFuture<GarageQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -58,7 +55,6 @@ public class GarageQueryServerController {
      * @return Flux de GarageResponseDTO
      */
     @GetMapping(path = "/garages")
-    //    @PreAuthorize("hasAuthority('USER')")
     public Flux<GarageQueryDTO> getGaragesAsyncServer() {
         CompletableFuture<List<GarageQueryDTO>> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -72,19 +68,4 @@ public class GarageQueryServerController {
         Flux<GarageQueryDTO> flux = Flux.fromStream(future.join().stream());
         return flux;
     }
-    
-    /**
-     * Renvoi la liste de tous les garages de manière synchrone, mais en convertissant une List en Flux
-     *
-     * @return Flux de GarageResponseDTO
-     */
-    //    @GetMapping(path = "/garages")
-    //    @PreAuthorize("hasAuthority('USER')")
-    //    public Flux<GarageResponseDTO> getGaragesFlux() {
-    //        List<GarageResponseDTO> garages = garageRepository.findAll()
-    //                                                          .stream()
-    //                                                          .map(GarageMapperManuel::convertGarageToGarageDTO)
-    //                                                          .collect(Collectors.toList());
-    //        return Flux.fromIterable(garages);
-    //    }
 }
