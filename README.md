@@ -1,72 +1,77 @@
-## Application de Maintenance Automobile (SMA)
+# SMA – Application de Maintenance Automobile
 
-L'application SMA est une application de Maintenance Automobile.
-  
-> SMA offre une expérience utilisateur fluide et réactive, capable de traiter efficacement de grands volumes de données en temps réel, tout en maintenant des performances élevées. L'architecture de l'application permet une gestion dynamique des opérations, garantissant une réactivité optimale même sous forte charge.
+## Description
+SMA est une application intranet de maintenance automobile développée en Java avec Spring Boot.
+Elle repose sur une architecture orientée événements et une approche réactive côté backend.
 
-> En matière de sécurité, SMA utilise des standards de pointe pour protéger les données et sécuriser les accès, assurant ainsi la confidentialité et l'intégrité des informations.
+Le projet est entièrement exécutable en local via Docker Compose.
+Les images du backend et du frontend sont construites à la volée à partir des Dockerfile présents dans le dépôt.
 
-Caractéristiques principales :
-   * __Programmation réactive__ : Optimisée pour gérer des charges élevées avec une faible latence grâce à l'approche asynchrone et non bloquante de _Spring WebFlux_ et de l'utilisation explicite de _futurs_.
-   * __Event Sourcing et CQRS__ : Séparation claire des commandes et des requêtes, garantissant une meilleure évolutivité, une cohérence des données, et une traçabilité complète des événements.
-   * __Sécurité__ : Utilisation de _OpenID Connect_ et du protocole _OAuth_ pour garantir une authentification et une autorisation robustes.
-   * __DevOps et performance__ : Adoption des pratiques DevOps pour assurer des performances optimales, une haute disponibilité, une mise à l'échelle automatique, et une tolérance aux pannes, grâce à la répartition dynamique des charges entre les serveurs.
+## Architecture
+- Backend : Spring Boot (WebFlux)
+- Frontend : Thymeleaf (rendu côté serveur)
+- Build : Maven
+- Base de données : PostgreSQL
+- Infrastructure locale : Docker / Docker Compose
 
-Déploiement et Infrastructure :
-   * __Containerisation__ : L'application est entièrement dockerisée, facilitant son déploiement et sa gestion.
-   * __Orchestration avec Kubernetes__ : Déploiement automatisé et gestion des conteneurs via _Kubernetes_, assurant la résilience et la scalabilité.
-   * __Infrastructure Cloud__ : Hébergée sur _AWS_ avec des machines virtuelles pour une fiabilité maximale et une flexibilité à grande échelle. 
+Les patterns **CQRS** et **Event Sourcing** sont utilisés pour séparer les responsabilités
+de commande et de lecture, améliorer la traçabilité des changements et faciliter l’évolution du modèle métier.
+
+## Sécurité
+L’authentification et l’autorisation reposent sur les standards :
+- OAuth 2.0
+- OpenID Connect
+
+(L’implémentation dépend de la configuration de l’environnement d’exécution.)
+
+## Structure du projet
+- Backend Spring Boot : racine du projet
+- Frontend Thymeleaf : `thymeleaf-frontend`
+- Données d’exemple : `thymeleaf-frontend/src/main/resources/vehicules.json`
+- Fichier Docker Compose : `compose.yaml`
+- Dockerfile backend : `Dockerfile`
+- Dockerfile frontend : `thymeleaf-frontend/Dockerfile`
+
+## Backend (Spring Boot WebFlux)
+Le backend Spring Boot constitue le cœur applicatif et expose les endpoints nécessaires
+au rendu serveur des vues Thymeleaf ainsi qu’aux opérations métier.
+
+## Frontend (Thymeleaf)
+
+Le frontend de l’application est entièrement développé avec **Thymeleaf** et repose sur
+un rendu **côté serveur** des vues HTML.
+
+Cette approche permet :
+
+- la génération dynamique des pages HTML côté backend
+- le contrôle complet des champs de formulaire (binding, validation, affichage conditionnel)
+- l’intégration native avec Spring (modèle, sécurité, internationalisation)
+- la centralisation de la logique de présentation côté serveur
+- la réduction de la logique JavaScript côté client
+
+Les vues Thymeleaf sont directement liées au modèle métier exposé par le backend,
+ce qui garantit la cohérence des données affichées et simplifie la maintenance
+dans un contexte applicatif intranet.
+
+## Accès (local)
+
+- Frontend (Thymeleaf) : http://localhost:8091
+- Backend (API / Actuator) : http://localhost:8092
+- Healthcheck backend : http://localhost:8092/actuator/health
+- Axon Server (dashboard) : http://localhost:8024
+- pgAdmin : http://localhost:6002
+- PostgreSQL : localhost:5432
 
 
+## Lancement de l’application (environnement local)
 
-## Application de Maintenance Automobile (SMA)
+À la racine du projet :
 
-L'application SMA est une solution innovante dédiée à la maintenance automobile.
+```bash
+docker compose -f compose.yaml up -d
+```
 
->    SMA adopte une architecture pilotée par les événements, s'appuyant sur la programmation réactive pour exploiter l'asynchronie et la concurrence. Cette approche permet de créer des interfaces utilisateur fluides et dynamiques, de gérer de larges volumes de données sans latence, et de garantir des performances optimales.
-> Spring WebFlux constitue la base de cette application, maximisant les avantages des CompletableFuture pour des traitements asynchrones et non bloquants. L'application intègre également les patterns d'architecture Event Sourcing et CQRS, offrant ainsi une évolutivité accrue, une résilience renforcée, et une maintenance simplifiée.
+## Licence
 
-(Basée sur Spring WebFlux, l'application tire pleinement parti des avantages des CompletableFuture pour des traitements asynchrones et non bloquants. 
-Elle implémente les patterns d'architecture Event Sourcing et CQRS, ce qui lui confère une grande évolutivité, une résilience renforcée et une maintenance simplifiée. 
-Pour une sécurité maximale, SMA utilise le standard OpenID Connect en conjonction avec le protocole OAuth.)
-
-> Pour assurer une sécurité maximale, SMA utilise le standard OpenID Connect couplé au protocole OAuth.
-
-<br><br>
-Caractéristiques principales :
-
-   * __Architecture réactive__ : Optimisée pour gérer des charges élevées avec une faible latence grâce à l'approche non bloquante de _Spring WebFlux_.
-   * __Event Sourcing et CQRS__ : Séparation claire des commandes et des requêtes, garantissant une meilleure évolutivité, une cohérence des données, et une traçabilité complète des événements.
-   * __Sécurité__ : Utilisation de _OpenID Connect_ et du protocole _OAuth_ pour garantir une authentification et une autorisation robustes.
-   * __DevOps et performance__ : Adoption des meilleures pratiques DevOps pour assurer des performances optimales, une haute disponibilité, une mise à l'échelle automatique, et une tolérance aux pannes, grâce à la répartition dynamique des charges entre les serveurs.
-
-Déploiement et Infrastructure :
-
-   * __Containerisation__ : L'application est entièrement dockerisée, simplifiant son déploiement et sa gestion.
-   * __Orchestration avec Kubernetes__ : Gestion automatisée des conteneurs via _Kubernetes_, garantissant résilience et scalabilité.
-   * __Infrastructure Cloud__ : Hébergement sur _AWS_ avec des machines virtuelles pour une fiabilité maximale et une flexibilité à grande échelle.
-
-Accès à l'application :
-   * L'application est accessible à l'adresse : *todo (URL à définir)*.
-
-
-
-<br><br>
-## Automotive Maintenance Application
-
-### This application is an automotive maintenance application.
-
->  It is an application implements the Event Sourcing and CQRS architectural patterns, offering high scalability, increased resilience, and simplified maintenance. It is based on Spring WebFlux that fully leverages the advantages of CompletableFuture for asynchronous and non-blocking processing
-
-### Key Features : 
-- **_Reactive Architecture_** : Designed to handle high loads with low latency, thanks to the non-blocking approach of Spring WebFlux.  
-- **_Event Sourcing and CQRS_** : Clear separation of commands and queries for better scalability and data consistency, with complete event traceability.  
-- **_DevOps and Performance_** : Integration of DevOps practices to ensure optimal performance, high availability, automatic scaling, and fault tolerance through dynamic load balancing across servers.  
-
-### Deployment and Infrastructure :
-- **_Containerization_** : The application is fully containerized using Docker, making deployment and management easier.  
-- **_Orchestration with Kubernetes_** : Automated deployment and container management via Kubernetes, ensuring resilience and scalability.  
-- **_Cloud Infrastructure_** : Hosted on AWS with virtual machines for maximum reliability and large-scale flexibility. 
-
-### Application Access :
-- The application is accessible at: todo (URL to be defined).
+Ce projet est distribué sous licence MIT.
+Voir le fichier [LICENSE](LICENSE).
