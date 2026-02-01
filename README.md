@@ -70,6 +70,17 @@ dans un contexte applicatif intranet.
 ```bash
 docker compose -f compose.yaml up -d
 ```
+## Profils Spring
+
+L’application utilise les profils Spring pour distinguer les configurations
+selon l’environnement d’exécution.
+
+- `default` : configuration par défaut (`application.properties`)
+- `local` : exécution locale hors Docker
+- `prod` : exécution via Docker Compose (intranet)
+
+Le profil actif est défini via la variable d’environnement `SPRING_PROFILES_ACTIVE`.
+Dans l’environnement Docker, le profil `prod` est utilisé.
 
 ## Licence
 
