@@ -2,128 +2,73 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.2</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>3.3.4</version>
+        <relativePath/>
     </parent>
+
     <groupId>fr.cdrochon</groupId>
     <artifactId>sma-monolithe</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>sma-monolithe</name>
-    <description>sma-monolithe</description>
+    <description>Application intranet de maintenance automobile</description>
+
+    <organization>
+        <name>Christian Drochon</name>
+        <url>https://cdrochon.fr</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Christian Drochon</name>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/mit</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+
     <properties>
-<!--        <java.version>17</java.version>-->
-<!--        <spring.boot.version>3.1.0</spring.boot.version>-->
-                <maven.compiler.source>1.8</maven.compiler.source>
-                <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>17</java.version>
+        <axon.version>4.12.3</axon.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.axonframework</groupId>
+                <artifactId>axon-bom</artifactId>
+                <version>${axon.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-        <!--AXON-->
+        <!-- AXON FRAMEWORK (Event Sourcing & CQRS) -->
         <dependency>
             <groupId>org.axonframework</groupId>
             <artifactId>axon-spring-boot-starter</artifactId>
-            <version>4.4.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.axonframework</groupId>
-                    <artifactId>axon-server-connector</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-
-        <!--        SPRING WEBFLUX REACTIVE  -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-            <version>2.5.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!--        JSON SERIALISATION ET DESERIALISATION  -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.17.0</version>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.17.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.17.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-parameter-names</artifactId>
-            <version>2.13.0</version>
-        </dependency>
-        <!--        Prise en charge de la classe Instant-->
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.13.0</version>
-        </dependency>
-        <!--        WebClient-->
-        <dependency>
-            <groupId>io.projectreactor.netty</groupId>
-            <artifactId>reactor-netty</artifactId>
-            <version>1.1.21</version>
-        </dependency>
-
-        <!--        <dependency>-->
-        <!--            <groupId>com.fasterxml.jackson.module</groupId>-->
-        <!--            <artifactId>jackson-module-kotlin</artifactId>-->
-        <!--            <version>2.13.0</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter</artifactId>-->
-        <!--        </dependency>-->
-
-        <!--        SPRING-->
-        <!--        manifest-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <groupId>org.axonframework</groupId>
+            <artifactId>axon-server-connector</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>3.2.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <version>2.5.2</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>8.0.1.Final</version>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-
-        <!--        PERSISTENCE-->
+        <!-- SPRING DATA JPA + POSTGRESQL -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -131,195 +76,106 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.6.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
-
-        <!--        SECURITE -->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>-->
-        <!--            <version>3.2.3</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.boot</groupId>-->
-        <!--            <artifactId>spring-boot-starter-oauth2-client</artifactId>-->
-        <!--        </dependency>-->
+        <!-- PROJECT REACTOR -->
+        <dependency>
+            <groupId>org.axonframework.extensions.reactor</groupId>
+            <artifactId>axon-reactor</artifactId>
+            <version>4.8.0</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
 
-        <!--SWAGGER-->
+        <!-- VALIDATION -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.2</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--        </dependency>-->
+
+
+        <!-- JACKSON -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.17.2</version>
         </dependency>
 
-
-        <!--        ObjectMapper et serialisation/deserialisation (garder ces versions pour java 1.8!!), classe Instant-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.fasterxml.jackson.core</groupId>-->
-        <!--            <artifactId>jackson-databind</artifactId>-->
-        <!--            <version>2.16.0</version>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.fasterxml.jackson.core</groupId>-->
-        <!--            <artifactId>jackson-core</artifactId>-->
-        <!--            <version>2.17.2</version>-->
-        <!--        </dependency>-->
-        <!--        &lt;!&ndash;        Pour supporter la classe Instant&ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.fasterxml.jackson.datatype</groupId>-->
-        <!--            <artifactId>jackson-datatype-jsr310</artifactId>-->
-        <!--            <version>2.15.4</version>-->
-        <!--        </dependency>-->
-        <!--        Securité des fichiers xstream. Inutile si utilisation de jckson dans application.properties -->
-        <!--        <dependency>-->
-        <!--            <groupId>com.thoughtworks.xstream</groupId>-->
-        <!--            <artifactId>xstream</artifactId>-->
-        <!--            <version>1.4.18</version> &lt;!&ndash; Remplacez par la dernière version disponible &ndash;&gt;-->
-        <!--        </dependency>-->
-
-        <!--DIVERS-->
+        <!-- LOGGING -->
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-ext</artifactId>
-            <version>2.0.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>3.3.2</version>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
 
+        <!-- LOMBOK -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <!--            <optional>true</optional>-->
-            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.mapstruct</groupId>-->
-        <!--            <artifactId>mapstruct</artifactId>-->
-        <!--            <version>1.4.2.Final</version>-->
-        <!--        </dependency>-->
 
-
-        <!--        TEST-->
+        <!-- SPRING BOOT TESTING -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
+
 
     </dependencies>
 
     <build>
         <plugins>
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <version>3.8.1</version>-->
-<!--                <configuration>-->
-<!--                    <source>17</source> &lt;!&ndash; Ensure this matches the Java version installed &ndash;&gt;-->
-<!--                    <target>17</target>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+            <!-- Plugin de Compilation -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-                <executions>
-                    <execution>
-                        <id>default-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>2.8.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>xml-maven-plugin</artifactId>
-                <version>1.0.2</version>
-            </plugin>
 
-            <!-- Ajoutez ces plugins pour configurer le manifeste -->
+            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+
+            <!-- Plugin pour exécuter les tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>fr.cdrochon.smamonolithe.SmaMonolitheApplication</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
             </plugin>
         </plugins>
     </build>
 
-    <!--    <build>-->
-    <!--        <plugins>-->
-    <!--&lt;!&ndash;            <plugin>&ndash;&gt;-->
-    <!--&lt;!&ndash;                <groupId>org.springframework.boot</groupId>&ndash;&gt;-->
-    <!--&lt;!&ndash;                <artifactId>spring-boot-maven-plugin</artifactId>&ndash;&gt;-->
-    <!--&lt;!&ndash;                <configuration>&ndash;&gt;-->
-    <!--&lt;!&ndash;                    <excludes>&ndash;&gt;-->
-    <!--&lt;!&ndash;                        <exclude>&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <groupId>org.projectlombok</groupId>&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <artifactId>lombok</artifactId>&ndash;&gt;-->
-    <!--&lt;!&ndash;                        </exclude>&ndash;&gt;-->
-    <!--&lt;!&ndash;                    </excludes>&ndash;&gt;-->
-    <!--&lt;!&ndash;                </configuration>&ndash;&gt;-->
-    <!--&lt;!&ndash;            </plugin>&ndash;&gt;-->
-    <!--            <plugin>-->
-    <!--                <groupId>org.apache.maven.plugins</groupId>-->
-    <!--                <artifactId>maven-compiler-plugin</artifactId>-->
-    <!--                <version>3.8.1</version>-->
-    <!--                <configuration>-->
-    <!--                    <source>1.8</source> &lt;!&ndash; depending on your project &ndash;&gt;-->
-    <!--                    <target>1.8</target> &lt;!&ndash; depending on your project &ndash;&gt;-->
-    <!--                    <annotationProcessorPaths>-->
-    <!--&lt;!&ndash;                        <path>&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <groupId>org.projectlombok</groupId>&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <artifactId>lombok</artifactId>&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <version>1.18.24</version>&ndash;&gt;-->
-    <!--&lt;!&ndash;                        </path>&ndash;&gt;-->
-    <!--&lt;!&ndash;                        <path>&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <groupId>org.mapstruct</groupId>&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <artifactId>mapstruct-processor</artifactId>&ndash;&gt;-->
-    <!--&lt;!&ndash;                            <version>1.4.2.Final</version>&ndash;&gt;-->
-    <!--&lt;!&ndash;                        </path>&ndash;&gt;-->
-    <!--                        &lt;!&ndash; other annotation processors &ndash;&gt;-->
-    <!--                    </annotationProcessorPaths>-->
-    <!--                </configuration>-->
-    <!--            </plugin>-->
-    <!--        </plugins>-->
-    <!--    </build>-->
 </project>
-

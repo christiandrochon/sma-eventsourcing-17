@@ -39,14 +39,17 @@
         <!--        REQUETE HTTP SYNCHRONE ET ASYNCHRONE -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
             <version>3.2.5</version>
         </dependency>
         <dependency>
-            <groupId>io.projectreactor.netty</groupId>
-            <artifactId>reactor-netty</artifactId>
-            <version>1.1.20</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>3.2.5</version>
         </dependency>
+
+
+
 
 
         <!--THYMELEAF-->
@@ -106,7 +109,7 @@
         <!--            <artifactId>spring-web</artifactId>-->
         <!--            <version>6.1.6</version>-->
         <!--        </dependency>-->
-<!--        Pour prendre en charge la classe Instant-->
+        <!--        Pour prendre en charge la classe Instant-->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
@@ -149,6 +152,10 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <version>3.3.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
         </dependency>
     </dependencies>
 
