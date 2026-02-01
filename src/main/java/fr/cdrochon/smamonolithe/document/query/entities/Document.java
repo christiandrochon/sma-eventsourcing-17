@@ -4,7 +4,7 @@ package fr.cdrochon.smamonolithe.document.query.entities;
 import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity

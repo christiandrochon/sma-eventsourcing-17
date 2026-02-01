@@ -2,7 +2,7 @@ package fr.cdrochon.smamonolithe.document.query.entities;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

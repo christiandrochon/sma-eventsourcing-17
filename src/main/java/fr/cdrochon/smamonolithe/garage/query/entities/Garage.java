@@ -6,9 +6,12 @@ package fr.cdrochon.smamonolithe.garage.query.entities;
 //import jakarta.persistence.Id;
 
 import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import lombok.*;
 
-import javax.persistence.*;
 
 /**
  * En lien avec les entités Garage dans l'autre package

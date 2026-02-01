@@ -3,9 +3,10 @@ package fr.cdrochon.smamonolithe.client.query.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
+import jakarta.persistence.Entity;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 
 @Entity

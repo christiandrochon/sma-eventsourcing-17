@@ -3,12 +3,12 @@ package fr.cdrochon.smamonolithe.dossier.query.entities;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
@@ -36,7 +36,7 @@ public class Dossier {
     private Vehicule vehicule;
     @Enumerated
     private DossierStatus dossierStatus;
-
+    
     
     /**
      * Au lieu d'inclure l'objet Dossier complet dans le toString(), on inclut uniquement l'identifiant du Dossier. Cela évite la récursion infinie tout en

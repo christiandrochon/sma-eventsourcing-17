@@ -2,10 +2,11 @@ package fr.cdrochon.smamonolithe.client.query.entities;
 
 
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Enumerated;
+
 
 
 @Embeddable

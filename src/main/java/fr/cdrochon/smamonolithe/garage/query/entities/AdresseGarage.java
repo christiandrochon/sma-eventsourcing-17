@@ -1,9 +1,8 @@
 package fr.cdrochon.smamonolithe.garage.query.entities;
 
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
+import jakarta.persistence.Embeddable;
 import lombok.*;
-
-import javax.persistence.Embeddable;
 
 
 @Embeddable
