@@ -1,18 +1,19 @@
-# ===== Java / Maven =====
+# Java / Maven
 target/
 *.jar
 *.war
 *.ear
+dependency-reduced-pom.xml
 
-# ===== Logs =====
+# Logs
 *.log
 
-# ===== IDE =====
+# IDE
 .idea/
 .vscode/
 *.iml
-*.iws
 *.ipr
+*.iws
 out/
 .classpath
 .project
@@ -22,17 +23,6 @@ out/
 .springBeans
 .apt_generated
 
-# ===== OS =====
+# OS
 .DS_Store
 Thumbs.db
-
-# ===== Docker (data locaux éventuels) =====
-**/docker-data/
-**/data/
-
-# ===== Configs locales (secrets) =====
-src/main/resources/application-local.properties
-src/main/resources/application-prod.properties
-thymeleaf-frontend/src/main/resources/application-local.properties
-thymeleaf-frontend/src/main/resources/application-prod.properties
-
