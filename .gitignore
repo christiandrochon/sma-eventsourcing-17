@@ -1,42 +1,38 @@
-HELP.md
+# ===== Java / Maven =====
 target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+*.jar
+*.war
+*.ear
 
-/src/main/java/fr/cdrochon/pattern/
+# ===== Logs =====
+*.log
 
-
-### STS ###
-.apt_generated
+# ===== IDE =====
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+out/
 .classpath
-.factorypath
 .project
 .settings
-.springBeans
+.factorypath
 .sts4-cache
+.springBeans
+.apt_generated
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# ===== OS =====
+.DS_Store
+Thumbs.db
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# ===== Docker (data locaux éventuels) =====
+**/docker-data/
+**/data/
 
-### VS Code ###
-.vscode/
+# ===== Configs locales (secrets) =====
+src/main/resources/application-local.properties
+src/main/resources/application-prod.properties
+thymeleaf-frontend/src/main/resources/application-local.properties
+thymeleaf-frontend/src/main/resources/application-prod.properties
 
-### OAuth secret ###
-src/main/resources/application.properties
-
-### Axon ###
-AxonServer/**/*
