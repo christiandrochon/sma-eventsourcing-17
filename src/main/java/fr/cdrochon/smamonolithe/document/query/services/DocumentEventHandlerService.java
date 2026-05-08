@@ -35,9 +35,6 @@ public class DocumentEventHandlerService {
     @EventHandler
     @Transactional
     public void on(DocumentCreatedEvent event) {
-        
-        log.info("********************************");
-        log.info("SAUVEGARDE DU DOCUMENT");
         try {
             Document document = new Document();
             document.setId(event.getId());
@@ -50,9 +47,14 @@ public class DocumentEventHandlerService {
             document.setDocumentStatus(event.getDocumentStatus());
             
             documentRepository.save(document);
-            
+            log.info("BIZ_DOCUMENT_CREATED documentId={} nomDocument={} type={} status={}",
+                     document.getId(),
+                     document.getNomDocument(),
+                     document.getTypeDocument(),
+                     document.getDocumentStatus());
+
         } catch(Exception e) {
-            System.out.println("TRANSACTION DOCUMENT ERREUR : " + e.getMessage());
+            log.error("TECH_DOCUMENT_PERSIST_ERROR documentId={} message={}", event.getId(), e.getMessage(), e);
             throw new TransactionException("Erreur lors de la sauvegarde du document");
         }
     }

@@ -52,9 +52,11 @@ public class DocumentAggregate {
         if(createDocumentCommand.getNomDocument() == null) {
             throw new CreatedGarageException("Le document doit exister ! ");
         }
-        
-        
-        log.info("Publication de l'evenement = commandHandler dans aggregate");
+        log.info("BIZ_DOCUMENT_CREATE_ACCEPTED documentId={} nomDocument={} type={} status={}",
+                 createDocumentCommand.getId(),
+                 createDocumentCommand.getNomDocument(),
+                 createDocumentCommand.getTypeDocument(),
+                 createDocumentCommand.getDocumentStatus());
         AggregateLifecycle.apply(new DocumentCreatedEvent(createDocumentCommand.getId(),
                                                           createDocumentCommand.getNomDocument(),
                                                           createDocumentCommand.getTitreDocument(),
@@ -73,8 +75,6 @@ public class DocumentAggregate {
      */
     @EventSourcingHandler
     public void on(DocumentCreatedEvent event) {
-        
-        log.info("Agregat Enventsourcinghandler ");
         this.idDocument = event.getId();
         this.nomDocument = event.getNomDocument();
         this.titreDocument = event.getTitreDocument();

@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.document.command.services;
 
 import fr.cdrochon.smamonolithe.document.command.commands.DocumentCreateCommand;
 import fr.cdrochon.smamonolithe.document.command.dtos.DocumentCommandDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Slf4j
 public class DocumentCommandService {
     
     private final CommandGateway commandGateway;
@@ -30,8 +32,14 @@ public class DocumentCommandService {
     public CompletableFuture<DocumentCommandDTO> createDocument(DocumentCommandDTO documentRestDTO) {
         //CompletableFuture<DossierCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureDTO = new CompletableFuture<>();
-        
-        commandGateway.send(new DocumentCreateCommand(UUID.randomUUID().toString(),
+        String documentId = UUID.randomUUID().toString();
+        log.info("BIZ_DOCUMENT_CREATE_REQUEST documentId={} nomDocument={} type={} status={}",
+                 documentId,
+                 documentRestDTO.getNomDocument(),
+                 documentRestDTO.getTypeDocument(),
+                 documentRestDTO.getDocumentStatus());
+
+        commandGateway.send(new DocumentCreateCommand(documentId,
                                                       documentRestDTO.getNomDocument(),
                                                       documentRestDTO.getTitreDocument(),
                                                       documentRestDTO.getEmetteurDuDocument(),
@@ -50,6 +58,10 @@ public class DocumentCommandService {
      */
     public void completeDocumentCreation(DocumentCommandDTO dto) {
         if(futureDTO != null) {
+            log.info("BIZ_DOCUMENT_CREATE_CONFIRMED documentId={} nomDocument={} status={}",
+                     dto.getId(),
+                     dto.getNomDocument(),
+                     dto.getDocumentStatus());
             futureDTO.complete(dto);
         }
     }

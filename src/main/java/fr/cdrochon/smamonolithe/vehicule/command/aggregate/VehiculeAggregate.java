@@ -6,6 +6,7 @@ import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -14,7 +15,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import java.time.Instant;
 
-@Aggregate @Getter @Setter
+@Aggregate @Getter @Setter @Slf4j
 public class VehiculeAggregate {
     
     @AggregateIdentifier
@@ -70,15 +71,16 @@ public class VehiculeAggregate {
         if(createVehiculeCommand.getImmatriculationVehicule() == null) {
             throw new CreatedGarageException("Le vehicule doit exister ! ");
         }
-        
-        System.out.println("**************************");
-        System.out.println("Publication de l'evenement = commandHandler dans aggregate");
+
+        log.info("BIZ_VEHICULE_CREATE_ACCEPTED vehiculeId={} immatriculation={} status={}",
+                 createVehiculeCommand.getId(),
+                 createVehiculeCommand.getImmatriculationVehicule(),
+                 createVehiculeCommand.getVehiculeStatus());
         AggregateLifecycle.apply(new VehiculeCreatedEvent(createVehiculeCommand.getId(),
                                                           createVehiculeCommand.getImmatriculationVehicule(),
                                                           createVehiculeCommand.getDateMiseEnCirculationVehicule(),
                                                           createVehiculeCommand.getVehiculeStatus()
         ));
-        System.out.println("**************************");
     }
     
     /**
@@ -90,9 +92,6 @@ public class VehiculeAggregate {
      */
     @EventSourcingHandler
     public void on(VehiculeCreatedEvent event) {
-        
-        System.out.println("**********************");
-        System.out.println("Agregat Enventsourcinghandler ");
         this.id = event.getId();
         this.immatriculationVehicule = event.getImmatriculationVehicule();
         this.dateMiseEnCirculationVehicule = event.getDateMiseEnCirculationVehicule();

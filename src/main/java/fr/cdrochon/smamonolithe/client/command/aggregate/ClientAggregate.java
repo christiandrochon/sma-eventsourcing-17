@@ -7,6 +7,7 @@ import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -15,6 +16,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 @Aggregate
 @Setter @Getter
+@Slf4j
 public class ClientAggregate {
     
     @AggregateIdentifier
@@ -55,6 +57,10 @@ public class ClientAggregate {
         }
 
         //publication de l'event
+        log.info("BIZ_CLIENT_CREATE_ACCEPTED clientId={} nomClient={} status={}",
+                 createClientCommand.getId(),
+                 createClientCommand.getNomClient(),
+                 ClientStatus.ACTIF);
         AggregateLifecycle.apply(new ClientCreatedEvent(createClientCommand.getId(),
                                                         createClientCommand.getNomClient(),
                                                         createClientCommand.getPrenomClient(),
@@ -74,9 +80,6 @@ public class ClientAggregate {
      */
     @EventSourcingHandler
     public void on(ClientCreatedEvent event) {
-        
-        System.out.println("**********************");
-        System.out.println("Agregat Enventsourcinghandler ");
         this.id = event.getId();
         this.nomClient = event.getNomClient();
         this.prenomClient = event.getPrenomClient();

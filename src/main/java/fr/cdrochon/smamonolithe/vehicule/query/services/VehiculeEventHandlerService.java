@@ -37,9 +37,6 @@ public class VehiculeEventHandlerService {
     @EventHandler
     @Transactional
     public void on(VehiculeCreatedEvent event) {
-        log.info("********************************");
-        log.info("SAUVEGARDE DE VEHICULE !!!!!!!!!!!!!!!!!!!!!!");
-        
         try {
             Vehicule vehicule = new Vehicule();
             vehicule.setId(event.getId());
@@ -47,8 +44,12 @@ public class VehiculeEventHandlerService {
             vehicule.setDateMiseEnCirculationVehicule(event.getDateMiseEnCirculationVehicule());
             vehicule.setVehiculeStatus(event.getVehiculeStatus());
             vehiculeRepository.save(vehicule);
+            log.info("BIZ_VEHICULE_CREATED vehiculeId={} immatriculation={} status={}",
+                     vehicule.getId(),
+                     vehicule.getImmatriculationVehicule(),
+                     vehicule.getVehiculeStatus());
         } catch(Exception e) {
-            log.info("Transaction vehicule Erreur : " + e.getMessage());
+            log.error("TECH_VEHICULE_PERSIST_ERROR vehiculeId={} message={}", event.getId(), e.getMessage(), e);
             throw new TransactionException("Erreur lors de la sauvegarde du vehicule");
         }
     }

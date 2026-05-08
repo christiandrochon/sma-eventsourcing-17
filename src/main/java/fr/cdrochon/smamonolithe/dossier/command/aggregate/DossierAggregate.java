@@ -8,6 +8,7 @@ import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -16,7 +17,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import java.time.Instant;
 
-@Aggregate @Getter @Setter
+@Aggregate @Getter @Setter @Slf4j
 public class DossierAggregate {
     
     @AggregateIdentifier
@@ -50,8 +51,12 @@ public class DossierAggregate {
         }
 
         //publication de l'event
-        System.out.println("**************************");
-        System.out.println("Publication de l'evenement = commandHandler dans aggregate");
+        log.info("BIZ_DOSSIER_CREATE_ACCEPTED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                 dossierCreateCommand.getId(),
+                 dossierCreateCommand.getNomDossier(),
+                 dossierCreateCommand.getClient().getId(),
+                 dossierCreateCommand.getVehicule().getId(),
+                 dossierCreateCommand.getDossierStatus());
         AggregateLifecycle.apply(new DossierCreatedEvent(dossierCreateCommand.getId(),
                                                         dossierCreateCommand.getNomDossier(),
                                                         dossierCreateCommand.getDateCreationDossier(),
@@ -73,9 +78,6 @@ public class DossierAggregate {
      */
     @EventSourcingHandler
     public void on(DossierCreatedEvent event) {
-        
-        System.out.println("**********************");
-        System.out.println("Agregat Enventsourcinghandler ");
         this.id = event.getId();
         this.nomDossier = event.getNomDossier();
         this.dateCreationDossier = event.getDateCreationDossier();

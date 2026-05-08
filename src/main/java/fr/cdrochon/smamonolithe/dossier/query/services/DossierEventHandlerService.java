@@ -46,9 +46,6 @@ public class DossierEventHandlerService {
     @EventHandler
     @Transactional
     public void on(DossierCreatedEvent event) {
-        log.info("********************************");
-        log.info("SAUVEGARDE DU DOSSIER !!!!!!!!!!!!!!!!!!!!!!");
-        
         try {
             Dossier dossier = new Dossier();
             
@@ -60,8 +57,7 @@ public class DossierEventHandlerService {
             vehicule.setVehiculeStatus(event.getVehicule().getVehiculeStatus());
             //SAVE vehicule en premier
             vehiculeRepository.save(vehicule);
-            log.info("Vehicule sauvegardé avec ID: {}", vehicule.getId());
-            
+
             Client client = new Client();
             client.setId(UUID.randomUUID().toString());
             client.setNomClient(event.getClient().getNomClient());
@@ -74,14 +70,12 @@ public class DossierEventHandlerService {
             client.setVehicule(vehicule);
             // SAVE
             clientRepository.save(client);
-            log.info("Client sauvegardé avec ID: {}", client.getId());
-            
+
             // save les relations entre client et vehicule, mais le vehicule doit d'abord etre enregistré avant de pouvoir etre lié à un client (cle etrangere),
             // -> UPDATE le vehicule avec desormais le nouveau client qui vient d'etre enregistré
             vehicule.setClient(client);
             vehiculeRepository.save(vehicule);
-            log.info("Vehicule mis à jour avec Client ID: {}", client.getId());
-            
+
             dossier.setId(event.getId());
             dossier.setNomDossier(event.getNomDossier());
             dossier.setDateCreationDossier(event.getDateCreationDossier());
@@ -92,10 +86,15 @@ public class DossierEventHandlerService {
             
             //SAVE le dossier en final
             dossierRepository.save(dossier);
-            log.info("Dossier sauvegardé avec ID: {}", dossier.getId());
-            
+            log.info("BIZ_DOSSIER_CREATED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                     dossier.getId(),
+                     dossier.getNomDossier(),
+                     client.getId(),
+                     vehicule.getId(),
+                     dossier.getDossierStatus());
+
         } catch(Exception e) {
-            System.out.println("ERREUR DE SAVE EN BDD : " + e.getMessage());
+            log.error("TECH_DOSSIER_PERSIST_ERROR dossierId={} message={}", event.getId(), e.getMessage(), e);
             throw new TransactionException("Erreur lors de la creation du dossier : " + e.getMessage());
         }
     }

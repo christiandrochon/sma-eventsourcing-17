@@ -37,8 +37,15 @@ public class DossierCommandService {
     public CompletableFuture<DossierCommandDTO> createDossier(DossierCommandDTO dossierCommandDTO) {
         //CompletableFuture<DossierCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureDTO = new CompletableFuture<>();
+        String dossierId = UUID.randomUUID().toString();
+        log.info("BIZ_DOSSIER_CREATE_REQUEST dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                 dossierId,
+                 dossierCommandDTO.getNomDossier(),
+                 dossierCommandDTO.getClient() != null ? dossierCommandDTO.getClient().getId() : null,
+                 dossierCommandDTO.getVehicule() != null ? dossierCommandDTO.getVehicule().getId() : null,
+                 dossierCommandDTO.getDossierStatus());
         //envoi de la commande de création du dossier
-        commandGateway.send(new DossierCreateCommand(UUID.randomUUID().toString(),
+        commandGateway.send(new DossierCreateCommand(dossierId,
                                                      dossierCommandDTO.getNomDossier(),
                                                      dossierCommandDTO.getDateCreationDossier(),
                                                      dossierCommandDTO.getDateModificationDossier(),
@@ -57,6 +64,11 @@ public class DossierCommandService {
      */
     public void completeDossierCreation(DossierCommandDTO dto) {
         if(futureDTO != null) {
+            log.info("BIZ_DOSSIER_CREATE_CONFIRMED dossierId={} clientId={} vehiculeId={} status={}",
+                     dto.getId(),
+                     dto.getClient() != null ? dto.getClient().getId() : null,
+                     dto.getVehicule() != null ? dto.getVehicule().getId() : null,
+                     dto.getDossierStatus());
             futureDTO.complete(dto);
         }
     }

@@ -35,7 +35,6 @@ public class ClientEventHandlerService {
      */
     @EventHandler
     public void on(ClientCreatedEvent event) {
-        
         try {
             Client client = new Client();
             client.setId(event.getId());
@@ -47,8 +46,9 @@ public class ClientEventHandlerService {
             client.setClientStatus(event.getClientStatus());
             
             clientRepository.save(client);
+            log.info("BIZ_CLIENT_CREATED clientId={} status={}", client.getId(), client.getClientStatus());
         } catch(Exception e) {
-            System.out.println("ERRRRRRRRRRRRRRRRRRRROOR : " + e.getMessage());
+            log.error("TECH_CLIENT_PERSIST_ERROR clientId={} message={}", event.getId(), e.getMessage(), e);
         }
     }
     
