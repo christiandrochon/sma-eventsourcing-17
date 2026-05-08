@@ -1,5 +1,6 @@
-package fr.cdrochon.smamonolithe.client.command.commands;
+package fr.cdrochon.smamonolithe.client;
 
+import fr.cdrochon.smamonolithe.client.command.commands.ClientBaseCommand;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

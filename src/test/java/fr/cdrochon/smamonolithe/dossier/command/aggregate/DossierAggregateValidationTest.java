@@ -14,8 +14,6 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 
 import static fr.cdrochon.smamonolithe.dossier.DossierTestDataFactory.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DossierAggregateValidationTest {
 

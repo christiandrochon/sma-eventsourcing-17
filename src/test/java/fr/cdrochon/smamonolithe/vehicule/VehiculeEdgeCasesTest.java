@@ -34,7 +34,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -45,7 +44,8 @@ import static fr.cdrochon.smamonolithe.vehicule.VehiculeTestDataFactory.*;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class VehiculeEdgeCasesTest {
@@ -56,8 +56,6 @@ class VehiculeEdgeCasesTest {
     private VehiculeRepository vehiculeRepository;
     @Mock
     private VehiculeCommandService vehiculeCommandService;
-    @Mock
-    private ClientEventSourcingService clientEventSourcingService;
 
     private AggregateTestFixture<VehiculeAggregate> fixture;
 

@@ -1,9 +1,10 @@
-package fr.cdrochon.smamonolithe.client.query.services;
+package fr.cdrochon.smamonolithe.client;
 
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
+import fr.cdrochon.smamonolithe.client.query.services.ClientEventHandlerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

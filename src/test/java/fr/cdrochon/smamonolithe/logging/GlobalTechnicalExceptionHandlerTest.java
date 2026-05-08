@@ -22,10 +22,22 @@ class GlobalTechnicalExceptionHandlerTest {
         assertAll(
                 () -> assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode()),
                 () -> assertNotNull(response.getBody()),
-                () -> assertEquals(500, response.getBody().get("status")),
-                () -> assertEquals("Internal Server Error", response.getBody().get("error")),
-                () -> assertEquals("Erreur technique interne", response.getBody().get("message")),
-                () -> assertEquals("/queries/vehicules/veh-1", response.getBody().get("path"))
+                () -> {
+                    assertNotNull(response.getBody());
+                    assertEquals(500, response.getBody().get("status"));
+                },
+                () -> {
+                    assertNotNull(response.getBody());
+                    assertEquals("Internal Server Error", response.getBody().get("error"));
+                },
+                () -> {
+                    assertNotNull(response.getBody());
+                    assertEquals("Erreur technique interne", response.getBody().get("message"));
+                },
+                () -> {
+                    assertNotNull(response.getBody());
+                    assertEquals("/queries/vehicules/veh-1", response.getBody().get("path"));
+                }
         );
     }
 }

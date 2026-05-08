@@ -1,6 +1,7 @@
-package fr.cdrochon.smamonolithe.client.command.services;
+package fr.cdrochon.smamonolithe.client;
 
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
+import fr.cdrochon.smamonolithe.client.command.services.ClientCommandService;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

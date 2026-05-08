@@ -3,7 +3,6 @@ package fr.cdrochon.smamonolithe.client;
 import fr.cdrochon.smamonolithe.client.command.aggregate.ClientAggregate;
 import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
-import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import fr.cdrochon.smamonolithe.client.query.entities.ClientStatus;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
 import org.axonframework.test.aggregate.AggregateTestFixture;
@@ -85,7 +84,6 @@ class ClientAggregateTest {
                     assert "Paris".equals(aggregate.getAdresseClient().getVille());
                 });
     }
-
 
 
     @Test

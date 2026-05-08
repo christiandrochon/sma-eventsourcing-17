@@ -4,8 +4,7 @@ import fr.cdrochon.smamonolithe.document.DocumentTestDataFactory;
 import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DocumentCreatedEventTest {
 
@@ -29,8 +28,8 @@ class DocumentCreatedEventTest {
 
         assertEquals("id", event.getId());
         assertEquals("N", event.getNomDocument());
-        assertEquals(null, event.getTitreDocument());
-        assertEquals(null, event.getDocumentStatus());
+        assertNull(null, event.getTitreDocument());
+        assertNull(null, String.valueOf(event.getDocumentStatus()));
     }
 
     @Test

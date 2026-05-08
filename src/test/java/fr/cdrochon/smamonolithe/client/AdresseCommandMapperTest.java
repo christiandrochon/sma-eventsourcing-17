@@ -1,5 +1,6 @@
-package fr.cdrochon.smamonolithe.client.command.dtos;
+package fr.cdrochon.smamonolithe.client;
 
+import fr.cdrochon.smamonolithe.client.command.dtos.AdresseCommandMapper;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import fr.cdrochon.smamonolithe.client.query.entities.Pays;
