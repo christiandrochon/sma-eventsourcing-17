@@ -7,6 +7,7 @@ import fr.cdrochon.smamonolithe.garage.query.dto.GetGarageDTO;
 import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
 import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
@@ -44,10 +45,13 @@ public class GarageEventHandlerService {
             garage.setGarageStatus(event.getGarageStatus());
             
             garageQueryRepository.save(garage);
-            log.info("Garage créé : " + garage.getNomGarage());
-            
+            BusinessLoggers.business().info("BIZ_GARAGE_CREATED garageId={} nomGarage={} status={}",
+                                            garage.getIdQuery(),
+                                            garage.getNomGarage(),
+                                            garage.getGarageStatus());
+
         } catch(Exception e) {
-            log.error("Erreur lors de la création du garage : " + e.getMessage());
+            log.error("TECH_GARAGE_PERSIST_ERROR garageId={} message={}", event.getId(), e.getMessage(), e);
             throw new IllegalArgumentException("Erreur lors de la création du garage : " + e.getMessage());
         }
     }

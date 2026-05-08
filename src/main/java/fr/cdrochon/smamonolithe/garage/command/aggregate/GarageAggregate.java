@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.garage.command.enums.GarageStatus;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
 import fr.cdrochon.smamonolithe.garage.events.GarageCreatedEvent;
 import fr.cdrochon.smamonolithe.garage.query.entities.AdresseGarage;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,11 @@ public class GarageAggregate {
                                                         command.getAdresse().getRue(),
                                                         command.getAdresse().getCp(),
                                                         command.getAdresse().getVille());
-        
+
+        BusinessLoggers.business().info("BIZ_GARAGE_CREATE_ACCEPTED garageId={} nomGarage={} status={}",
+                                        command.getId(),
+                                        command.getNomGarage(),
+                                        GarageStatus.CREATED);
         //publication de l'event
         AggregateLifecycle.apply(
                 new GarageCreatedEvent(command.getId(),
@@ -75,8 +80,7 @@ public class GarageAggregate {
      */
     @EventSourcingHandler
     public void on(GarageCreatedEvent event) {
-        
-        log.info("Event sourced : {}", event);
+        log.debug("TECH_GARAGE_EVENT_SOURCED eventType={} garageId={}", event.getClass().getSimpleName(), event.getId());
         this.id = event.getId();
         this.nomGarage = event.getNomGarage();
         this.mailResponsable = event.getMailResponsable();

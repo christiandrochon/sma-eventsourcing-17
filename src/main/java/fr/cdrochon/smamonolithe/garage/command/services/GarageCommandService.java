@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.garage.command.services;
 
 import fr.cdrochon.smamonolithe.garage.command.commands.GarageCreateCommand;
 import fr.cdrochon.smamonolithe.garage.command.dtos.GarageCommandDTO;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +30,13 @@ public class GarageCommandService {
     public CompletableFuture<GarageCommandDTO> createGarage(GarageCommandDTO garageDTO) {
         //CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureGarageDTO = new CompletableFuture<>();
+        String garageId = UUID.randomUUID().toString();
+        BusinessLoggers.business().info("BIZ_GARAGE_CREATE_REQUEST garageId={} nomGarage={}",
+                                        garageId,
+                                        garageDTO.getNomGarage());
         //envoyer la commande de création de garage -> @CommandHandler
         //CHECKME : est ce ici que l'on créé l'id du garage ?
-        commandGateway.send(new GarageCreateCommand(UUID.randomUUID().toString(), garageDTO.getNomGarage(), garageDTO.getMailResp(), garageDTO.getAdresse()));
+        commandGateway.send(new GarageCreateCommand(garageId, garageDTO.getNomGarage(), garageDTO.getMailResp(), garageDTO.getAdresse()));
         return futureGarageDTO;
     }
     
@@ -42,6 +47,9 @@ public class GarageCommandService {
      */
     public void completeGarageCreation(GarageCommandDTO garageDTO) {
         if(futureGarageDTO != null) {
+            BusinessLoggers.business().info("BIZ_GARAGE_CREATE_CONFIRMED garageId={} nomGarage={}",
+                                            garageDTO.getId(),
+                                            garageDTO.getNomGarage());
             futureGarageDTO.complete(garageDTO);
         }
     }
