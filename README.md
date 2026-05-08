@@ -82,6 +82,69 @@ selon l’environnement d’exécution.
 Le profil actif est défini via la variable d’environnement `SPRING_PROFILES_ACTIVE`.
 Dans l’environnement Docker, le profil `prod` est utilisé.
 
+## Tests automatisés (campagnes ajoutées)
+
+Les campagnes de tests unitaires enrichies couvrent en priorité les domaines CQRS/Event Sourcing suivants :
+
+- `client` : commandes, aggregate, handlers, mappers et cas limites
+- `document` : commandes, aggregate, handlers, entités, mappers et cas limites
+- `vehicule` : tests unitaires classiques + tests de cas limites
+- `logging` : filtres techniques et gestionnaire global d’exceptions
+
+Exemples de classes de test ajoutées/renforcées :
+
+- `src/test/java/fr/cdrochon/smamonolithe/client/ClientEdgeCasesTest.java`
+- `src/test/java/fr/cdrochon/smamonolithe/document/DocumentEdgeCasesTest.java`
+- `src/test/java/fr/cdrochon/smamonolithe/vehicule/VehiculeClassicUnitTest.java`
+- `src/test/java/fr/cdrochon/smamonolithe/vehicule/VehiculeEdgeCasesTest.java`
+- `src/test/java/fr/cdrochon/smamonolithe/logging/TechnicalRequestWebFilterTest.java`
+- `src/test/java/fr/cdrochon/smamonolithe/logging/GlobalTechnicalExceptionHandlerTest.java`
+
+Lancer toute la suite :
+
+```bash
+mvn test
+```
+
+Lancer les suites principales ajoutées :
+
+```bash
+mvn -Dtest=Client*Test,Adresse*Test,Document*Test,Vehicule*Test,TechnicalRequestWebFilterTest,GlobalTechnicalExceptionHandlerTest,ClientWebConfigTest test
+```
+
+## Logs personnalisés business
+
+Une séparation stricte des logs a été mise en place pour éviter que les événements métier soient noyés par les logs framework.
+
+### Principe
+
+- Les logs métier utilisent un logger dédié `BUSINESS`
+- Les événements métier sont formatés avec des préfixes `BIZ_*`
+- Les logs techniques restent séparés (`TECH_*`)
+- La sortie métier est disponible en console et dans un fichier dédié
+
+### Fichiers de configuration concernés
+
+- `src/main/resources/logback-spring.xml`
+- `src/main/resources/application.properties`
+- `src/main/java/fr/cdrochon/smamonolithe/logging/BusinessLoggers.java`
+
+### Emplacement du fichier métier
+
+- `logs/business.log`
+
+### Vérification rapide des logs business
+
+1. Démarrer l’application
+2. Appeler un endpoint de création (ex: `POST /commands/createClient`)
+3. Vérifier la présence de lignes `BIZ_*` en console ou dans `logs/business.log`
+
+Suivre le fichier en direct :
+
+```bash
+tail -f logs/business.log
+```
+
 ## Licence
 
 Ce projet est distribué sous licence MIT.
