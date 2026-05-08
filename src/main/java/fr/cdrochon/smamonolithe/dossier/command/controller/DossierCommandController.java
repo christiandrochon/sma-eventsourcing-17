@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.dossier.command.controller;
 
 import fr.cdrochon.smamonolithe.dossier.command.dtos.DossierCommandDTO;
 import fr.cdrochon.smamonolithe.dossier.command.services.DossierCommandService;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,11 @@ public class DossierCommandController {
                        return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(dossier));
                    })
                    .onErrorResume(ex -> {
+                       BusinessLoggers.business().error("BIZ_DOSSIER_CREATE_FAILED nomDossier={} clientId={} vehiculeId={} message={}",
+                                                       dossierCommandDTO != null ? dossierCommandDTO.getNomDossier() : null,
+                                                       dossierCommandDTO != null && dossierCommandDTO.getClient() != null ? dossierCommandDTO.getClient().getId() : null,
+                                                       dossierCommandDTO != null && dossierCommandDTO.getVehicule() != null ? dossierCommandDTO.getVehicule().getId() : null,
+                                                       ex.getMessage());
                        log.error("Erreur lors de la création du garage : " + ex.getMessage());
                        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
                    });
@@ -67,6 +73,9 @@ public class DossierCommandController {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> exceptionHandler(Exception exception) {
+        BusinessLoggers.business().error("BIZ_DOSSIER_CREATE_FAILED message={} exceptionType={}",
+                                        exception.getMessage(),
+                                        exception.getClass().getSimpleName());
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
