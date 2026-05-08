@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.cdrochon.smamonolithe.json.Views;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
@@ -36,8 +37,15 @@ public class VehiculeSearchQueryController {
      */
     @GetMapping("/vehiculeExists/{immatriculation}")
     public Mono<Boolean> immatriculationExiste(@PathVariable String immatriculation) {
+        BusinessLoggers.business().info("BIZ_VEHICULE_READ_BY_IMMATRICULATION_REQUEST immatriculation={}", immatriculation);
         CompletableFuture<Boolean> future =
-                CompletableFuture.supplyAsync(() -> vehiculeRepository.existsByImmatriculationVehicule(immatriculation));
+                CompletableFuture.supplyAsync(() -> {
+                    boolean exists = vehiculeRepository.existsByImmatriculationVehicule(immatriculation);
+                    BusinessLoggers.business().info("BIZ_VEHICULE_READ_BY_IMMATRICULATION_SUCCESS immatriculation={} exists={}",
+                                                    immatriculation,
+                                                    exists);
+                    return exists;
+                });
         Mono<Boolean> mono = Mono.fromFuture(future);
         return mono;
     }
@@ -54,15 +62,26 @@ public class VehiculeSearchQueryController {
     @GetMapping(value = "/vehicules/immatriculation/{immatriculation}")
     @JsonView(Views.VehiculeView.class)
     public Mono<ResponseEntity<?>> getVehiculeByImmatriculationAsync(@PathVariable String immatriculation) {
+        BusinessLoggers.business().info("BIZ_VEHICULE_READ_BY_IMMATRICULATION_REQUEST immatriculation={}", immatriculation);
         return Mono.fromSupplier(() -> {
                        Vehicule vehicule = vehiculeRepository.findByImmatriculationVehicule(immatriculation);
                        if(vehicule == null) {
+                           BusinessLoggers.business().info("BIZ_VEHICULE_READ_BY_IMMATRICULATION_NOT_FOUND immatriculation={}",
+                                                           immatriculation);
                            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
                        }
                        VehiculeQueryDTO vehiculeQueryDTO = VehiculeQueryMapper.convertVehiculeToVehiculeDTO(vehicule);
+                       BusinessLoggers.business().info("BIZ_VEHICULE_READ_BY_IMMATRICULATION_SUCCESS immatriculation={} vehiculeId={}",
+                                                       immatriculation,
+                                                       vehiculeQueryDTO.getId());
                        log.info("VehiculeQueryDTO trouvé : {}", vehiculeQueryDTO);
                        return ResponseEntity.status(HttpStatus.OK).body(vehiculeQueryDTO);
                    })
-                   .onErrorResume(e -> Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null)));
+                   .onErrorResume(e -> {
+                       BusinessLoggers.business().error("BIZ_VEHICULE_READ_BY_IMMATRICULATION_FAILED immatriculation={} message={}",
+                                                       immatriculation,
+                                                       e.getMessage());
+                       return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
+                   });
     }
 }
