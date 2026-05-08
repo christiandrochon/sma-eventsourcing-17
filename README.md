@@ -145,6 +145,80 @@ Suivre le fichier en direct :
 tail -f logs/business.log
 ```
 
+### Encart lecture rapide (dossier : passe/casse)
+
+Pour la création d'un dossier, lire les logs `BIZ_DOSSIER_*` dans cet ordre :
+
+| Log | Interprétation métier |
+|---|---|
+| `BIZ_DOSSIER_CREATE_REQUEST` | La demande de création est reçue |
+| `BIZ_DOSSIER_CREATE_ACCEPTED` | La commande est acceptée par l'aggregate |
+| `BIZ_DOSSIER_CREATED` | Le dossier est bien projeté/persisté |
+| `BIZ_DOSSIER_CREATE_CONFIRMED` | Le flux asynchrone est confirmé côté retour API |
+| `BIZ_DOSSIER_CREATE_FAILED` | La création a échoué (cas métier ou technique) |
+
+Lecture opérationnelle :
+- Si vous voyez `REQUEST` puis `...CONFIRMED`, la création **passe**.
+- Si vous voyez `...FAILED`, la création **casse** (même si `REQUEST` a été émis).
+- Pour la lecture (`GET /queries/dossiers/{id}`, `GET /queries/dossiers`) :
+  - `BIZ_DOSSIER_READ_REQUEST` / `BIZ_DOSSIER_READ_SUCCESS` / `BIZ_DOSSIER_READ_NOT_FOUND`
+  - `BIZ_DOSSIER_LIST_REQUEST` / `BIZ_DOSSIER_LIST_SUCCESS`
+
+### Encart lecture rapide (client : passe/casse)
+
+Pour la création d'un client, lire les logs `BIZ_CLIENT_*` dans cet ordre :
+
+| Log | Interprétation métier |
+|---|---|
+| `BIZ_CLIENT_CREATE_REQUEST` | La demande de création est reçue |
+| `BIZ_CLIENT_CREATE_ACCEPTED` | La commande est acceptée par l'aggregate |
+| `BIZ_CLIENT_CREATED` | Le client est bien projeté/persisté |
+| `BIZ_CLIENT_CREATE_CONFIRMED` | Le flux asynchrone est confirmé côté retour API |
+
+Lecture opérationnelle :
+- Si vous voyez `REQUEST` puis `...CONFIRMED`, la création **passe**.
+- Si `...CONFIRMED` n'apparaît pas, la création est **à investiguer** (vérifier les logs `TECH_*`).
+- Pour la lecture (`GET /queries/clients/{id}`, `GET /queries/clients`) :
+  - `BIZ_CLIENT_READ_REQUEST` / `BIZ_CLIENT_READ_SUCCESS` / `BIZ_CLIENT_READ_FAILED`
+  - `BIZ_CLIENT_LIST_REQUEST` / `BIZ_CLIENT_LIST_SUCCESS`
+
+### Encart lecture rapide (vehicule : passe/casse)
+
+Pour la création d'un véhicule, lire les logs `BIZ_VEHICULE_*` dans cet ordre :
+
+| Log | Interprétation métier |
+|---|---|
+| `BIZ_VEHICULE_CREATE_REQUEST` | La demande de création est reçue |
+| `BIZ_VEHICULE_CREATE_ACCEPTED` | La commande est acceptée par l'aggregate |
+| `BIZ_VEHICULE_CREATED` | Le véhicule est bien projeté/persisté |
+| `BIZ_VEHICULE_CREATE_CONFIRMED` | Le flux asynchrone est confirmé côté retour API |
+
+Lecture opérationnelle :
+- Si vous voyez `REQUEST` puis `...CONFIRMED`, la création **passe**.
+- Si `...CONFIRMED` n'apparaît pas, la création est **à investiguer** (vérifier les logs `TECH_*`).
+- Pour la lecture (`GET /queries/vehicules/{id}`, `GET /queries/vehicules`) :
+  - `BIZ_VEHICULE_READ_REQUEST` / `BIZ_VEHICULE_READ_SUCCESS` / `BIZ_VEHICULE_READ_NOT_FOUND`
+  - `BIZ_VEHICULE_LIST_REQUEST` / `BIZ_VEHICULE_LIST_SUCCESS`
+  - Recherche par immatriculation : `BIZ_VEHICULE_READ_BY_IMMATRICULATION_*`
+
+### Encart lecture rapide (document : passe/casse)
+
+Pour la création d'un document, lire les logs `BIZ_DOCUMENT_*` dans cet ordre :
+
+| Log | Interprétation métier |
+|---|---|
+| `BIZ_DOCUMENT_CREATE_REQUEST` | La demande de création est reçue |
+| `BIZ_DOCUMENT_CREATE_ACCEPTED` | La commande est acceptée par l'aggregate |
+| `BIZ_DOCUMENT_CREATED` | Le document est bien projeté/persisté |
+| `BIZ_DOCUMENT_CREATE_CONFIRMED` | Le flux asynchrone est confirmé côté retour API |
+
+Lecture opérationnelle :
+- Si vous voyez `REQUEST` puis `...CONFIRMED`, la création **passe**.
+- Si `...CONFIRMED` n'apparaît pas, la création est **à investiguer** (vérifier les logs `TECH_*`).
+- Pour la lecture (`GET /queries/documents/{id}`, `GET /queries/documents`) :
+  - `BIZ_DOCUMENT_READ_REQUEST` / `BIZ_DOCUMENT_READ_SUCCESS` / `BIZ_DOCUMENT_READ_NOT_FOUND`
+  - `BIZ_DOCUMENT_LIST_REQUEST` / `BIZ_DOCUMENT_LIST_SUCCESS`
+
 ## Clôture du lot logs techniques (5 items)
 
 Ce lot est considéré clôturé quand les 5 points ci-dessous sont validés.
