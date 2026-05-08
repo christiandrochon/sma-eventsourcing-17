@@ -8,6 +8,7 @@ import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
@@ -44,10 +45,10 @@ public class VehiculeEventHandlerService {
             vehicule.setDateMiseEnCirculationVehicule(event.getDateMiseEnCirculationVehicule());
             vehicule.setVehiculeStatus(event.getVehiculeStatus());
             vehiculeRepository.save(vehicule);
-            log.info("BIZ_VEHICULE_CREATED vehiculeId={} immatriculation={} status={}",
-                     vehicule.getId(),
-                     vehicule.getImmatriculationVehicule(),
-                     vehicule.getVehiculeStatus());
+            BusinessLoggers.business().info("BIZ_VEHICULE_CREATED vehiculeId={} immatriculation={} status={}",
+                                            vehicule.getId(),
+                                            vehicule.getImmatriculationVehicule(),
+                                            vehicule.getVehiculeStatus());
         } catch(Exception e) {
             log.error("TECH_VEHICULE_PERSIST_ERROR vehiculeId={} message={}", event.getId(), e.getMessage(), e);
             throw new TransactionException("Erreur lors de la sauvegarde du vehicule");

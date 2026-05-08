@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.client.command.services;
 
 import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class ClientCommandService {
         //CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureDTO = new CompletableFuture<>();
         String clientId = UUID.randomUUID().toString();
-        log.info("BIZ_CLIENT_CREATE_REQUEST clientId={} nomClient={}", clientId, clientrestPostDTO.getNomClient());
+        BusinessLoggers.business().info("BIZ_CLIENT_CREATE_REQUEST clientId={} nomClient={}", clientId,
+                                        clientrestPostDTO.getNomClient());
         //envoyer la commande de création de garage -> @CommandHandler
         //CHECKME : est ce ici que l'on créé l'id du garage ?
         commandGateway.send(new ClientCreateCommand(clientId,
@@ -52,7 +54,8 @@ public class ClientCommandService {
      */
     public void completeClientCreation(ClientCommandDTO dto) {
         if(futureDTO != null) {
-            log.info("BIZ_CLIENT_CREATE_CONFIRMED clientId={} status={}", dto.getId(), dto.getClientStatus());
+            BusinessLoggers.business().info("BIZ_CLIENT_CREATE_CONFIRMED clientId={} status={}", dto.getId(),
+                                            dto.getClientStatus());
             futureDTO.complete(dto);
         }
     }

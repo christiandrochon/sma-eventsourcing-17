@@ -6,6 +6,7 @@ import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.client.query.mapper.ClientQueryMapper;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
@@ -46,7 +47,8 @@ public class ClientEventHandlerService {
             client.setClientStatus(event.getClientStatus());
             
             clientRepository.save(client);
-            log.info("BIZ_CLIENT_CREATED clientId={} status={}", client.getId(), client.getClientStatus());
+            BusinessLoggers.business().info("BIZ_CLIENT_CREATED clientId={} status={}", client.getId(),
+                                            client.getClientStatus());
         } catch(Exception e) {
             log.error("TECH_CLIENT_PERSIST_ERROR clientId={} message={}", event.getId(), e.getMessage(), e);
         }

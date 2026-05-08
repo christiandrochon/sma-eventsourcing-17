@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.dossier.command.commands.DossierCreateCommand;
 import fr.cdrochon.smamonolithe.dossier.events.DossierCreatedEvent;
 import fr.cdrochon.smamonolithe.dossier.query.entities.DossierStatus;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,12 +52,12 @@ public class DossierAggregate {
         }
 
         //publication de l'event
-        log.info("BIZ_DOSSIER_CREATE_ACCEPTED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
-                 dossierCreateCommand.getId(),
-                 dossierCreateCommand.getNomDossier(),
-                 dossierCreateCommand.getClient().getId(),
-                 dossierCreateCommand.getVehicule().getId(),
-                 dossierCreateCommand.getDossierStatus());
+        BusinessLoggers.business().info("BIZ_DOSSIER_CREATE_ACCEPTED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                                        dossierCreateCommand.getId(),
+                                        dossierCreateCommand.getNomDossier(),
+                                        dossierCreateCommand.getClient().getId(),
+                                        dossierCreateCommand.getVehicule().getId(),
+                                        dossierCreateCommand.getDossierStatus());
         AggregateLifecycle.apply(new DossierCreatedEvent(dossierCreateCommand.getId(),
                                                         dossierCreateCommand.getNomDossier(),
                                                         dossierCreateCommand.getDateCreationDossier(),

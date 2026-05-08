@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.document.command.services;
 
 import fr.cdrochon.smamonolithe.document.command.commands.DocumentCreateCommand;
 import fr.cdrochon.smamonolithe.document.command.dtos.DocumentCommandDTO;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
@@ -33,11 +34,11 @@ public class DocumentCommandService {
         //CompletableFuture<DossierCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureDTO = new CompletableFuture<>();
         String documentId = UUID.randomUUID().toString();
-        log.info("BIZ_DOCUMENT_CREATE_REQUEST documentId={} nomDocument={} type={} status={}",
-                 documentId,
-                 documentRestDTO.getNomDocument(),
-                 documentRestDTO.getTypeDocument(),
-                 documentRestDTO.getDocumentStatus());
+        BusinessLoggers.business().info("BIZ_DOCUMENT_CREATE_REQUEST documentId={} nomDocument={} type={} status={}",
+                                        documentId,
+                                        documentRestDTO.getNomDocument(),
+                                        documentRestDTO.getTypeDocument(),
+                                        documentRestDTO.getDocumentStatus());
 
         commandGateway.send(new DocumentCreateCommand(documentId,
                                                       documentRestDTO.getNomDocument(),
@@ -58,10 +59,10 @@ public class DocumentCommandService {
      */
     public void completeDocumentCreation(DocumentCommandDTO dto) {
         if(futureDTO != null) {
-            log.info("BIZ_DOCUMENT_CREATE_CONFIRMED documentId={} nomDocument={} status={}",
-                     dto.getId(),
-                     dto.getNomDocument(),
-                     dto.getDocumentStatus());
+            BusinessLoggers.business().info("BIZ_DOCUMENT_CREATE_CONFIRMED documentId={} nomDocument={} status={}",
+                                            dto.getId(),
+                                            dto.getNomDocument(),
+                                            dto.getDocumentStatus());
             futureDTO.complete(dto);
         }
     }

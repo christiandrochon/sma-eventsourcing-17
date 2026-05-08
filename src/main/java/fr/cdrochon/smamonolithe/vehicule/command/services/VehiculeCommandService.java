@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.vehicule.command.services;
 
 import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
 import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
@@ -33,10 +34,10 @@ public class VehiculeCommandService {
         //CompletableFuture<DossierCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureDTO = new CompletableFuture<>();
         String vehiculeId = UUID.randomUUID().toString();
-        log.info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status={}",
-                 vehiculeId,
-                 vehiculeRestPostDTO.getImmatriculationVehicule(),
-                 vehiculeRestPostDTO.getVehiculeStatus());
+        BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status={}",
+                                        vehiculeId,
+                                        vehiculeRestPostDTO.getImmatriculationVehicule(),
+                                        vehiculeRestPostDTO.getVehiculeStatus());
         commandGateway.send(new VehiculeCreateCommand(vehiculeId,
                                                       vehiculeRestPostDTO.getImmatriculationVehicule(),
                                                       vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
@@ -52,10 +53,10 @@ public class VehiculeCommandService {
      */
     public void completeVehiculeCreation(VehiculeCommandDTO dto) {
         if(futureDTO != null) {
-            log.info("BIZ_VEHICULE_CREATE_CONFIRMED vehiculeId={} immatriculation={} status={}",
-                     dto.getId(),
-                     dto.getImmatriculationVehicule(),
-                     dto.getVehiculeStatus());
+            BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_CONFIRMED vehiculeId={} immatriculation={} status={}",
+                                            dto.getId(),
+                                            dto.getImmatriculationVehicule(),
+                                            dto.getVehiculeStatus());
             futureDTO.complete(dto);
         }
     }

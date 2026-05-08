@@ -8,6 +8,7 @@ import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierQueryDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
 import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierQueryMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -86,12 +87,12 @@ public class DossierEventHandlerService {
             
             //SAVE le dossier en final
             dossierRepository.save(dossier);
-            log.info("BIZ_DOSSIER_CREATED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
-                     dossier.getId(),
-                     dossier.getNomDossier(),
-                     client.getId(),
-                     vehicule.getId(),
-                     dossier.getDossierStatus());
+            BusinessLoggers.business().info("BIZ_DOSSIER_CREATED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                                            dossier.getId(),
+                                            dossier.getNomDossier(),
+                                            client.getId(),
+                                            vehicule.getId(),
+                                            dossier.getDossierStatus());
 
         } catch(Exception e) {
             log.error("TECH_DOSSIER_PERSIST_ERROR dossierId={} message={}", event.getId(), e.getMessage(), e);

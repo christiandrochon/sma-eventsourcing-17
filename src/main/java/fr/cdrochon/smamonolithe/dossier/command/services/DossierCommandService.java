@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.dossier.command.services;
 
 import fr.cdrochon.smamonolithe.dossier.command.commands.DossierCreateCommand;
 import fr.cdrochon.smamonolithe.dossier.command.dtos.DossierCommandDTO;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.stereotype.Service;
@@ -38,12 +39,12 @@ public class DossierCommandService {
         //CompletableFuture<DossierCommandDTO> sera complétée lorsque l'événement sera reçu.
         futureDTO = new CompletableFuture<>();
         String dossierId = UUID.randomUUID().toString();
-        log.info("BIZ_DOSSIER_CREATE_REQUEST dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
-                 dossierId,
-                 dossierCommandDTO.getNomDossier(),
-                 dossierCommandDTO.getClient() != null ? dossierCommandDTO.getClient().getId() : null,
-                 dossierCommandDTO.getVehicule() != null ? dossierCommandDTO.getVehicule().getId() : null,
-                 dossierCommandDTO.getDossierStatus());
+        BusinessLoggers.business().info("BIZ_DOSSIER_CREATE_REQUEST dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                                        dossierId,
+                                        dossierCommandDTO.getNomDossier(),
+                                        dossierCommandDTO.getClient() != null ? dossierCommandDTO.getClient().getId() : null,
+                                        dossierCommandDTO.getVehicule() != null ? dossierCommandDTO.getVehicule().getId() : null,
+                                        dossierCommandDTO.getDossierStatus());
         //envoi de la commande de création du dossier
         commandGateway.send(new DossierCreateCommand(dossierId,
                                                      dossierCommandDTO.getNomDossier(),
@@ -64,11 +65,11 @@ public class DossierCommandService {
      */
     public void completeDossierCreation(DossierCommandDTO dto) {
         if(futureDTO != null) {
-            log.info("BIZ_DOSSIER_CREATE_CONFIRMED dossierId={} clientId={} vehiculeId={} status={}",
-                     dto.getId(),
-                     dto.getClient() != null ? dto.getClient().getId() : null,
-                     dto.getVehicule() != null ? dto.getVehicule().getId() : null,
-                     dto.getDossierStatus());
+            BusinessLoggers.business().info("BIZ_DOSSIER_CREATE_CONFIRMED dossierId={} clientId={} vehiculeId={} status={}",
+                                            dto.getId(),
+                                            dto.getClient() != null ? dto.getClient().getId() : null,
+                                            dto.getVehicule() != null ? dto.getVehicule().getId() : null,
+                                            dto.getDossierStatus());
             futureDTO.complete(dto);
         }
     }

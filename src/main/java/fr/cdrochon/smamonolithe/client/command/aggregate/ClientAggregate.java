@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.client.query.entities.ClientStatus;
 import fr.cdrochon.smamonolithe.client.events.ClientCreatedEvent;
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -57,10 +58,10 @@ public class ClientAggregate {
         }
 
         //publication de l'event
-        log.info("BIZ_CLIENT_CREATE_ACCEPTED clientId={} nomClient={} status={}",
-                 createClientCommand.getId(),
-                 createClientCommand.getNomClient(),
-                 ClientStatus.ACTIF);
+        BusinessLoggers.business().info("BIZ_CLIENT_CREATE_ACCEPTED clientId={} nomClient={} status={}",
+                                        createClientCommand.getId(),
+                                        createClientCommand.getNomClient(),
+                                        ClientStatus.ACTIF);
         AggregateLifecycle.apply(new ClientCreatedEvent(createClientCommand.getId(),
                                                         createClientCommand.getNomClient(),
                                                         createClientCommand.getPrenomClient(),

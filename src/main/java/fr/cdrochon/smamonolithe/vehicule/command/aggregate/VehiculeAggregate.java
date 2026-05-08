@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.vehicule.command.aggregate;
 
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
 import fr.cdrochon.smamonolithe.vehicule.command.enums.VehiculeStatus;
 import fr.cdrochon.smamonolithe.vehicule.event.VehiculeCreatedEvent;
@@ -72,10 +73,10 @@ public class VehiculeAggregate {
             throw new CreatedGarageException("Le vehicule doit exister ! ");
         }
 
-        log.info("BIZ_VEHICULE_CREATE_ACCEPTED vehiculeId={} immatriculation={} status={}",
-                 createVehiculeCommand.getId(),
-                 createVehiculeCommand.getImmatriculationVehicule(),
-                 createVehiculeCommand.getVehiculeStatus());
+        BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_ACCEPTED vehiculeId={} immatriculation={} status={}",
+                                        createVehiculeCommand.getId(),
+                                        createVehiculeCommand.getImmatriculationVehicule(),
+                                        createVehiculeCommand.getVehiculeStatus());
         AggregateLifecycle.apply(new VehiculeCreatedEvent(createVehiculeCommand.getId(),
                                                           createVehiculeCommand.getImmatriculationVehicule(),
                                                           createVehiculeCommand.getDateMiseEnCirculationVehicule(),

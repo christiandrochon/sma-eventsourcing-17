@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
 import fr.cdrochon.smamonolithe.document.events.DocumentCreatedEvent;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import fr.cdrochon.smamonolithe.garage.command.exceptions.CreatedGarageException;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -52,11 +53,11 @@ public class DocumentAggregate {
         if(createDocumentCommand.getNomDocument() == null) {
             throw new CreatedGarageException("Le document doit exister ! ");
         }
-        log.info("BIZ_DOCUMENT_CREATE_ACCEPTED documentId={} nomDocument={} type={} status={}",
-                 createDocumentCommand.getId(),
-                 createDocumentCommand.getNomDocument(),
-                 createDocumentCommand.getTypeDocument(),
-                 createDocumentCommand.getDocumentStatus());
+        BusinessLoggers.business().info("BIZ_DOCUMENT_CREATE_ACCEPTED documentId={} nomDocument={} type={} status={}",
+                                        createDocumentCommand.getId(),
+                                        createDocumentCommand.getNomDocument(),
+                                        createDocumentCommand.getTypeDocument(),
+                                        createDocumentCommand.getDocumentStatus());
         AggregateLifecycle.apply(new DocumentCreatedEvent(createDocumentCommand.getId(),
                                                           createDocumentCommand.getNomDocument(),
                                                           createDocumentCommand.getTitreDocument(),

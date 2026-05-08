@@ -6,6 +6,7 @@ import fr.cdrochon.smamonolithe.document.query.dtos.GetDocumentDTO;
 import fr.cdrochon.smamonolithe.document.query.entities.Document;
 import fr.cdrochon.smamonolithe.document.query.mapper.DocumentQueryMapper;
 import fr.cdrochon.smamonolithe.document.query.repositories.DocumentRepository;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
@@ -47,11 +48,11 @@ public class DocumentEventHandlerService {
             document.setDocumentStatus(event.getDocumentStatus());
             
             documentRepository.save(document);
-            log.info("BIZ_DOCUMENT_CREATED documentId={} nomDocument={} type={} status={}",
-                     document.getId(),
-                     document.getNomDocument(),
-                     document.getTypeDocument(),
-                     document.getDocumentStatus());
+            BusinessLoggers.business().info("BIZ_DOCUMENT_CREATED documentId={} nomDocument={} type={} status={}",
+                                            document.getId(),
+                                            document.getNomDocument(),
+                                            document.getTypeDocument(),
+                                            document.getDocumentStatus());
 
         } catch(Exception e) {
             log.error("TECH_DOCUMENT_PERSIST_ERROR documentId={} message={}", event.getId(), e.getMessage(), e);
