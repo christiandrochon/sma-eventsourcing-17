@@ -59,6 +59,39 @@ class DocumentCreateCommandTest {
     }
 
     @Test
+    void shouldPreserveDatesBetweenConstructorAndGetter() {
+        DocumentCreateCommand cmd = DocumentTestDataFactory.sampleCreateCommand();
+        assertEquals(DocumentTestDataFactory.creationInstant(), cmd.getDateCreationDocument());
+        assertEquals(DocumentTestDataFactory.modificationInstant(), cmd.getDateModificationDocument());
+    }
+
+    @Test
+    void shouldAllowCreationAndModificationDatesBeEqual() {
+        java.time.Instant same = DocumentTestDataFactory.creationInstant();
+        DocumentCreateCommand cmd = new DocumentCreateCommand(
+                "doc-eq", "N", "T", "E",
+                DocumentTestDataFactory.sampleTypeDocument(),
+                same, same,
+                DocumentStatusDTO.DRAFT
+        );
+        assertEquals(cmd.getDateCreationDocument(), cmd.getDateModificationDocument());
+    }
+
+    @Test
+    void shouldSupportAllDocumentStatusValues() {
+        for (DocumentStatusDTO status : DocumentStatusDTO.values()) {
+            DocumentCreateCommand cmd = new DocumentCreateCommand(
+                    "doc-s", "N", "T", "E",
+                    DocumentTestDataFactory.sampleTypeDocument(),
+                    DocumentTestDataFactory.creationInstant(),
+                    DocumentTestDataFactory.modificationInstant(),
+                    status
+            );
+            assertEquals(status, cmd.getDocumentStatus());
+        }
+    }
+
+    @Test
     void shouldSupportUnicodeValues() {
         DocumentCreateCommand command = new DocumentCreateCommand(
                 "doc-3",

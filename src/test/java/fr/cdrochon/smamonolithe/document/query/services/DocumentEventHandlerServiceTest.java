@@ -1,6 +1,7 @@
 package fr.cdrochon.smamonolithe.document.query.services;
 
 import fr.cdrochon.smamonolithe.document.DocumentTestDataFactory;
+import fr.cdrochon.smamonolithe.document.events.DocumentCreatedEvent;
 import fr.cdrochon.smamonolithe.document.query.dtos.DocumentQueryDTO;
 import fr.cdrochon.smamonolithe.document.query.dtos.GetDocumentDTO;
 import fr.cdrochon.smamonolithe.document.query.entities.Document;
@@ -89,6 +90,22 @@ class DocumentEventHandlerServiceTest {
 
         assertEquals(1, result.size());
         assertEquals("doc-1", result.get(0).getId());
+    }
+
+    @Test
+    void shouldMapMultipleEventsIndependently() {
+        DocumentCreatedEvent event2 = new fr.cdrochon.smamonolithe.document.events.DocumentCreatedEvent(
+                "doc-2", "OTHER", null, null,
+                DocumentTestDataFactory.sampleTypeDocument(),
+                DocumentTestDataFactory.creationInstant(),
+                DocumentTestDataFactory.modificationInstant(),
+                fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO.ARCHIVED
+        );
+
+        service.on(DocumentTestDataFactory.sampleCreatedEvent());
+        service.on(event2);
+
+        verify(documentRepository, times(2)).save(any(Document.class));
     }
 
     @Test

@@ -57,6 +57,30 @@ class DocumentQueryMapperTest {
     }
 
     @Test
+    void shouldPreserveNullFieldsInEntityToDto() {
+        Document entity = new Document();
+        entity.setId("doc-null");
+
+        DocumentQueryDTO dto = DocumentQueryMapper.convertDocumentToDocumentDTO(entity);
+
+        assertNull(dto.getNomDocument());
+        assertNull(dto.getTypeDocument());
+        assertNull(dto.getDocumentStatus());
+    }
+
+    @Test
+    void shouldPreserveNullFieldsInDtoToEntity() {
+        DocumentQueryDTO dto = new DocumentQueryDTO();
+        dto.setId("doc-null");
+
+        Document entity = DocumentQueryMapper.convertDocumentDTOToDocument(dto);
+
+        assertNull(entity.getNomDocument());
+        assertNull(entity.getTypeDocument());
+        assertNull(entity.getDocumentStatus());
+    }
+
+    @Test
     void shouldCreateDistinctTargetInstances() {
         DocumentQueryDTO dto = DocumentTestDataFactory.sampleQueryDTO();
 

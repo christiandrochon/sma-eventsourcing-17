@@ -58,6 +58,16 @@ class DocumentEntityTest {
     }
 
     @Test
+    void shouldNotChangeOtherFieldsWhenOneSetterCalled() {
+        Document document = DocumentTestDataFactory.sampleEntity();
+        document.setNomDocument("CHANGED");
+
+        assertEquals("CHANGED", document.getNomDocument());
+        assertEquals("doc-1", document.getId()); // unchanged
+        assertEquals(DocumentStatusDTO.CREATED, document.getDocumentStatus()); // unchanged
+    }
+
+    @Test
     void shouldProvideNonNullToString() {
         Document document = DocumentTestDataFactory.sampleEntity();
 

@@ -74,6 +74,14 @@ class DocumentCommandServiceTest {
     }
 
     @Test
+    void shouldStillCompleteSecondFutureAfterFirstReplaced() {
+        service.createDocument(DocumentTestDataFactory.sampleCommandDTO()); // première future remplacée
+        CompletableFuture<DocumentCommandDTO> secondFuture = service.createDocument(DocumentTestDataFactory.sampleCommandDTO());
+        service.completeDocumentCreation(DocumentTestDataFactory.sampleCommandDTO());
+        assertTrue(secondFuture.isDone());
+    }
+
+    @Test
     void shouldAcceptDtoWithNullFieldsAtServiceLevel() {
         DocumentCommandDTO dto = new DocumentCommandDTO();
         dto.setNomDocument(null);
