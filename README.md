@@ -150,24 +150,37 @@ tail -f logs/business.log
 Ce lot est considéré clôturé quand les 5 points ci-dessous sont validés.
 
 1. **Erreurs / exceptions centralisées**  
-   Toutes les exceptions non gérées passent par `GlobalTechnicalExceptionHandler` avec un log `TECH_EXCEPTION`.
+   Toutes les exceptions non gérées passent par un handler global avec log `TECH_EXCEPTION`.
+   - Implémentation : `src/main/java/fr/cdrochon/smamonolithe/logging/GlobalTechnicalExceptionHandler.java`
+   - Comportement attendu : log erreur + réponse HTTP 500 structurée (`timestamp`, `status`, `error`, `message`, `path`).
+   - Validation : `src/test/java/fr/cdrochon/smamonolithe/logging/GlobalTechnicalExceptionHandlerTest.java`
 
 2. **Latence HTTP et statut tracés**  
-   Chaque requête backend produit un log `TECH_HTTP` (méthode, path, status, durée) via `TechnicalRequestWebFilter`.
+   Chaque requête backend produit un log `TECH_HTTP` avec méthode, path, status et durée.
+   - Implémentation : `src/main/java/fr/cdrochon/smamonolithe/logging/TechnicalRequestWebFilter.java`
+   - Comportement attendu : log `info` en succès, log `error` avec stacktrace en cas d'échec, statut et durée dans les deux cas.
+   - Validation : `src/test/java/fr/cdrochon/smamonolithe/logging/TechnicalRequestWebFilterTest.java`
 
 3. **Appels externes journalisés**  
    Les appels sortants (`RestTemplate` / `WebClient`) sont logués en technique avec statut, latence et erreur éventuelle.
+   - Implémentation : `src/main/java/fr/cdrochon/smamonolithe/configuration/ClientWebConfig.java`
+   - Comportement attendu :
+     - `TECH_EXT_REST` / `TECH_EXT_REST_ERROR` pour `RestTemplate`
+     - `TECH_EXT_WEBCLIENT` / `TECH_EXT_WEBCLIENT_ERROR` pour `WebClient`
+   - Validation : `src/test/java/fr/cdrochon/smamonolithe/configuration/ClientWebConfigTest.java`
 
 4. **Niveaux de logs maîtrisés (anti-bruit)**  
-   Les frameworks restent en `WARN` et les logs utiles applicatifs/techniques sont conservés au bon niveau dans `application.properties`.
+   Les frameworks restent en `WARN` et les logs utiles applicatifs/techniques sont conservés au bon niveau.
+   - Configuration : `src/main/resources/application.properties`, `src/main/resources/logback-spring.xml`
+   - Réglages clés : `logging.level.root=WARN`, `logging.level.org.springframework=WARN`, `logging.level.org.axonframework=WARN`, `logging.level.fr.cdrochon.smamonolithe.logging=INFO`.
+   - Résultat : réduction du bruit framework, conservation des logs techniques pertinents.
 
 5. **Validation par tests ciblés**  
-   Les tests de la couche logging passent, notamment :
-   - `TechnicalRequestWebFilterTest`
-   - `GlobalTechnicalExceptionHandlerTest`
-   - `ClientWebConfigTest`
-
-Commande de validation ciblée :
+   Les tests ciblés de la couche logging passent sur les composants techniques critiques :
+   - `src/test/java/fr/cdrochon/smamonolithe/logging/TechnicalRequestWebFilterTest.java`
+   - `src/test/java/fr/cdrochon/smamonolithe/logging/GlobalTechnicalExceptionHandlerTest.java`
+   - `src/test/java/fr/cdrochon/smamonolithe/configuration/ClientWebConfigTest.java`
+   - Commande de validation :
 
 ```bash
 mvn -Dtest=TechnicalRequestWebFilterTest,GlobalTechnicalExceptionHandlerTest,ClientWebConfigTest test
