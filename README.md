@@ -145,6 +145,34 @@ Suivre le fichier en direct :
 tail -f logs/business.log
 ```
 
+## Clôture du lot logs techniques (5 items)
+
+Ce lot est considéré clôturé quand les 5 points ci-dessous sont validés.
+
+1. **Erreurs / exceptions centralisées**  
+   Toutes les exceptions non gérées passent par `GlobalTechnicalExceptionHandler` avec un log `TECH_EXCEPTION`.
+
+2. **Latence HTTP et statut tracés**  
+   Chaque requête backend produit un log `TECH_HTTP` (méthode, path, status, durée) via `TechnicalRequestWebFilter`.
+
+3. **Appels externes journalisés**  
+   Les appels sortants (`RestTemplate` / `WebClient`) sont logués en technique avec statut, latence et erreur éventuelle.
+
+4. **Niveaux de logs maîtrisés (anti-bruit)**  
+   Les frameworks restent en `WARN` et les logs utiles applicatifs/techniques sont conservés au bon niveau dans `application.properties`.
+
+5. **Validation par tests ciblés**  
+   Les tests de la couche logging passent, notamment :
+   - `TechnicalRequestWebFilterTest`
+   - `GlobalTechnicalExceptionHandlerTest`
+   - `ClientWebConfigTest`
+
+Commande de validation ciblée :
+
+```bash
+mvn -Dtest=TechnicalRequestWebFilterTest,GlobalTechnicalExceptionHandlerTest,ClientWebConfigTest test
+```
+
 ## Licence
 
 Ce projet est distribué sous licence MIT.
