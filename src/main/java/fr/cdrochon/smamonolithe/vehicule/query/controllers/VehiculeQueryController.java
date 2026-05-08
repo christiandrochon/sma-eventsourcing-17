@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.vehicule.query.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.cdrochon.smamonolithe.json.Views;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
@@ -36,11 +37,17 @@ public class VehiculeQueryController {
     @JsonView(Views.VehiculeView.class)
     //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
     public Mono<VehiculeQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
+        BusinessLoggers.business().info("BIZ_VEHICULE_READ_REQUEST vehiculeId={}", id);
         CompletableFuture<VehiculeQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
                     VehiculeQueryDTO dto = vehiculeRepository.findById(id)
                                                              .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
                                                              .orElse(null);
+                    if(dto == null) {
+                        BusinessLoggers.business().info("BIZ_VEHICULE_READ_NOT_FOUND vehiculeId={}", id);
+                    } else {
+                        BusinessLoggers.business().info("BIZ_VEHICULE_READ_SUCCESS vehiculeId={}", id);
+                    }
                     return dto;
                 });
         Mono<VehiculeQueryDTO> mono = Mono.fromFuture(future);
@@ -57,12 +64,14 @@ public class VehiculeQueryController {
     @GetMapping("/vehicules")
     @JsonView(Views.VehiculeView.class)
     public Flux<VehiculeQueryDTO> getDossiersAsync() {
+        BusinessLoggers.business().info("BIZ_VEHICULE_LIST_REQUEST");
         CompletableFuture<List<VehiculeQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<VehiculeQueryDTO> clients =
                     vehiculeRepository.findAll()
                                       .stream()
                                       .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
                                       .collect(Collectors.toList());
+            BusinessLoggers.business().info("BIZ_VEHICULE_LIST_SUCCESS count={}", clients.size());
             return clients;
         });
         Flux<VehiculeQueryDTO> flux = Flux.fromStream(future.join().stream());

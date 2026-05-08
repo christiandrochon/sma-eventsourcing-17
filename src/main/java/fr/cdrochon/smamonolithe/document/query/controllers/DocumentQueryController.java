@@ -4,6 +4,7 @@ package fr.cdrochon.smamonolithe.document.query.controllers;
 import fr.cdrochon.smamonolithe.document.query.dtos.DocumentQueryDTO;
 import fr.cdrochon.smamonolithe.document.query.mapper.DocumentQueryMapper;
 import fr.cdrochon.smamonolithe.document.query.repositories.DocumentRepository;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,11 +35,17 @@ public class DocumentQueryController {
      */
     @GetMapping(path = "/documents/{id}")
     public Mono<DocumentQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
+        BusinessLoggers.business().info("BIZ_DOCUMENT_READ_REQUEST documentId={}", id);
         CompletableFuture<DocumentQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
                     DocumentQueryDTO doc = documentRepository.findById(id)
                                                              .map(DocumentQueryMapper::convertDocumentToDocumentDTO)
                                                              .orElse(null);
+                    if(doc == null) {
+                        BusinessLoggers.business().info("BIZ_DOCUMENT_READ_NOT_FOUND documentId={}", id);
+                    } else {
+                        BusinessLoggers.business().info("BIZ_DOCUMENT_READ_SUCCESS documentId={}", id);
+                    }
                     return doc;
                 });
         Mono<DocumentQueryDTO> mono = Mono.fromFuture(future);
@@ -52,12 +59,14 @@ public class DocumentQueryController {
      */
     @GetMapping(path = "/documents")
     public Flux<DocumentQueryDTO> getDossiersAsync() {
+        BusinessLoggers.business().info("BIZ_DOCUMENT_LIST_REQUEST");
         CompletableFuture<List<DocumentQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<DocumentQueryDTO> clients =
                     documentRepository.findAll()
                                       .stream()
                                       .map(DocumentQueryMapper::convertDocumentToDocumentDTO)
                                       .collect(Collectors.toList());
+            BusinessLoggers.business().info("BIZ_DOCUMENT_LIST_SUCCESS count={}", clients.size());
             return clients;
         });
         Flux<DocumentQueryDTO> flux = Flux.fromStream(future.join().stream());

@@ -4,6 +4,7 @@ import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierQueryDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
 import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierQueryMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.val;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -41,11 +42,17 @@ public class DossierQueryController {
      */
     @GetMapping(path = "/dossiers/{id}")
     public Mono<DossierQueryDTO> getDossierByIdAsync(@PathVariable String id) {
+        BusinessLoggers.business().info("BIZ_DOSSIER_READ_REQUEST dossierId={}", id);
         CompletableFuture<DossierQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
                     val dossier = dossierRepository.findById(id)
                                                    .map(DossierQueryMapper::convertDossierToDossierDTO)
                                                    .orElse(null);
+                    if(dossier == null) {
+                        BusinessLoggers.business().info("BIZ_DOSSIER_READ_NOT_FOUND dossierId={}", id);
+                    } else {
+                        BusinessLoggers.business().info("BIZ_DOSSIER_READ_SUCCESS dossierId={}", id);
+                    }
                     return dossier;
                 });
         Mono<DossierQueryDTO> mono = Mono.fromFuture(future);
@@ -60,12 +67,14 @@ public class DossierQueryController {
      */
     @GetMapping(path = "/dossiers")
     public Flux<DossierQueryDTO> getDossiersAsync() {
+        BusinessLoggers.business().info("BIZ_DOSSIER_LIST_REQUEST");
         CompletableFuture<List<DossierQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<DossierQueryDTO> clients =
                     dossierRepository.findAll()
                                      .stream()
                                      .map(DossierQueryMapper::convertDossierToDossierDTO)
                                      .collect(Collectors.toList());
+            BusinessLoggers.business().info("BIZ_DOSSIER_LIST_SUCCESS count={}", clients.size());
             return clients;
         });
         Flux<DossierQueryDTO> flux = Flux.fromStream(future.join().stream());
@@ -80,12 +89,18 @@ public class DossierQueryController {
      */
     @GetMapping(value = "/dossier/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<DossierQueryDTO> watch(@PathVariable String id) {
-        
+        BusinessLoggers.business().info("BIZ_DOSSIER_READ_STREAM_REQUEST dossierId={}", id);
+
         try(SubscriptionQueryResult<DossierQueryDTO, DossierQueryDTO> result = queryGateway.subscriptionQuery(
                 new GetDossierDTO(id),
                 ResponseTypes.instanceOf(DossierQueryDTO.class),
                 ResponseTypes.instanceOf(DossierQueryDTO.class))) {
-            return result.initialResult().concatWith(result.updates());
+            return result.initialResult()
+                         .concatWith(result.updates())
+                         .doOnNext(dossier -> BusinessLoggers.business().info("BIZ_DOSSIER_READ_STREAM_EVENT dossierId={}", id))
+                         .doOnError(error -> BusinessLoggers.business().error("BIZ_DOSSIER_READ_STREAM_FAILED dossierId={} message={}",
+                                                                              id,
+                                                                              error.getMessage()));
         }
     }
 }

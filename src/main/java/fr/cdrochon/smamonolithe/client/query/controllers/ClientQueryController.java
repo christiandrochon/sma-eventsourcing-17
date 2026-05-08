@@ -6,6 +6,7 @@ import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.mapper.ClientQueryMapper;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import fr.cdrochon.smamonolithe.json.Views;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -46,13 +47,17 @@ public class ClientQueryController {
     @GetMapping(path = "/clients/{id}")
     @JsonView(Views.ClientView.class)
     public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id) {
+        BusinessLoggers.business().info("BIZ_CLIENT_READ_REQUEST clientId={}", id);
         CompletableFuture<ClientQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
                     try {
-                        return clientRepository.findById(id)
-                                               .map(ClientQueryMapper::convertClientToClientDTO)
-                                               .orElseThrow(() -> new RuntimeException("Client not found"));
+                        ClientQueryDTO client = clientRepository.findById(id)
+                                                                 .map(ClientQueryMapper::convertClientToClientDTO)
+                                                                 .orElseThrow(() -> new RuntimeException("Client not found"));
+                        BusinessLoggers.business().info("BIZ_CLIENT_READ_SUCCESS clientId={}", id);
+                        return client;
                     } catch(Exception e) {
+                        BusinessLoggers.business().error("BIZ_CLIENT_READ_FAILED clientId={} message={}", id, e.getMessage());
                         log.error("Error retrieving client with id {}: {}", id, e.getMessage(), e);
                         throw new RuntimeException("Error retrieving client", e);
                     }
@@ -69,12 +74,14 @@ public class ClientQueryController {
     @GetMapping(path = "/clients")
     @JsonView(Views.ClientView.class)
     public Flux<ClientQueryDTO> getClientsAsync() {
+        BusinessLoggers.business().info("BIZ_CLIENT_LIST_REQUEST");
         CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<ClientQueryDTO> clients =
                     clientRepository.findAll()
                                     .stream()
                                     .map(ClientQueryMapper::convertClientToClientDTO)
                                     .collect(Collectors.toList());
+            BusinessLoggers.business().info("BIZ_CLIENT_LIST_SUCCESS count={}", clients.size());
             return clients;
         });
         Flux<ClientQueryDTO> flux = Flux.fromStream(future.join().stream());
@@ -90,13 +97,19 @@ public class ClientQueryController {
      */
     @GetMapping(value = "/client/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ClientQueryDTO> watch(@PathVariable String id) {
-        
+        BusinessLoggers.business().info("BIZ_CLIENT_READ_STREAM_REQUEST clientId={}", id);
+
         try(SubscriptionQueryResult<ClientQueryDTO, ClientQueryDTO> result = queryGateway.subscriptionQuery(
                 new GetClientDTO(id),
                 ResponseTypes.instanceOf(ClientQueryDTO.class),
                 ResponseTypes.instanceOf(ClientQueryDTO.class)
                                                                                                            )) {
-            return result.initialResult().concatWith(result.updates());
+            return result.initialResult()
+                         .concatWith(result.updates())
+                         .doOnNext(client -> BusinessLoggers.business().info("BIZ_CLIENT_READ_STREAM_EVENT clientId={}", id))
+                         .doOnError(error -> BusinessLoggers.business().error("BIZ_CLIENT_READ_STREAM_FAILED clientId={} message={}",
+                                                                              id,
+                                                                              error.getMessage()));
         }
     }
 }

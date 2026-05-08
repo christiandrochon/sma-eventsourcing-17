@@ -3,6 +3,7 @@ package fr.cdrochon.smamonolithe.garage.query.controllers;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageQueryDTO;
 import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,11 +36,17 @@ public class GarageQueryServerController {
      */
     @GetMapping(path = "/garages/{id}")
     public Mono<GarageQueryDTO> getGarageByIdAsync(@PathVariable String id) {
+        BusinessLoggers.business().info("BIZ_GARAGE_READ_REQUEST garageId={}", id);
         CompletableFuture<GarageQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
                     GarageQueryDTO garage = garageRepository.findById(id)
                                                             .map(GarageMapperManuel::convertGarageToGarageDTO)
                                                             .orElse(null);
+                    if(garage == null) {
+                        BusinessLoggers.business().info("BIZ_GARAGE_READ_NOT_FOUND garageId={}", id);
+                    } else {
+                        BusinessLoggers.business().info("BIZ_GARAGE_READ_SUCCESS garageId={}", id);
+                    }
                     return garage;
                 });
         Mono<GarageQueryDTO> mono = Mono.fromFuture(future);
@@ -53,6 +60,7 @@ public class GarageQueryServerController {
      */
     @GetMapping(path = "/garages")
     public Flux<GarageQueryDTO> getGaragesAsyncServer() {
+        BusinessLoggers.business().info("BIZ_GARAGE_LIST_REQUEST");
         CompletableFuture<List<GarageQueryDTO>> future =
                 CompletableFuture.supplyAsync(() -> {
                     List<GarageQueryDTO> garages =
@@ -60,6 +68,7 @@ public class GarageQueryServerController {
                                             .stream()
                                             .map(GarageMapperManuel::convertGarageToGarageDTO)
                                             .collect(Collectors.toList());
+                    BusinessLoggers.business().info("BIZ_GARAGE_LIST_SUCCESS count={}", garages.size());
                     return garages;
                 });
         Flux<GarageQueryDTO> flux = Flux.fromStream(future.join().stream());
