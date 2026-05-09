@@ -103,6 +103,15 @@
         "clientRole": false,
         "containerId": "96b9ff3d-767c-4951-84e2-09151f95102e",
         "attributes": {}
+      },
+      {
+        "id": "8d5c7b3e-083a-45c6-b922-81d01e8ffefb",
+        "name": "AUDITOR",
+        "description": "Auditeur RGPD - lecture seule sur les endpoints audit",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "96b9ff3d-767c-4951-84e2-09151f95102e",
+        "attributes": {}
       }
     ],
     "client": {
