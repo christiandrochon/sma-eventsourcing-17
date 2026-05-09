@@ -59,6 +59,24 @@ public class SecurityConfig {
 			authorize.pathMatchers("/audit/compliance/**").permitAll();
 		}
 
+		// --- Règles métier ---
+		// ADMIN uniquement : création de client et de dossier, liste de tous les clients
+		authorize
+				.pathMatchers(HttpMethod.POST, "/commands/createClient").hasRole("ADMIN")
+				.pathMatchers(HttpMethod.POST, "/commands/createDossier").hasRole("ADMIN")
+				.pathMatchers(HttpMethod.GET, "/queries/clients").hasRole("ADMIN")
+				// ADMIN ou USER : création de véhicule et de document
+				.pathMatchers(HttpMethod.POST, "/commands/createVehicule").hasAnyRole("ADMIN", "USER")
+				.pathMatchers(HttpMethod.POST, "/commands/createDocument").hasAnyRole("ADMIN", "USER")
+				// ADMIN ou USER : consultation d'un dossier, d'un client (son propre compte - contrôle métier à la couche service)
+				.pathMatchers(HttpMethod.GET, "/queries/dossiers/**").hasAnyRole("ADMIN", "USER")
+				.pathMatchers(HttpMethod.GET, "/queries/dossier/**").hasAnyRole("ADMIN", "USER")
+				.pathMatchers(HttpMethod.GET, "/queries/clients/{id}").hasAnyRole("ADMIN", "USER")
+				.pathMatchers(HttpMethod.GET, "/queries/client/**").hasAnyRole("ADMIN", "USER")
+				// ADMIN ou USER : consultation des documents et véhicules
+				.pathMatchers(HttpMethod.GET, "/queries/documents/**").hasAnyRole("ADMIN", "USER")
+				.pathMatchers(HttpMethod.GET, "/queries/vehicules/**").hasAnyRole("ADMIN", "USER");
+
 		if (requireAuthenticatedAll) {
 			authorize.anyExchange().authenticated();
 		} else {
