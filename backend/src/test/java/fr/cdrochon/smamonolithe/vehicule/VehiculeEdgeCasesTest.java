@@ -190,7 +190,7 @@ class VehiculeEdgeCasesTest {
     void edge_19_queryControllerShouldReturnEmptyFluxWhenNoVehicule() {
         VehiculeQueryController controller = new VehiculeQueryController(vehiculeRepository);
         when(vehiculeRepository.findAll()).thenReturn(List.of());
-        assertEquals(0, controller.getDossiersAsync().collectList().block().size());
+        assertEquals(0, controller.getDossiersAsync(null).collectList().block().size());
     }
 
     @Test

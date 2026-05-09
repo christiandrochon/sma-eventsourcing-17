@@ -289,7 +289,7 @@ class VehiculeClassicUnitTest {
     void classic_27_queryControllerShouldReturnFluxForAllVehicules() {
         VehiculeQueryController controller = new VehiculeQueryController(vehiculeRepository);
         when(vehiculeRepository.findAll()).thenReturn(List.of(sampleVehicule(), sampleVehicule("veh-2", "BB", VehiculeStatus.VENDU)));
-        List<VehiculeQueryDTO> dtos = controller.getDossiersAsync().collectList().block();
+        List<VehiculeQueryDTO> dtos = controller.getDossiersAsync(null).collectList().block();
         assertEquals(2, dtos.size());
     }
 
