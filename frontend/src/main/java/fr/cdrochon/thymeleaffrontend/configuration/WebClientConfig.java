@@ -1,15 +1,16 @@
 package fr.cdrochon.thymeleaffrontend.configuration;
 
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,69 +21,65 @@ public class WebClientConfig {
     @Value("${external.service.url}")
     private String externalServiceUrl;
 
-    private final OAuth2AuthorizedClientService authorizedClientService;
+    private final OAuth2AuthorizedClientManager authorizedClientManager;
 
-    public WebClientConfig(ObjectProvider<OAuth2AuthorizedClientService> authorizedClientServiceProvider) {
-        this.authorizedClientService = authorizedClientServiceProvider.getIfAvailable();
+    public WebClientConfig(ClientRegistrationRepository clientRegistrationRepository,
+                           OAuth2AuthorizedClientRepository authorizedClientRepository) {
+        OAuth2AuthorizedClientProvider authorizedClientProvider = OAuth2AuthorizedClientProviderBuilder.builder()
+                .authorizationCode()
+                .refreshToken()
+                .clientCredentials()
+                .build();
+        DefaultOAuth2AuthorizedClientManager manager =
+                new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository);
+        manager.setAuthorizedClientProvider(authorizedClientProvider);
+        this.authorizedClientManager = manager;
     }
 
     @Bean
     public WebClient webClient() {
+        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 =
+                new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
+        oauth2.setDefaultOAuth2AuthorizedClient(true);
+
         return WebClient.builder()
                         .baseUrl(externalServiceUrl)
+                        .apply(oauth2.oauth2Configuration())
                         .filter((request, next) -> {
                             long startMs = System.currentTimeMillis();
-                            ClientRequest authenticatedRequest = withBearerTokenIfAvailable(request);
-                            return next.exchange(authenticatedRequest)
+                            return next.exchange(ClientRequest.from(request).build())
+                                       .retryWhen(reactor.util.retry.Retry.backoff(3, java.time.Duration.ofMillis(200))
+                                               .doBeforeRetry(signal -> FrontendLoggers.tech().warn(
+                                                       "UI_TECH_RETRY attempt={} method={} uri={}",
+                                                       signal.totalRetries() + 1,
+                                                       request.method(),
+                                                       request.url()
+                                               )))
                                        .doOnNext(response -> {
-                                           long durationMs = System.currentTimeMillis() - startMs;
-                                           FrontendLoggers.tech().info(
-                                                   "UI_TECH_EXT_WEBCLIENT method={} uri={} status={} durationMs={}",
-                                                    authenticatedRequest.method(),
-                                                    authenticatedRequest.url(),
-                                                   response.statusCode().value(),
-                                                   durationMs
-                                           );
-                                       })
-                                       .doOnError(exception -> {
-                                           long durationMs = System.currentTimeMillis() - startMs;
-                                           FrontendLoggers.error().error(
-                                                   "UI_TECH_EXT_WEBCLIENT_ERROR method={} uri={} durationMs={} message={}",
-                                                    authenticatedRequest.method(),
-                                                    authenticatedRequest.url(),
-                                                   durationMs,
-                                                   exception.getMessage(),
-                                                   exception
-                                           );
-                                       });
+                                            long durationMs = System.currentTimeMillis() - startMs;
+                                            FrontendLoggers.tech().info(
+                                                    "UI_TECH_EXT_WEBCLIENT method={} uri={} status={} durationMs={}",
+                                                     request.method(),
+                                                     request.url(),
+                                                    response.statusCode().value(),
+                                                    durationMs
+                                            );
+                                        })
+                                        .doOnError(exception -> {
+                                            long durationMs = System.currentTimeMillis() - startMs;
+                                            FrontendLoggers.error().error(
+                                                    "UI_TECH_EXT_WEBCLIENT_ERROR method={} uri={} durationMs={} message={}",
+                                                     request.method(),
+                                                     request.url(),
+                                                    durationMs,
+                                                    exception.getMessage(),
+                                                    exception
+                                            );
+                                        });
                         })
                         .build();
     }
 
-    private ClientRequest withBearerTokenIfAvailable(ClientRequest request) {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authorizedClientService == null || !(authentication instanceof OAuth2AuthenticationToken oauthToken)) {
-                return request;
-            }
-
-            OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
-                    oauthToken.getAuthorizedClientRegistrationId(),
-                    oauthToken.getName()
-            );
-
-            if (client == null || client.getAccessToken() == null || client.getAccessToken().getTokenValue() == null) {
-                return request;
-            }
-
-            return ClientRequest.from(request)
-                    .headers(headers -> headers.setBearerAuth(client.getAccessToken().getTokenValue()))
-                    .build();
-        } catch (Exception exception) {
-            FrontendLoggers.tech().warn("UI_TECH_AUTH_RELAY_SKIPPED reason={}", exception.getMessage());
-            return request;
-        }
-    }
 
     //UTILE POUR DEBUGUER ET VOIR LE CONTENU DU JSON mais genere un httpcode 302 de redirection (en plus des requetes avec httpclient)
 //        @Bean
