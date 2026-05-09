@@ -1,0 +1,110 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - '8091:8091'
+    expose:
+      - '8091'
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+        - monolithe-network
+
+
+  backend:
+    build:
+        context: ./backend
+        dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - '8092:8092'
+    expose:
+      - '8092'
+    depends_on:
+      postgres-monolithe:
+        condition: service_healthy
+      axon-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      POSTGRES_HOST: postgres-monolithe
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: monolithe
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      AXON_AXONSERVER_SERVERS: axon-server:8124
+      JAVA_TOOL_OPTIONS: "-Daxon.axonserver.servers=axon-server:8124" # Pour s'assurer que la variable est prise en compte par Axon
+    healthcheck:
+      start_period: 30s
+#      test: ["CMD", "curl", "-f", "http://backend:8092/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8092/actuator/health"]
+      interval: 20s
+      retries: 5
+    networks:
+        - monolithe-network
+
+
+  axon-server:
+    image: axoniq/axonserver
+    container_name: axon-server
+    ports:
+      - "8024:8024"  # Port HTTP pour le dashboard Axon
+      - "8124:8124"  # Port gRPC utilisé par Axon Framework
+    environment:
+      AXONIQ_AXONSERVER_STANDALONE: "true"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8092/actuator/health | grep -q '\"status\":\"UP\"'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+    networks:
+      - monolithe-network
+
+
+  postgres-monolithe:
+    image: postgres:13
+    container_name: postgres-monolithe
+    volumes:
+      - pg_monolithe:/var/lib/postgresql/data
+      - ./docker/initdb_postgres.sh:/docker-entrypoint-initdb.d/initdb_postgres.sh
+    environment:
+      POSTGRES_DB: monolithe
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+    command: -p 5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      retries: 5
+    networks:
+        - monolithe-network
+
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "6002:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pg@pg.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin_data_monolithe:/var/lib/pgadmin
+    networks:
+        - monolithe-network
+
+volumes:
+  pg_monolithe:
+  pgadmin_data_monolithe:
+
+networks:
+  monolithe-network:
+    driver: bridge
