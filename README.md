@@ -683,6 +683,7 @@ chmod +x scripts/audit-export.sh
 10. **Comment eviter un login manuel repetitif avec Keycloak ?**
    - utiliser un token non interactif pour scripts/outillage
    - script fourni : `scripts/keycloak-token.sh`
+   - RBAC audit: les endpoints `/audit/compliance/**` exigent un role `ADMIN` ou `AUDITOR` quand la securite est activee
 
 ```bash
 cd /home/cdn/IdeaProjects/sma-eventsourcing-17
@@ -693,6 +694,22 @@ export KEYCLOAK_CLIENT_ID="sma-thymeleaf-frontend"
 export KEYCLOAK_GRANT_TYPE="client_credentials"
 TOKEN="$(./scripts/keycloak-token.sh)"
 curl -H "Authorization: Bearer ${TOKEN}" "http://localhost:8092/audit/compliance/dashboard"
+```
+
+Configuration RBAC (backend) :
+
+```bash
+# securite activee/desactivee
+APP_SECURITY_ENABLED=true
+
+# auth globale (optionnel): false = seules les routes protegees sont verrouillees
+APP_SECURITY_REQUIRE_AUTHENTICATED_ALL=false
+
+# protection des endpoints audit
+APP_SECURITY_AUDIT_ENDPOINTS_AUTHENTICATED=true
+
+# roles autorises sur /audit/compliance/**
+APP_SECURITY_AUDIT_REQUIRED_ROLES=ADMIN,AUDITOR
 ```
 
 ## 11. Deployement Kubernetes (optionnel)
