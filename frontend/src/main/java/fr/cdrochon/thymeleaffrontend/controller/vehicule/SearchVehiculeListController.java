@@ -5,6 +5,10 @@ import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +24,9 @@ public class SearchVehiculeListController {
     
     @Autowired
     private WebClient webClient;
+
+    @Autowired(required = false)
+    private OAuth2AuthorizedClientService authorizedClientService;
 
     /**
      * Fournit un objet VehiculeThymConvertDTO vide au modèle Thymeleaf.
@@ -40,12 +47,16 @@ public class SearchVehiculeListController {
      * @return la vue vehicule/searchVehiculeList
      */
     @GetMapping(value = "/searchvehiculelist")
-    public Mono<String> searchClientsAsync(Model model, RedirectAttributes redirectAttributes) {
+    public Mono<String> searchClientsAsync(Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
+        String accessToken = getJwtTokenValue(authentication);
         return webClient.get()
                         .uri("/queries/vehicules")
                         .accept(MediaType.APPLICATION_JSON)
-                        //                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION,
-                        //                                         "Bearer " + getJwtTokenValue()))
+                        .headers(httpHeaders -> {
+                            if (accessToken != null && !accessToken.isBlank()) {
+                                httpHeaders.setBearerAuth(accessToken);
+                            }
+                        })
                         .retrieve()
                         .bodyToFlux(VehiculeThymConvertDTO.class)
                         .collectList()
@@ -95,11 +106,15 @@ public class SearchVehiculeListController {
      * @return la vue vehicule/view
      */
     @GetMapping(value = "/searchvehiculelist/{id}")
-    public Mono<String> searchClientByIdAsync(@PathVariable String id, Model model) {
+    public Mono<String> searchClientByIdAsync(@PathVariable String id, Model model, Authentication authentication) {
+        String accessToken = getJwtTokenValue(authentication);
         return webClient.get()
                         .uri("/queries/vehicules/" + id)
-                        //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
-                        //                                  getJwtTokenValue()))
+                        .headers(httpHeaders -> {
+                            if (accessToken != null && !accessToken.isBlank()) {
+                                httpHeaders.setBearerAuth(accessToken);
+                            }
+                        })
                         .retrieve()
                         .bodyToMono(VehiculeThymConvertDTO.class)
                         .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du véhicule")))
@@ -107,6 +122,20 @@ public class SearchVehiculeListController {
                             model.addAttribute("vehicule", dto);
                             return Mono.just("vehicule/view");
                         });
+    }
+
+    private String getJwtTokenValue(Authentication authentication) {
+        if (!(authentication instanceof OAuth2AuthenticationToken oauthToken) || authorizedClientService == null) {
+            return null;
+        }
+        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+                oauthToken.getAuthorizedClientRegistrationId(),
+                oauthToken.getName()
+        );
+        if (client == null || client.getAccessToken() == null) {
+            return null;
+        }
+        return client.getAccessToken().getTokenValue();
     }
     
 }
