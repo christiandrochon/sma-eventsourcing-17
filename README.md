@@ -282,12 +282,24 @@ Important : `application-local.properties` et `application-prod.properties` sont
 
 Cette section sert a distinguer rapidement les evenements metier (audit fonctionnel) des erreurs techniques (diagnostic runtime).
 
+Point important : le log technique est gere des deux cotes, mais pas pour les memes usages.
+
+- **Frontend** : diagnostic UI, requetes HTTP entrantes, appels WebClient vers le backend, initialisation du module.
+- **Backend** : diagnostic serveur, requetes WebFlux entrantes, exceptions techniques globales.
+
 Separation actuelle des logs :
 
 - Backend metier : `backend/logs/business.log`
 - Backend technique : `backend/logs/technical.log`
 - Frontend acces UI : `frontend/logs/ui-access.log`
 - Frontend erreurs UI : `frontend/logs/ui-error.log`
+- Frontend technique : `frontend/logs/ui-technical.log`
+
+En pratique :
+
+- un evenement `UI_ACCESS_*` va dans `ui-access.log`
+- un evenement `UI_TECH_*` va dans `ui-technical.log`
+- un evenement backend technique va dans `technical.log`
 
 Suivi live des logs metier backend :
 
