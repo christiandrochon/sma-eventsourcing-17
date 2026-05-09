@@ -40,51 +40,43 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-		ServerHttpSecurity.AuthorizeExchangeSpec authorize = http
+		return http
 				.csrf(ServerHttpSecurity.CsrfSpec::disable)
 				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-				.authorizeExchange();
+				.authorizeExchange(authorize -> {
+					authorize
+							.pathMatchers("/actuator/health", "/actuator/info").permitAll()
+							.pathMatchers("/v3/**", "/swagger-ui/**").permitAll()
+							.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
-		authorize
-				.pathMatchers("/actuator/health", "/actuator/info").permitAll()
-				.pathMatchers("/v3/**", "/swagger-ui/**").permitAll()
-				.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+					if (auditEndpointsAuthenticated) {
+						authorize
+								.pathMatchers(HttpMethod.GET, "/audit/compliance/**").hasAnyRole(resolveAuditRoles())
+								.pathMatchers(HttpMethod.POST, "/audit/compliance/**").hasAnyRole(resolveAuditWriterRoles())
+								.pathMatchers("/audit/compliance/**").denyAll();
+					} else {
+						authorize.pathMatchers("/audit/compliance/**").permitAll();
+					}
 
-		if (auditEndpointsAuthenticated) {
-			authorize
-					.pathMatchers(HttpMethod.GET, "/audit/compliance/**").hasAnyRole(resolveAuditRoles())
-					.pathMatchers(HttpMethod.POST, "/audit/compliance/**").hasAnyRole(resolveAuditWriterRoles())
-					.pathMatchers("/audit/compliance/**").denyAll();
-		} else {
-			authorize.pathMatchers("/audit/compliance/**").permitAll();
-		}
+					authorize
+							.pathMatchers(HttpMethod.POST, "/commands/createClient").hasRole("ADMIN")
+							.pathMatchers(HttpMethod.POST, "/commands/createDossier").hasRole("ADMIN")
+							.pathMatchers(HttpMethod.GET, "/queries/clients").hasAnyRole("ADMIN", "USER", "AUDITOR")
+							.pathMatchers(HttpMethod.POST, "/commands/createVehicule").hasAnyRole("ADMIN", "USER")
+							.pathMatchers(HttpMethod.POST, "/commands/createDocument").hasAnyRole("ADMIN", "USER")
+							.pathMatchers(HttpMethod.GET, "/queries/dossiers/**").hasAnyRole("ADMIN", "USER")
+							.pathMatchers(HttpMethod.GET, "/queries/dossier/**").hasAnyRole("ADMIN", "USER")
+							.pathMatchers(HttpMethod.GET, "/queries/clients/*").hasAnyRole("ADMIN", "USER", "AUDITOR")
+							.pathMatchers(HttpMethod.GET, "/queries/client/**").hasAnyRole("ADMIN", "USER", "AUDITOR")
+							.pathMatchers(HttpMethod.GET, "/queries/documents/**").hasAnyRole("ADMIN", "USER")
+							.pathMatchers(HttpMethod.GET, "/queries/vehicules/**").hasAnyRole("ADMIN", "USER");
 
-		// --- Règles métier ---
-		// ADMIN uniquement : création de client et de dossier
-		authorize
-				.pathMatchers(HttpMethod.POST, "/commands/createClient").hasRole("ADMIN")
-				.pathMatchers(HttpMethod.POST, "/commands/createDossier").hasRole("ADMIN")
-				// ADMIN, USER et AUDITOR : lecture des clients
-				.pathMatchers(HttpMethod.GET, "/queries/clients").hasAnyRole("ADMIN", "USER", "AUDITOR")
-				// ADMIN ou USER : création de véhicule et de document
-				.pathMatchers(HttpMethod.POST, "/commands/createVehicule").hasAnyRole("ADMIN", "USER")
-				.pathMatchers(HttpMethod.POST, "/commands/createDocument").hasAnyRole("ADMIN", "USER")
-				// ADMIN, USER ou AUDITOR : consultation d'un dossier, d'un client
-				.pathMatchers(HttpMethod.GET, "/queries/dossiers/**").hasAnyRole("ADMIN", "USER")
-				.pathMatchers(HttpMethod.GET, "/queries/dossier/**").hasAnyRole("ADMIN", "USER")
-				.pathMatchers(HttpMethod.GET, "/queries/clients/*").hasAnyRole("ADMIN", "USER", "AUDITOR")
-				.pathMatchers(HttpMethod.GET, "/queries/client/**").hasAnyRole("ADMIN", "USER", "AUDITOR")
-				// ADMIN ou USER : consultation des documents et véhicules
-				.pathMatchers(HttpMethod.GET, "/queries/documents/**").hasAnyRole("ADMIN", "USER")
-				.pathMatchers(HttpMethod.GET, "/queries/vehicules/**").hasAnyRole("ADMIN", "USER");
-
-		if (requireAuthenticatedAll) {
-			authorize.anyExchange().authenticated();
-		} else {
-			authorize.anyExchange().permitAll();
-		}
-
-		return http
+					if (requireAuthenticatedAll) {
+						authorize.anyExchange().authenticated();
+					} else {
+						authorize.anyExchange().permitAll();
+					}
+				})
 				.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
 				.build();
 	}
