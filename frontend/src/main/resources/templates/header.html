@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>header</title>
@@ -50,6 +50,22 @@
                             <li><a class="dropdown-item" th:href="@{/showvehicule}">Rechercher un véhicule (saisie manuelle)</a></li>
                             <li><a class="dropdown-item" th:href="@{/searchvehiculelist}">Rechercher un véhicule (liste déroulante)</a></li>
                         </ul>
+                    </li>
+
+                    <!-- Utilisateur connecte + deconnexion -->
+                    <li class="nav-item d-flex align-items-center ms-4" sec:authorize="isAuthenticated()">
+                        <span class="nav-link px-2 text-muted">
+                            Connecte: <strong
+                                th:text="${#authentication.principal.claims != null and #authentication.principal.claims['name'] != null}
+                                    ? ${#authentication.principal.claims['name']}
+                                    : (${#authentication.principal.claims != null and #authentication.principal.claims['preferred_username'] != null}
+                                        ? ${#authentication.principal.claims['preferred_username']}
+                                        : ${#authentication.name})">user</strong>
+                        </span>
+                        <form th:action="@{/logout}" method="post" class="ms-2 mb-0">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">Se deconnecter</button>
+                        </form>
                     </li>
                 </ul>
             </div>

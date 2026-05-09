@@ -109,7 +109,8 @@
         <h1>Suivi de Maintenance Automobile</h1>
         <p class="lead">Optimisez la durée de vie de votre voiture en un clic grâce à notre application de maintenance automobile intelligente et personnalisée</p>
         <p class="lead">
-            <a href="#" th:href="@{/dossiers}" class="btn btn-lg btn-light fw-bold border-1 bg-white">Entrez</a>
+            <!-- Cible une page protegee: Spring memorise /dossiers puis revient dessus apres login Keycloak -->
+            <a href="#" th:href="@{/dossiers}" class="btn btn-lg btn-light fw-bold border-1 bg-white">Entrez dans l'appli</a>
         </p>
     </main>
 
