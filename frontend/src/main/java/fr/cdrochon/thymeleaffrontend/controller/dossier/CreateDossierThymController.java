@@ -105,6 +105,11 @@ public class CreateDossierThymController {
                                                    dossierThymDTO.getClient() != null ? dossierThymDTO.getClient().getNomClient() : "N/A",
                                                    dossierThymDTO.getVehicule() != null ? dossierThymDTO.getVehicule().getImmatriculationVehicule() : "N/A",
                                                    dossierThymDTO.getDossierStatus());
+                     FrontendLoggers.business().info("UI_DOSSIER_CREATE_REQUEST nomDossier={} clientNom={} vehiculeImmatriculation={} status={}",
+                                                     dossierThymDTO.getNomDossier(),
+                                                     dossierThymDTO.getClient() != null ? dossierThymDTO.getClient().getNomClient() : "N/A",
+                                                     dossierThymDTO.getVehicule() != null ? dossierThymDTO.getVehicule().getImmatriculationVehicule() : "N/A",
+                                                     dossierThymDTO.getDossierStatus());
 
                      DossierThymConvertDTO dossierConvertThymDTO = convertDossierDTO(dossierThymDTO);
                     String jsonPayload = convertObjectToJson(dossierConvertThymDTO);
@@ -127,6 +132,8 @@ public class CreateDossierThymController {
                                         FrontendLoggers.access().info("Response: {}", dossier);
                                         FrontendLoggers.access().info("type de valeur : {}", dossier.getDateCreationDossier().getClass());
                                         FrontendLoggers.access().info("Dossier created successfully");
+                                        FrontendLoggers.business().info("UI_DOSSIER_CREATE_OK dossierId={} nomDossier={} status={}",
+                                                                        dossier.getId(), dossier.getNomDossier(), dossier.getDossierStatus());
                                         redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
                                         return Mono.just("redirect:/dossier/" + dossier.getId());
                                         // redirection vers la liste des clients
@@ -135,12 +142,16 @@ public class CreateDossierThymController {
                                     })
                                     .onErrorResume(TimeoutException.class, e -> {
                                         FrontendLoggers.error().error("Timeout occurred: {}", e.getMessage());
+                                        FrontendLoggers.business().error("UI_DOSSIER_CREATE_FAILED reason=timeout nomDossier={} message={}",
+                                                                         dossierThymDTO.getNomDossier(), e.getMessage());
                                         redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                         redirectAttributes.addFlashAttribute("errorMessage", "Tempes de requête dépassé. Veuillez réessayer plus tard.");
                                         redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");
                                         return Mono.just("redirect:/error");
                                     })
                                     .onErrorResume(WebClientResponseException.class, e -> {
+                                        FrontendLoggers.business().error("UI_DOSSIER_CREATE_FAILED status={} nomDossier={} message={}",
+                                                                         e.getStatusCode().value(), dossierThymDTO.getNomDossier(), e.getResponseBodyAsString());
                                         if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                                             FrontendLoggers.error().error("400 Bad Request: {}", e.getResponseBodyAsString());
                                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");

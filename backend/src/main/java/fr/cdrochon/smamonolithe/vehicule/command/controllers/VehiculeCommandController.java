@@ -2,7 +2,7 @@ package fr.cdrochon.smamonolithe.vehicule.command.controllers;
 
 import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
 import fr.cdrochon.smamonolithe.vehicule.command.services.VehiculeCommandService;
-import lombok.extern.slf4j.Slf4j;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-@Slf4j
 @RestController
 @RequestMapping("/commands")
 public class VehiculeCommandController {
@@ -32,13 +31,17 @@ public class VehiculeCommandController {
      */
     @PostMapping(value = "/createVehicule")
     public Mono<ResponseEntity<VehiculeCommandDTO>> createClientAsync(@RequestBody VehiculeCommandDTO vehiculeRequestDTO) {
+        BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST immatriculation={} status={}",
+                                        vehiculeRequestDTO.getImmatriculationVehicule(), vehiculeRequestDTO.getVehiculeStatus());
         return Mono.fromFuture(vehiculeCommandService.createVehicule(vehiculeRequestDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(vehicule -> {
-                       log.info("Garage créé : " + vehicule);
+                       BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_OK vehiculeId={} immatriculation={} status={}",
+                                                       vehicule.getId(), vehicule.getImmatriculationVehicule(), vehicule.getVehiculeStatus());
                        return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(vehicule));
                    })
                    .onErrorResume(ex -> {
-                       log.error("Erreur lors de la création du garage : " + ex.getMessage());
+                       BusinessLoggers.business().error("BIZ_VEHICULE_CREATE_FAILED immatriculation={} message={}",
+                                                        vehiculeRequestDTO.getImmatriculationVehicule(), ex.getMessage());
                        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
                    });
     }

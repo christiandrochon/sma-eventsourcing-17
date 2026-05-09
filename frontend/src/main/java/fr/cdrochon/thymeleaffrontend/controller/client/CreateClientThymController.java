@@ -71,6 +71,8 @@ public class CreateClientThymController {
          FrontendLoggers.access().info("UI_CLIENT_CREATE_REQUEST nomClient={} prenomClient={} mail={} tel={} status={}",
                                        clientDTO.getNomClient(), clientDTO.getPrenomClient(), clientDTO.getMailClient(),
                                        clientDTO.getTelClient(), clientDTO.getClientStatus());
+         FrontendLoggers.business().info("UI_CLIENT_CREATE_REQUEST nomClient={} prenomClient={} status={}",
+                                         clientDTO.getNomClient(), clientDTO.getPrenomClient(), clientDTO.getClientStatus());
 
          return webClient.post()
                         .uri("/commands/createClient")
@@ -86,6 +88,8 @@ public class CreateClientThymController {
                                 return Mono.error(new RuntimeException("Erreur lors de la création du client"));
                             }
                             FrontendLoggers.access().info("UI_CLIENT_CREATE_OK clientId={}", clientThymDTO.getId());
+                            FrontendLoggers.business().info("UI_CLIENT_CREATE_OK clientId={} nomClient={} prenomClient={}",
+                                                            clientThymDTO.getId(), clientThymDTO.getNomClient(), clientThymDTO.getPrenomClient());
                             redirectAttributes.addFlashAttribute("successMessage", "Client créé avec succès");
                             return Mono.just("redirect:/client/" + clientThymDTO.getId());
                             // redirection vers la liste des clients
@@ -94,6 +98,8 @@ public class CreateClientThymController {
                         })
                         .onErrorResume(TimeoutException.class, e -> {
                             FrontendLoggers.error().error("UI_CLIENT_CREATE_FAILED reason=timeout message={}", e.getMessage());
+                            FrontendLoggers.business().error("UI_CLIENT_CREATE_FAILED reason=timeout nomClient={} prenomClient={} message={}",
+                                                             clientDTO.getNomClient(), clientDTO.getPrenomClient(), e.getMessage());
                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                             redirectAttributes.addFlashAttribute("errorMessage", "Temps de requête dépassé. Veuillez réessayer plus tard.");
                             redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");
@@ -101,6 +107,8 @@ public class CreateClientThymController {
                         })
                         .onErrorResume(WebClientResponseException.class, e -> {
                             FrontendLoggers.error().error("UI_CLIENT_CREATE_FAILED status={} message={}", e.getStatusCode().value(), e.getResponseBodyAsString());
+                            FrontendLoggers.business().error("UI_CLIENT_CREATE_FAILED status={} nomClient={} prenomClient={} message={}",
+                                                             e.getStatusCode().value(), clientDTO.getNomClient(), clientDTO.getPrenomClient(), e.getResponseBodyAsString());
                             if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");

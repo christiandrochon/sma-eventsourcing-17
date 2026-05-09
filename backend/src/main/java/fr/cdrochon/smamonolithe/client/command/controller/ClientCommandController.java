@@ -2,7 +2,7 @@ package fr.cdrochon.smamonolithe.client.command.controller;
 
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
 import fr.cdrochon.smamonolithe.client.command.services.ClientCommandService;
-import lombok.extern.slf4j.Slf4j;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,6 @@ import reactor.core.scheduler.Schedulers;
 import java.util.stream.Stream;
 
 @RestController
-@Slf4j
 @RequestMapping("/commands")
 public class ClientCommandController {
     
@@ -35,13 +34,17 @@ public class ClientCommandController {
      */
     @PostMapping("/createClient")
     public Mono<ResponseEntity<ClientCommandDTO>> createClientAsync(@RequestBody ClientCommandDTO clientCommandDTO) {
+        BusinessLoggers.business().info("BIZ_CLIENT_CREATE_REQUEST nomClient={} prenomClient={} status={}",
+                                        clientCommandDTO.getNomClient(), clientCommandDTO.getPrenomClient(), clientCommandDTO.getClientStatus());
         return Mono.fromFuture(clientCommandService.createClient(clientCommandDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(client -> {
-                       log.info("Garage créé : " + client);
+                       BusinessLoggers.business().info("BIZ_CLIENT_CREATE_OK clientId={} nomClient={} prenomClient={} status={}",
+                                                       client.getId(), client.getNomClient(), client.getPrenomClient(), client.getClientStatus());
                        return Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(client));
                    })
                    .onErrorResume(ex -> {
-                       log.error("Erreur lors de la création du garage : " + ex.getMessage());
+                       BusinessLoggers.business().error("BIZ_CLIENT_CREATE_FAILED nomClient={} prenomClient={} message={}",
+                                                        clientCommandDTO.getNomClient(), clientCommandDTO.getPrenomClient(), ex.getMessage());
                        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
                    });
     }

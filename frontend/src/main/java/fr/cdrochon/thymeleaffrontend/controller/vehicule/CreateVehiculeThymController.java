@@ -89,6 +89,9 @@ public class CreateVehiculeThymController {
                                                    vehiculePostDTO.getImmatriculationVehicule(),
                                                    vehiculePostDTO.getDateMiseEnCirculationVehicule(),
                                                    vehiculePostDTO.getVehiculeStatus());
+                     FrontendLoggers.business().info("UI_VEHICULE_CREATE_REQUEST immatriculation={} status={}",
+                                                     vehiculePostDTO.getImmatriculationVehicule(),
+                                                     vehiculePostDTO.getVehiculeStatus());
 
                      VehiculeThymConvertDTO vehiculeDateConvertDTO = convertVehiculeDTO(vehiculePostDTO);
                     String jsonPayload = convertObjectToJson(vehiculeDateConvertDTO);
@@ -111,6 +114,8 @@ public class CreateVehiculeThymController {
                                         FrontendLoggers.access().info("Response: {}", vehicule);
                                         FrontendLoggers.access().info("type de valeur : {}", vehicule.getDateMiseEnCirculationVehicule().getClass());
                                         FrontendLoggers.access().info("Vehicule created successfully");
+                                        FrontendLoggers.business().info("UI_VEHICULE_CREATE_OK vehiculeId={} immatriculation={} status={}",
+                                                                        vehicule.getId(), vehicule.getImmatriculationVehicule(), vehicule.getVehiculeStatus());
                                         redirectAttributes.addFlashAttribute("successMessage", "Vehicule créé avec succès");
                                         return Mono.just("redirect:/vehicules/" + vehicule.getId());
                                         // redirection vers la liste des clients
@@ -119,12 +124,16 @@ public class CreateVehiculeThymController {
                                     })
                                     .onErrorResume(TimeoutException.class, e -> {
                                         FrontendLoggers.error().error("Timeout occurred: {}", e.getMessage());
+                                        FrontendLoggers.business().error("UI_VEHICULE_CREATE_FAILED reason=timeout immatriculation={} message={}",
+                                                                         vehiculePostDTO.getImmatriculationVehicule(), e.getMessage());
                                         redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                         redirectAttributes.addFlashAttribute("errorMessage", "Tempes de requête dépassé. Veuillez réessayer plus tard.");
                                         redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
                                         return Mono.just("redirect:/error");
                                     })
                                     .onErrorResume(WebClientResponseException.class, e -> {
+                                        FrontendLoggers.business().error("UI_VEHICULE_CREATE_FAILED status={} immatriculation={} message={}",
+                                                                         e.getStatusCode().value(), vehiculePostDTO.getImmatriculationVehicule(), e.getResponseBodyAsString());
                                         if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                                             FrontendLoggers.error().error("400 Bad Request: {}", e.getResponseBodyAsString());
                                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");

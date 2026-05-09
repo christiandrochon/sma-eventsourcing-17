@@ -84,6 +84,8 @@ public class CreateDocumentThymController {
                                        documentThymDTO.getNomDocument(), documentThymDTO.getTitreDocument(),
                                        documentThymDTO.getEmetteurDuDocument(), documentThymDTO.getTypeDocument(),
                                        documentThymDTO.getDocumentStatus(), jsonPayload);
+         FrontendLoggers.business().info("UI_DOCUMENT_CREATE_REQUEST nomDocument={} type={} status={}",
+                                         documentThymDTO.getNomDocument(), documentThymDTO.getTypeDocument(), documentThymDTO.getDocumentStatus());
 
         return webClient.post()
                         .uri("/commands/createDocument")
@@ -102,6 +104,8 @@ public class CreateDocumentThymController {
                             FrontendLoggers.access().info("UI_DOCUMENT_CREATE_RESPONSE doc={}", doc);
                             FrontendLoggers.access().info("UI_DOCUMENT_CREATE_DATE_TYPE type={}", doc.getDateCreationDocument().getClass());
                             FrontendLoggers.access().info("UI_DOCUMENT_CREATE_OK");
+                            FrontendLoggers.business().info("UI_DOCUMENT_CREATE_OK documentId={} nomDocument={} type={}",
+                                                            doc.getId(), doc.getNomDocument(), doc.getTypeDocument());
                             redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
                             return Mono.just("redirect:/document/" + doc.getId());
                             // redirection vers la liste des clients
@@ -110,12 +114,16 @@ public class CreateDocumentThymController {
                         })
                         .onErrorResume(TimeoutException.class, e -> {
                             FrontendLoggers.error().error("UI_DOCUMENT_CREATE_FAILED reason=timeout message={}", e.getMessage());
+                            FrontendLoggers.business().error("UI_DOCUMENT_CREATE_FAILED reason=timeout nomDocument={} message={}",
+                                                             documentThymDTO.getNomDocument(), e.getMessage());
                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                             redirectAttributes.addFlashAttribute("errorMessage", "Tempes de requête dépassé. Veuillez réessayer plus tard.");
                             redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
                             return Mono.just("redirect:/error");
                         })
                         .onErrorResume(WebClientResponseException.class, e -> {
+                            FrontendLoggers.business().error("UI_DOCUMENT_CREATE_FAILED status={} nomDocument={} message={}",
+                                                             e.getStatusCode().value(), documentThymDTO.getNomDocument(), e.getResponseBodyAsString());
                             if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                                 FrontendLoggers.error().error("UI_DOCUMENT_CREATE_FAILED status=400 message={}", e.getResponseBodyAsString());
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
