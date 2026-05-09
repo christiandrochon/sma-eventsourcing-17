@@ -22,6 +22,7 @@ public final class DossierTestDataFactory {
     public static final String DOSSIER_ID = "dossier-1";
     public static final String CLIENT_ID = "client-1";
     public static final String VEHICULE_ID = "vehicule-1";
+    public static final String USER_ID = "user-1";
     public static final Instant CREATED_AT = Instant.parse("2025-01-01T10:00:00Z");
     public static final Instant UPDATED_AT = Instant.parse("2025-01-01T11:00:00Z");
 
@@ -96,49 +97,52 @@ public final class DossierTestDataFactory {
         return vehicule;
     }
 
-    public static DossierCommandDTO sampleDossierCommandDto() {
-        return DossierCommandDTO.builder()
-                .id(DOSSIER_ID)
-                .nomDossier("DOSSIER-001")
-                .dateCreationDossier(CREATED_AT)
-                .dateModificationDossier(UPDATED_AT)
-                .client(sampleClientCommandDto())
-                .vehicule(sampleVehiculeCommandDto())
-                .dossierStatus(DossierStatus.OUVERT)
-                .build();
-    }
+     public static DossierCommandDTO sampleDossierCommandDto() {
+         return DossierCommandDTO.builder()
+                 .id(DOSSIER_ID)
+                 .nomDossier("DOSSIER-001")
+                 .dateCreationDossier(CREATED_AT)
+                 .dateModificationDossier(UPDATED_AT)
+                 .client(sampleClientCommandDto())
+                 .vehicule(sampleVehiculeCommandDto())
+                 .dossierStatus(DossierStatus.OUVERT)
+                 .userId(USER_ID)
+                 .build();
+     }
 
-    public static DossierCreateCommand sampleDossierCreateCommand() {
-        Client client = sampleClientEntity();
-        Vehicule vehicule = sampleVehiculeEntity();
-        return new DossierCreateCommand(
-                DOSSIER_ID,
-                "DOSSIER-001",
-                CREATED_AT,
-                UPDATED_AT,
-                client,
-                vehicule,
-                DossierStatus.OUVERT,
-                client.getId(),
-                vehicule.getId()
-        );
-    }
+     public static DossierCreateCommand sampleDossierCreateCommand() {
+         Client client = sampleClientEntity();
+         Vehicule vehicule = sampleVehiculeEntity();
+         return new DossierCreateCommand(
+                 DOSSIER_ID,
+                 "DOSSIER-001",
+                 CREATED_AT,
+                 UPDATED_AT,
+                 client,
+                 vehicule,
+                 DossierStatus.OUVERT,
+                 client.getId(),
+                 vehicule.getId(),
+                 USER_ID
+         );
+     }
 
-    public static DossierCreatedEvent sampleDossierCreatedEvent() {
-        Client client = sampleClientEntity();
-        Vehicule vehicule = sampleVehiculeEntity();
-        return new DossierCreatedEvent(
-                DOSSIER_ID,
-                "DOSSIER-001",
-                CREATED_AT,
-                UPDATED_AT,
-                client,
-                vehicule,
-                DossierStatus.OUVERT,
-                client.getId(),
-                vehicule.getId()
-        );
-    }
+     public static DossierCreatedEvent sampleDossierCreatedEvent() {
+         Client client = sampleClientEntity();
+         Vehicule vehicule = sampleVehiculeEntity();
+         return new DossierCreatedEvent(
+                 DOSSIER_ID,
+                 "DOSSIER-001",
+                 CREATED_AT,
+                 UPDATED_AT,
+                 client,
+                 vehicule,
+                 DossierStatus.OUVERT,
+                 client.getId(),
+                 vehicule.getId(),
+                 USER_ID
+         );
+     }
 
     public static Dossier sampleDossierEntity() {
         Client client = sampleClientEntity();

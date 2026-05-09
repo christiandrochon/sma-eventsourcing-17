@@ -39,45 +39,47 @@ class DossierAggregateTest {
                 ))));
     }
 
-    @Test
-    void shouldRejectCommandWhenClientIsMissing() {
-        Vehicule vehicule = sampleVehiculeEntity();
-        DossierCreateCommand command = new DossierCreateCommand(
-                DOSSIER_ID,
-                "DOSSIER-001",
-                CREATED_AT,
-                UPDATED_AT,
-                null,
-                vehicule,
-                DossierStatus.OUVERT,
-                CLIENT_ID,
-                VEHICULE_ID
-        );
+     @Test
+     void shouldRejectCommandWhenClientIsMissing() {
+         Vehicule vehicule = sampleVehiculeEntity();
+         DossierCreateCommand command = new DossierCreateCommand(
+                 DOSSIER_ID,
+                 "DOSSIER-001",
+                 CREATED_AT,
+                 UPDATED_AT,
+                 null,
+                 vehicule,
+                 DossierStatus.OUVERT,
+                 CLIENT_ID,
+                 VEHICULE_ID,
+                 USER_ID
+         );
 
-        fixture.givenNoPriorActivity()
-                .when(command)
-                .expectException(CreatedGarageException.class);
-    }
+         fixture.givenNoPriorActivity()
+                 .when(command)
+                 .expectException(CreatedGarageException.class);
+     }
 
-    @Test
-    void shouldRejectCommandWhenVehiculeIsMissing() {
-        Client client = sampleClientEntity();
-        DossierCreateCommand command = new DossierCreateCommand(
-                DOSSIER_ID,
-                "DOSSIER-001",
-                CREATED_AT,
-                UPDATED_AT,
-                client,
-                null,
-                DossierStatus.OUVERT,
-                CLIENT_ID,
-                VEHICULE_ID
-        );
+     @Test
+     void shouldRejectCommandWhenVehiculeIsMissing() {
+         Client client = sampleClientEntity();
+         DossierCreateCommand command = new DossierCreateCommand(
+                 DOSSIER_ID,
+                 "DOSSIER-001",
+                 CREATED_AT,
+                 UPDATED_AT,
+                 client,
+                 null,
+                 DossierStatus.OUVERT,
+                 CLIENT_ID,
+                 VEHICULE_ID,
+                 USER_ID
+         );
 
-        fixture.givenNoPriorActivity()
-                .when(command)
-                .expectException(CreatedGarageException.class);
-    }
+         fixture.givenNoPriorActivity()
+                 .when(command)
+                 .expectException(CreatedGarageException.class);
+     }
 
     @Test
     void shouldRehydrateStateFromCreatedEvent() {

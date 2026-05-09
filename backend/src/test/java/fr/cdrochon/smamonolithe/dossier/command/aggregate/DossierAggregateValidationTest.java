@@ -24,24 +24,25 @@ class DossierAggregateValidationTest {
         fixture = new AggregateTestFixture<>(DossierAggregate.class);
     }
 
-    @Test
-    void shouldRejectDossierWhenClientAndVehiculeAreBothNull() {
-        DossierCreateCommand command = new DossierCreateCommand(
-                DOSSIER_ID,
-                "DOSSIER-001",
-                CREATED_AT,
-                UPDATED_AT,
-                null,
-                null,
-                DossierStatus.OUVERT,
-                CLIENT_ID,
-                VEHICULE_ID
-        );
+     @Test
+     void shouldRejectDossierWhenClientAndVehiculeAreBothNull() {
+         DossierCreateCommand command = new DossierCreateCommand(
+                 DOSSIER_ID,
+                 "DOSSIER-001",
+                 CREATED_AT,
+                 UPDATED_AT,
+                 null,
+                 null,
+                 DossierStatus.OUVERT,
+                 CLIENT_ID,
+                 VEHICULE_ID,
+                 USER_ID
+         );
 
-        fixture.givenNoPriorActivity()
-                .when(command)
-                .expectException(CreatedGarageException.class);
-    }
+         fixture.givenNoPriorActivity()
+                 .when(command)
+                 .expectException(CreatedGarageException.class);
+     }
 
     @Test
     void shouldRejectDossierWhenModificationDateIsBeforeCreationDate() {
@@ -50,17 +51,18 @@ class DossierAggregateValidationTest {
         Instant futureDate = CREATED_AT.plusSeconds(3600);
         Instant pastDate = CREATED_AT.minusSeconds(3600);
 
-        DossierCreateCommand command = new DossierCreateCommand(
-                DOSSIER_ID,
-                "DOSSIER-001",
-                futureDate,
-                pastDate,
-                client,
-                vehicule,
-                DossierStatus.OUVERT,
-                CLIENT_ID,
-                VEHICULE_ID
-        );
+         DossierCreateCommand command = new DossierCreateCommand(
+                 DOSSIER_ID,
+                 "DOSSIER-001",
+                 futureDate,
+                 pastDate,
+                 client,
+                 vehicule,
+                 DossierStatus.OUVERT,
+                 CLIENT_ID,
+                 VEHICULE_ID,
+                 USER_ID
+         );
 
         fixture.givenNoPriorActivity()
                 .when(command)
@@ -77,17 +79,18 @@ class DossierAggregateValidationTest {
         Client client = sampleClientEntity();
         Vehicule vehicule = sampleVehiculeEntity();
 
-        DossierCreateCommand command = new DossierCreateCommand(
-                DOSSIER_ID,
-                "",
-                CREATED_AT,
-                UPDATED_AT,
-                client,
-                vehicule,
-                DossierStatus.OUVERT,
-                CLIENT_ID,
-                VEHICULE_ID
-        );
+         DossierCreateCommand command = new DossierCreateCommand(
+                 DOSSIER_ID,
+                 "",
+                 CREATED_AT,
+                 UPDATED_AT,
+                 client,
+                 vehicule,
+                 DossierStatus.OUVERT,
+                 CLIENT_ID,
+                 VEHICULE_ID,
+                 USER_ID
+         );
 
         fixture.givenNoPriorActivity()
                 .when(command)
@@ -105,17 +108,18 @@ class DossierAggregateValidationTest {
         Vehicule vehicule = sampleVehiculeEntity();
         String veryLongName = "A".repeat(500);
 
-        DossierCreateCommand command = new DossierCreateCommand(
-                DOSSIER_ID,
-                veryLongName,
-                CREATED_AT,
-                UPDATED_AT,
-                client,
-                vehicule,
-                DossierStatus.OUVERT,
-                CLIENT_ID,
-                VEHICULE_ID
-        );
+         DossierCreateCommand command = new DossierCreateCommand(
+                 DOSSIER_ID,
+                 veryLongName,
+                 CREATED_AT,
+                 UPDATED_AT,
+                 client,
+                 vehicule,
+                 DossierStatus.OUVERT,
+                 CLIENT_ID,
+                 VEHICULE_ID,
+                 USER_ID
+         );
 
         fixture.givenNoPriorActivity()
                 .when(command)
