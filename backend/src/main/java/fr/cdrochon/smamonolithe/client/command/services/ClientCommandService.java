@@ -1,0 +1,62 @@
+package fr.cdrochon.smamonolithe.client.command.services;
+
+import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
+import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
+import lombok.extern.slf4j.Slf4j;
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+
+@Service
+@Slf4j
+public class ClientCommandService {
+    
+    private final CommandGateway commandGateway;
+    //utiliser une CompletableFuture pour synchroniser l'attente du contrôleur jusqu'à ce que l'événement soit reçu et traité
+    private CompletableFuture<ClientCommandDTO> futureDTO;
+    
+    public ClientCommandService(CommandGateway commandGateway) {
+        this.commandGateway = commandGateway;
+    }
+    
+    /**
+     * Genere un UUID aleatoirement pour la creation d'un id de client
+     *
+     * @param clientrestPostDTO DTO contenant les informations du client a creer
+     * @return CompletableFuture that supports dependent functions and actions triggered upon its completion
+     */
+    @Transactional
+    public CompletableFuture<ClientCommandDTO> createClient(ClientCommandDTO clientrestPostDTO) {
+        //CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu.
+        futureDTO = new CompletableFuture<>();
+        String clientId = UUID.randomUUID().toString();
+        BusinessLoggers.business().info("BIZ_CLIENT_CREATE_REQUEST clientId={} nomClient={}", clientId,
+                                        clientrestPostDTO.getNomClient());
+        //envoyer la commande de création de garage -> @CommandHandler
+        //CHECKME : est ce ici que l'on créé l'id du garage ?
+        commandGateway.send(new ClientCreateCommand(clientId,
+                                                    clientrestPostDTO.getNomClient(),
+                                                    clientrestPostDTO.getPrenomClient(),
+                                                    clientrestPostDTO.getMailClient(),
+                                                    clientrestPostDTO.getTelClient(),
+                                                    clientrestPostDTO.getAdresse()));
+        return futureDTO;
+    }
+    
+    /**
+     * Compléter la future dans le service. Méthode appelée par @EventHandler
+     *
+     * @param dto DTO de création d'un garage
+     */
+    public void completeClientCreation(ClientCommandDTO dto) {
+        if(futureDTO != null) {
+            BusinessLoggers.business().info("BIZ_CLIENT_CREATE_CONFIRMED clientId={} status={}", dto.getId(),
+                                            dto.getClientStatus());
+            futureDTO.complete(dto);
+        }
+    }
+}
