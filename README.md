@@ -17,9 +17,10 @@ Application intranet de maintenance automobile basee sur Spring Boot, avec separ
 - [6. Build et tests](#6-build-et-tests)
 - [7. Configuration et profils Spring](#7-configuration-et-profils-spring)
 - [8. Logs](#8-logs)
-- [9. Troubleshooting rapide](#9-troubleshooting-rapide)
-- [10. Deployement Kubernetes (optionnel)](#10-deployement-kubernetes-optionnel)
-- [11. Licence](#11-licence)
+- [9. Grille d'audit independant (RGPD + gouvernance data)](#9-grille-daudit-independant-rgpd--gouvernance-data)
+- [10. Troubleshooting rapide](#10-troubleshooting-rapide)
+- [11. Deployement Kubernetes (optionnel)](#11-deployement-kubernetes-optionnel)
+- [12. Licence](#12-licence)
 
 ## 1. Vue d'ensemble
 
@@ -387,7 +388,117 @@ ls -la backend/logs/
 ls -la frontend/logs/securite/
 ```
 
-## 9. Troubleshooting rapide
+## 9. Grille d'audit independant (RGPD + gouvernance data)
+
+Objectif : rendre consultables en base les attentes d'un audit independant, au-dela des logs techniques.
+
+Cette grille fonctionne en 3 blocs complementaires :
+
+- `audit_events` : preuves operationnelles (qui a consulte quoi, quand, resultat, ip, etc.)
+- `audit_expectations` : referentiel des attentes de conformite (ce que l'auditeur verifie)
+- `audit_expectation_checks` : historique des controles independants (statut, score, constats, preuves)
+
+### Ce que fait la grille
+
+- Centralise les attentes RGPD et gouvernance de donnees dans la base `audit`
+- Permet d'associer des preuves concretes et datées a chaque attente
+- Conserve l'historique des controles (pas seulement le dernier statut)
+- Fournit une vue `audit_expectations_latest` pour un cockpit rapide
+- Garde les tables d'audit en mode append-only (pas d'update/delete)
+
+### Grille d'attentes initiale (seed)
+
+| Code | Domaine | Attente auditee | Frequence cible |
+|---|---|---|---|
+| `GOV_001` | `GOVERNANCE` | Roles et responsabilites definis | `QUARTERLY` |
+| `LAW_001` | `LEGAL_BASIS` | Base legale documentee | `QUARTERLY` |
+| `ROPA_001` | `ROPA` | Registre des traitements maintenu | `MONTHLY` |
+| `MIN_001` | `MINIMIZATION` | Minimisation des donnees | `QUARTERLY` |
+| `RET_001` | `RETENTION` | Retention et suppression controlees | `MONTHLY` |
+| `DSR_001` | `DATA_SUBJECT_RIGHTS` | Gestion des droits des personnes | `MONTHLY` |
+| `IAM_001` | `ACCESS_CONTROL` | Moindre privilege / habilitations | `MONTHLY` |
+| `AUD_001` | `TRACEABILITY` | Traçabilite complete et consultable | `WEEKLY` |
+| `XGR_001` | `CROSS_GARAGE` | Acces cross-garage monitorés | `WEEKLY` |
+| `VND_001` | `PROCESSORS` | Sous-traitants et contrats maitrises | `QUARTERLY` |
+| `TRF_001` | `INTERNATIONAL_TRANSFER` | Transferts internationaux couverts | `QUARTERLY` |
+| `DPIA_001` | `DPIA` | Analyses d'impact sur traitements a risque | `QUARTERLY` |
+| `INC_001` | `INCIDENTS` | Processus de violation de donnees operationnel | `MONTHLY` |
+| `RES_001` | `RESILIENCE` | Sauvegarde/restauration testees | `MONTHLY` |
+| `QTY_001` | `DATA_QUALITY` | Qualite/integrite des donnees | `MONTHLY` |
+
+### API backend pour consultation d'audit
+
+Ces endpoints lisent/ecrivent dans la base `audit` (datasource dediee `audit.datasource.*`) :
+
+- `GET /audit/compliance/expectations` : liste la grille + dernier statut de chaque attente
+- `GET /audit/compliance/expectations/{code}` : detail d'une attente + historique des controles
+- `POST /audit/compliance/expectations/{code}/checks` : ajoute une evaluation independante
+- `GET /audit/compliance/dashboard` : synthese (statuts + metriques 30 jours)
+
+### Initialiser la grille sur une base existante (volume deja cree)
+
+Si ton conteneur PostgreSQL utilise deja un volume, le script `initdb_postgres.sh` ne se rejoue pas automatiquement.
+Dans ce cas, applique explicitement le schema via `docker/audit_schema.sql` :
+
+```bash
+docker exec -i postgres-monolithe bash -lc "psql -U postgres -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname='audit'\" | grep -q 1 || psql -U postgres -d postgres -c \"CREATE DATABASE audit\""
+docker exec -i postgres-monolithe psql -U postgres -d audit < docker/audit_schema.sql
+```
+
+Exemple d'ajout d'un controle d'audit :
+
+```bash
+curl -X POST "http://localhost:8092/audit/compliance/expectations/AUD_001/checks" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "checkedBy": "cabinet-externe",
+    "status": "PARTIAL",
+    "score": 72,
+    "scope": "Perimetre backend prod",
+    "findings": "Traçabilite correcte mais raison fonctionnelle parfois absente.",
+    "remediationPlan": "Rendre reason obligatoire pour les acces cross-garage.",
+    "dueDate": "2026-06-30",
+    "evidenceUri": "s3://audit/evidence/AUD_001_2026Q2.pdf",
+    "crossGarageSampleSize": 25,
+    "insertedFrom": "INDEPENDENT_AUDIT"
+  }'
+```
+
+### Requetes SQL utiles pour un audit independant
+
+```sql
+-- Vue synthese de la grille
+SELECT code, domain, title, status, score, checked_at
+FROM audit_expectations_latest
+ORDER BY domain, code;
+
+-- Historique des controles d'une attente
+SELECT *
+FROM audit_expectation_checks
+WHERE expectation_code = 'AUD_001'
+ORDER BY checked_at DESC;
+
+-- Qui a consulte quoi (30 jours)
+SELECT actor, action, resource, resource_id, event_time
+FROM audit_events
+WHERE event_time >= now() - interval '30 days'
+ORDER BY event_time DESC;
+
+-- Acces cross-garage
+SELECT *
+FROM audit_events
+WHERE cross_garage = true
+ORDER BY event_time DESC;
+```
+
+### Notes d'implementation
+
+- Le schema est defini dans `docker/initdb_postgres.sh` et `docker/audit_schema.sql`
+- Les tables d'audit sont append-only via trigger `prevent_audit_mutation()`
+- La capture automatique des requetes HTTP passe par `TechnicalRequestWebFilter`
+- Le module de consultation est expose par `AuditComplianceController`
+
+## 10. Troubleshooting rapide
 
 1. **Erreur Thymeleaf `Error resolving template [template]`**
    - verifier que `frontend/src/main/resources/templates/template.html` existe
@@ -405,10 +516,10 @@ ls -la frontend/logs/securite/
    - verifier `logging.file.path` dans les fichiers `application-*.properties`
    - verifier la config de `backend/src/main/resources/logback-spring.xml`
 
-## 10. Deployement Kubernetes (optionnel)
+## 11. Deployement Kubernetes (optionnel)
 
 Les manifests sont disponibles dans `komp-smb/` pour un deploiement hors Docker Compose local.
 
-## 11. Licence
+## 12. Licence
 
 Projet distribue sous licence MIT. Voir `LICENCE`.
