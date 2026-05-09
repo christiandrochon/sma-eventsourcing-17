@@ -344,15 +344,47 @@ Validation automatique des logs de securite :
 - Backend :
   - `TechnicalRequestWebFilterHttpStatusMatrixTest` (100 cas, statuts 2xx a 5xx)
   - `TechnicalRequestWebFilterSecurityAnomalyTest` (methodes/chemins suspects + cas normal)
+  - `BackendSecurityLogFileDetectionTest` (30+ cas : codes 3xx/4xx/5xx, verification d'ecriture reelle dans `security.log`)
+  - `BackendLoggingStartupProbeTest` (verification de la creation des fichiers de log au demarrage)
 - Frontend :
   - `FrontendTechnicalRequestFilterHttpStatusMatrixTest` (100 cas, statuts 2xx a 5xx)
   - `FrontendTechnicalRequestFilterSecurityAnomalyTest` (methodes/chemins suspects + cas normal)
+  - `FrontendSecurityLogFilePolicyTest` (30+ cas : codes 3xx/4xx/5xx, verification d'ecriture reelle dans `ui-security.log`)
+
+### Politique de log securite
+
+Les regles appliquees automatiquement par les filtres de securite sont :
+
+| Situation | Code HTTP | Evenement logue | Fichier cible |
+|---|---|---|---|
+| Acces non autorise | 401 | `SEC_HTTP_ACCESS_DENIED` / `SEC_FRONTEND_ACCESS_DENIED` | `security.log` / `ui-security.log` |
+| Acces interdit | 403 | `SEC_HTTP_ACCESS_DENIED` / `SEC_FRONTEND_ACCESS_DENIED` | `security.log` / `ui-security.log` |
+| Methode suspecte (DELETE, PATCH, PUT, TRACE, OPTIONS) | tout | `SEC_HTTP_ANOMALOUS_REQUEST` / `SEC_FRONTEND_ANOMALOUS_REQUEST` | `security.log` / `ui-security.log` |
+| Chemin suspect (`//`, `../`, `/admin`, `/actuator`, etc.) | tout | `SEC_HTTP_ANOMALOUS_REQUEST` / `SEC_FRONTEND_ANOMALOUS_REQUEST` | `security.log` / `ui-security.log` |
+| Autres codes (2xx, 3xx, 4xx autres, 5xx) | hors 401/403 | **rien** (pas de log securite) | — |
+
+Seuls les codes **401** et **403** alimentent le log securite pour les acces refuses. Les codes 3xx, 400, 404, 429, 500, 502, 503, etc. ne declenchent pas d'evenement securite (ils sont geres par le log technique).
 
 Execution rapide des tests de securite :
 
 ```bash
-mvn -pl backend -Dtest=TechnicalRequestWebFilterHttpStatusMatrixTest,TechnicalRequestWebFilterSecurityAnomalyTest test
-mvn -pl frontend -Dtest=FrontendTechnicalRequestFilterHttpStatusMatrixTest,FrontendTechnicalRequestFilterSecurityAnomalyTest test
+mvn -pl backend -Dtest=TechnicalRequestWebFilterHttpStatusMatrixTest,TechnicalRequestWebFilterSecurityAnomalyTest,BackendSecurityLogFileDetectionTest,BackendLoggingStartupProbeTest test
+mvn -pl frontend -Dtest=FrontendTechnicalRequestFilterHttpStatusMatrixTest,FrontendTechnicalRequestFilterSecurityAnomalyTest,FrontendSecurityLogFilePolicyTest test
+```
+
+### Creation automatique des fichiers de log au demarrage
+
+Au demarrage de chaque module, un composant `@Component` (`BackendLoggingStartupProbe` / `FrontendLoggingStartupProbe`) verifie et cree automatiquement les fichiers de log manquants :
+
+- Backend : `backend/logs/metier/`, `backend/logs/technique/`, `backend/logs/security.log`
+- Frontend : `frontend/logs/metier/`, `frontend/logs/technique/`, `frontend/logs/securite/`
+
+Si un fichier est absent au demarrage, il est cree vide. Un evenement `SEC_STARTUP` est emis dans le log securite pour confirmer l'initialisation.
+
+```bash
+# Verifier la creation des fichiers au premier lancement :
+ls -la backend/logs/
+ls -la frontend/logs/securite/
 ```
 
 ## 9. Troubleshooting rapide
