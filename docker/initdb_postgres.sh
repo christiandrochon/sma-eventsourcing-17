@@ -22,7 +22,59 @@ END
 GRANT ALL PRIVILEGES ON DATABASE "${POSTGRES_DB}" TO "${POSTGRES_USER}";
 EOSQL
 
-echo "Init script: done"
+echo "Init script: monolithe database done"
+
+# -----------------------------------------------------------------------
+# BASE audit : traçabilité RGPD - non modifiable par l'applicatif
+# -----------------------------------------------------------------------
+echo "Creating 'audit' database..."
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname postgres <<EOSQL
+DO \$\$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'audit') THEN
+    EXECUTE 'CREATE DATABASE audit';
+  END IF;
+END
+\$\$;
+GRANT ALL PRIVILEGES ON DATABASE audit TO "${POSTGRES_USER}";
+EOSQL
+
+echo "Creating audit schema and audit_events table..."
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname audit <<EOSQL
+CREATE TABLE IF NOT EXISTS audit_events (
+    id              BIGSERIAL                   PRIMARY KEY,
+    event_time      TIMESTAMP WITH TIME ZONE    NOT NULL DEFAULT now(),
+    actor           VARCHAR(255)                NOT NULL,
+    actor_garage    VARCHAR(255),
+    action          VARCHAR(100)                NOT NULL,
+    resource        VARCHAR(100)                NOT NULL,
+    resource_id     VARCHAR(255),
+    garage_id       VARCHAR(255),
+    cross_garage    BOOLEAN                     NOT NULL DEFAULT FALSE,
+    reason          TEXT,
+    result          VARCHAR(50)                 NOT NULL,
+    http_method     VARCHAR(10),
+    http_path       VARCHAR(1024),
+    http_status     INTEGER,
+    ip_address      VARCHAR(45),
+    user_agent      VARCHAR(512),
+    details         TEXT
+);
+
+-- Index pour recherche RGPD : qui a fait quoi, quand
+CREATE INDEX IF NOT EXISTS idx_audit_actor       ON audit_events (actor);
+CREATE INDEX IF NOT EXISTS idx_audit_event_time  ON audit_events (event_time);
+CREATE INDEX IF NOT EXISTS idx_audit_resource    ON audit_events (resource, resource_id);
+CREATE INDEX IF NOT EXISTS idx_audit_garage      ON audit_events (garage_id);
+CREATE INDEX IF NOT EXISTS idx_audit_cross       ON audit_events (cross_garage) WHERE cross_garage = TRUE;
+
+-- SECURITE RGPD : l'applicatif ne peut qu'INSERer, jamais UPDATE ni DELETE
+REVOKE UPDATE, DELETE ON audit_events FROM "${POSTGRES_USER}";
+EOSQL
+
+echo "Init script: audit database done"
 
 
 
