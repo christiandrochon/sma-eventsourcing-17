@@ -23,4 +23,5 @@ public class DossierThymConvertDTO {
     private ClientThymDTO client;
     private VehiculeThymConvertDTO vehicule;
     private DossierStatusThymDTO dossierStatus;
+    private String userId;
 }

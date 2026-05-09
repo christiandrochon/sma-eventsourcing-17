@@ -27,4 +27,5 @@ public class DossierThymDTO {
     @Valid
     private VehiculeThymDTO vehicule;
     private DossierStatusThymDTO dossierStatus;
+    private String userId;
 }
