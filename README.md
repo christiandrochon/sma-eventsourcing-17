@@ -657,6 +657,18 @@ docker exec -i postgres-monolithe psql -U postgres -d audit -c "\copy (SELECT * 
 docker exec -i postgres-monolithe psql -U postgres -d audit -c "SELECT event_time, actor, actor_garage, garage_id, resource, resource_id, reason FROM audit_events WHERE cross_garage = true ORDER BY event_time DESC LIMIT 200;"
 ```
 
+8. **Existe-t-il une commande unique pour verifier rapidement l'etat audit ?**
+   - oui, utiliser le script `scripts/audit-check.sh`
+   - mode standard: diagnostic seulement
+   - mode `--apply-schema`: tente de corriger le schema audit si manquant
+
+```bash
+cd /home/cdn/IdeaProjects/sma-eventsourcing-17
+chmod +x scripts/audit-check.sh
+./scripts/audit-check.sh
+./scripts/audit-check.sh --apply-schema
+```
+
 ## 11. Deployement Kubernetes (optionnel)
 
 Les manifests sont disponibles dans `komp-smb/` pour un deploiement hors Docker Compose local.
