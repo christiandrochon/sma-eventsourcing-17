@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -25,6 +26,15 @@ public class SecurityConfig {
 	@Value("${app.security.audit-endpoints-authenticated:true}")
 	private boolean auditEndpointsAuthenticated;
 
+	@Value("${app.security.audit-required-roles:ADMIN,AUDITOR}")
+	private String auditRequiredRoles;
+
+	private final KeycloakReactiveJwtAuthenticationConverter jwtAuthenticationConverter;
+
+	public SecurityConfig(KeycloakReactiveJwtAuthenticationConverter jwtAuthenticationConverter) {
+		this.jwtAuthenticationConverter = jwtAuthenticationConverter;
+	}
+
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 		ServerHttpSecurity.AuthorizeExchangeSpec authorize = http
@@ -38,7 +48,7 @@ public class SecurityConfig {
 				.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
 		if (auditEndpointsAuthenticated) {
-			authorize.pathMatchers("/audit/compliance/**").authenticated();
+			authorize.pathMatchers("/audit/compliance/**").hasAnyRole(resolveAuditRoles());
 		} else {
 			authorize.pathMatchers("/audit/compliance/**").permitAll();
 		}
@@ -50,8 +60,19 @@ public class SecurityConfig {
 		}
 
 		return http
-				.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> {}))
+				.oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
 				.build();
+	}
+
+	private String[] resolveAuditRoles() {
+		String[] roles = StringUtils.commaDelimitedListToStringArray(auditRequiredRoles);
+		if (roles.length == 0) {
+			return new String[]{"ADMIN", "AUDITOR"};
+		}
+		for (int i = 0; i < roles.length; i++) {
+			roles[i] = roles[i].trim().replace("ROLE_", "");
+		}
+		return roles;
 	}
 
 	@Bean
