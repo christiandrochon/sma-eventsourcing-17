@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.5.14</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>fr.cdrochon</groupId>
@@ -15,6 +15,9 @@
     <description>frontend</description>
     <properties>
         <java.version>17</java.version>
+        <jackson-bom.version>2.18.6</jackson-bom.version>
+        <thymeleaf.version>3.1.5.RELEASE</thymeleaf.version>
+        <tomcat.version>10.1.54</tomcat.version>
     </properties>
     <dependencies>
         <!--SPRING-->
