@@ -29,6 +29,9 @@ public class SecurityConfig {
 	@Value("${app.security.audit-required-roles:ADMIN,AUDITOR}")
 	private String auditRequiredRoles;
 
+	@Value("${app.security.audit-writer-roles:ADMIN}")
+	private String auditWriterRoles;
+
 	private final KeycloakReactiveJwtAuthenticationConverter jwtAuthenticationConverter;
 
 	public SecurityConfig(KeycloakReactiveJwtAuthenticationConverter jwtAuthenticationConverter) {
@@ -48,7 +51,10 @@ public class SecurityConfig {
 				.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
 		if (auditEndpointsAuthenticated) {
-			authorize.pathMatchers("/audit/compliance/**").hasAnyRole(resolveAuditRoles());
+			authorize
+					.pathMatchers(HttpMethod.GET, "/audit/compliance/**").hasAnyRole(resolveAuditRoles())
+					.pathMatchers(HttpMethod.POST, "/audit/compliance/**").hasAnyRole(resolveAuditWriterRoles())
+					.pathMatchers("/audit/compliance/**").denyAll();
 		} else {
 			authorize.pathMatchers("/audit/compliance/**").permitAll();
 		}
@@ -66,8 +72,17 @@ public class SecurityConfig {
 
 	private String[] resolveAuditRoles() {
 		String[] roles = StringUtils.commaDelimitedListToStringArray(auditRequiredRoles);
+		return normalizeRoles(roles, new String[]{"ADMIN", "AUDITOR"});
+	}
+
+	private String[] resolveAuditWriterRoles() {
+		String[] roles = StringUtils.commaDelimitedListToStringArray(auditWriterRoles);
+		return normalizeRoles(roles, new String[]{"ADMIN"});
+	}
+
+	private String[] normalizeRoles(String[] roles, String[] fallback) {
 		if (roles.length == 0) {
-			return new String[]{"ADMIN", "AUDITOR"};
+			return fallback;
 		}
 		for (int i = 0; i < roles.length; i++) {
 			roles[i] = roles[i].trim().replace("ROLE_", "");
