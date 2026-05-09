@@ -46,7 +46,7 @@ class TechnicalRequestWebFilterHttpStatusMatrixTest {
     @ParameterizedTest(name = "backend status={0}")
     @MethodSource("hundredStatuses")
     void shouldTraceHttpStatusesFrom2xxTo5xx(int status) {
-        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter();
+        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter(NoopAuditServiceFactory.noop());
         MockServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.get("/queries/status/" + status).build()
         );

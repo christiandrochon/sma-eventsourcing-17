@@ -13,7 +13,7 @@ class TechnicalRequestWebFilterTest {
 
     @Test
     void shouldPassRequestThroughChain() {
-        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter();
+        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter(NoopAuditServiceFactory.noop());
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/queries/vehicules").build());
         WebFilterChain chain = mock(WebFilterChain.class);
 
@@ -25,7 +25,7 @@ class TechnicalRequestWebFilterTest {
 
     @Test
     void shouldPropagateErrorFromChain() {
-        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter();
+        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter(NoopAuditServiceFactory.noop());
         MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/queries/error").build());
         WebFilterChain chain = mock(WebFilterChain.class);
 

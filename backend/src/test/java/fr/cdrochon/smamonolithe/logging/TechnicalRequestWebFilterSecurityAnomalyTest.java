@@ -43,7 +43,7 @@ class TechnicalRequestWebFilterSecurityAnomalyTest {
                                                                String path,
                                                                boolean expectedSuspiciousMethod,
                                                                boolean expectedSuspiciousPath) {
-        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter();
+        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter(NoopAuditServiceFactory.noop());
         MockServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.method(HttpMethod.valueOf(method), path).build()
         );
@@ -68,7 +68,7 @@ class TechnicalRequestWebFilterSecurityAnomalyTest {
 
     @Test
     void shouldNotLogAnomalousRequestForSafeMethodAndPath() {
-        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter();
+        TechnicalRequestWebFilter filter = new TechnicalRequestWebFilter(NoopAuditServiceFactory.noop());
         MockServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.get("/queries/vehicules").build()
         );
