@@ -178,7 +178,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>fr.cdrochon.thymeleaffrontend.ThymeleafFrontendApplication</mainClass>
+                            <mainClass>fr.cdrochon.frontend.ThymeleafFrontendApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
