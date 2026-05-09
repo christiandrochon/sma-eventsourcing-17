@@ -87,5 +87,6 @@ export KEYCLOAK_PASSWORD="my-password"
 Notes RBAC audit :
 
 - Les endpoints backend `/audit/compliance/**` attendent un role `ADMIN` ou `AUDITOR` (quand `APP_SECURITY_ENABLED=true`).
-- Le token recupere doit donc contenir l'un de ces roles pour acceder au dashboard audit.
+- Le token recupere doit contenir un role lecture (`ADMIN`/`AUDITOR`) pour les GET.
+- L'ecriture (`POST /audit/compliance/**`) est reservee par defaut a `ADMIN`.
 
