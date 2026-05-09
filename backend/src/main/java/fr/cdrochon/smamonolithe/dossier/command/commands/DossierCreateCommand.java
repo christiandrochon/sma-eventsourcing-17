@@ -27,9 +27,10 @@ public class DossierCreateCommand extends DossierBaseCommand<String> {
     private final DossierStatus dossierStatus;
     private final String clientId;
     private final String vehiculeId;
-    
+    private final String userId;
+
     public DossierCreateCommand(String id, String nomDossier, Instant dateCreationDossier, Instant dateModificationDossier, Client client, Vehicule vehicule,
-                                DossierStatus dossierStatus, String clientId, String vehiculeId) {
+                                DossierStatus dossierStatus, String clientId, String vehiculeId, String userId) {
         super(id);
         this.nomDossier = nomDossier;
         this.dateCreationDossier = dateCreationDossier;
@@ -39,6 +40,7 @@ public class DossierCreateCommand extends DossierBaseCommand<String> {
         this.dossierStatus = dossierStatus;
         this.clientId = clientId;
         this.vehiculeId = vehiculeId;
+        this.userId = userId;
     }
     
     /**

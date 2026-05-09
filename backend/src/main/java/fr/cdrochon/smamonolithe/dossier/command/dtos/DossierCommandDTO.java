@@ -27,4 +27,5 @@ public class DossierCommandDTO {
     private VehiculeCommandDTO vehicule;
     // Un enum est immutable, pas besoin de le convertir en DTO
     private DossierStatus dossierStatus;
+    private String userId;
 }
