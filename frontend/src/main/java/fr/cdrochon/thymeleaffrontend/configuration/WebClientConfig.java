@@ -1,5 +1,6 @@
 package fr.cdrochon.thymeleaffrontend.configuration;
 
+import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,31 @@ public class WebClientConfig {
     public WebClient webClient() {
         return WebClient.builder()
                         .baseUrl(externalServiceUrl)
+                        .filter((request, next) -> {
+                            long startMs = System.currentTimeMillis();
+                            return next.exchange(request)
+                                       .doOnNext(response -> {
+                                           long durationMs = System.currentTimeMillis() - startMs;
+                                           FrontendLoggers.tech().info(
+                                                   "UI_TECH_EXT_WEBCLIENT method={} uri={} status={} durationMs={}",
+                                                   request.method(),
+                                                   request.url(),
+                                                   response.statusCode().value(),
+                                                   durationMs
+                                           );
+                                       })
+                                       .doOnError(exception -> {
+                                           long durationMs = System.currentTimeMillis() - startMs;
+                                           FrontendLoggers.error().error(
+                                                   "UI_TECH_EXT_WEBCLIENT_ERROR method={} uri={} durationMs={} message={}",
+                                                   request.method(),
+                                                   request.url(),
+                                                   durationMs,
+                                                   exception.getMessage(),
+                                                   exception
+                                           );
+                                       });
+                        })
                         .build();
     }
     
