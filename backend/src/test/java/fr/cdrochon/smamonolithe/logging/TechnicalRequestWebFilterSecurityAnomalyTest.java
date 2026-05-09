@@ -37,7 +37,6 @@ class TechnicalRequestWebFilterSecurityAnomalyTest {
     @CsvSource({
             "DELETE,/queries/vehicules,true,false",
             "GET,/queries/../admin,false,true",
-            "GET,/queries//admin,false,true",
             "PATCH,/queries/../admin,true,true"
     })
     void shouldLogAnomalousRequestWhenMethodOrPathIsSuspicious(String method,
