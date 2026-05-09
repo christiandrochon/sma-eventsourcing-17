@@ -4,6 +4,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,51 +46,59 @@ public class ClientThymController {
 
     /**
      * Affiche la liste des clients
+     * USER ne voit que ses propres clients
+     * ADMIN et AUDITOR voient tous les clients
      *
-     * @param model              model de la vue client/clients
-     * @param redirectAttributes attributs de redirection
+     * @param model model de la vue client/clients
+     * @param authentication authentication de l'utilisateur
      * @return la vue client/clients
      */
-     @GetMapping(value = "/clients")
-     public Mono<String> getClientsAsync(Model model) {
-         FrontendLoggers.business().info("UI_CLIENTS_LIST_REQUEST");
-         return webClient.get()
-                         .uri("/queries/clients")
-                         .retrieve()
-                         .bodyToFlux(ClientThymConvertDTO.class)
-                         .collectList()
-                         .flatMap(clients -> {
-                             assert clients != null;
-                             FrontendLoggers.business().info("UI_CLIENTS_LIST_RETRIEVED count={}", clients.size());
-                             clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
-                             model.addAttribute("clients", clients);
-                             return Mono.just("client/clients");
-                         })
-                        .onErrorResume(WebClientResponseException.class, e -> {
-                            FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status={} message={}", e.getStatusCode(), e.getResponseBodyAsString());
-                            model.addAttribute("alertClass", "alert-danger");
-                            model.addAttribute("urlRedirection", "/dossiers");
-                            if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                                model.addAttribute("errorMessage", "Accès interdit : vous n'avez pas les droits pour consulter la liste des clients.");
-                            } else if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                                model.addAttribute("errorMessage", "Non authentifié : veuillez vous reconnecter.");
-                            } else if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                                model.addAttribute("errorMessage", "Aucun client trouvé.");
-                            } else if (e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
-                                model.addAttribute("errorMessage", "Erreur interne du serveur. Réessayez plus tard.");
-                            } else {
-                                model.addAttribute("errorMessage", "Erreur inattendue (" + e.getStatusCode() + ").");
-                            }
-                            return Mono.just("error");
+    @GetMapping(value = "/clients")
+    public Mono<String> getClientsAsync(Model model, Authentication authentication) {
+        FrontendLoggers.business().info("UI_CLIENTS_LIST_REQUEST");
+
+        // Ajouter le nom d'utilisateur au modèle
+        if (authentication != null && authentication.isAuthenticated()) {
+            model.addAttribute("currentUsername", authentication.getName());
+        }
+
+        return webClient.get()
+                        .uri("/queries/clients")
+                        .retrieve()
+                        .bodyToFlux(ClientThymConvertDTO.class)
+                        .collectList()
+                        .flatMap(clients -> {
+                            assert clients != null;
+                            FrontendLoggers.business().info("UI_CLIENTS_LIST_RETRIEVED count={}", clients.size());
+                            clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
+                            model.addAttribute("clients", clients);
+                            return Mono.just("client/clients");
                         })
-                        .onErrorResume(Exception.class, e -> {
-                            FrontendLoggers.error().error("UI_CLIENT_LIST_UNEXPECTED_ERROR message={}", e.getMessage(), e);
-                            model.addAttribute("alertClass", "alert-danger");
-                            model.addAttribute("urlRedirection", "/dossiers");
-                            model.addAttribute("errorMessage", "Erreur de connexion au serveur : " + e.getMessage());
-                            return Mono.just("error");
-                        });
-     }
+                       .onErrorResume(WebClientResponseException.class, e -> {
+                           FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status={} message={}", e.getStatusCode(), e.getResponseBodyAsString());
+                           model.addAttribute("alertClass", "alert-danger");
+                           model.addAttribute("urlRedirection", "/dossiers");
+                           if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                               model.addAttribute("errorMessage", "Accès interdit : vous n'avez pas les droits pour consulter la liste des clients.");
+                           } else if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                               model.addAttribute("errorMessage", "Non authentifié : veuillez vous reconnecter.");
+                           } else if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                               model.addAttribute("errorMessage", "Aucun client trouvé.");
+                           } else if (e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
+                               model.addAttribute("errorMessage", "Erreur interne du serveur. Réessayez plus tard.");
+                           } else {
+                               model.addAttribute("errorMessage", "Erreur inattendue (" + e.getStatusCode() + ").");
+                           }
+                           return Mono.just("error");
+                       })
+                       .onErrorResume(Exception.class, e -> {
+                           FrontendLoggers.error().error("UI_CLIENT_LIST_UNEXPECTED_ERROR message={}", e.getMessage(), e);
+                           model.addAttribute("alertClass", "alert-danger");
+                           model.addAttribute("urlRedirection", "/dossiers");
+                           model.addAttribute("errorMessage", "Erreur de connexion au serveur : " + e.getMessage());
+                           return Mono.just("error");
+                       });
+    }
 
     /**
      * >Formatage du numéro de téléphone, avec un formatage de type "XX XX XX XX XX"
