@@ -60,19 +60,20 @@ public class SecurityConfig {
 		}
 
 		// --- Règles métier ---
-		// ADMIN uniquement : création de client et de dossier, liste de tous les clients
+		// ADMIN uniquement : création de client et de dossier
 		authorize
 				.pathMatchers(HttpMethod.POST, "/commands/createClient").hasRole("ADMIN")
 				.pathMatchers(HttpMethod.POST, "/commands/createDossier").hasRole("ADMIN")
-				.pathMatchers(HttpMethod.GET, "/queries/clients").hasRole("ADMIN")
+				// ADMIN, USER et AUDITOR : lecture des clients
+				.pathMatchers(HttpMethod.GET, "/queries/clients").hasAnyRole("ADMIN", "USER", "AUDITOR")
 				// ADMIN ou USER : création de véhicule et de document
 				.pathMatchers(HttpMethod.POST, "/commands/createVehicule").hasAnyRole("ADMIN", "USER")
 				.pathMatchers(HttpMethod.POST, "/commands/createDocument").hasAnyRole("ADMIN", "USER")
-				// ADMIN ou USER : consultation d'un dossier, d'un client (son propre compte - contrôle métier à la couche service)
+				// ADMIN, USER ou AUDITOR : consultation d'un dossier, d'un client
 				.pathMatchers(HttpMethod.GET, "/queries/dossiers/**").hasAnyRole("ADMIN", "USER")
 				.pathMatchers(HttpMethod.GET, "/queries/dossier/**").hasAnyRole("ADMIN", "USER")
-				.pathMatchers(HttpMethod.GET, "/queries/clients/{id}").hasAnyRole("ADMIN", "USER")
-				.pathMatchers(HttpMethod.GET, "/queries/client/**").hasAnyRole("ADMIN", "USER")
+				.pathMatchers(HttpMethod.GET, "/queries/clients/*").hasAnyRole("ADMIN", "USER", "AUDITOR")
+				.pathMatchers(HttpMethod.GET, "/queries/client/**").hasAnyRole("ADMIN", "USER", "AUDITOR")
 				// ADMIN ou USER : consultation des documents et véhicules
 				.pathMatchers(HttpMethod.GET, "/queries/documents/**").hasAnyRole("ADMIN", "USER")
 				.pathMatchers(HttpMethod.GET, "/queries/vehicules/**").hasAnyRole("ADMIN", "USER");
