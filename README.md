@@ -287,20 +287,29 @@ Point important : le log technique est gere des deux cotes, mais pas pour les me
 - **Frontend** : diagnostic UI, requetes HTTP entrantes, appels WebClient vers le backend, initialisation du module.
 - **Backend** : diagnostic serveur, requetes WebFlux entrantes, exceptions techniques globales.
 
+Les logs de sécurité sont maintenant separes dans un dossier dédié `securite` :
+
+- **Frontend** : tentatives d'accès non autorisées, accès refusés, méthodes ou chemins suspects.
+- **Backend** : requêtes suspectes, accès refusés, chemins/méthodes anormaux.
+
 Separation actuelle des logs :
 
 - Backend metier : `backend/logs/metier/business.log`
 - Backend technique : `backend/logs/technique/technical.log`
+- Backend sécurité : `backend/logs/securite/security.log`
 - Frontend acces UI : `frontend/logs/metier/ui-access.log`
 - Frontend metier UI : `frontend/logs/metier/ui-business.log`
 - Frontend erreurs UI : `frontend/logs/technique/ui-error.log`
 - Frontend technique : `frontend/logs/technique/ui-technical.log`
+- Frontend sécurité : `frontend/logs/securite/ui-security.log`
 
 En pratique :
 
 - un evenement `UI_ACCESS_*` va dans `frontend/logs/metier/ui-access.log`
 - un evenement `UI_TECH_*` va dans `frontend/logs/technique/ui-technical.log`
+- un evenement `SEC_*` frontend va dans `frontend/logs/securite/ui-security.log`
 - un evenement backend technique va dans `backend/logs/technique/technical.log`
+- un evenement `SEC_*` backend va dans `backend/logs/securite/security.log`
 
 Suivi live des logs metier backend :
 
@@ -314,6 +323,12 @@ Suivi live des logs techniques backend :
 tail -f backend/logs/technique/technical.log
 ```
 
+Suivi live des logs sécurité backend :
+
+```bash
+tail -f backend/logs/securite/security.log
+```
+
 Suivi live des logs frontend :
 
 ```bash
@@ -321,6 +336,23 @@ tail -f frontend/logs/metier/ui-access.log
 tail -f frontend/logs/metier/ui-business.log
 tail -f frontend/logs/technique/ui-error.log
 tail -f frontend/logs/technique/ui-technical.log
+tail -f frontend/logs/securite/ui-security.log
+```
+
+Validation automatique des logs de securite :
+
+- Backend :
+  - `TechnicalRequestWebFilterHttpStatusMatrixTest` (100 cas, statuts 2xx a 5xx)
+  - `TechnicalRequestWebFilterSecurityAnomalyTest` (methodes/chemins suspects + cas normal)
+- Frontend :
+  - `FrontendTechnicalRequestFilterHttpStatusMatrixTest` (100 cas, statuts 2xx a 5xx)
+  - `FrontendTechnicalRequestFilterSecurityAnomalyTest` (methodes/chemins suspects + cas normal)
+
+Execution rapide des tests de securite :
+
+```bash
+mvn -pl backend -Dtest=TechnicalRequestWebFilterHttpStatusMatrixTest,TechnicalRequestWebFilterSecurityAnomalyTest test
+mvn -pl frontend -Dtest=FrontendTechnicalRequestFilterHttpStatusMatrixTest,FrontendTechnicalRequestFilterSecurityAnomalyTest test
 ```
 
 ## 9. Troubleshooting rapide
