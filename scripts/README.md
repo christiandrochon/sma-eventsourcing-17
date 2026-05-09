@@ -58,3 +58,29 @@ Variables d'environnement supportees :
 - `AUDIT_EXPORT_DAYS` (defaut: `30`)
 - `AUDIT_EXPORT_DIR` (defaut: `./audit-exports`)
 
+## `keycloak-token.sh`
+
+Recupere un token Keycloak sans login interactif (utile pour scripts CI/CD ou operations repetitives).
+
+Modes supportes :
+
+- `client_credentials` (recommande pour service account)
+- `password` (fallback legacy/dev)
+
+Exemples :
+
+```bash
+# Service account
+export KEYCLOAK_BASE_URL="http://localhost:8080"
+export KEYCLOAK_REALM="sma-realm"
+export KEYCLOAK_CLIENT_ID="sma-thymeleaf-frontend"
+export KEYCLOAK_GRANT_TYPE="client_credentials"
+./scripts/keycloak-token.sh
+
+# Password grant (dev)
+export KEYCLOAK_GRANT_TYPE="password"
+export KEYCLOAK_USERNAME="my-user"
+export KEYCLOAK_PASSWORD="my-password"
+./scripts/keycloak-token.sh
+```
+

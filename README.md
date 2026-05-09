@@ -680,6 +680,21 @@ chmod +x scripts/audit-export.sh
 ./scripts/audit-export.sh --days 90 --output-dir ./audit-exports
 ```
 
+10. **Comment eviter un login manuel repetitif avec Keycloak ?**
+   - utiliser un token non interactif pour scripts/outillage
+   - script fourni : `scripts/keycloak-token.sh`
+
+```bash
+cd /home/cdn/IdeaProjects/sma-eventsourcing-17
+chmod +x scripts/keycloak-token.sh
+export KEYCLOAK_BASE_URL="http://localhost:8080"
+export KEYCLOAK_REALM="sma-realm"
+export KEYCLOAK_CLIENT_ID="sma-thymeleaf-frontend"
+export KEYCLOAK_GRANT_TYPE="client_credentials"
+TOKEN="$(./scripts/keycloak-token.sh)"
+curl -H "Authorization: Bearer ${TOKEN}" "http://localhost:8092/audit/compliance/dashboard"
+```
+
 ## 11. Deployement Kubernetes (optionnel)
 
 Les manifests sont disponibles dans `komp-smb/` pour un deploiement hors Docker Compose local.
