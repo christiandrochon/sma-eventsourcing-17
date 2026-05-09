@@ -11,7 +11,7 @@ services:
 
   sma-monolithe:
     build: .
-    container_name: sma-monolithe
+    container_name: backend
     ports:
       - '8092:8092'
     expose:
@@ -19,7 +19,7 @@ services:
     depends_on:
       - postgres-monolithe
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://sma-monolithe:8092/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://backend:8092/actuator/health"]
       interval: 10s
       retries: 5
 

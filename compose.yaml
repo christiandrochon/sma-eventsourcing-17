@@ -1,25 +1,25 @@
 services:
-  thymeleaf-frontend:
+  frontend:
     build:
-      context: ./thymeleaf-frontend
+      context: ./frontend
       dockerfile: Dockerfile
-    container_name: thymeleaf-frontend
+    container_name: frontend
     ports:
       - '8091:8091'
     expose:
       - '8091'
     depends_on:
-      sma-monolithe:
+      backend:
         condition: service_healthy
     networks:
         - monolithe-network
 
 
-  sma-monolithe:
+  backend:
     build:
-        context: .
+        context: ./backend
         dockerfile: Dockerfile
-    container_name: sma-monolithe
+    container_name: backend
     ports:
       - '8092:8092'
     expose:
@@ -40,7 +40,7 @@ services:
       JAVA_TOOL_OPTIONS: "-Daxon.axonserver.servers=axon-server:8124" # Pour s'assurer que la variable est prise en compte par Axon
     healthcheck:
       start_period: 30s
-#      test: ["CMD", "curl", "-f", "http://sma-monolithe:8092/actuator/health"]
+#      test: ["CMD", "curl", "-f", "http://backend:8092/actuator/health"]
       test: ["CMD", "curl", "-f", "http://localhost:8092/actuator/health"]
       interval: 20s
       retries: 5
