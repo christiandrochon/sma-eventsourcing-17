@@ -30,3 +30,14 @@ Thumbs.db
 
 # Audit exports
 audit-exports/
+
+# Generated META-INF (Maven generated files)
+**/src/main/resources/META-INF/
+**/src/test/resources/META-INF/
+
+# Test security files (generated)
+frontend/src/test/java/fr/cdrochon/thymeleaffrontend/security/
+
+# Backup files
+*.bak
+
