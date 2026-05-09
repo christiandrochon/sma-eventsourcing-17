@@ -23,6 +23,9 @@
                 <form action='#' th:action="@{/createDossier}" method='post' th:object="${dossierDTO}">
                     <div class="row g-3">
 
+                        <!-- Champ caché pour stocker l'ID utilisateur -->
+                        <input type="hidden" th:field="*{userId}" th:value="${currentUsername}">
+
                         <div class="">
                             <label for="nomDossier" class="form-label">Nom du dossier</label>
                             <input id="nomDossier" class="form-control" type="text" th:field="*{nomDossier}"
@@ -51,19 +54,28 @@
                         <div class="col-sm-6">
                             <label for="nomClient" class="form-label">Nom du client</label>
                             <input id="nomClient" class="form-control" type="text" th:field="*{client.nomClient}"
+                                   list="existingClientNames"
                                    th:classappend="${#fields.hasErrors('client.nomClient')} ? 'validation-champ-surimpression'" required>
                             <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.nomClient')}" th:errors="*{client.nomClient}">Erreur
                                 de nom client
                             </div>
+                            <small class="text-body-secondary">Suggestions depuis les clients existants (saisie libre autorisée).</small>
+                            <datalist id="existingClientNames">
+                                <option th:each="existingClient : ${existingClients}" th:value="${existingClient.nomClient}"></option>
+                            </datalist>
                         </div>
                         <div class="col-sm-6">
                             <label for="prenomClient" class="form-label">Prénom du client</label>
                             <input id="prenomClient" class="form-control" type="text" th:field="*{client.prenomClient}"
+                                   list="existingClientFirstNames"
                                    th:classappend="${#fields.hasErrors('client.prenomClient')} ? 'validation-champ-surimpression'" required>
                             <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.prenomClient')}" th:errors="*{client.prenomClient}">
                                 Erreur
                                 de prenom client
                             </div>
+                            <datalist id="existingClientFirstNames">
+                                <option th:each="existingClient : ${existingClients}" th:value="${existingClient.prenomClient}"></option>
+                            </datalist>
                         </div>
                         <div class="col-sm-5">
                             <label for="mailClient" class="form-label">Email du client </label>
