@@ -435,6 +435,84 @@ Ces endpoints lisent/ecrivent dans la base `audit` (datasource dediee `audit.dat
 - `POST /audit/compliance/expectations/{code}/checks` : ajoute une evaluation independante
 - `GET /audit/compliance/dashboard` : synthese (statuts + metriques 30 jours)
 
+### Procedure complete (mise en place + execution d'un audit)
+
+Checklist operationnelle :
+
+1. Demarrer l'infra (`postgres-monolithe`, `backend`)
+2. Initialiser la base `audit` et le schema (si volume deja existant)
+3. Verifier que la grille seedee est presente
+4. Executer la collecte de preuves (`audit_events`)
+5. Saisir les controles independants (`audit_expectation_checks`)
+6. Exporter la synthese (`dashboard` + SQL)
+
+Commandes minimales :
+
+```bash
+cd /home/cdn/IdeaProjects/sma-eventsourcing-17
+docker compose -f compose.yaml up -d postgres-monolithe backend
+```
+
+```bash
+# Optionnel : verifier que le backend est vivant
+curl -fsS "http://localhost:8092/actuator/health"
+```
+
+```bash
+# Si volume PostgreSQL deja existant, appliquer explicitement le schema audit
+docker exec -i postgres-monolithe bash -lc "psql -U postgres -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname='audit'\" | grep -q 1 || psql -U postgres -d postgres -c \"CREATE DATABASE audit\""
+docker exec -i postgres-monolithe psql -U postgres -d audit < docker/audit_schema.sql
+```
+
+```bash
+# Verifier que la grille seedee existe
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "SELECT code, domain, expected_frequency FROM audit_expectations ORDER BY code;"
+```
+
+```bash
+# Verifier l'alimentation automatique des preuves operationnelles
+curl -sS "http://localhost:8092/queries/vehicules" >/dev/null
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "SELECT event_time, actor, action, resource, http_status FROM audit_events ORDER BY id DESC LIMIT 10;"
+```
+
+```bash
+# Lire la grille + dernier etat
+curl -sS "http://localhost:8092/audit/compliance/expectations"
+
+# Lire le dashboard de pilotage
+curl -sS "http://localhost:8092/audit/compliance/dashboard"
+```
+
+```bash
+# Enregistrer un controle independant (exemple)
+curl -X POST "http://localhost:8092/audit/compliance/expectations/AUD_001/checks" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "checkedBy": "cabinet-externe",
+    "status": "PARTIAL",
+    "score": 72,
+    "scope": "Perimetre backend prod",
+    "findings": "Traçabilite correcte mais raison fonctionnelle parfois absente.",
+    "remediationPlan": "Rendre reason obligatoire pour les acces cross-garage.",
+    "dueDate": "2026-06-30",
+    "evidenceUri": "s3://audit/evidence/AUD_001_2026Q2.pdf",
+    "crossGarageSampleSize": 25,
+    "insertedFrom": "INDEPENDENT_AUDIT"
+  }'
+```
+
+```bash
+# Verifier l'historique d'une attente
+curl -sS "http://localhost:8092/audit/compliance/expectations/AUD_001?historyLimit=20"
+```
+
+Points de vigilance pour l'audit independant :
+
+- `audit_events` et `audit_expectation_checks` sont append-only (triggers SQL bloquent `UPDATE/DELETE`)
+- la preuve "qui a consulte quoi" est dans `audit_events`
+- la preuve "pourquoi / resultat / plan de remediation" est dans `audit_expectation_checks`
+- tant que l'auth JWT n'est pas reactivee, l'acteur peut apparaitre `ANONYMOUS` dans certaines traces
+
 ### Initialiser la grille sur une base existante (volume deja cree)
 
 Si ton conteneur PostgreSQL utilise deja un volume, le script `initdb_postgres.sh` ne se rejoue pas automatiquement.
