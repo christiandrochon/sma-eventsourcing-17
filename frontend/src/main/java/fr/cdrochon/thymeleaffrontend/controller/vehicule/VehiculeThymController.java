@@ -10,58 +10,38 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import reactor.core.publisher.Mono;
 
 @Controller
 public class VehiculeThymController {
-    
+
     @Autowired
     private WebClient webClient;
-    
-    /**
-     * Affiche les détails d'un vehicule spécifique, ou renvoi les informations saisies par l'utilisateur en cas d'erreur
-     *
-     * @param id                 id du vehicule
-     * @param model              model de la vue vehicule/view
-     * @param redirectAttributes attributs de redirection
-     * @return la vue vehicule/view
-     */
+
     @GetMapping("/vehicule/{id}")
-    public Mono<String> getVehiculeByIdAsync(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
+    public Mono<String> getVehiculeByIdAsync(@PathVariable String id, Model model) {
         return webClient.get()
                         .uri("/queries/vehicules/" + id)
-                        //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
-                        //                                  getJwtTokenValue()))
                         .retrieve()
                         .bodyToMono(VehiculeThymConvertDTO.class)
                         .flatMap(dto -> {
                             assert dto != null;
                             model.addAttribute("vehicule", dto);
                             return Mono.just("vehicule/view");
-                        }).onErrorResume(WebClientResponseException.class, e -> {
-                    FrontendLoggers.error().error("400 Bad Request: {}", e.getMessage());
-                    redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                    redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
-                    redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
-                    return Mono.just("redirect:/error");
-                });
+                        })
+                        .onErrorResume(WebClientResponseException.class, e -> {
+                            FrontendLoggers.error().error("UI_VEHICULE_READ_FAILED status={} message={}", e.getStatusCode(), e.getResponseBodyAsString());
+                            model.addAttribute("alertClass", "alert-danger");
+                            model.addAttribute("urlRedirection", "/vehicules");
+                            model.addAttribute("errorMessage", "Erreur lors de la récupération du véhicule (" + e.getStatusCode() + ").");
+                            return Mono.just("error");
+                        });
     }
-    
-    
-    /**
-     * Affiche la liste de tous les vehicules enregistrés
-     *
-     * @param model              model de la vue vehicule/vehicules
-     * @param redirectAttributes attributs de redirection
-     * @return la vue vehicule/vehicules
-     */
+
     @GetMapping("/vehicules")
-    public Mono<String> getVehiculesAsync(Model model, RedirectAttributes redirectAttributes) {
+    public Mono<String> getVehiculesAsync(Model model) {
         return webClient.get()
                         .uri("/queries/vehicules")
-                        //                                         .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION,
-                        //                                         "Bearer " + getJwtTokenValue()))
                         .retrieve()
                         .bodyToFlux(VehiculeThymConvertDTO.class)
                         .collectList()
@@ -71,31 +51,26 @@ public class VehiculeThymController {
                             return Mono.just("vehicule/vehicules");
                         })
                         .onErrorResume(WebClientResponseException.class, e -> {
-                            if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                                FrontendLoggers.error().error("400 Bad Request: {}", e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
-                                return Mono.just("redirect:/error");
-                            } else if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                                FrontendLoggers.error().error("404 Not Found: {}", e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
-                                return Mono.just("redirect:/error");
-                            } else if(e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
-                                FrontendLoggers.error().error("500 Internal Server Error: {}", e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                redirectAttributes.addFlashAttribute("errorMessage",
-                                                                     "Erreur interne de serveur. " + e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
-                                return Mono.just("redirect:/error");
+                            FrontendLoggers.error().error("UI_VEHICULE_LIST_FAILED status={} message={}", e.getStatusCode(), e.getResponseBodyAsString());
+                            model.addAttribute("alertClass", "alert-danger");
+                            model.addAttribute("urlRedirection", "/vehicules");
+                            if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                                model.addAttribute("errorMessage", "Accès interdit : vous n'avez pas les droits pour consulter les véhicules.");
+                            } else if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                                model.addAttribute("errorMessage", "Non authentifié : veuillez vous reconnecter.");
+                            } else if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                                model.addAttribute("errorMessage", "Aucun véhicule trouvé.");
+                            } else {
+                                model.addAttribute("errorMessage", "Erreur inattendue (" + e.getStatusCode() + ").");
                             }
-                            FrontendLoggers.error().error("ERREUR: {}", e.getResponseBodyAsString());
-                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                            redirectAttributes.addFlashAttribute("errorMessage", "Erreur non reconnue. " + e.getResponseBodyAsString());
-                            redirectAttributes.addFlashAttribute("urlRedirection", "/vehicules");
-                            return Mono.just("redirect:/error");
+                            return Mono.just("error");
+                        })
+                        .onErrorResume(Exception.class, e -> {
+                            FrontendLoggers.error().error("UI_VEHICULE_LIST_UNEXPECTED_ERROR message={}", e.getMessage(), e);
+                            model.addAttribute("alertClass", "alert-danger");
+                            model.addAttribute("urlRedirection", "/vehicules");
+                            model.addAttribute("errorMessage", "Erreur de connexion au serveur : " + e.getMessage());
+                            return Mono.just("error");
                         });
     }
 }

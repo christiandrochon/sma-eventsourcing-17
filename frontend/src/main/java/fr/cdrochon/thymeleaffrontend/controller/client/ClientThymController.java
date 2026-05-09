@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import reactor.core.publisher.Mono;
 
 @Controller
@@ -51,7 +51,7 @@ public class ClientThymController {
      * @return la vue client/clients
      */
      @GetMapping(value = "/clients")
-     public Mono<String> getClientsAsync(Model model, RedirectAttributes redirectAttributes) {
+     public Mono<String> getClientsAsync(Model model) {
          FrontendLoggers.business().info("UI_CLIENTS_LIST_REQUEST");
          return webClient.get()
                          .uri("/queries/clients")
@@ -66,33 +66,31 @@ public class ClientThymController {
                              return Mono.just("client/clients");
                          })
                         .onErrorResume(WebClientResponseException.class, e -> {
-                            if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                                FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status=400 message={}", e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createGarage");
-                                return Mono.just("redirect:/error");
-                            } else if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                                FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status=404 message={}", e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/clients");
-                                return Mono.just("redirect:/error");
-                            } else if(e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
-                                FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status=500 message={}", e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                                redirectAttributes.addFlashAttribute("errorMessage", "Erreur interne de serveur. " + e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createGarage");
-                                return Mono.just("redirect:/error");
-                            }
                             FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status={} message={}", e.getStatusCode(), e.getResponseBodyAsString());
-                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                            redirectAttributes.addFlashAttribute("errorMessage", "Erreur non reconnue. " + e.getResponseBodyAsString());
-                            redirectAttributes.addFlashAttribute("urlRedirection", "/clients");
-                            return Mono.just("redirect:/error");
+                            model.addAttribute("alertClass", "alert-danger");
+                            model.addAttribute("urlRedirection", "/dossiers");
+                            if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                                model.addAttribute("errorMessage", "Accès interdit : vous n'avez pas les droits pour consulter la liste des clients.");
+                            } else if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                                model.addAttribute("errorMessage", "Non authentifié : veuillez vous reconnecter.");
+                            } else if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                                model.addAttribute("errorMessage", "Aucun client trouvé.");
+                            } else if (e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
+                                model.addAttribute("errorMessage", "Erreur interne du serveur. Réessayez plus tard.");
+                            } else {
+                                model.addAttribute("errorMessage", "Erreur inattendue (" + e.getStatusCode() + ").");
+                            }
+                            return Mono.just("error");
+                        })
+                        .onErrorResume(Exception.class, e -> {
+                            FrontendLoggers.error().error("UI_CLIENT_LIST_UNEXPECTED_ERROR message={}", e.getMessage(), e);
+                            model.addAttribute("alertClass", "alert-danger");
+                            model.addAttribute("urlRedirection", "/dossiers");
+                            model.addAttribute("errorMessage", "Erreur de connexion au serveur : " + e.getMessage());
+                            return Mono.just("error");
                         });
-    }
-    
+     }
+
     /**
      * >Formatage du numéro de téléphone, avec un formatage de type "XX XX XX XX XX"
      *
