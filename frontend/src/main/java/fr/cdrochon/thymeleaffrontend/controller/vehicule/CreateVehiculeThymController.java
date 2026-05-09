@@ -5,6 +5,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymDTO;
 import jakarta.validation.Valid;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
+import fr.cdrochon.thymeleaffrontend.logging.FrontendSecurityLoggers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -141,14 +142,16 @@ public class CreateVehiculeThymController {
                                             redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
                                             return Mono.just("redirect:/error");
                                         } else if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                                            FrontendLoggers.error().error("401 Internal Server Error: {}", e.getResponseBodyAsString());
+                                            FrontendSecurityLoggers.security().warn("SEC_FRONTEND_UNAUTHORIZED action=createVehicule immatriculation={} status={} message={}",
+                                                                                    vehiculePostDTO.getImmatriculationVehicule(), e.getStatusCode().value(), e.getResponseBodyAsString());
                                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                             redirectAttributes.addFlashAttribute("errorMessage", "Accès non autorisé. " + e
                                                     .getResponseBodyAsString());
                                             redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
                                             return Mono.just("redirect:/error");
                                         } else if(e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                                            FrontendLoggers.error().error("403 Forbidden: {}", e.getResponseBodyAsString());
+                                            FrontendSecurityLoggers.security().warn("SEC_FRONTEND_FORBIDDEN action=createVehicule immatriculation={} status={} message={}",
+                                                                                    vehiculePostDTO.getImmatriculationVehicule(), e.getStatusCode().value(), e.getResponseBodyAsString());
                                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                             redirectAttributes.addFlashAttribute("errorMessage", "Accès interdit. " + e
                                                     .getResponseBodyAsString());
@@ -170,7 +173,8 @@ public class CreateVehiculeThymController {
                                             redirectAttributes.addFlashAttribute("urlRedirection", "/createVehicule");
                                             return Mono.just("redirect:/error");
                                         } else if(e.getStatusCode() == HttpStatus.LOCKED) {
-                                            FrontendLoggers.error().error("423 Forbidden: {}", e.getResponseBodyAsString());
+                                            FrontendSecurityLoggers.security().warn("SEC_FRONTEND_LOCKED action=createVehicule immatriculation={} status={} message={}",
+                                                                                    vehiculePostDTO.getImmatriculationVehicule(), e.getStatusCode().value(), e.getResponseBodyAsString());
                                             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                             redirectAttributes.addFlashAttribute("errorMessage",
                                                                                  "Ressource verrouillée. " + e.getResponseBodyAsString());

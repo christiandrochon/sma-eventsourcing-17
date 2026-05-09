@@ -4,6 +4,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.client.ClientStatusDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.client.PaysDTO;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
+import fr.cdrochon.thymeleaffrontend.logging.FrontendSecurityLoggers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -115,11 +116,15 @@ public class CreateClientThymController {
                                 redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");
                                 return Mono.just("redirect:/error");
                             } else if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                                FrontendSecurityLoggers.security().warn("SEC_FRONTEND_UNAUTHORIZED action=createClient nomClient={} prenomClient={} status={} message={}",
+                                                                        clientDTO.getNomClient(), clientDTO.getPrenomClient(), e.getStatusCode().value(), e.getResponseBodyAsString());
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage", "Accès non autorisé. " + e.getResponseBodyAsString());
                                 redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");
                                 return Mono.just("redirect:/error");
                             } else if(e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                                FrontendSecurityLoggers.security().warn("SEC_FRONTEND_FORBIDDEN action=createClient nomClient={} prenomClient={} status={} message={}",
+                                                                        clientDTO.getNomClient(), clientDTO.getPrenomClient(), e.getStatusCode().value(), e.getResponseBodyAsString());
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage", "Accès interdit. " + e.getResponseBodyAsString());
                                 redirectAttributes.addFlashAttribute("urlRedirection", "/createClient");

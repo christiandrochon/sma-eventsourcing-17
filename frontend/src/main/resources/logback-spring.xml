@@ -27,6 +27,16 @@
         </encoder>
     </appender>
 
+    <!-- Console : logs sécurité -->
+    <appender name="CONSOLE_SECURITY" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} UISEC - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- Fichier : navigation / actions utilisateur → frontend/logs/metier/ui-access.log -->
     <appender name="UI_ACCESS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_DIR}/metier/ui-access.log</file>
@@ -87,6 +97,21 @@
         </encoder>
     </appender>
 
+    <!-- Fichier : logs sécurité frontend → frontend/logs/securite/ui-security.log -->
+    <appender name="UI_SECURITY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/securite/ui-security.log</file>
+        <prudent>false</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/securite/ui-security.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- Logger accès (FrontendLoggers.access()) -->
     <logger name="UI_ACCESS" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE_ACCESS"/>
@@ -108,6 +133,12 @@
     <logger name="UI_BUSINESS" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE_BIZ"/>
         <appender-ref ref="UI_BUSINESS_FILE"/>
+    </logger>
+
+    <!-- Logger sécurité (FrontendLoggers.security()) -->
+    <logger name="UI_SECURITY" level="WARN" additivity="false">
+        <appender-ref ref="CONSOLE_SECURITY"/>
+        <appender-ref ref="UI_SECURITY_FILE"/>
     </logger>
 
     <!-- Root : erreurs techniques Spring Boot vers console -->

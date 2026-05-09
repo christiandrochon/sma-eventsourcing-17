@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,6 +21,20 @@ public class FrontendTechnicalRequestFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         long startMs = System.currentTimeMillis();
+        String method = request.getMethod();
+        String path = request.getRequestURI();
+        boolean suspiciousMethod = !"GET".equals(method) && !"POST".equals(method) && !"HEAD".equals(method);
+        boolean suspiciousPath = path.contains("..") || path.contains("//") || path.contains("%2e") || path.contains("%2f") || path.contains("\\");
+
+        if(suspiciousMethod || suspiciousPath) {
+            FrontendSecurityLoggers.security().warn(
+                    "SEC_FRONTEND_ANOMALOUS_REQUEST method={} path={} suspiciousMethod={} suspiciousPath={}",
+                    method,
+                    path,
+                    suspiciousMethod,
+                    suspiciousPath
+            );
+        }
 
         try {
             filterChain.doFilter(request, response);
@@ -37,18 +52,30 @@ public class FrontendTechnicalRequestFilter extends OncePerRequestFilter {
             throw exception;
         } finally {
             long durationMs = System.currentTimeMillis() - startMs;
+            int status = response.getStatus();
+
+            if(status == HttpStatus.UNAUTHORIZED.value() || status == HttpStatus.FORBIDDEN.value()) {
+                FrontendSecurityLoggers.security().warn(
+                        "SEC_FRONTEND_ACCESS_DENIED method={} path={} status={} durationMs={}",
+                        method,
+                        path,
+                        status,
+                        durationMs
+                );
+            }
+
             FrontendLoggers.access().info(
                     "UI_ACCESS_HTTP method={} path={} status={} durationMs={}",
-                    request.getMethod(),
-                    request.getRequestURI(),
-                    response.getStatus(),
+                    method,
+                    path,
+                    status,
                     durationMs
             );
             FrontendLoggers.tech().info(
                     "UI_TECH_HTTP method={} path={} status={} durationMs={}",
-                    request.getMethod(),
-                    request.getRequestURI(),
-                    response.getStatus(),
+                    method,
+                    path,
+                    status,
                     durationMs
             );
         }

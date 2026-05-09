@@ -6,6 +6,7 @@ import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentThymDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.document.TypeDocumentDTO;
 import jakarta.validation.Valid;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
+import fr.cdrochon.thymeleaffrontend.logging.FrontendSecurityLoggers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -131,14 +132,16 @@ public class CreateDocumentThymController {
                                 redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
                                 return Mono.just("redirect:/error");
                             } else if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                                FrontendLoggers.error().error("UI_DOCUMENT_CREATE_FAILED status=401 message={}", e.getResponseBodyAsString());
+                                FrontendSecurityLoggers.security().warn("SEC_FRONTEND_UNAUTHORIZED action=createDocument nomDocument={} status={} message={}",
+                                                                        documentThymDTO.getNomDocument(), e.getStatusCode().value(), e.getResponseBodyAsString());
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage", "Accès non autorisé. " + e
                                         .getResponseBodyAsString());
                                 redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
                                 return Mono.just("redirect:/error");
                             } else if(e.getStatusCode() == HttpStatus.FORBIDDEN) {
-                                FrontendLoggers.error().error("UI_DOCUMENT_CREATE_FAILED status=403 message={}", e.getResponseBodyAsString());
+                                FrontendSecurityLoggers.security().warn("SEC_FRONTEND_FORBIDDEN action=createDocument nomDocument={} status={} message={}",
+                                                                        documentThymDTO.getNomDocument(), e.getStatusCode().value(), e.getResponseBodyAsString());
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage", "Accès interdit. " + e
                                         .getResponseBodyAsString());

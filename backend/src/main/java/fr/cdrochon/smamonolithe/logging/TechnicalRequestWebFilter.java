@@ -3,6 +3,7 @@ package fr.cdrochon.smamonolithe.logging;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -23,7 +24,20 @@ public class TechnicalRequestWebFilter implements WebFilter {
         String traceId = exchange.getRequest().getId();
         String method = exchange.getRequest().getMethod() != null ? exchange.getRequest().getMethod().name() : "UNKNOWN";
         String path = exchange.getRequest().getURI().getPath();
+        boolean suspiciousMethod = !"GET".equals(method) && !"POST".equals(method) && !"HEAD".equals(method) && !"OPTIONS".equals(method);
+        boolean suspiciousPath = path.contains("..") || path.contains("//") || path.contains("%2e") || path.contains("%2f") || path.contains("\\");
         AtomicReference<Throwable> errorRef = new AtomicReference<>();
+
+        if(suspiciousMethod || suspiciousPath) {
+            BackendSecurityLoggers.security().warn(
+                    "SEC_HTTP_ANOMALOUS_REQUEST traceId={} method={} path={} suspiciousMethod={} suspiciousPath={}",
+                    traceId,
+                    method,
+                    path,
+                    suspiciousMethod,
+                    suspiciousPath
+            );
+        }
 
         return chain.filter(exchange)
                 .doOnError(errorRef::set)
@@ -31,6 +45,17 @@ public class TechnicalRequestWebFilter implements WebFilter {
                     long durationMs = System.currentTimeMillis() - startMs;
                     HttpStatusCode statusCode = exchange.getResponse().getStatusCode();
                     int status = statusCode != null ? statusCode.value() : (errorRef.get() != null ? 500 : 200);
+
+                    if(status == HttpStatus.UNAUTHORIZED.value() || status == HttpStatus.FORBIDDEN.value()) {
+                        BackendSecurityLoggers.security().warn(
+                                "SEC_HTTP_ACCESS_DENIED traceId={} method={} path={} status={} durationMs={}",
+                                traceId,
+                                method,
+                                path,
+                                status,
+                                durationMs
+                        );
+                    }
 
                     if (errorRef.get() != null) {
                         log.error(
