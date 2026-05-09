@@ -6,6 +6,9 @@ import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,18 +66,41 @@ public class VehiculeQueryController {
      */
     @GetMapping("/vehicules")
     @JsonView(Views.VehiculeView.class)
-    public Flux<VehiculeQueryDTO> getDossiersAsync() {
-        BusinessLoggers.business().info("BIZ_VEHICULE_LIST_REQUEST");
+    public Flux<VehiculeQueryDTO> getDossiersAsync(Authentication authentication) {
+        Jwt jwt = authentication instanceof JwtAuthenticationToken jwtAuth ? jwtAuth.getToken() : null;
+        boolean isAdmin = jwt != null && hasRole(jwt, "ADMIN");
+        String email = jwt != null ? jwt.getClaimAsString("email") : null;
+
+        BusinessLoggers.business().info("BIZ_VEHICULE_LIST_REQUEST isAdmin={} email={}", isAdmin, email);
         CompletableFuture<List<VehiculeQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
-            List<VehiculeQueryDTO> clients =
-                    vehiculeRepository.findAll()
-                                      .stream()
-                                      .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
-                                      .collect(Collectors.toList());
-            BusinessLoggers.business().info("BIZ_VEHICULE_LIST_SUCCESS count={}", clients.size());
-            return clients;
+            List<VehiculeQueryDTO> vehicules;
+            if (isAdmin || email == null) {
+                vehicules = vehiculeRepository.findAll()
+                        .stream()
+                        .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
+                        .collect(Collectors.toList());
+            } else {
+                vehicules = vehiculeRepository.findByClientMailClient(email)
+                        .stream()
+                        .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
+                        .collect(Collectors.toList());
+            }
+            BusinessLoggers.business().info("BIZ_VEHICULE_LIST_SUCCESS count={}", vehicules.size());
+            return vehicules;
         });
-        Flux<VehiculeQueryDTO> flux = Flux.fromStream(future.join().stream());
-        return flux;
+        return Flux.fromStream(future.join().stream());
+    }
+
+    private boolean hasRole(Jwt jwt, String role) {
+        try {
+            java.util.Map<String, Object> realmAccess = jwt.getClaimAsMap("realm_access");
+            if (realmAccess != null) {
+                Object roles = realmAccess.get("roles");
+                if (roles instanceof java.util.List<?> list) {
+                    return list.contains(role) || list.contains("ROLE_" + role);
+                }
+            }
+        } catch (Exception ignored) {}
+        return false;
     }
 }

@@ -5,6 +5,7 @@ import fr.cdrochon.smamonolithe.vehicule.command.services.VehiculeCommandService
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,12 @@ public class VehiculeCommandController {
      * @param vehiculeRequestDTO DTO de création d'un vehicule
      * @return ResponseEntity<VehiculeCommandDTO> DTO de création d'un vehicule
      */
+    /**
+     * Création d'un vehicule : ADMIN ou USER.
+     * Note : la restriction "son propre véhicule uniquement" (pour USER) est à appliquer au niveau service.
+     */
     @PostMapping(value = "/createVehicule")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Mono<ResponseEntity<VehiculeCommandDTO>> createClientAsync(@RequestBody VehiculeCommandDTO vehiculeRequestDTO) {
         BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST immatriculation={} status={}",
                                         vehiculeRequestDTO.getImmatriculationVehicule(), vehiculeRequestDTO.getVehiculeStatus());
