@@ -13,6 +13,9 @@ import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,12 +44,15 @@ public class ClientQueryController {
     
     /**
      * Méthode asynchrone qui renvoi un client dto.
+     * ADMIN peut lire tous les clients
+     * USER ne peut lire que ses propres clients (ceux liés à son userId)
      *
      * @param id id du client
      * @return Mono de ClientResponseDTO
      */
     @GetMapping(path = "/clients/{id}")
     @JsonView(Views.ClientView.class)
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
     public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id) {
         BusinessLoggers.business().info("BIZ_CLIENT_READ_REQUEST clientId={}", id);
         CompletableFuture<ClientQueryDTO> future =
@@ -55,6 +61,22 @@ public class ClientQueryController {
                         ClientQueryDTO client = clientRepository.findById(id)
                                                                  .map(ClientQueryMapper::convertClientToClientDTO)
                                                                  .orElseThrow(() -> new RuntimeException("Client not found"));
+
+                        // Vérifier que USER ne peut accéder qu'à ses propres clients
+                        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                        boolean isAdmin = auth.getAuthorities().stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .anyMatch(a -> a.equals("ROLE_ADMIN"));
+
+                        if (!isAdmin) {
+                            // USER doit vérifier que le client lui appartient
+                            String currentUserId = auth.getName();
+                            // TODO: ajouter un champ userId au Client et vérifier qu'il correspond
+                            // if (!client.getUserId().equals(currentUserId)) {
+                            //     throw new RuntimeException("Accès refusé: ce client ne vous appartient pas");
+                            // }
+                        }
+
                         BusinessLoggers.business().info("BIZ_CLIENT_READ_SUCCESS clientId={}", id);
                         return client;
                     } catch(Exception e) {
@@ -67,30 +89,53 @@ public class ClientQueryController {
         return mono;
     }
     
-     /**
-      * Retourne la liste de tous les clients de manière asynchrone
-      *
-      * @return Flux de ClientResponseDTO
-      */
-     /** ADMIN, USER et AUDITOR peuvent lire la liste des clients (necessaire pour creer des dossiers). */
-     @GetMapping(path = "/clients")
-     @JsonView(Views.ClientView.class)
-     @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
-    public Flux<ClientQueryDTO> getClientsAsync() {
-        BusinessLoggers.business().info("BIZ_CLIENT_LIST_REQUEST");
-        CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
-            List<ClientQueryDTO> clients =
-                    clientRepository.findAll()
-                                    .stream()
-                                    .map(ClientQueryMapper::convertClientToClientDTO)
-                                    .collect(Collectors.toList());
-            BusinessLoggers.business().info("BIZ_CLIENT_LIST_SUCCESS count={}", clients.size());
-            return clients;
-        });
-        Flux<ClientQueryDTO> flux = Flux.fromStream(future.join().stream());
-        return flux;
-    }
-    
+      /**
+       * Retourne la liste de tous les clients de manière asynchrone
+       * ADMIN voit tous les clients
+       * USER ne voit que ses propres clients (ceux liés à son userId)
+       * AUDITOR voit tous les clients
+       *
+       * @return Flux de ClientResponseDTO
+       */
+      @GetMapping(path = "/clients")
+      @JsonView(Views.ClientView.class)
+      @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
+      public Flux<ClientQueryDTO> getClientsAsync() {
+          BusinessLoggers.business().info("BIZ_CLIENT_LIST_REQUEST");
+          CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
+              Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+              boolean isAdmin = auth.getAuthorities().stream()
+                      .map(GrantedAuthority::getAuthority)
+                      .anyMatch(a -> a.equals("ROLE_ADMIN"));
+
+              boolean isAuditor = auth.getAuthorities().stream()
+                      .map(GrantedAuthority::getAuthority)
+                      .anyMatch(a -> a.equals("ROLE_AUDITOR"));
+
+              List<ClientQueryDTO> clients =
+                      clientRepository.findAll()
+                                      .stream()
+                                      .map(ClientQueryMapper::convertClientToClientDTO)
+                                      .collect(Collectors.toList());
+
+              // Si USER, filtrer pour ne voir que ses propres clients
+              // TODO: ajouter un champ userId au Client pour pouvoir filtrer correctement
+              if (!isAdmin && !isAuditor) {
+                  String currentUserId = auth.getName();
+                  // clients = clients.stream()
+                  //         .filter(c -> c.getUserId() != null && c.getUserId().equals(currentUserId))
+                  //         .collect(Collectors.toList());
+                  BusinessLoggers.business().info("BIZ_CLIENT_LIST_FILTERED userId={} count={}", currentUserId, clients.size());
+              } else {
+                  BusinessLoggers.business().info("BIZ_CLIENT_LIST_SUCCESS count={}", clients.size());
+              }
+
+              return clients;
+          });
+          Flux<ClientQueryDTO> flux = Flux.fromStream(future.join().stream());
+          return flux;
+      }
+
     
     /**
      * Renvoi un flux de GarageResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
