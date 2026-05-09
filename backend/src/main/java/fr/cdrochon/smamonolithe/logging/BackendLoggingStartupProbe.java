@@ -23,14 +23,12 @@ public class BackendLoggingStartupProbe implements ApplicationRunner {
         Path rootPath = Path.of(loggingPath).toAbsolutePath().normalize();
         Path metierPath = rootPath.resolve("metier");
         Path techniquePath = rootPath.resolve("technique");
-        Path securityPath = rootPath.resolve("securite");
         Path businessLogFile = metierPath.resolve("business.log");
         Path technicalLogFile = techniquePath.resolve("technical.log");
-        Path securityLogFile = securityPath.resolve("security.log");
+        Path securityLogFile = rootPath.resolve("security.log");
 
         Files.createDirectories(metierPath);
         Files.createDirectories(techniquePath);
-        Files.createDirectories(securityPath);
 
         if (Files.notExists(businessLogFile)) {
             Files.createFile(businessLogFile);

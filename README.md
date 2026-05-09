@@ -296,7 +296,7 @@ Separation actuelle des logs :
 
 - Backend metier : `backend/logs/metier/business.log`
 - Backend technique : `backend/logs/technique/technical.log`
-- Backend sécurité : `backend/logs/securite/security.log`
+- Backend sécurité : `backend/logs/security.log`
 - Frontend acces UI : `frontend/logs/metier/ui-access.log`
 - Frontend metier UI : `frontend/logs/metier/ui-business.log`
 - Frontend erreurs UI : `frontend/logs/technique/ui-error.log`
@@ -309,7 +309,7 @@ En pratique :
 - un evenement `UI_TECH_*` va dans `frontend/logs/technique/ui-technical.log`
 - un evenement `SEC_*` frontend va dans `frontend/logs/securite/ui-security.log`
 - un evenement backend technique va dans `backend/logs/technique/technical.log`
-- un evenement `SEC_*` backend va dans `backend/logs/securite/security.log`
+- un evenement `SEC_*` backend va dans `backend/logs/security.log`
 
 Suivi live des logs metier backend :
 
@@ -326,7 +326,7 @@ tail -f backend/logs/technique/technical.log
 Suivi live des logs sécurité backend :
 
 ```bash
-tail -f backend/logs/securite/security.log
+tail -f backend/logs/security.log
 ```
 
 Suivi live des logs frontend :
