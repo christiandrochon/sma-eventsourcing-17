@@ -594,6 +594,69 @@ ORDER BY event_time DESC;
    - verifier `logging.file.path` dans les fichiers `application-*.properties`
    - verifier la config de `backend/src/main/resources/logback-spring.xml`
 
+### 10.1 FAQ audit (RGPD)
+
+1. **`relation "audit_expectations" does not exist`**
+   - la base `audit` n'a pas encore le schema
+   - applique `docker/audit_schema.sql` dans le conteneur PostgreSQL
+
+```bash
+cd /home/cdn/IdeaProjects/sma-eventsourcing-17
+docker exec -i postgres-monolithe bash -lc "psql -U postgres -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname='audit'\" | grep -q 1 || psql -U postgres -d postgres -c \"CREATE DATABASE audit\""
+docker exec -i postgres-monolithe psql -U postgres -d audit < docker/audit_schema.sql
+```
+
+2. **Le endpoint `/audit/compliance/*` repond 404**
+   - verifier que le backend tourne bien sur `8092`
+   - verifier que l'artefact en cours est le backend le plus recent
+
+```bash
+curl -fsS "http://localhost:8092/actuator/health"
+curl -i "http://localhost:8092/audit/compliance/dashboard"
+```
+
+3. **La grille d'attentes est vide**
+   - verifier que le seed a ete applique
+   - compter les lignes dans `audit_expectations` (attendu: 15 lignes minimum)
+
+```bash
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "SELECT COUNT(*) AS expectations_count FROM audit_expectations;"
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "SELECT code, domain FROM audit_expectations ORDER BY code;"
+```
+
+4. **`audit_events` ne se remplit pas**
+   - declencher une requete backend, puis verifier les derniers evenements
+   - en local sans JWT, `actor` peut etre `ANONYMOUS` (comportement attendu)
+
+```bash
+curl -sS "http://localhost:8092/queries/vehicules" >/dev/null
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "SELECT id, event_time, actor, action, resource, http_status FROM audit_events ORDER BY id DESC LIMIT 20;"
+```
+
+5. **Impossible de modifier/supprimer des lignes d'audit**
+   - c'est normal: les tables d'audit sont append-only (preuve non falsifiable)
+   - verifier la presence des triggers de blocage
+
+```bash
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "SELECT tgname, tgrelid::regclass FROM pg_trigger WHERE tgname LIKE 'trg_audit_%';"
+```
+
+6. **Comment preparer un export auditeur rapidement ?**
+   - exporter la vue `audit_expectations_latest`
+   - exporter les evenements `audit_events` des 30 derniers jours
+
+```bash
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "\copy (SELECT * FROM audit_expectations_latest ORDER BY domain, code) TO STDOUT WITH CSV HEADER" > audit_expectations_latest.csv
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "\copy (SELECT * FROM audit_events WHERE event_time >= now() - interval '30 days' ORDER BY event_time DESC) TO STDOUT WITH CSV HEADER" > audit_events_30d.csv
+```
+
+7. **Comment verifier les acces cross-garage ?**
+   - cette extraction doit etre revue periodiquement (attente `XGR_001`)
+
+```bash
+docker exec -i postgres-monolithe psql -U postgres -d audit -c "SELECT event_time, actor, actor_garage, garage_id, resource, resource_id, reason FROM audit_events WHERE cross_garage = true ORDER BY event_time DESC LIMIT 200;"
+```
+
 ## 11. Deployement Kubernetes (optionnel)
 
 Les manifests sont disponibles dans `komp-smb/` pour un deploiement hors Docker Compose local.
