@@ -29,7 +29,8 @@ public class DossierAggregate {
     private Client client;
     private Vehicule vehicule;
     private DossierStatus dossierStatus;
-    
+    private String userId;
+
     public DossierAggregate() {
         //requis par Axon
     }
@@ -52,42 +53,44 @@ public class DossierAggregate {
         }
 
         //publication de l'event
-        BusinessLoggers.business().info("BIZ_DOSSIER_CREATE_ACCEPTED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
-                                        dossierCreateCommand.getId(),
-                                        dossierCreateCommand.getNomDossier(),
-                                        dossierCreateCommand.getClient().getId(),
-                                        dossierCreateCommand.getVehicule().getId(),
-                                        dossierCreateCommand.getDossierStatus());
-        AggregateLifecycle.apply(new DossierCreatedEvent(dossierCreateCommand.getId(),
-                                                        dossierCreateCommand.getNomDossier(),
-                                                        dossierCreateCommand.getDateCreationDossier(),
-                                                        dossierCreateCommand.getDateModificationDossier(),
-                                                        dossierCreateCommand.getClient(),
-                                                        dossierCreateCommand.getVehicule(),
-                                                        dossierCreateCommand.getDossierStatus(),
-                                                        dossierCreateCommand.getClient().getId(),
-                                                        dossierCreateCommand.getVehicule().getId()
-        ));
+         BusinessLoggers.business().info("BIZ_DOSSIER_CREATE_ACCEPTED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                                         dossierCreateCommand.getId(),
+                                         dossierCreateCommand.getNomDossier(),
+                                         dossierCreateCommand.getClient().getId(),
+                                         dossierCreateCommand.getVehicule().getId(),
+                                         dossierCreateCommand.getDossierStatus());
+         AggregateLifecycle.apply(new DossierCreatedEvent(dossierCreateCommand.getId(),
+                                                         dossierCreateCommand.getNomDossier(),
+                                                         dossierCreateCommand.getDateCreationDossier(),
+                                                         dossierCreateCommand.getDateModificationDossier(),
+                                                         dossierCreateCommand.getClient(),
+                                                         dossierCreateCommand.getVehicule(),
+                                                         dossierCreateCommand.getDossierStatus(),
+                                                         dossierCreateCommand.getClient().getId(),
+                                                         dossierCreateCommand.getVehicule().getId(),
+                                                         dossierCreateCommand.getUserId()
+         ));
     }
     
-    /**
-     * <str>Fonction de projection</str> = met à jour l'état de l'agrégat
-     * <p>
-     * Met à jour l'état de l'agrégat à chaque événement reçu dans le bus d'événement via le @EventSourcingHandler qui subscribe à l'eventBus.
-     *
-     * @param event Evènement de création d'un dossier
-     */
-    @EventSourcingHandler
-    public void on(DossierCreatedEvent event) {
-        this.id = event.getId();
-        this.nomDossier = event.getNomDossier();
-        this.dateCreationDossier = event.getDateCreationDossier();
-        this.dateModificationDossier = event.getDateModificationDossier();
-        this.client = event.getClient();
-        this.vehicule = event.getVehicule();
-        this.dossierStatus = event.getDossierStatus();
-        
-        this.client.setId(event.getClient().getId());
-        this.vehicule.setId(event.getVehicule().getId());
-    }
+     /**
+      * <str>Fonction de projection</str> = met à jour l'état de l'agrégat
+      * <p>
+      * Met à jour l'état de l'agrégat à chaque événement reçu dans le bus d'événement via le @EventSourcingHandler qui subscribe à l'eventBus.
+      *
+      * @param event Evènement de création d'un dossier
+      */
+     @EventSourcingHandler
+     public void on(DossierCreatedEvent event) {
+         this.id = event.getId();
+         this.nomDossier = event.getNomDossier();
+         this.dateCreationDossier = event.getDateCreationDossier();
+         this.dateModificationDossier = event.getDateModificationDossier();
+         this.client = event.getClient();
+         this.vehicule = event.getVehicule();
+         this.dossierStatus = event.getDossierStatus();
+         this.userId = event.getUserId();
+
+         this.client.setId(event.getClient().getId());
+         this.vehicule.setId(event.getVehicule().getId());
+     }
 }

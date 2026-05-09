@@ -21,22 +21,25 @@ public class DossierEventHandler {
     }
     
     
-    @EventHandler
-    public void on(DossierCreatedEvent event) {
-        
-        log.info("Received event: {}", event);
-        BusinessLoggers.business().info("BIZ_DOSSIER_CREATED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
-                                       event.getId(), event.getNomDossier(), event.getClientId(), event.getVehiculeId(), event.getDossierStatus());
-        //conversion du dto du dossier en entité dossier
-        DossierCommandDTO dossierDTO = new DossierCommandDTO(event.getId(),
-                                                             event.getNomDossier(),
-                                                             event.getDateCreationDossier(),
-                                                             event.getDateModificationDossier(),
-                                                             convertClientToClientDTO(event.getClient()),
-                                                             convertVehiculeToVehiculeDTO(event.getVehicule()),
-                                                             event.getDossierStatus());
-        // Compléter la future dans le service
-        dossierCommandService.completeDossierCreation(dossierDTO);
-    }
-    
+     @EventHandler
+     public void on(DossierCreatedEvent event) {
+
+         log.info("Received event: {}", event);
+         BusinessLoggers.business().info("BIZ_DOSSIER_CREATED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                                        event.getId(), event.getNomDossier(), event.getClientId(), event.getVehiculeId(), event.getDossierStatus());
+         //conversion du dto du dossier en entité dossier
+         DossierCommandDTO dossierDTO = DossierCommandDTO.builder()
+                 .id(event.getId())
+                 .nomDossier(event.getNomDossier())
+                 .dateCreationDossier(event.getDateCreationDossier())
+                 .dateModificationDossier(event.getDateModificationDossier())
+                 .client(convertClientToClientDTO(event.getClient()))
+                 .vehicule(convertVehiculeToVehiculeDTO(event.getVehicule()))
+                 .dossierStatus(event.getDossierStatus())
+                 .userId(event.getUserId())
+                 .build();
+         // Compléter la future dans le service
+         dossierCommandService.completeDossierCreation(dossierDTO);
+     }
+
 }
