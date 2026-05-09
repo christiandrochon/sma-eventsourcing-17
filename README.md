@@ -1,266 +1,335 @@
-# SMA – Application de Maintenance Automobile
+# SMA - Application de Maintenance Automobile
 
-## Description
-SMA est une application intranet de maintenance automobile développée en Java avec Spring Boot.
-Elle repose sur une architecture orientée événements et une approche réactive côté backend.
+Application intranet de maintenance automobile basee sur Spring Boot, avec separation claire entre interface serveur (Thymeleaf) et coeur metier CQRS/Event Sourcing.
 
-Le projet est entièrement exécutable en local via Docker Compose.
-Les images du backend et du frontend sont construites à la volée à partir des Dockerfile présents dans le dépôt.
+## Sommaire
 
-## Architecture
-- Backend : Spring Boot (WebFlux)
-- Frontend : Thymeleaf (rendu côté serveur)
+- [1. Vue d'ensemble](#1-vue-densemble)
+- [2. Architecture actuelle](#2-architecture-actuelle)
+  - [2.1 Runtime local (Docker Compose)](#21-runtime-local-docker-compose)
+  - [2.2 Structure du depot](#22-structure-du-depot)
+  - [2.3 Flux CQRS simplifie](#23-flux-cqrs-simplifie)
+- [3. Stack technique](#3-stack-technique)
+- [4. Structure des modules](#4-structure-des-modules)
+- [5. Demarrage rapide](#5-demarrage-rapide)
+- [5.1 Demarrage Docker Compose](#51-demarrage-docker-compose)
+- [5.2 Demarrage local (sans conteneur app)](#52-demarrage-local-sans-conteneur-app)
+- [6. Build et tests](#6-build-et-tests)
+- [7. Configuration et profils Spring](#7-configuration-et-profils-spring)
+- [8. Logs](#8-logs)
+- [9. Troubleshooting rapide](#9-troubleshooting-rapide)
+- [10. Deployement Kubernetes (optionnel)](#10-deployement-kubernetes-optionnel)
+- [11. Licence](#11-licence)
+
+## 1. Vue d'ensemble
+
+Le repository est maintenant organise en **multi-modules Maven** :
+
+- `backend` : API metier reactive + Axon (Command/Query/Event)
+- `frontend` : UI serveur Spring MVC + Thymeleaf
+- `pom.xml` racine : agregateur Maven
+- `compose.yaml` : stack locale complete
+
+Objectif principal de cette architecture : isoler les responsabilites, fiabiliser les evolutions, et garder un pipeline de build/deploiement simple par module.
+
+## 2. Architecture actuelle
+
+### 2.1 Runtime local (Docker Compose)
+
+```text
++-----------------------------------------------------------------------------------+
+| NIVEAU 1 - CLIENT                                                                 |
+|   [ Navigateur ]                                                                  |
++-----------------------------------------------------------------------------------+
+                                      |
+                                      | HTTP :8091
+                                      v
++-----------------------------------------------------------------------------------+
+| NIVEAU 2 - PRESENTATION                                                           |
+|   [ Frontend - Spring MVC + Thymeleaf ]                                           |
++-----------------------------------------------------------------------------------+
+                                      |
+                                      | REST HTTP :8092
+                                      v
++-----------------------------------------------------------------------------------+
+| NIVEAU 3 - COEUR METIER                                                           |
+|   [ Backend - Spring WebFlux + Axon ]                                             |
+|      |                                                                            |
+|      +--> Commandes + evenements --> [ Axon Server ] (:8024 / :8124)             |
+|      |                                                                            |
+|      +--> Projections lecture -----> [ PostgreSQL ] (:5432)                       |
++-----------------------------------------------------------------------------------+
+                                      ^
+                                      |
+                         [ pgAdmin ] (:6002)
+```
+
+### 2.2 Structure du depot
+
+```text
+sma-eventsourcing-17/
+|
++-- pom.xml                              (parent Maven, packaging pom)
+|
++-- backend/                             (module metier)
+|   |
+|   +-- pom.xml
+|   +-- Dockerfile
+|   +-- application-local.properties
+|   +-- application-prod.properties
+|   `-- src/
+|       +-- main/
+|       `-- test/
+|
++-- frontend/                            (module UI Thymeleaf)
+|   |
+|   +-- pom.xml
+|   +-- Dockerfile
+|   +-- application-local.properties
+|   +-- application-prod.properties
+|   `-- src/
+|       +-- main/
+|       `-- test/
+|
++-- compose.yaml                         (stack locale)
++-- docker/                              (fichiers annexes)
+`-- komp-smb/                            (manifests Kubernetes)
+```
+
+### 2.3 Flux CQRS simplifie
+
+```text
++-----------------------------------------------------------------------------------+
+| NIVEAU 1 - UI                                                                      |
+|   [ Templates Thymeleaf ]                                                          |
++-----------------------------------------------------------------------------------+
+          |
+          +--> Flux ecriture (COMMAND)
+          |      |
+          |      v
+          |   [ Controllers Command ]
+          |      |
+          |      v
+          |   [ Axon Command Bus / Event Store ]
+          |      |
+          |      v
+          |   [ Event Handlers / Projection ]
+          |      |
+          |      v
+          |   [ Read Model PostgreSQL ]
+          |
+          `--> Flux lecture (QUERY)
+                 |
+                 v
+              [ Controllers Query ]
+                 |
+                 v
+              [ Read Model PostgreSQL ]
+```
+
+## 3. Stack technique
+
+- Java 17
+- Spring Boot 3.4.0
+- Backend : Spring WebFlux, Axon Framework, JPA
+- Frontend : Spring MVC, Thymeleaf, Thymeleaf Layout Dialect
+- Base de donnees : PostgreSQL
+- Orchestration locale : Docker Compose
 - Build : Maven
-- Base de données : PostgreSQL
-- Infrastructure locale : Docker / Docker Compose
 
-Les patterns **CQRS** et **Event Sourcing** sont utilisés pour séparer les responsabilités
-de commande et de lecture, améliorer la traçabilité des changements et faciliter l’évolution du modèle métier.
+## 4. Structure des modules
 
-## Sécurité
-L’authentification et l’autorisation reposent sur les standards :
-- OAuth 2.0
-- OpenID Connect
+```text
+sma-eventsourcing-17/
+  pom.xml
+  backend/
+    pom.xml
+    Dockerfile
+    application-local.properties
+    application-prod.properties
+    src/main
+    src/test
+    logs/
+  frontend/
+    pom.xml
+    Dockerfile
+    application-local.properties
+    application-prod.properties
+    src/main
+    src/test
+    logs/
+  compose.yaml
+  docker/
+  komp-smb/
+```
 
-(L’implémentation dépend de la configuration de l’environnement d’exécution.)
+## 5. Demarrage rapide
 
-## Structure du projet
-- Backend Spring Boot : racine du projet
-- Frontend Thymeleaf : `thymeleaf-frontend`
-- Données d’exemple : `thymeleaf-frontend/src/main/resources/vehicules.json`
-- Fichier Docker Compose : `compose.yaml`
-- Dockerfile backend : `Dockerfile`
-- Dockerfile frontend : `thymeleaf-frontend/Dockerfile`
+Prerequis minimaux : Docker + Docker Compose + Java 17 + Maven.
 
-## Backend (Spring Boot WebFlux)
-Le backend Spring Boot constitue le cœur applicatif et expose les endpoints nécessaires
-au rendu serveur des vues Thymeleaf ainsi qu’aux opérations métier.
+### 5.1 Demarrage Docker Compose
 
-## Frontend (Thymeleaf)
-
-Le frontend de l’application est entièrement développé avec **Thymeleaf** et repose sur
-un rendu **côté serveur** des vues HTML.
-
-Cette approche permet :
-
-- la génération dynamique des pages HTML côté backend
-- le contrôle complet des champs de formulaire (binding, validation, affichage conditionnel)
-- l’intégration native avec Spring (modèle, sécurité, internationalisation)
-- la centralisation de la logique de présentation côté serveur
-- la réduction de la logique JavaScript côté client
-
-Les vues Thymeleaf sont directement liées au modèle métier exposé par le backend,
-ce qui garantit la cohérence des données affichées et simplifie la maintenance
-dans un contexte applicatif intranet.
-
-## Accès (local)
-
-- Frontend (Thymeleaf) : http://localhost:8091
-- Backend (API / Actuator) : http://localhost:8092
-- Healthcheck backend : http://localhost:8092/actuator/health
-- Axon Server (dashboard) : http://localhost:8024
-- pgAdmin : http://localhost:6002
-- PostgreSQL : localhost:5432
-
-
-## Lancement de l’application (environnement local)
-
-À la racine du projet :
+Depuis la racine du projet :
 
 ```bash
 docker compose -f compose.yaml up -d
 ```
-## Profils Spring
 
-L’application utilise les profils Spring pour distinguer les configurations
-selon l’environnement d’exécution.
-
-- `default` : configuration par défaut (`application.properties`)
-- `local` : exécution locale hors Docker
-- `prod` : exécution via Docker Compose (intranet)
-
-Le profil actif est défini via la variable d’environnement `SPRING_PROFILES_ACTIVE`.
-Dans l’environnement Docker, le profil `prod` est utilisé.
-
-## Tests automatisés (campagnes ajoutées)
-
-Les campagnes de tests unitaires enrichies couvrent en priorité les domaines CQRS/Event Sourcing suivants :
-
-- `client` : commandes, aggregate, handlers, mappers et cas limites
-- `document` : commandes, aggregate, handlers, entités, mappers et cas limites
-- `vehicule` : tests unitaires classiques + tests de cas limites
-- `logging` : filtres techniques et gestionnaire global d’exceptions
-
-Exemples de classes de test ajoutées/renforcées :
-
-- `src/test/java/fr/cdrochon/smamonolithe/client/ClientEdgeCasesTest.java`
-- `src/test/java/fr/cdrochon/smamonolithe/document/DocumentEdgeCasesTest.java`
-- `src/test/java/fr/cdrochon/smamonolithe/vehicule/VehiculeClassicUnitTest.java`
-- `src/test/java/fr/cdrochon/smamonolithe/vehicule/VehiculeEdgeCasesTest.java`
-- `src/test/java/fr/cdrochon/smamonolithe/logging/TechnicalRequestWebFilterTest.java`
-- `src/test/java/fr/cdrochon/smamonolithe/logging/GlobalTechnicalExceptionHandlerTest.java`
-
-Lancer toute la suite :
+Arret de la stack :
 
 ```bash
-mvn test
+docker compose -f compose.yaml down
 ```
 
-Lancer les suites principales ajoutées :
+Voir les logs des services :
 
 ```bash
-mvn -Dtest=Client*Test,Adresse*Test,Document*Test,Vehicule*Test,TechnicalRequestWebFilterTest,GlobalTechnicalExceptionHandlerTest,ClientWebConfigTest test
+docker compose -f compose.yaml logs -f frontend
+docker compose -f compose.yaml logs -f backend
 ```
 
-## Logs personnalisés business
-
-Une séparation stricte des logs a été mise en place pour éviter que les événements métier soient noyés par les logs framework.
-
-### Principe
-
-- Les logs métier utilisent un logger dédié `BUSINESS`
-- Les événements métier sont formatés avec des préfixes `BIZ_*`
-- Les logs techniques restent séparés (`TECH_*`)
-- La sortie métier est disponible en console et dans un fichier dédié
-
-### Fichiers de configuration concernés
-
-- `src/main/resources/logback-spring.xml`
-- `src/main/resources/application.properties`
-- `src/main/java/fr/cdrochon/smamonolithe/logging/BusinessLoggers.java`
-
-### Emplacement du fichier métier
-
-- `logs/business.log`
-
-### Vérification rapide des logs business
-
-1. Démarrer l’application
-2. Appeler un endpoint de création (ex: `POST /commands/createClient`)
-3. Vérifier la présence de lignes `BIZ_*` en console ou dans `logs/business.log`
-
-Suivre le fichier en direct :
+Rebuild complet des images :
 
 ```bash
-tail -f logs/business.log
+docker compose -f compose.yaml up -d --build
 ```
 
-### Encart lecture rapide (dossier : passe/casse)
+### 5.2 Demarrage local (sans conteneur app)
 
-Pour la création d'un dossier, lire les logs `BIZ_DOSSIER_*` dans cet ordre :
+Option pratique : lancer seulement les dependances (PostgreSQL + Axon + pgAdmin) en Docker, puis demarrer les apps en local.
 
-| Log | Interprétation métier |
-|---|---|
-| `BIZ_DOSSIER_CREATE_REQUEST` | La demande de création est reçue |
-| `BIZ_DOSSIER_CREATE_ACCEPTED` | La commande est acceptée par l'aggregate |
-| `BIZ_DOSSIER_CREATED` | Le dossier est bien projeté/persisté |
-| `BIZ_DOSSIER_CREATE_CONFIRMED` | Le flux asynchrone est confirmé côté retour API |
-| `BIZ_DOSSIER_CREATE_FAILED` | La création a échoué (cas métier ou technique) |
-
-Lecture opérationnelle :
-- Si vous voyez `REQUEST` puis `...CONFIRMED`, la création **passe**.
-- Si vous voyez `...FAILED`, la création **casse** (même si `REQUEST` a été émis).
-- Pour la lecture (`GET /queries/dossiers/{id}`, `GET /queries/dossiers`) :
-  - `BIZ_DOSSIER_READ_REQUEST` / `BIZ_DOSSIER_READ_SUCCESS` / `BIZ_DOSSIER_READ_NOT_FOUND`
-  - `BIZ_DOSSIER_LIST_REQUEST` / `BIZ_DOSSIER_LIST_SUCCESS`
-
-### Encart lecture rapide (client : passe/casse)
-
-Pour la création d'un client, lire les logs `BIZ_CLIENT_*` dans cet ordre :
-
-| Log | Interprétation métier |
-|---|---|
-| `BIZ_CLIENT_CREATE_REQUEST` | La demande de création est reçue |
-| `BIZ_CLIENT_CREATE_ACCEPTED` | La commande est acceptée par l'aggregate |
-| `BIZ_CLIENT_CREATED` | Le client est bien projeté/persisté |
-| `BIZ_CLIENT_CREATE_CONFIRMED` | Le flux asynchrone est confirmé côté retour API |
-
-Lecture opérationnelle :
-- Si vous voyez `REQUEST` puis `...CONFIRMED`, la création **passe**.
-- Si `...CONFIRMED` n'apparaît pas, la création est **à investiguer** (vérifier les logs `TECH_*`).
-- Pour la lecture (`GET /queries/clients/{id}`, `GET /queries/clients`) :
-  - `BIZ_CLIENT_READ_REQUEST` / `BIZ_CLIENT_READ_SUCCESS` / `BIZ_CLIENT_READ_FAILED`
-  - `BIZ_CLIENT_LIST_REQUEST` / `BIZ_CLIENT_LIST_SUCCESS`
-
-### Encart lecture rapide (vehicule : passe/casse)
-
-Pour la création d'un véhicule, lire les logs `BIZ_VEHICULE_*` dans cet ordre :
-
-| Log | Interprétation métier |
-|---|---|
-| `BIZ_VEHICULE_CREATE_REQUEST` | La demande de création est reçue |
-| `BIZ_VEHICULE_CREATE_ACCEPTED` | La commande est acceptée par l'aggregate |
-| `BIZ_VEHICULE_CREATED` | Le véhicule est bien projeté/persisté |
-| `BIZ_VEHICULE_CREATE_CONFIRMED` | Le flux asynchrone est confirmé côté retour API |
-
-Lecture opérationnelle :
-- Si vous voyez `REQUEST` puis `...CONFIRMED`, la création **passe**.
-- Si `...CONFIRMED` n'apparaît pas, la création est **à investiguer** (vérifier les logs `TECH_*`).
-- Pour la lecture (`GET /queries/vehicules/{id}`, `GET /queries/vehicules`) :
-  - `BIZ_VEHICULE_READ_REQUEST` / `BIZ_VEHICULE_READ_SUCCESS` / `BIZ_VEHICULE_READ_NOT_FOUND`
-  - `BIZ_VEHICULE_LIST_REQUEST` / `BIZ_VEHICULE_LIST_SUCCESS`
-  - Recherche par immatriculation : `BIZ_VEHICULE_READ_BY_IMMATRICULATION_*`
-
-### Encart lecture rapide (document : passe/casse)
-
-Pour la création d'un document, lire les logs `BIZ_DOCUMENT_*` dans cet ordre :
-
-| Log | Interprétation métier |
-|---|---|
-| `BIZ_DOCUMENT_CREATE_REQUEST` | La demande de création est reçue |
-| `BIZ_DOCUMENT_CREATE_ACCEPTED` | La commande est acceptée par l'aggregate |
-| `BIZ_DOCUMENT_CREATED` | Le document est bien projeté/persisté |
-| `BIZ_DOCUMENT_CREATE_CONFIRMED` | Le flux asynchrone est confirmé côté retour API |
-
-Lecture opérationnelle :
-- Si vous voyez `REQUEST` puis `...CONFIRMED`, la création **passe**.
-- Si `...CONFIRMED` n'apparaît pas, la création est **à investiguer** (vérifier les logs `TECH_*`).
-- Pour la lecture (`GET /queries/documents/{id}`, `GET /queries/documents`) :
-  - `BIZ_DOCUMENT_READ_REQUEST` / `BIZ_DOCUMENT_READ_SUCCESS` / `BIZ_DOCUMENT_READ_NOT_FOUND`
-  - `BIZ_DOCUMENT_LIST_REQUEST` / `BIZ_DOCUMENT_LIST_SUCCESS`
-
-## Clôture du lot logs techniques (5 items)
-
-Ce lot est considéré clôturé quand les 5 points ci-dessous sont validés.
-
-1. **Erreurs / exceptions centralisées**  
-   Toutes les exceptions non gérées passent par un handler global avec log `TECH_EXCEPTION`.
-   - Implémentation : `src/main/java/fr/cdrochon/smamonolithe/logging/GlobalTechnicalExceptionHandler.java`
-   - Comportement attendu : log erreur + réponse HTTP 500 structurée (`timestamp`, `status`, `error`, `message`, `path`).
-   - Validation : `src/test/java/fr/cdrochon/smamonolithe/logging/GlobalTechnicalExceptionHandlerTest.java`
-
-2. **Latence HTTP et statut tracés**  
-   Chaque requête backend produit un log `TECH_HTTP` avec méthode, path, status et durée.
-   - Implémentation : `src/main/java/fr/cdrochon/smamonolithe/logging/TechnicalRequestWebFilter.java`
-   - Comportement attendu : log `info` en succès, log `error` avec stacktrace en cas d'échec, statut et durée dans les deux cas.
-   - Validation : `src/test/java/fr/cdrochon/smamonolithe/logging/TechnicalRequestWebFilterTest.java`
-
-3. **Appels externes journalisés**  
-   Les appels sortants (`RestTemplate` / `WebClient`) sont logués en technique avec statut, latence et erreur éventuelle.
-   - Implémentation : `src/main/java/fr/cdrochon/smamonolithe/configuration/ClientWebConfig.java`
-   - Comportement attendu :
-     - `TECH_EXT_REST` / `TECH_EXT_REST_ERROR` pour `RestTemplate`
-     - `TECH_EXT_WEBCLIENT` / `TECH_EXT_WEBCLIENT_ERROR` pour `WebClient`
-   - Validation : `src/test/java/fr/cdrochon/smamonolithe/configuration/ClientWebConfigTest.java`
-
-4. **Niveaux de logs maîtrisés (anti-bruit)**  
-   Les frameworks restent en `WARN` et les logs utiles applicatifs/techniques sont conservés au bon niveau.
-   - Configuration : `src/main/resources/application.properties`, `src/main/resources/logback-spring.xml`
-   - Réglages clés : `logging.level.root=WARN`, `logging.level.org.springframework=WARN`, `logging.level.org.axonframework=WARN`, `logging.level.fr.cdrochon.smamonolithe.logging=INFO`.
-   - Résultat : réduction du bruit framework, conservation des logs techniques pertinents.
-
-5. **Validation par tests ciblés**  
-   Les tests ciblés de la couche logging passent sur les composants techniques critiques :
-   - `src/test/java/fr/cdrochon/smamonolithe/logging/TechnicalRequestWebFilterTest.java`
-   - `src/test/java/fr/cdrochon/smamonolithe/logging/GlobalTechnicalExceptionHandlerTest.java`
-   - `src/test/java/fr/cdrochon/smamonolithe/configuration/ClientWebConfigTest.java`
-   - Commande de validation :
+1) Lancer les dependances :
 
 ```bash
-mvn -Dtest=TechnicalRequestWebFilterTest,GlobalTechnicalExceptionHandlerTest,ClientWebConfigTest test
+docker compose -f compose.yaml up -d postgres-monolithe axon-server pgadmin4
 ```
 
-## Licence
+2) Lancer le backend en local avec surcharge `application-local.properties` :
 
-Ce projet est distribué sous licence MIT.
-Voir le fichier [LICENSE](LICENSE).
+```bash
+cd /home/cdn/IdeaProjects/sma-eventsourcing-17/backend
+mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=local,--spring.config.additional-location=file:application-local.properties"
+```
+
+3) Lancer le frontend en local avec surcharge `application-local.properties` :
+
+```bash
+cd /home/cdn/IdeaProjects/sma-eventsourcing-17/frontend
+mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=local,--spring.config.additional-location=file:application-local.properties"
+```
+
+Acces utiles :
+
+- Frontend : `http://localhost:8091`
+- Backend : `http://localhost:8092`
+- Health backend : `http://localhost:8092/actuator/health`
+- Axon Dashboard : `http://localhost:8024`
+- pgAdmin : `http://localhost:6002`
+
+## 6. Build et tests
+
+Cette section sert a valider que la base compile, que les regressions principales sont detectees, et que les refactorings n'ont pas casse le flux metier.
+
+Build complet (racine) :
+
+```bash
+mvn clean verify
+```
+
+Build par module :
+
+```bash
+mvn -pl backend -DskipTests compile
+mvn -pl frontend -DskipTests compile
+```
+
+Tests backend uniquement :
+
+```bash
+mvn -pl backend test
+```
+
+Tests frontend uniquement :
+
+```bash
+mvn -pl frontend test
+```
+
+Tests cibles backend (log technique) :
+
+```bash
+mvn -pl backend -Dtest=TechnicalRequestWebFilterTest,GlobalTechnicalExceptionHandlerTest,ClientWebConfigTest test
+```
+
+## 7. Configuration et profils Spring
+
+Profils utilises :
+
+- `default` : valeurs de base dans `src/main/resources/application.properties`
+- `local` : surcharge locale via `application-local.properties` (fichiers a la racine des modules)
+- `prod` : surcharge conteneur via `application-prod.properties`
+
+Fichiers principaux :
+
+- `backend/application-local.properties`
+- `backend/application-prod.properties`
+- `frontend/application-local.properties`
+- `frontend/application-prod.properties`
+
+Important : `application-local.properties` et `application-prod.properties` sont des fichiers externes aux resources Spring standards. Pour les prendre en compte de facon explicite, utiliser `--spring.config.additional-location=file:...` comme dans la section demarrage.
+
+## 8. Logs
+
+Cette section sert a distinguer rapidement les evenements metier (audit fonctionnel) des erreurs techniques (diagnostic runtime).
+
+Separation actuelle des logs :
+
+- Backend metier : `backend/logs/business.log`
+- Backend technique : `backend/logs/technical.log`
+- Frontend acces UI : `frontend/logs/ui-access.log`
+- Frontend erreurs UI : `frontend/logs/ui-error.log`
+
+Suivi live des logs metier backend :
+
+```bash
+tail -f backend/logs/business.log
+```
+
+Suivi live des logs techniques backend :
+
+```bash
+tail -f backend/logs/technical.log
+```
+
+Suivi live des logs frontend :
+
+```bash
+tail -f frontend/logs/ui-access.log
+tail -f frontend/logs/ui-error.log
+```
+
+## 9. Troubleshooting rapide
+
+1. **Erreur Thymeleaf `Error resolving template [template]`**
+   - verifier que `frontend/src/main/resources/templates/template.html` existe
+   - verifier que `layout:decorate="~{template}"` est utilise dans les vues
+
+2. **Erreur Thymeleaf `Error resolving template [toggledark]`**
+   - verifier que `frontend/src/main/resources/templates/toggledark.html` existe
+   - verifier l'inclusion `th:insert="~{toggledark :: toggledarkFragment}"`
+
+3. **Le frontend ne joint pas le backend**
+   - en local : `external.service.url=http://localhost:8092`
+   - en docker : `external.service.url=http://backend:8092`
+
+4. **Aucun log business visible**
+   - verifier `logging.file.path` dans les fichiers `application-*.properties`
+   - verifier la config de `backend/src/main/resources/logback-spring.xml`
+
+## 10. Deployement Kubernetes (optionnel)
+
+Les manifests sont disponibles dans `komp-smb/` pour un deploiement hors Docker Compose local.
+
+## 11. Licence
+
+Projet distribue sous licence MIT. Voir `LICENCE`.
