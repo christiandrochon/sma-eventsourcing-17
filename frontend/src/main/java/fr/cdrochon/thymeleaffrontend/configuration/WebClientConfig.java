@@ -1,10 +1,17 @@
 package fr.cdrochon.thymeleaffrontend.configuration;
 
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -12,20 +19,27 @@ public class WebClientConfig {
     
     @Value("${external.service.url}")
     private String externalServiceUrl;
-    
+
+    private final OAuth2AuthorizedClientService authorizedClientService;
+
+    public WebClientConfig(ObjectProvider<OAuth2AuthorizedClientService> authorizedClientServiceProvider) {
+        this.authorizedClientService = authorizedClientServiceProvider.getIfAvailable();
+    }
+
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
                         .baseUrl(externalServiceUrl)
                         .filter((request, next) -> {
                             long startMs = System.currentTimeMillis();
-                            return next.exchange(request)
+                            ClientRequest authenticatedRequest = withBearerTokenIfAvailable(request);
+                            return next.exchange(authenticatedRequest)
                                        .doOnNext(response -> {
                                            long durationMs = System.currentTimeMillis() - startMs;
                                            FrontendLoggers.tech().info(
                                                    "UI_TECH_EXT_WEBCLIENT method={} uri={} status={} durationMs={}",
-                                                   request.method(),
-                                                   request.url(),
+                                                    authenticatedRequest.method(),
+                                                    authenticatedRequest.url(),
                                                    response.statusCode().value(),
                                                    durationMs
                                            );
@@ -34,8 +48,8 @@ public class WebClientConfig {
                                            long durationMs = System.currentTimeMillis() - startMs;
                                            FrontendLoggers.error().error(
                                                    "UI_TECH_EXT_WEBCLIENT_ERROR method={} uri={} durationMs={} message={}",
-                                                   request.method(),
-                                                   request.url(),
+                                                    authenticatedRequest.method(),
+                                                    authenticatedRequest.url(),
                                                    durationMs,
                                                    exception.getMessage(),
                                                    exception
@@ -44,7 +58,32 @@ public class WebClientConfig {
                         })
                         .build();
     }
-    
+
+    private ClientRequest withBearerTokenIfAvailable(ClientRequest request) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authorizedClientService == null || !(authentication instanceof OAuth2AuthenticationToken oauthToken)) {
+                return request;
+            }
+
+            OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+                    oauthToken.getAuthorizedClientRegistrationId(),
+                    oauthToken.getName()
+            );
+
+            if (client == null || client.getAccessToken() == null || client.getAccessToken().getTokenValue() == null) {
+                return request;
+            }
+
+            return ClientRequest.from(request)
+                    .headers(headers -> headers.setBearerAuth(client.getAccessToken().getTokenValue()))
+                    .build();
+        } catch (Exception exception) {
+            FrontendLoggers.tech().warn("UI_TECH_AUTH_RELAY_SKIPPED reason={}", exception.getMessage());
+            return request;
+        }
+    }
+
     //UTILE POUR DEBUGUER ET VOIR LE CONTENU DU JSON mais genere un httpcode 302 de redirection (en plus des requetes avec httpclient)
 //        @Bean
 //        public WebClient webClient() {
