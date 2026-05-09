@@ -1,5 +1,87 @@
 # Scripts utilitaires
 
+## `dev.sh` (point d'entree unique recommande)
+
+Facade simple pour lancer et piloter l'application locale sans memoriser plusieurs scripts.
+
+Exemples :
+
+```bash
+./scripts/dev.sh secure
+./scripts/dev.sh fast
+./scripts/dev.sh open
+./scripts/dev.sh check
+./scripts/dev.sh seed-users
+./scripts/dev.sh ensure-users
+./scripts/dev.sh down
+```
+
+Ce script delegue vers :
+
+- `dev-up.sh` (start/stop/restart secure|fast)
+- `dev-login.sh` (show/open/check URLs + credentials)
+- `keycloak-realm.sh` (`seed-demo-users`, `status`)
+
+Decision rapide (quel script selon mon objectif) :
+
+| Objectif | Script/commande |
+|---|---|
+| Lancer la stack securisee | `./scripts/dev.sh secure` |
+| Lancer la stack sans login (debug) | `./scripts/dev.sh fast` |
+| Afficher URLs + credentials | `./scripts/dev.sh show` |
+| Ouvrir directement app + Keycloak | `./scripts/dev.sh open` |
+| Verifier la disponibilite HTTP | `./scripts/dev.sh check` |
+| Creer les 3 comptes demo RBAC | `./scripts/dev.sh seed-users` |
+| Garantir les users avant login (alias explicite) | `./scripts/dev.sh ensure-users` |
+| Verifier le realm Keycloak | `./scripts/dev.sh realm-status` |
+| Arreter la stack | `./scripts/dev.sh down` |
+
+## `dev-up.sh`
+
+Gestion du cycle de vie local de la stack (Docker Compose) : mode securise avec Keycloak ou mode rapide sans login.
+
+Exemples :
+
+```bash
+./scripts/dev-up.sh secure
+./scripts/dev-up.sh fast
+./scripts/dev-up.sh status
+./scripts/dev-up.sh down
+```
+
+## `dev-login.sh`
+
+Affiche les URLs utiles et credentials de demo; peut ouvrir automatiquement le navigateur et faire un check HTTP rapide.
+
+Exemples :
+
+```bash
+./scripts/dev-login.sh
+./scripts/dev-login.sh open
+./scripts/dev-login.sh check
+```
+
+## `keycloak-realm.sh`
+
+Gestion directe du realm Keycloak (hors facade `dev.sh`).
+
+Exemples :
+
+```bash
+./scripts/keycloak-realm.sh status
+./scripts/keycloak-realm.sh seed-demo-users
+./scripts/keycloak-realm.sh create-user
+./scripts/keycloak-realm.sh add-role
+./scripts/keycloak-realm.sh backup
+./scripts/keycloak-realm.sh restore
+```
+
+Comptes demo crees par `seed-demo-users` (si absents) :
+
+- `admin-test / admin123!` (`ADMIN`)
+- `user-test / user123!` (`USER`)
+- `audit-test / audit123!` (`AUDITOR`)
+
 ## `audit-check.sh`
 
 Script de diagnostic rapide pour l'audit RGPD.
@@ -89,4 +171,3 @@ Notes RBAC audit :
 - Les endpoints backend `/audit/compliance/**` attendent un role `ADMIN` ou `AUDITOR` (quand `APP_SECURITY_ENABLED=true`).
 - Le token recupere doit contenir un role lecture (`ADMIN`/`AUDITOR`) pour les GET.
 - L'ecriture (`POST /audit/compliance/**`) est reservee par defaut a `ADMIN`.
-
