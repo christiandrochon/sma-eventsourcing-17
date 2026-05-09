@@ -10,6 +10,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -17,6 +20,7 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 import java.net.InetSocketAddress;
+import java.security.Principal;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -29,8 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
  *   <li>Enregistrement d'un événement d'audit dans la base PostgreSQL {@code audit} via {@link AuditService}</li>
  * </ul>
  *
- * <p>L'acteur est actuellement {@code ANONYMOUS} car l'authentification Keycloak est désactivée.
- * Quand Spring Security + JWT sera réactivé, l'acteur sera extrait du token JWT.</p>
+ * <p>Si un JWT Keycloak est present, l'acteur et son garage sont extraits automatiquement.
+ * Sinon, l'acteur reste {@code ANONYMOUS}.</p>
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -45,6 +49,11 @@ public class TechnicalRequestWebFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        return resolveActorContext(exchange)
+                .flatMap(actorContext -> doFilter(exchange, chain, actorContext));
+    }
+
+    private Mono<Void> doFilter(ServerWebExchange exchange, WebFilterChain chain, ActorContext actorContext) {
         long startMs = System.currentTimeMillis();
         String traceId = exchange.getRequest().getId();
         String method  = exchange.getRequest().getMethod() != null ? exchange.getRequest().getMethod().name() : "UNKNOWN";
@@ -66,7 +75,8 @@ public class TechnicalRequestWebFilter implements WebFilter {
                     traceId, method, path, suspiciousMethod, suspiciousPath);
 
             auditService.record(AuditEventRecord.builder()
-                    .actor("ANONYMOUS")
+                    .actor(actorContext.actor())
+                    .actorGarage(actorContext.actorGarage())
                     .action(AuditAction.ANOMALY)
                     .resource(AuditPathResolver.resolveResource(path))
                     .resourceId(AuditPathResolver.resolveResourceId(path))
@@ -93,7 +103,8 @@ public class TechnicalRequestWebFilter implements WebFilter {
                                 traceId, method, path, status, durationMs);
 
                         auditService.record(AuditEventRecord.builder()
-                                .actor("ANONYMOUS")
+                                .actor(actorContext.actor())
+                                .actorGarage(actorContext.actorGarage())
                                 .action(AuditAction.ACCESS_DENIED)
                                 .resource(AuditPathResolver.resolveResource(path))
                                 .resourceId(AuditPathResolver.resolveResourceId(path))
@@ -110,7 +121,8 @@ public class TechnicalRequestWebFilter implements WebFilter {
                                 : (status >= 400 ? AuditResult.ERROR : AuditResult.SUCCESS);
 
                         auditService.record(AuditEventRecord.builder()
-                                .actor("ANONYMOUS")
+                                .actor(actorContext.actor())
+                                .actorGarage(actorContext.actorGarage())
                                 .action(AuditPathResolver.resolveAction(method))
                                 .resource(AuditPathResolver.resolveResource(path))
                                 .resourceId(AuditPathResolver.resolveResourceId(path))
@@ -136,6 +148,52 @@ public class TechnicalRequestWebFilter implements WebFilter {
                 });
     }
 
+    private Mono<ActorContext> resolveActorContext(ServerWebExchange exchange) {
+        return exchange.getPrincipal()
+                .map(this::toActorContext)
+                .defaultIfEmpty(ActorContext.anonymous())
+                .onErrorReturn(ActorContext.anonymous());
+    }
+
+    private ActorContext toActorContext(Principal principal) {
+        if (!(principal instanceof Authentication authentication)) {
+            String name = principal != null && principal.getName() != null && !principal.getName().isBlank()
+                    ? principal.getName()
+                    : "ANONYMOUS";
+            return new ActorContext(name, null);
+        }
+
+        if (authentication instanceof JwtAuthenticationToken jwtAuthenticationToken) {
+            Jwt jwt = jwtAuthenticationToken.getToken();
+            String actor = firstNonBlank(
+                    jwt.getClaimAsString("preferred_username"),
+                    jwt.getClaimAsString("email"),
+                    jwt.getClaimAsString("sub"),
+                    authentication.getName(),
+                    "ANONYMOUS"
+            );
+            String actorGarage = firstNonBlank(
+                    jwt.getClaimAsString("garage_id"),
+                    jwt.getClaimAsString("garage"),
+                    jwt.getClaimAsString("garageId"),
+                    null
+            );
+            return new ActorContext(actor, actorGarage);
+        }
+
+        String actor = firstNonBlank(authentication.getName(), "ANONYMOUS");
+        return new ActorContext(actor, null);
+    }
+
+    private static String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     // -----------------------------------------------------------------------
 
     private static String resolveIp(ServerWebExchange exchange) {
@@ -146,6 +204,12 @@ public class TechnicalRequestWebFilter implements WebFilter {
         }
         InetSocketAddress remoteAddr = exchange.getRequest().getRemoteAddress();
         return remoteAddr != null ? remoteAddr.getAddress().getHostAddress() : "unknown";
+    }
+
+    private record ActorContext(String actor, String actorGarage) {
+        static ActorContext anonymous() {
+            return new ActorContext("ANONYMOUS", null);
+        }
     }
 }
 
