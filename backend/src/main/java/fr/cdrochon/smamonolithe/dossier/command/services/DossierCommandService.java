@@ -20,9 +20,8 @@ import static fr.cdrochon.smamonolithe.dossier.command.dtos.DossierCommandMapper
 public class DossierCommandService {
     
     private final CommandGateway commandGateway;
-    //utiliser une CompletableFuture pour synchroniser l'attente du contrôleur jusqu'à ce que l'événement soit reçu et traité
-    private CompletableFuture<DossierCommandDTO> futureDTO;
-    
+    private final java.util.Map<String, CompletableFuture<DossierCommandDTO>> dossierFutures = new java.util.concurrent.ConcurrentHashMap<>();
+
     public DossierCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
@@ -36,8 +35,6 @@ public class DossierCommandService {
      */
     @Transactional
     public CompletableFuture<DossierCommandDTO> createDossier(DossierCommandDTO dossierCommandDTO) {
-        //CompletableFuture<DossierCommandDTO> sera complétée lorsque l'événement sera reçu.
-        futureDTO = new CompletableFuture<>();
         String dossierId = UUID.randomUUID().toString();
         BusinessLoggers.business().info("BIZ_DOSSIER_CREATE_REQUEST dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
                                         dossierId,
@@ -45,32 +42,48 @@ public class DossierCommandService {
                                         dossierCommandDTO.getClient() != null ? dossierCommandDTO.getClient().getId() : null,
                                         dossierCommandDTO.getVehicule() != null ? dossierCommandDTO.getVehicule().getId() : null,
                                         dossierCommandDTO.getDossierStatus());
-        //envoi de la commande de création du dossier
-        commandGateway.send(new DossierCreateCommand(dossierId,
-                                                     dossierCommandDTO.getNomDossier(),
-                                                     dossierCommandDTO.getDateCreationDossier(),
-                                                     dossierCommandDTO.getDateModificationDossier(),
-                                                     convertClientDtoToClient(dossierCommandDTO.getClient()),
-                                                     convertVehiculeDtoToVehicule(dossierCommandDTO.getVehicule()),
-                                                     dossierCommandDTO.getDossierStatus(),
-                                                     dossierCommandDTO.getClient().getId(),
-                                                     dossierCommandDTO.getVehicule().getId()));
-        return futureDTO;
+
+        // Créer une future qui sera résolue quand l'event handler appellera completeDossierCreation()
+        CompletableFuture<DossierCommandDTO> dossierFuture = new CompletableFuture<>();
+        dossierFutures.put(dossierId, dossierFuture);
+
+        DossierCreateCommand command = new DossierCreateCommand(
+                dossierId,
+                dossierCommandDTO.getNomDossier(),
+                dossierCommandDTO.getDateCreationDossier(),
+                dossierCommandDTO.getDateModificationDossier(),
+                convertClientDtoToClient(dossierCommandDTO.getClient()),
+                convertVehiculeDtoToVehicule(dossierCommandDTO.getVehicule()),
+                dossierCommandDTO.getDossierStatus(),
+                dossierCommandDTO.getClient() != null ? dossierCommandDTO.getClient().getId() : null,
+                dossierCommandDTO.getVehicule() != null ? dossierCommandDTO.getVehicule().getId() : null,
+                dossierCommandDTO.getUserId()
+        );
+
+        commandGateway.send(command);
+
+        // Retourner la future qui sera complétée par l'event handler
+        return dossierFuture;
     }
     
     /**
      * Compléter la future dans le service. Méthode appelée par @EventHandler
      *
-     * @param dto DTO de création d'un garage
+     * @param dto DTO de création d'un dossier
      */
     public void completeDossierCreation(DossierCommandDTO dto) {
-        if(futureDTO != null) {
-            BusinessLoggers.business().info("BIZ_DOSSIER_CREATE_CONFIRMED dossierId={} clientId={} vehiculeId={} status={}",
-                                            dto.getId(),
-                                            dto.getClient() != null ? dto.getClient().getId() : null,
-                                            dto.getVehicule() != null ? dto.getVehicule().getId() : null,
-                                            dto.getDossierStatus());
-            futureDTO.complete(dto);
+        BusinessLoggers.business().info("BIZ_DOSSIER_CREATE_CONFIRMED dossierId={} clientId={} vehiculeId={} status={}",
+                dto != null ? dto.getId() : null,
+                dto != null && dto.getClient() != null ? dto.getClient().getId() : null,
+                dto != null && dto.getVehicule() != null ? dto.getVehicule().getId() : null,
+                dto != null ? dto.getDossierStatus() : null);
+        
+        // Résoudre la future avec le DTO complet depuis l'event handler
+        if (dto != null && dto.getId() != null) {
+            CompletableFuture<DossierCommandDTO> future = dossierFutures.remove(dto.getId());
+            if (future != null) {
+                future.complete(dto);
+            }
         }
     }
 }
