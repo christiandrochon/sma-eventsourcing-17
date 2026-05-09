@@ -60,7 +60,7 @@ class DossierQueryControllerTest {
         DossierQueryController controller = new DossierQueryController(queryGateway, dossierRepository);
         when(dossierRepository.findAll()).thenReturn(List.of(sampleDossierEntity(), sampleDossierEntity()));
 
-        StepVerifier.create(controller.getDossiersAsync())
+        StepVerifier.create(controller.getDossiersAsync(null))
                 .expectNextCount(2)
                 .verifyComplete();
     }

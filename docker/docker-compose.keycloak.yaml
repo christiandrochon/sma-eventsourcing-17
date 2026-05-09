@@ -63,8 +63,8 @@ services:
     image: quay.io/keycloak/keycloak
     container_name: keycloak
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_DB: postgres
       KC_DB_URL_PORT: 50007
       KC_DB_URL_HOST: postgres-keycloak
@@ -75,8 +75,8 @@ services:
       - start-dev
       - --import-realm
     volumes:
-      - ./realm-export.json:/opt/keycloak/data/import/sma-realm.json
-#      - /home/christiandrochon/Documents/sma-realm-export.json:/opt/keycloak/data/import/sma-realm.json
+      - ./realm-export.json:/opt/keycloak/data/import/sma-realm-realm.json
+#      - /home/christiandrochon/Documents/sma-realm-export.json:/opt/keycloak/data/import/sma-realm-realm.json
     restart: always
     ports:
       - '8080:8080'
@@ -85,6 +85,12 @@ services:
     depends_on:
       postgres-keycloak:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080; printf \"GET /realms/master/.well-known/openid-configuration HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; head -n 1 <&3 | grep -q \"200\"' || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
   postgres-keycloak:
     image: postgres
     restart: always

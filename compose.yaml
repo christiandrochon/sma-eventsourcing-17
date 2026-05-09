@@ -11,6 +11,23 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # Base URL backend vue depuis le conteneur frontend
+      EXTERNAL_SERVICE_URL: http://backend:8092
+      # Bascules rapides pour eviter de bloquer le dev local
+      APP_SECURITY_ENABLED: ${FRONTEND_SECURITY_ENABLED:-true}
+      # Keycloak — variables custom pour application.properties
+      KEYCLOAK_AUTH_URL: http://localhost:8080/realms/sma-realm/protocol/openid-connect/auth
+      KEYCLOAK_TOKEN_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/token
+      KEYCLOAK_USER_INFO_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/userinfo
+      KEYCLOAK_JWK_SET_URL: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
+      KEYCLOAK_CLIENT_ID: sma-thymeleaf-frontend
+      KEYCLOAK_CLIENT_AUTH_METHOD: none
+      # Spring OAuth2 — proprietes Spring explicites
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_AUTHORIZATION_URI: http://localhost:8080/realms/sma-realm/protocol/openid-connect/auth
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_TOKEN_URI: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/token
+      SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_KEYCLOAK_JWK_SET_URI: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
     networks:
         - monolithe-network
 
@@ -29,15 +46,29 @@ services:
         condition: service_healthy
       axon-server:
         condition: service_started
+      keycloak:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      APP_SECURITY_ENABLED: ${BACKEND_SECURITY_ENABLED:-true}
+      # Base URL frontend vue depuis le conteneur backend
+      EXTERNAL_SERVICE_URL: http://frontend:8091
       POSTGRES_HOST: postgres-monolithe
       POSTGRES_PORT: 5432
       POSTGRES_DB: monolithe
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+      # Datasource Spring explicite (evite les ambiguities de resolution de profil)
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-monolithe:5432/monolithe
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
       AXON_AXONSERVER_SERVERS: axon-server:8124
-      JAVA_TOOL_OPTIONS: "-Daxon.axonserver.servers=axon-server:8124" # Pour s'assurer que la variable est prise en compte par Axon
+      JAVA_TOOL_OPTIONS: "-Daxon.axonserver.servers=axon-server:8124"
+      # Keycloak — issuer et JWKS pour validation des tokens JWT
+      KEYCLOAK_ISSUER_URL: http://localhost:8080/realms/sma-realm
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://localhost:8080/realms/sma-realm
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: http://keycloak:8080/realms/sma-realm/protocol/openid-connect/certs
     healthcheck:
       start_period: 30s
 #      test: ["CMD", "curl", "-f", "http://backend:8092/actuator/health"]
@@ -101,9 +132,80 @@ services:
     networks:
         - monolithe-network
 
+
+  # ---------------------------------------------------------------------------
+  # Keycloak — Serveur d'identite (SSO / OIDC / RBAC)
+  # Le realm sma-realm est importe automatiquement depuis docker/realm-export.json
+  # Les donnees sont persistees dans le volume pg_keycloak (survit aux redemarrages)
+  # ---------------------------------------------------------------------------
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command:
+      - start-dev
+      - --import-realm
+    environment:
+      # Compte administrateur Keycloak (console http://localhost:8080)
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      # Base PostgreSQL dediee a Keycloak
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres-keycloak
+      KC_DB_URL_PORT: 5433
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+      # Desactiver HTTPS en developpement local
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HTTP_ENABLED: "true"
+      # Hostname public pour les redirections navigateur (evite DNS keycloak introuvable cote host)
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HTTP_RELATIVE_PATH: /
+    volumes:
+      # Le realm sma-realm sera importe au premier demarrage (volume vide)
+      - ./docker/realm-export.json:/opt/keycloak/data/import/sma-realm-realm.json
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8080; printf \"GET /realms/master/.well-known/openid-configuration HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; head -n 1 <&3 | grep -q \"200\"' || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    networks:
+      - monolithe-network
+
+
+  postgres-keycloak:
+    image: postgres:13
+    container_name: postgres-keycloak
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pg_keycloak:/var/lib/postgresql/data
+    ports:
+      - '5433:5433'
+    command: -p 5433
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -p 5433"]
+      interval: 10s
+      retries: 5
+    networks:
+      - monolithe-network
+
 volumes:
   pg_monolithe:
   pgadmin_data_monolithe:
+  pg_keycloak:
 
 networks:
   monolithe-network:
