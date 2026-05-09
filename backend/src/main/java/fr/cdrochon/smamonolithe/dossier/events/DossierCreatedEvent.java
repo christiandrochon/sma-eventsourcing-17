@@ -19,9 +19,10 @@ public class DossierCreatedEvent extends DossierBaseEvent<String> {
     private final DossierStatus dossierStatus;
     private final String clientId;
     private final String vehiculeId;
-    
+    private final String userId;
+
     /**
-     * Ajout des id de vehicule et de client
+     * Ajout des id de vehicule, de client et d'utilisateur
      *
      * @param id                      id du dossier
      * @param nomDossier              nom du dossier
@@ -32,9 +33,10 @@ public class DossierCreatedEvent extends DossierBaseEvent<String> {
      * @param dossierStatus           status du dossier
      * @param clientId                id du client
      * @param vehiculeId              id du vehicule
+     * @param userId                  id de l'utilisateur qui a créé le dossier
      */
     public DossierCreatedEvent(String id, String nomDossier, Instant dateCreationDossier, Instant dateModificationDossier, Client client, Vehicule vehicule,
-                               DossierStatus dossierStatus, String clientId, String vehiculeId) {
+                               DossierStatus dossierStatus, String clientId, String vehiculeId, String userId) {
         super(id);
         this.nomDossier = nomDossier;
         this.dateCreationDossier = dateCreationDossier;
@@ -45,5 +47,6 @@ public class DossierCreatedEvent extends DossierBaseEvent<String> {
         //TODO verifier si ces ids sont utiles !
         this.clientId = clientId;
         this.vehiculeId = vehiculeId;
+        this.userId = userId;
     }
 }
