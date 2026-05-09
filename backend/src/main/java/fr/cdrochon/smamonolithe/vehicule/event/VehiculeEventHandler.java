@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.vehicule.event;
 
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
 import fr.cdrochon.smamonolithe.vehicule.command.services.VehiculeCommandService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,8 @@ public class VehiculeEventHandler {
     @EventHandler
     public void on(VehiculeCreatedEvent event) {
         log.info("Received event: {}", event);
+        BusinessLoggers.business().info("BIZ_VEHICULE_CREATED vehiculeId={} immatriculation={} status={}",
+                                       event.getId(), event.getImmatriculationVehicule(), event.getVehiculeStatus());
         VehiculeCommandDTO commandDTO = new VehiculeCommandDTO(event.getId(),
                                                                event.getImmatriculationVehicule(),
                                                                event.getDateMiseEnCirculationVehicule(),

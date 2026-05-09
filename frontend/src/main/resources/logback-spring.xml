@@ -20,12 +20,19 @@
         </encoder>
     </appender>
 
-    <!-- Fichier : navigation / actions utilisateur → frontend/logs/ui-access.log -->
+    <!-- Console : logs métier -->
+    <appender name="CONSOLE_BIZ" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} UIBIZ - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Fichier : navigation / actions utilisateur → frontend/logs/metier/ui-access.log -->
     <appender name="UI_ACCESS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/ui-access.log</file>
+        <file>${LOG_DIR}/metier/ui-access.log</file>
         <prudent>false</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/ui-access.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/metier/ui-access.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
             <maxHistory>14</maxHistory>
             <totalSizeCap>500MB</totalSizeCap>
@@ -35,12 +42,12 @@
         </encoder>
     </appender>
 
-    <!-- Fichier : erreurs HTTP / exceptions / timeouts → frontend/logs/ui-error.log -->
+    <!-- Fichier : erreurs HTTP / exceptions / timeouts → frontend/logs/technique/ui-error.log -->
     <appender name="UI_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/ui-error.log</file>
+        <file>${LOG_DIR}/technique/ui-error.log</file>
         <prudent>false</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/ui-error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/technique/ui-error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
             <maxHistory>14</maxHistory>
             <totalSizeCap>500MB</totalSizeCap>
@@ -50,18 +57,33 @@
         </encoder>
     </appender>
 
-    <!-- Fichier : traces techniques (latence, statut HTTP) → frontend/logs/ui-technical.log -->
+    <!-- Fichier : traces techniques (latence, statut HTTP) → frontend/logs/technique/ui-technical.log -->
     <appender name="UI_TECH_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/ui-technical.log</file>
+        <file>${LOG_DIR}/technique/ui-technical.log</file>
         <prudent>false</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/ui-technical.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/technique/ui-technical.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
             <maxHistory>14</maxHistory>
             <totalSizeCap>500MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Fichier : logs métier frontend → frontend/logs/metier/ui-business.log -->
+    <appender name="UI_BUSINESS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/metier/ui-business.log</file>
+        <prudent>false</prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/metier/ui-business.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -80,6 +102,12 @@
     <!-- Logger technique (FrontendLoggers.tech()) -->
     <logger name="UI_TECH" level="INFO" additivity="false">
         <appender-ref ref="UI_TECH_FILE"/>
+    </logger>
+
+    <!-- Logger métier (FrontendLoggers.business()) -->
+    <logger name="UI_BUSINESS" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE_BIZ"/>
+        <appender-ref ref="UI_BUSINESS_FILE"/>
     </logger>
 
     <!-- Root : erreurs techniques Spring Boot vers console -->

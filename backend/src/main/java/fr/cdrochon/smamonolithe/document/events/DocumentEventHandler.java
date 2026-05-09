@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.document.events;
 
 import fr.cdrochon.smamonolithe.document.command.dtos.DocumentCommandDTO;
 import fr.cdrochon.smamonolithe.document.command.services.DocumentCommandService;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,8 @@ public class DocumentEventHandler {
     public void on(DocumentCreatedEvent event) {
         
         log.info("Received event: {}", event);
+        BusinessLoggers.business().info("BIZ_DOCUMENT_CREATED documentId={} nomDocument={} type={} status={}",
+                                       event.getId(), event.getNomDocument(), event.getTypeDocument(), event.getDocumentStatus());
         //conversion du dto du dossier en entité dossier
         DocumentCommandDTO commandDTO = new DocumentCommandDTO(event.getId(),
                                                                event.getNomDocument(),

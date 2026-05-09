@@ -2,6 +2,7 @@ package fr.cdrochon.smamonolithe.dossier.events;
 
 import fr.cdrochon.smamonolithe.dossier.command.dtos.DossierCommandDTO;
 import fr.cdrochon.smamonolithe.dossier.command.services.DossierCommandService;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,8 @@ public class DossierEventHandler {
     public void on(DossierCreatedEvent event) {
         
         log.info("Received event: {}", event);
+        BusinessLoggers.business().info("BIZ_DOSSIER_CREATED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                                       event.getId(), event.getNomDossier(), event.getClientId(), event.getVehiculeId(), event.getDossierStatus());
         //conversion du dto du dossier en entité dossier
         DossierCommandDTO dossierDTO = new DossierCommandDTO(event.getId(),
                                                              event.getNomDossier(),

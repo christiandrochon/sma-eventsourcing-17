@@ -74,19 +74,23 @@ public class CreateVehiculeThymController {
             return Mono.just("vehicule/createVehiculeForm");
         }
         
-        return immatriculationExiste(vehiculePostDTO.getImmatriculationVehicule())
-                .flatMap(immatriculationExiste -> {
-                    if(immatriculationExiste && vehiculePostDTO.getImmatriculationVehicule() != null) {
-                        // Numéro d'immatriculation déjà existant
-                        model.addAttribute("vehiculePostDTO", vehiculePostDTO);
-                        model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
-                        model.addAttribute("immatriculationExisteError",
-                                           "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
-                        return Mono.just("vehicule/createVehiculeForm");
-                    }
-                    
-                    
-                    VehiculeThymConvertDTO vehiculeDateConvertDTO = convertVehiculeDTO(vehiculePostDTO);
+         return immatriculationExiste(vehiculePostDTO.getImmatriculationVehicule())
+                 .flatMap(immatriculationExiste -> {
+                     if(immatriculationExiste && vehiculePostDTO.getImmatriculationVehicule() != null) {
+                         // Numéro d'immatriculation déjà existant
+                         model.addAttribute("vehiculePostDTO", vehiculePostDTO);
+                         model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
+                         model.addAttribute("immatriculationExisteError",
+                                            "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
+                         return Mono.just("vehicule/createVehiculeForm");
+                     }
+
+                     FrontendLoggers.access().info("UI_VEHICULE_CREATE_REQUEST immatriculation={} dateMiseEnCirculation={} status={}",
+                                                   vehiculePostDTO.getImmatriculationVehicule(),
+                                                   vehiculePostDTO.getDateMiseEnCirculationVehicule(),
+                                                   vehiculePostDTO.getVehiculeStatus());
+
+                     VehiculeThymConvertDTO vehiculeDateConvertDTO = convertVehiculeDTO(vehiculePostDTO);
                     String jsonPayload = convertObjectToJson(vehiculeDateConvertDTO);
                     FrontendLoggers.access().info("JSON Payload: {}", jsonPayload);
                     

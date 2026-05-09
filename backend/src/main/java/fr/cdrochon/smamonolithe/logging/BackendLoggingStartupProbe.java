@@ -1,4 +1,4 @@
-package fr.cdrochon.thymeleaffrontend.logging;
+package fr.cdrochon.smamonolithe.logging;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -9,9 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Component
-public class FrontendLoggingStartupProbe implements ApplicationRunner {
+public class BackendLoggingStartupProbe implements ApplicationRunner {
 
-    @Value("${logging.file.path:frontend/logs}")
+    @Value("${logging.file.path:backend/logs}")
     private String loggingPath;
 
     @Override
@@ -23,8 +23,7 @@ public class FrontendLoggingStartupProbe implements ApplicationRunner {
         Files.createDirectories(metierPath);
         Files.createDirectories(techniquePath);
 
-        FrontendLoggers.access().info("UI_ACCESS_STARTUP logDir={}", metierPath);
-        FrontendLoggers.tech().info("UI_TECH_STARTUP logDir={}", techniquePath);
+        BusinessLoggers.business().info("BIZ_STARTUP logDir={}", metierPath);
     }
 }
 

@@ -77,11 +77,14 @@ public class CreateDocumentThymController {
             return Mono.just("document/createDocumentForm");
         }
         
-        //convertir les date  String > Instant
-        DocumentConvertThymDTO documentConvertThymDTO = convertThymDTO(documentThymDTO);
-        String jsonPayload = convertObjectToJson(documentConvertThymDTO);
-        FrontendLoggers.access().info("UI_DOCUMENT_CREATE_PAYLOAD payload={}", jsonPayload);
-        
+         //convertir les date  String > Instant
+         DocumentConvertThymDTO documentConvertThymDTO = convertThymDTO(documentThymDTO);
+         String jsonPayload = convertObjectToJson(documentConvertThymDTO);
+         FrontendLoggers.access().info("UI_DOCUMENT_CREATE_REQUEST nomDocument={} titre={} emetteur={} type={} status={} payload={}",
+                                       documentThymDTO.getNomDocument(), documentThymDTO.getTitreDocument(),
+                                       documentThymDTO.getEmetteurDuDocument(), documentThymDTO.getTypeDocument(),
+                                       documentThymDTO.getDocumentStatus(), jsonPayload);
+
         return webClient.post()
                         .uri("/commands/createDocument")
                         .contentType(MediaType.APPLICATION_JSON)

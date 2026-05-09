@@ -26,21 +26,23 @@ public class ClientThymController {
      * @param model model de la vue client/view
      * @return la vue client/view
      */
-    @GetMapping(value = "/client/{id}")
-    public Mono<String> getClientByIdAsync(@PathVariable String id, Model model) {
-        return webClient.get()
-                        .uri("/queries/clients/" + id)
-                        //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
-                        //                                  getJwtTokenValue()))
-                        .retrieve()
-                        .bodyToMono(ClientThymConvertDTO.class)
-                        .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du client")))
-                        .flatMap(clientThymDTO -> {
-                            model.addAttribute("client", clientThymDTO);
-                            return Mono.just("client/view");
-                        });
-    }
-    
+     @GetMapping(value = "/client/{id}")
+     public Mono<String> getClientByIdAsync(@PathVariable String id, Model model) {
+         FrontendLoggers.business().info("UI_CLIENT_QUERY clientId={}", id);
+         return webClient.get()
+                         .uri("/queries/clients/" + id)
+                         //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
+                         //                                  getJwtTokenValue()))
+                         .retrieve()
+                         .bodyToMono(ClientThymConvertDTO.class)
+                         .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du client")))
+                         .flatMap(clientThymDTO -> {
+                             FrontendLoggers.access().info("UI_CLIENT_RETRIEVED clientId={} nomClient={}", id, clientThymDTO.getNomClient());
+                             model.addAttribute("client", clientThymDTO);
+                             return Mono.just("client/view");
+                         });
+     }
+
     /**
      * Affiche la liste des clients
      *
@@ -48,19 +50,21 @@ public class ClientThymController {
      * @param redirectAttributes attributs de redirection
      * @return la vue client/clients
      */
-    @GetMapping(value = "/clients")
-    public Mono<String> getClientsAsync(Model model, RedirectAttributes redirectAttributes) {
-        return webClient.get()
-                        .uri("/queries/clients")
-                        .retrieve()
-                        .bodyToFlux(ClientThymConvertDTO.class)
-                        .collectList()
-                        .flatMap(clients -> {
-                            assert clients != null;
-                            clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
-                            model.addAttribute("clients", clients);
-                            return Mono.just("client/clients");
-                        })
+     @GetMapping(value = "/clients")
+     public Mono<String> getClientsAsync(Model model, RedirectAttributes redirectAttributes) {
+         FrontendLoggers.business().info("UI_CLIENTS_LIST_REQUEST");
+         return webClient.get()
+                         .uri("/queries/clients")
+                         .retrieve()
+                         .bodyToFlux(ClientThymConvertDTO.class)
+                         .collectList()
+                         .flatMap(clients -> {
+                             assert clients != null;
+                             FrontendLoggers.business().info("UI_CLIENTS_LIST_RETRIEVED count={}", clients.size());
+                             clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
+                             model.addAttribute("clients", clients);
+                             return Mono.just("client/clients");
+                         })
                         .onErrorResume(WebClientResponseException.class, e -> {
                             if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                                 FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status=400 message={}", e.getResponseBodyAsString());

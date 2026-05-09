@@ -20,11 +20,12 @@
         </encoder>
     </appender>
 
-    <!-- Fichier : logs métier → backend/logs/business.log -->
+    <!-- Fichier : logs métier → backend/logs/metier/business.log -->
     <appender name="BUSINESS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/business.log</file>
+        <file>${LOG_DIR}/metier/business.log</file>
+        <prudent>false</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/business.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/metier/business.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
             <maxHistory>14</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>
@@ -34,14 +35,15 @@
         </encoder>
     </appender>
 
-    <!-- Fichier : erreurs techniques → backend/logs/technical.log -->
+    <!-- Fichier : erreurs techniques → backend/logs/technique/technical.log -->
     <appender name="TECHNICAL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/technical.log</file>
+        <file>${LOG_DIR}/technique/technical.log</file>
+        <prudent>false</prudent>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>WARN</level>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/technical.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/technique/technical.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <maxFileSize>10MB</maxFileSize>
             <maxHistory>14</maxHistory>
             <totalSizeCap>500MB</totalSizeCap>

@@ -57,18 +57,22 @@ public class CreateClientThymController {
      * @param model              modèle du client: permet de passer des attributs à la vue
      * @return la vue clients si la création a réussi, sinon la vue createClientForm
      */
-    @PostMapping(value = "/createClient")
-    public Mono<String> createClient(@Valid @ModelAttribute("clientDTO") ClientThymDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes,
-                                     Model model) {
-        if(result.hasErrors()) {
-            result.getAllErrors().forEach(err -> FrontendLoggers.error().warn("UI_CLIENT_CREATE_VALIDATION_ERROR field={}", err.getDefaultMessage()));
-            model.addAttribute("clientDTO", clientDTO);
-            model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
-            model.addAttribute("paysList", List.of(PaysDTO.values()));
-            return Mono.just("client/createClientForm");
-        }
-        
-        return webClient.post()
+     @PostMapping(value = "/createClient")
+     public Mono<String> createClient(@Valid @ModelAttribute("clientDTO") ClientThymDTO clientDTO, BindingResult result, RedirectAttributes redirectAttributes,
+                                      Model model) {
+         if(result.hasErrors()) {
+             result.getAllErrors().forEach(err -> FrontendLoggers.error().warn("UI_CLIENT_CREATE_VALIDATION_ERROR field={}", err.getDefaultMessage()));
+             model.addAttribute("clientDTO", clientDTO);
+             model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
+             model.addAttribute("paysList", List.of(PaysDTO.values()));
+             return Mono.just("client/createClientForm");
+         }
+
+         FrontendLoggers.access().info("UI_CLIENT_CREATE_REQUEST nomClient={} prenomClient={} mail={} tel={} status={}",
+                                       clientDTO.getNomClient(), clientDTO.getPrenomClient(), clientDTO.getMailClient(),
+                                       clientDTO.getTelClient(), clientDTO.getClientStatus());
+
+         return webClient.post()
                         .uri("/commands/createClient")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)

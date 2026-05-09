@@ -289,35 +289,38 @@ Point important : le log technique est gere des deux cotes, mais pas pour les me
 
 Separation actuelle des logs :
 
-- Backend metier : `backend/logs/business.log`
-- Backend technique : `backend/logs/technical.log`
-- Frontend acces UI : `frontend/logs/ui-access.log`
-- Frontend erreurs UI : `frontend/logs/ui-error.log`
-- Frontend technique : `frontend/logs/ui-technical.log`
+- Backend metier : `backend/logs/metier/business.log`
+- Backend technique : `backend/logs/technique/technical.log`
+- Frontend acces UI : `frontend/logs/metier/ui-access.log`
+- Frontend metier UI : `frontend/logs/metier/ui-business.log`
+- Frontend erreurs UI : `frontend/logs/technique/ui-error.log`
+- Frontend technique : `frontend/logs/technique/ui-technical.log`
 
 En pratique :
 
-- un evenement `UI_ACCESS_*` va dans `ui-access.log`
-- un evenement `UI_TECH_*` va dans `ui-technical.log`
-- un evenement backend technique va dans `technical.log`
+- un evenement `UI_ACCESS_*` va dans `frontend/logs/metier/ui-access.log`
+- un evenement `UI_TECH_*` va dans `frontend/logs/technique/ui-technical.log`
+- un evenement backend technique va dans `backend/logs/technique/technical.log`
 
 Suivi live des logs metier backend :
 
 ```bash
-tail -f backend/logs/business.log
+tail -f backend/logs/metier/business.log
 ```
 
 Suivi live des logs techniques backend :
 
 ```bash
-tail -f backend/logs/technical.log
+tail -f backend/logs/technique/technical.log
 ```
 
 Suivi live des logs frontend :
 
 ```bash
-tail -f frontend/logs/ui-access.log
-tail -f frontend/logs/ui-error.log
+tail -f frontend/logs/metier/ui-access.log
+tail -f frontend/logs/metier/ui-business.log
+tail -f frontend/logs/technique/ui-error.log
+tail -f frontend/logs/technique/ui-technical.log
 ```
 
 ## 9. Troubleshooting rapide

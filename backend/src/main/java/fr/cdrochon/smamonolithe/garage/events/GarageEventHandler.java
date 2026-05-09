@@ -3,6 +3,7 @@ package fr.cdrochon.smamonolithe.garage.events;
 import fr.cdrochon.smamonolithe.garage.command.dtos.GarageCommandDTO;
 import fr.cdrochon.smamonolithe.garage.command.services.GarageCommandService;
 import fr.cdrochon.smamonolithe.garage.query.dto.GarageAdresseDTO;
+import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,9 @@ public class GarageEventHandler {
     public void on(GarageCreatedEvent event) {
         // Convertir l'événement en DTO si nécessaire
         log.info("Received event: {}", event);
-        
+        BusinessLoggers.business().info("BIZ_GARAGE_CREATED garageId={} nomGarage={} mailResponsable={}",
+                                       event.getId(), event.getNomGarage(), event.getMailResponsable());
+
         GarageAdresseDTO adresseDTO = new GarageAdresseDTO(
                 event.getAdresseGarage().getNumeroDeRue(),
                 event.getAdresseGarage().getRue(),

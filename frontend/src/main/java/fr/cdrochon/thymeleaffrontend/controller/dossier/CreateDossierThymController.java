@@ -90,17 +90,23 @@ public class CreateDossierThymController {
             return Mono.just("dossier/createDossierForm");
         }
         
-        return immatriculationExiste(dossierThymDTO.getVehicule().getImmatriculationVehicule())
-                .flatMap(exists -> {
-                    if(exists) {
-                        model.addAttribute("dossierDTO", dossierThymDTO);
-                        modelAttributesError(model);
-                        model.addAttribute("immatriculationExisteError",
-                                           "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
-                        return Mono.just("dossier/createDossierForm");
-                    }
-                    
-                    DossierThymConvertDTO dossierConvertThymDTO = convertDossierDTO(dossierThymDTO);
+         return immatriculationExiste(dossierThymDTO.getVehicule().getImmatriculationVehicule())
+                 .flatMap(exists -> {
+                     if(exists) {
+                         model.addAttribute("dossierDTO", dossierThymDTO);
+                         modelAttributesError(model);
+                         model.addAttribute("immatriculationExisteError",
+                                            "L'immatriculation existe déjà, vous ne pouvez pas créer deux véhicules ayant la même immatriculation.");
+                         return Mono.just("dossier/createDossierForm");
+                     }
+
+                     FrontendLoggers.access().info("UI_DOSSIER_CREATE_REQUEST nomDossier={} clientNom={} vehiculeImmatriculation={} status={}",
+                                                   dossierThymDTO.getNomDossier(),
+                                                   dossierThymDTO.getClient() != null ? dossierThymDTO.getClient().getNomClient() : "N/A",
+                                                   dossierThymDTO.getVehicule() != null ? dossierThymDTO.getVehicule().getImmatriculationVehicule() : "N/A",
+                                                   dossierThymDTO.getDossierStatus());
+
+                     DossierThymConvertDTO dossierConvertThymDTO = convertDossierDTO(dossierThymDTO);
                     String jsonPayload = convertObjectToJson(dossierConvertThymDTO);
                     FrontendLoggers.access().info("JSON Payload: {}", jsonPayload);
                     
