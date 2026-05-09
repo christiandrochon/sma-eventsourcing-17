@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template</title>
+
+    <script th:src="@{/assets/js/color-modes.js}"></script>
+    <link rel="stylesheet" th:href="@{/assets/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/template.css}">
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+    <link rel="stylesheet" th:href="@{/css/perso.css}">
+    <link rel="icon" th:href="@{/img/car_repair_icon_180719.ico}">
+</head>
+<body class="text-body-secondary" data-bs-theme="auto">
+<div th:insert="~{toggledark :: toggledarkFragment}"></div>
+<div th:insert="~{header :: headerFragment}"></div>
+
+<div layout:fragment="content"></div>
+
+<div th:insert="~{footer :: footerFragment}"></div>
+<script th:src="@{/assets/dist/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/checkout.js}"></script>
+<script th:src="@{/js/perso.js}"></script>
+</body>
+</html>
+

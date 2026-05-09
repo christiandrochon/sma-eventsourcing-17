@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Lire le répertoire de logs depuis application.properties (logging.file.path) -->
+    <springProperty name="LOG_DIR" source="logging.file.path" defaultValue="frontend/logs"/>
+
+    <!-- Console : erreurs UI uniquement -->
+    <appender name="CONSOLE_ERROR" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Console : accès utilisateur -->
+    <appender name="CONSOLE_ACCESS" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} UI    - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Fichier : navigation / actions utilisateur → frontend/logs/ui-access.log -->
+    <appender name="UI_ACCESS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/ui-access.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/ui-access.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Fichier : erreurs HTTP / exceptions / timeouts → frontend/logs/ui-error.log -->
+    <appender name="UI_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/ui-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/ui-error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>14</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger accès (FrontendLoggers.access()) -->
+    <logger name="UI_ACCESS" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE_ACCESS"/>
+        <appender-ref ref="UI_ACCESS_FILE"/>
+    </logger>
+
+    <!-- Logger erreurs (FrontendLoggers.error()) -->
+    <logger name="UI_ERROR" level="WARN" additivity="false">
+        <appender-ref ref="CONSOLE_ERROR"/>
+        <appender-ref ref="UI_ERROR_FILE"/>
+    </logger>
+
+    <!-- Root : erreurs techniques Spring Boot vers console -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE_ERROR"/>
+    </root>
+</configuration>
+

@@ -1,0 +1,104 @@
+package fr.cdrochon.thymeleaffrontend.controller.client;
+
+import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymConvertDTO;
+import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import reactor.core.publisher.Mono;
+
+@Controller
+public class ClientThymController {
+    
+    @Autowired
+    private WebClient webClient;
+    
+    /**
+     * Affiche les détails d'un client spécifique
+     *
+     * @param id    id du client
+     * @param model model de la vue client/view
+     * @return la vue client/view
+     */
+    @GetMapping(value = "/client/{id}")
+    public Mono<String> getClientByIdAsync(@PathVariable String id, Model model) {
+        return webClient.get()
+                        .uri("/queries/clients/" + id)
+                        //                                  .headers(httpHeaders -> httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " +
+                        //                                  getJwtTokenValue()))
+                        .retrieve()
+                        .bodyToMono(ClientThymConvertDTO.class)
+                        .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du client")))
+                        .flatMap(clientThymDTO -> {
+                            model.addAttribute("client", clientThymDTO);
+                            return Mono.just("client/view");
+                        });
+    }
+    
+    /**
+     * Affiche la liste des clients
+     *
+     * @param model              model de la vue client/clients
+     * @param redirectAttributes attributs de redirection
+     * @return la vue client/clients
+     */
+    @GetMapping(value = "/clients")
+    public Mono<String> getClientsAsync(Model model, RedirectAttributes redirectAttributes) {
+        return webClient.get()
+                        .uri("/queries/clients")
+                        .retrieve()
+                        .bodyToFlux(ClientThymConvertDTO.class)
+                        .collectList()
+                        .flatMap(clients -> {
+                            assert clients != null;
+                            clients.forEach(client -> client.setTelClient(formaterNumeroTelephone(client.getTelClient())));
+                            model.addAttribute("clients", clients);
+                            return Mono.just("client/clients");
+                        })
+                        .onErrorResume(WebClientResponseException.class, e -> {
+                            if(e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                                FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status=400 message={}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createGarage");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                                FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status=404 message={}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/clients");
+                                return Mono.just("redirect:/error");
+                            } else if(e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
+                                FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status=500 message={}", e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                                redirectAttributes.addFlashAttribute("errorMessage", "Erreur interne de serveur. " + e.getResponseBodyAsString());
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createGarage");
+                                return Mono.just("redirect:/error");
+                            }
+                            FrontendLoggers.error().error("UI_CLIENT_LIST_FAILED status={} message={}", e.getStatusCode(), e.getResponseBodyAsString());
+                            redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                            redirectAttributes.addFlashAttribute("errorMessage", "Erreur non reconnue. " + e.getResponseBodyAsString());
+                            redirectAttributes.addFlashAttribute("urlRedirection", "/clients");
+                            return Mono.just("redirect:/error");
+                        });
+    }
+    
+    /**
+     * >Formatage du numéro de téléphone, avec un formatage de type "XX XX XX XX XX"
+     *
+     * @param numero le numéro de téléphone à formater
+     * @return le numéro de téléphone formaté
+     */
+    public String formaterNumeroTelephone(String numero) {
+        if(numero == null) {
+            return "";
+        }
+        return numero.replaceAll("(\\d{2})(?=(\\d{2})+(?!\\d))", "$1 ");
+    }
+}
