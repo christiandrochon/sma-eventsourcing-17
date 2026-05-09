@@ -12,6 +12,7 @@ import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,13 +67,15 @@ public class ClientQueryController {
         return mono;
     }
     
-    /**
-     * Retourne la liste de tous les clients de manière asynchrone
-     *
-     * @return Flux de ClientResponseDTO
-     */
-    @GetMapping(path = "/clients")
-    @JsonView(Views.ClientView.class)
+     /**
+      * Retourne la liste de tous les clients de manière asynchrone
+      *
+      * @return Flux de ClientResponseDTO
+      */
+     /** ADMIN, USER et AUDITOR peuvent lire la liste des clients (necessaire pour creer des dossiers). */
+     @GetMapping(path = "/clients")
+     @JsonView(Views.ClientView.class)
+     @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
     public Flux<ClientQueryDTO> getClientsAsync() {
         BusinessLoggers.business().info("BIZ_CLIENT_LIST_REQUEST");
         CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {

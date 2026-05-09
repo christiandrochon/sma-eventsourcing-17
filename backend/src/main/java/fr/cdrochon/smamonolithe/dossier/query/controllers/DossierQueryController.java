@@ -10,6 +10,9 @@ import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,21 +69,97 @@ public class DossierQueryController {
      * @return List<DossierResponseDTO> liste des dossiers sous forme de DTO
      */
     @GetMapping(path = "/dossiers")
-    public Flux<DossierQueryDTO> getDossiersAsync() {
-        BusinessLoggers.business().info("BIZ_DOSSIER_LIST_REQUEST");
+    public Flux<DossierQueryDTO> getDossiersAsync(Authentication authentication) {
+        Jwt jwt = extractJwt(authentication);
+        boolean isAdmin = jwt != null && hasRole(jwt, "ADMIN");
+        String email = jwt != null ? jwt.getClaimAsString("email") : null;
+
+        BusinessLoggers.business().info("BIZ_DOSSIER_LIST_REQUEST isAdmin={} email={}", isAdmin, email);
+
         CompletableFuture<List<DossierQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
-            List<DossierQueryDTO> clients =
-                    dossierRepository.findAll()
-                                     .stream()
-                                     .map(DossierQueryMapper::convertDossierToDossierDTO)
-                                     .collect(Collectors.toList());
-            BusinessLoggers.business().info("BIZ_DOSSIER_LIST_SUCCESS count={}", clients.size());
-            return clients;
+            List<DossierQueryDTO> dossiers;
+            if (isAdmin || email == null) {
+                dossiers = dossierRepository.findAll()
+                        .stream()
+                        .map(DossierQueryMapper::convertDossierToDossierDTO)
+                        .collect(Collectors.toList());
+            } else {
+                dossiers = dossierRepository.findByClientMailClient(email)
+                        .stream()
+                        .map(DossierQueryMapper::convertDossierToDossierDTO)
+                        .collect(Collectors.toList());
+            }
+            BusinessLoggers.business().info("BIZ_DOSSIER_LIST_SUCCESS count={}", dossiers.size());
+            return dossiers;
         });
-        Flux<DossierQueryDTO> flux = Flux.fromStream(future.join().stream());
-        return flux;
+        return Flux.fromStream(future.join().stream());
+    }
+
+    private static Jwt extractJwt(Authentication authentication) {
+        if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+            return jwtAuth.getToken();
+        }
+        return null;
+    }
+
+    private boolean hasRole(Jwt jwt, String role) {
+        try {
+            java.util.Map<String, Object> realmAccess = jwt.getClaimAsMap("realm_access");
+            if (realmAccess != null) {
+                Object roles = realmAccess.get("roles");
+                if (roles instanceof java.util.List<?> list) {
+                    return list.contains(role) || list.contains("ROLE_" + role);
+                }
+            }
+        } catch (Exception ignored) {}
+        return false;
     }
     
+    /**
+     * Attend que le dossier soit disponible dans la projection (read model).
+     * Utile après une création pour attendre la synchronisation de l'event sourcing.
+     *
+     * @param id id du dossier
+     * @return Mono<DossierQueryDTO> le dossier quand il est disponible
+     */
+    @GetMapping(path = "/dossiers/{id}/wait-ready")
+    public Mono<DossierQueryDTO> waitForDossierReady(@PathVariable String id) {
+        BusinessLoggers.business().info("BIZ_DOSSIER_WAIT_READY_REQUEST dossierId={}", id);
+
+        return Mono.fromFuture(CompletableFuture.supplyAsync(() -> {
+            long maxWaitMs = 5000; // Attendre max 5 secondes
+            long pollingIntervalMs = 100; // Vérifier toutes les 100ms
+            long startTime = System.currentTimeMillis();
+
+            while (System.currentTimeMillis() - startTime < maxWaitMs) {
+                DossierQueryDTO dossier = dossierRepository.findById(id)
+                        .map(DossierQueryMapper::convertDossierToDossierDTO)
+                        .orElse(null);
+
+                if (dossier != null) {
+                    BusinessLoggers.business().info("BIZ_DOSSIER_WAIT_READY_OK dossierId={} waitMs={}",
+                            id, System.currentTimeMillis() - startTime);
+                    return dossier;
+                }
+
+                try {
+                    Thread.sleep(pollingIntervalMs);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    BusinessLoggers.business().warn("BIZ_DOSSIER_WAIT_READY_INTERRUPTED dossierId={}", id);
+                    return null;
+                }
+            }
+
+            BusinessLoggers.business().warn("BIZ_DOSSIER_WAIT_READY_TIMEOUT dossierId={}", id);
+            return null;
+        }))
+        .onErrorResume(e -> {
+            BusinessLoggers.business().error("BIZ_DOSSIER_WAIT_READY_ERROR dossierId={} message={}", id, e.getMessage());
+            return Mono.empty();
+        });
+    }
+
     /**
      * Renvoi un flux de DossierResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
      *

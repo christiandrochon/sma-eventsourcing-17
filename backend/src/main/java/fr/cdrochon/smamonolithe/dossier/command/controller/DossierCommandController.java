@@ -6,6 +6,7 @@ import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -32,7 +33,9 @@ public class DossierCommandController {
      * @param dossierCommandDTO DTO de création d'un dossier
      * @return ResponseEntity<DossierCommandDTO> DTO de création d'un dossier
      */
+    /** Création d'un dossier : réservé à l'ADMIN. */
     @PostMapping(value = "/createDossier")
+    @PreAuthorize("hasRole('ADMIN')")
     public Mono<ResponseEntity<DossierCommandDTO>> createClientAsync(@RequestBody DossierCommandDTO dossierCommandDTO) {
         return Mono.fromFuture(dossierCommandService.createDossier(dossierCommandDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(dossier -> {

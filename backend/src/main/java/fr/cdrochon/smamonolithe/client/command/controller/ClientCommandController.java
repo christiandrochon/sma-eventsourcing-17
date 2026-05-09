@@ -6,6 +6,7 @@ import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -32,7 +33,9 @@ public class ClientCommandController {
      * @param clientCommandDTO DTO de création d'un client
      * @return ResponseEntity<ClientCommandDTO> DTO de création d'un client
      */
+    /** Création d'un client : réservé à l'ADMIN. */
     @PostMapping("/createClient")
+    @PreAuthorize("hasRole('ADMIN')")
     public Mono<ResponseEntity<ClientCommandDTO>> createClientAsync(@RequestBody ClientCommandDTO clientCommandDTO) {
         BusinessLoggers.business().info("BIZ_CLIENT_CREATE_REQUEST nomClient={} prenomClient={} status={}",
                                         clientCommandDTO.getNomClient(), clientCommandDTO.getPrenomClient(), clientCommandDTO.getClientStatus());
