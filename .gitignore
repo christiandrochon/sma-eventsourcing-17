@@ -27,3 +27,6 @@ out/
 # OS
 .DS_Store
 Thumbs.db
+
+# Audit exports
+audit-exports/

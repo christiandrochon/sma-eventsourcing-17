@@ -669,6 +669,17 @@ chmod +x scripts/audit-check.sh
 ./scripts/audit-check.sh --apply-schema
 ```
 
+9. **Comment exporter les preuves pour un auditeur externe ?**
+   - utiliser `scripts/audit-export.sh` pour produire un dossier CSV date
+   - le dossier contient un `README.txt` manifest
+
+```bash
+cd /home/cdn/IdeaProjects/sma-eventsourcing-17
+chmod +x scripts/audit-export.sh
+./scripts/audit-export.sh
+./scripts/audit-export.sh --days 90 --output-dir ./audit-exports
+```
+
 ## 11. Deployement Kubernetes (optionnel)
 
 Les manifests sont disponibles dans `komp-smb/` pour un deploiement hors Docker Compose local.

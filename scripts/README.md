@@ -32,3 +32,29 @@ Variables d'environnement supportees :
 - `AUDIT_BACKEND_URL` (defaut: `http://localhost:8092`)
 - `AUDIT_POSTGRES_USER` (defaut: `postgres`)
 
+## `audit-export.sh`
+
+Script d'export de preuves pour un audit independant.
+
+Fichiers generes :
+
+- `audit_expectations_latest.csv`
+- `audit_events_<N>d.csv`
+- `audit_cross_garage_<N>d.csv`
+- `audit_expectation_checks.csv`
+- `README.txt` (manifest d'export)
+
+Exemple :
+
+```bash
+./scripts/audit-export.sh
+./scripts/audit-export.sh --days 90 --output-dir ./audit-exports
+```
+
+Variables d'environnement supportees :
+
+- `AUDIT_PG_CONTAINER` (defaut: `postgres-monolithe`)
+- `AUDIT_POSTGRES_USER` (defaut: `postgres`)
+- `AUDIT_EXPORT_DAYS` (defaut: `30`)
+- `AUDIT_EXPORT_DIR` (defaut: `./audit-exports`)
+
