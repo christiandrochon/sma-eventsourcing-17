@@ -14,8 +14,13 @@ import fr.cdrochon.thymeleaffrontend.logging.FrontendSecurityLoggers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -40,38 +45,51 @@ public class CreateDossierThymController {
     
     @Autowired
     private WebClient webClient;
-    
+
+    @Autowired(required = false)
+    private OAuth2AuthorizedClientService authorizedClientService;
+
     /**
      * Affiche le formulaire de création d'un dossier
      *
      * @param model modèle du dossier: permet de passer des attributs à la vue
      * @return la vue createDossierForm
      */
-    @GetMapping("/createDossier")
-    public Mono<String> getDossier(Model model, RedirectAttributes redirectAttributes) {
-        if(!model.containsAttribute("dossierDTO")) {
-            model.addAttribute("dossierDTO", new DossierThymDTO());
-        }
-        
-        //chargement des listes de status de dossier, de status de vehicule, de status de client et de pays
-        //        modelAttributesError(model);
-        model.addAttribute("dossierStatuses", List.of(DossierStatusThymDTO.values()));
-        model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
-        model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
-        model.addAttribute("paysList", List.of(PaysDTO.values()));
-        model.addAttribute("valeurClientStatutParDefaut", ClientStatusDTO.valeurClientStatutParDefaut());
-        model.addAttribute("valeurDossierStatutParDefaut", DossierStatusThymDTO.valeurDossierStatutParDefaut());
-        model.addAttribute("valeurPaysParDefaut", PaysDTO.valeurPaysParDefaut());
-        return Mono.just("dossier/createDossierForm")
-                   .onErrorResume(WebClientResponseException.class, e -> {
-                       FrontendLoggers.error().error("400 Bad Request: {}", e.getMessage());
-                       redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
-                       redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
-                       redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
-                       return Mono.just("redirect:/error");
-                   });
-    }
-    
+     @GetMapping("/createDossier")
+     public Mono<String> getDossier(Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
+         if(!model.containsAttribute("dossierDTO")) {
+             DossierThymDTO dossierDTO = new DossierThymDTO();
+             // Pré-remplir l'ID utilisateur si authentifié
+             if (authentication != null && authentication.isAuthenticated()) {
+                 dossierDTO.setUserId(authentication.getName());
+             }
+             model.addAttribute("dossierDTO", dossierDTO);
+         }
+
+         //chargement des listes de status de dossier, de status de vehicule, de status de client et de pays
+         //        modelAttributesError(model);
+         model.addAttribute("dossierStatuses", List.of(DossierStatusThymDTO.values()));
+         model.addAttribute("vehiculeStatuses", List.of(VehiculeStatusDTO.values()));
+         model.addAttribute("clientStatuses", List.of(ClientStatusDTO.values()));
+         model.addAttribute("paysList", List.of(PaysDTO.values()));
+         model.addAttribute("valeurClientStatutParDefaut", ClientStatusDTO.valeurClientStatutParDefaut());
+         model.addAttribute("valeurDossierStatutParDefaut", DossierStatusThymDTO.valeurDossierStatutParDefaut());
+         model.addAttribute("valeurPaysParDefaut", PaysDTO.valeurPaysParDefaut());
+         // Ajouter l'utilisateur actuel au modèle
+         if (authentication != null && authentication.isAuthenticated()) {
+             model.addAttribute("currentUsername", authentication.getName());
+         }
+         return loadExistingClients(model)
+                    .thenReturn("dossier/createDossierForm")
+                    .onErrorResume(WebClientResponseException.class, e -> {
+                        FrontendLoggers.error().error("400 Bad Request: {}", e.getMessage());
+                        redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
+                        redirectAttributes.addFlashAttribute("errorMessage", "Requête invalide.");
+                        redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                        return Mono.just("redirect:/error");
+                    });
+     }
+
     /**
      * Crée un dossier
      *
@@ -83,7 +101,7 @@ public class CreateDossierThymController {
      */
     @PostMapping(value = "/createDossier")
     public Mono<String> createDossierAsync(@Valid @ModelAttribute("dossierDTO") DossierThymDTO dossierThymDTO, BindingResult result,
-                                           RedirectAttributes redirectAttributes, Model model) {
+                                           RedirectAttributes redirectAttributes, Model model, Authentication authentication) {
         if(result.hasErrors()) {
             result.getAllErrors().forEach(err -> FrontendLoggers.error().error("LOG ERROR : {}", err.getDefaultMessage()));
             model.addAttribute("dossierDTO", dossierThymDTO);
@@ -116,31 +134,51 @@ public class CreateDossierThymController {
                     String jsonPayload = convertObjectToJson(dossierConvertThymDTO);
                     FrontendLoggers.access().info("JSON Payload: {}", jsonPayload);
                     
-                    return webClient.post()
-                                    .uri("/commands/createDossier")
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .accept(MediaType.APPLICATION_JSON)
-                                    .bodyValue(jsonPayload)
-                                    .retrieve()
-                                    .bodyToMono(DossierThymConvertDTO.class)
-                                    .timeout(Duration.ofSeconds(30))
-                                    .flatMap(dossier -> {
-                                        if(dossier == null) {
-                                            FrontendLoggers.error().error("Erreur lors de la création du dossier");
-                                            return Mono.error(new RuntimeException("Erreur lors de la création du dossier"));
-                                        }
-                                        
-                                        FrontendLoggers.access().info("Response: {}", dossier);
-                                        FrontendLoggers.access().info("type de valeur : {}", dossier.getDateCreationDossier().getClass());
-                                        FrontendLoggers.access().info("Dossier created successfully");
-                                        FrontendLoggers.business().info("UI_DOSSIER_CREATE_OK dossierId={} nomDossier={} status={}",
-                                                                        dossier.getId(), dossier.getNomDossier(), dossier.getDossierStatus());
-                                        redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
-                                        return Mono.just("redirect:/dossier/" + dossier.getId());
-                                        // redirection vers la liste des clients
-                                        //                            redirectAttributes.addFlashAttribute("successMessage", "Client créé avec succès");
-                                        //                            return Mono.just("redirect:/dossier/" + dossier.getId());
-                                    })
+                     String accessToken = resolveAccessToken(authentication);
+                     WebClient.RequestHeadersSpec<?> requestSpec = webClient.post()
+                             .uri("/commands/createDossier")
+                             .contentType(MediaType.APPLICATION_JSON)
+                             .accept(MediaType.APPLICATION_JSON)
+                             .headers(headers -> {
+                                 if (StringUtils.hasText(accessToken)) {
+                                     headers.setBearerAuth(accessToken);
+                                 }
+                             })
+                             .bodyValue(jsonPayload);
+
+                      return requestSpec.retrieve()
+                                     .bodyToMono(DossierThymConvertDTO.class)
+                                     .timeout(Duration.ofSeconds(30))
+                                     .flatMap(dossier -> {
+                                         if(dossier == null) {
+                                             FrontendLoggers.error().error("Erreur lors de la création du dossier");
+                                             return Mono.error(new RuntimeException("Erreur lors de la création du dossier"));
+                                         }
+
+                                         FrontendLoggers.access().info("Response: {}", dossier);
+                                         FrontendLoggers.access().info("type de valeur : {}", dossier.getDateCreationDossier().getClass());
+                                         FrontendLoggers.access().info("Dossier created successfully");
+                                         FrontendLoggers.business().info("UI_DOSSIER_CREATE_OK dossierId={} nomDossier={} status={}",
+                                                                         dossier.getId(), dossier.getNomDossier(), dossier.getDossierStatus());
+
+                                         // Attendre que le dossier soit synchronisé dans la projection avant de rediriger
+                                         return webClient.get()
+                                                 .uri("/queries/dossiers/" + dossier.getId() + "/wait-ready")
+                                                 .retrieve()
+                                                 .bodyToMono(DossierThymConvertDTO.class)
+                                                 .timeout(Duration.ofSeconds(10))
+                                                 .flatMap(readyDossier -> {
+                                                     redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
+                                                     return Mono.just("redirect:/dossier/" + dossier.getId());
+                                                 })
+                                 .onErrorResume(e -> {
+                                                     // Si l'attente timeout ou échoue, rediriger quand même vers la liste
+                                                     FrontendLoggers.error().warn("UI_DOSSIER_WAIT_READY_FAILED dossierId={} message={}",
+                                                             dossier.getId(), e.getMessage());
+                                                     redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès (en synchronisation)");
+                                                     return Mono.just("redirect:/dossiers");
+                                                 });
+                                     })
                                     .onErrorResume(TimeoutException.class, e -> {
                                         FrontendLoggers.error().error("Timeout occurred: {}", e.getMessage());
                                         FrontendLoggers.business().error("UI_DOSSIER_CREATE_FAILED reason=timeout nomDossier={} message={}",
@@ -234,60 +272,94 @@ public class CreateDossierThymController {
         model.addAttribute("paysList", List.of(PaysDTO.values()));
         model.addAttribute("valeurPaysParDefaut", PaysDTO.valeurPaysParDefaut());
         model.addAttribute("valeurClientStatutParDefaut", ClientStatusDTO.valeurClientStatutParDefaut());
-    }
-    
-    /**
-     * Conversion de DossierThymDTO en DossierThymConvertDTO
-     * <p></p>
-     * Convertit le dto en un autre dto qui convertit la valeurs des String recus en json en un objet qui prend en charge la classe Instant
-     *
-     * @param dossierThymDTO dto converti avec les valeurs de date en type Instant
-     * @return DossierThymConvertDTO
-     */
-    private DossierThymConvertDTO convertDossierDTO(DossierThymDTO dossierThymDTO) {
-        
-        try {
-            
-            //conversion du vehicule (à cause des dates Instant <> String)
-            VehiculeThymConvertDTO vehiculeDateConvertDTO = new VehiculeThymConvertDTO();
-            vehiculeDateConvertDTO.setId(dossierThymDTO.getVehicule().getId());
-            vehiculeDateConvertDTO.setImmatriculationVehicule(dossierThymDTO.getVehicule().getImmatriculationVehicule());
-            vehiculeDateConvertDTO.setVehiculeStatus(dossierThymDTO.getVehicule().getVehiculeStatus());
-            
-            // conversion de la date de mise en circulation du vehicule
-            //reconvertir la date de mise en circulation du véhicule en Instant , d'abord en LocalDate de type 'yyyy-MM-dd', puis réellement en Instant
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate localDate = LocalDate.parse(dossierThymDTO.getVehicule().getDateMiseEnCirculationVehicule(), formatter);
-            Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
-            vehiculeDateConvertDTO.setDateMiseEnCirculationVehicule(instant);
-            
-            // mapper du client
-            ClientThymDTO clientThymDTO = new ClientThymDTO();
-            clientThymDTO.setId(dossierThymDTO.getClient().getId());
-            clientThymDTO.setNomClient(dossierThymDTO.getClient().getNomClient());
-            clientThymDTO.setPrenomClient(dossierThymDTO.getClient().getPrenomClient());
-            clientThymDTO.setMailClient(dossierThymDTO.getClient().getMailClient());
-            clientThymDTO.setTelClient(dossierThymDTO.getClient().getTelClient());
-            clientThymDTO.setAdresse(dossierThymDTO.getClient().getAdresse());
-            clientThymDTO.setClientStatus(dossierThymDTO.getClient().getClientStatus());
-            
-            //mapper du dossier
-            DossierThymConvertDTO dossierConvertPostDTO = new DossierThymConvertDTO();
-            dossierConvertPostDTO.setId(dossierThymDTO.getId());
-            dossierConvertPostDTO.setNomDossier(dossierThymDTO.getNomDossier());
-            dossierConvertPostDTO.setDateCreationDossier(Instant.now());
-            dossierConvertPostDTO.setDateModificationDossier(Instant.now());
-            dossierConvertPostDTO.setDossierStatus(dossierThymDTO.getDossierStatus());
-            dossierConvertPostDTO.setClient(clientThymDTO);
-            dossierConvertPostDTO.setVehicule(vehiculeDateConvertDTO);
-            
-            return dossierConvertPostDTO;
-        } catch(Exception e) {
-            FrontendLoggers.error().error("Erreur lors de la conversion du dossier: {}", e.getMessage());
-            throw new RuntimeException("Erreur lors de la conversion du dossier: " + e.getMessage());
+        if (!model.containsAttribute("existingClients")) {
+            model.addAttribute("existingClients", List.of());
         }
     }
+
+    private Mono<Void> loadExistingClients(Model model) {
+        return webClient.get()
+                .uri("/queries/clients")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToFlux(ClientThymDTO.class)
+                .collectList()
+                .doOnNext(clients -> model.addAttribute("existingClients", clients))
+                .then()
+                .onErrorResume(ex -> {
+                    FrontendLoggers.tech().warn("UI_TECH_CLIENT_LIST_FOR_DOSSIER_UNAVAILABLE message={}", ex.getMessage());
+                    model.addAttribute("existingClients", List.of());
+                    return Mono.empty();
+                });
+    }
+
+    private String resolveAccessToken(Authentication authentication) {
+        if (!(authentication instanceof OAuth2AuthenticationToken oauthToken) || authorizedClientService == null) {
+            return null;
+        }
+        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
+                oauthToken.getAuthorizedClientRegistrationId(),
+                oauthToken.getName()
+        );
+        if (client == null || client.getAccessToken() == null) {
+            return null;
+        }
+        return client.getAccessToken().getTokenValue();
+    }
     
+     /**
+      * Conversion de DossierThymDTO en DossierThymConvertDTO
+      * <p></p>
+      * Convertit le dto en un autre dto qui convertit la valeurs des String recus en json en un objet qui prend en charge la classe Instant
+      *
+      * @param dossierThymDTO dto converti avec les valeurs de date en type Instant
+      * @return DossierThymConvertDTO
+      */
+     private DossierThymConvertDTO convertDossierDTO(DossierThymDTO dossierThymDTO) {
+
+         try {
+
+             //conversion du vehicule (à cause des dates Instant <> String)
+             VehiculeThymConvertDTO vehiculeDateConvertDTO = new VehiculeThymConvertDTO();
+             vehiculeDateConvertDTO.setId(dossierThymDTO.getVehicule().getId());
+             vehiculeDateConvertDTO.setImmatriculationVehicule(dossierThymDTO.getVehicule().getImmatriculationVehicule());
+             vehiculeDateConvertDTO.setVehiculeStatus(dossierThymDTO.getVehicule().getVehiculeStatus());
+
+             // conversion de la date de mise en circulation du vehicule
+             //reconvertir la date de mise en circulation du véhicule en Instant , d'abord en LocalDate de type 'yyyy-MM-dd', puis réellement en Instant
+             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+             LocalDate localDate = LocalDate.parse(dossierThymDTO.getVehicule().getDateMiseEnCirculationVehicule(), formatter);
+             Instant instant = localDate.atStartOfDay().toInstant(ZoneOffset.UTC);
+             vehiculeDateConvertDTO.setDateMiseEnCirculationVehicule(instant);
+
+             // mapper du client
+             ClientThymDTO clientThymDTO = new ClientThymDTO();
+             clientThymDTO.setId(dossierThymDTO.getClient().getId());
+             clientThymDTO.setNomClient(dossierThymDTO.getClient().getNomClient());
+             clientThymDTO.setPrenomClient(dossierThymDTO.getClient().getPrenomClient());
+             clientThymDTO.setMailClient(dossierThymDTO.getClient().getMailClient());
+             clientThymDTO.setTelClient(dossierThymDTO.getClient().getTelClient());
+             clientThymDTO.setAdresse(dossierThymDTO.getClient().getAdresse());
+             clientThymDTO.setClientStatus(dossierThymDTO.getClient().getClientStatus());
+
+             //mapper du dossier
+             DossierThymConvertDTO dossierConvertPostDTO = new DossierThymConvertDTO();
+             dossierConvertPostDTO.setId(dossierThymDTO.getId());
+             dossierConvertPostDTO.setNomDossier(dossierThymDTO.getNomDossier());
+             dossierConvertPostDTO.setDateCreationDossier(Instant.now());
+             dossierConvertPostDTO.setDateModificationDossier(Instant.now());
+             dossierConvertPostDTO.setDossierStatus(dossierThymDTO.getDossierStatus());
+             dossierConvertPostDTO.setClient(clientThymDTO);
+             dossierConvertPostDTO.setVehicule(vehiculeDateConvertDTO);
+             dossierConvertPostDTO.setUserId(dossierThymDTO.getUserId());
+
+             return dossierConvertPostDTO;
+         } catch(Exception e) {
+             FrontendLoggers.error().error("Erreur lors de la conversion du dossier: {}", e.getMessage());
+             throw new RuntimeException("Erreur lors de la conversion du dossier: " + e.getMessage());
+         }
+     }
+
     
     /**
      * Empêche la création d'un vehicule si l'immatriculation existe déjà. Vérifie si un vehicule existe en fonction de son immatriculation.
