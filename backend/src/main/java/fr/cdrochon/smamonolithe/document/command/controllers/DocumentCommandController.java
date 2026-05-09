@@ -6,6 +6,7 @@ import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -31,7 +32,9 @@ public class DocumentCommandController {
      * @param documentCommandDTO DTO de création d'un document
      * @return ResponseEntity<DocumentCommandDTO> DTO de création d'un document
      */
+    /** Création d'un document : ADMIN ou USER. */
     @PostMapping(value = "/createDocument")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Mono<ResponseEntity<DocumentCommandDTO>> createClientAsync(@RequestBody DocumentCommandDTO documentCommandDTO) {
         return Mono.fromFuture(documentCommandService.createDocument(documentCommandDTO)).subscribeOn(Schedulers.boundedElastic())
                    .flatMap(document -> {

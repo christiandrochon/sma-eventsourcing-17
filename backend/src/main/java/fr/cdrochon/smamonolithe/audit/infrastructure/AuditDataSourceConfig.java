@@ -1,8 +1,8 @@
 package fr.cdrochon.smamonolithe.audit.infrastructure;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,14 +22,22 @@ import javax.sql.DataSource;
 @Configuration
 public class AuditDataSourceConfig {
 
+    @Bean
+    @ConfigurationProperties(prefix = "audit.datasource")
+    public DataSourceProperties auditDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
     /**
      * DataSource pointant sur la base {@code audit}.
      * Utilise HikariCP (pool par défaut de Spring Boot).
      */
     @Bean(name = "auditDataSource")
-    @ConfigurationProperties(prefix = "audit.datasource")
-    public DataSource auditDataSource() {
-        return DataSourceBuilder.create()
+    @ConfigurationProperties(prefix = "audit.datasource.hikari")
+    public DataSource auditDataSource(DataSourceProperties auditDataSourceProperties) {
+        // DataSourceProperties gere correctement la conversion url -> jdbcUrl pour Hikari.
+        return auditDataSourceProperties
+                .initializeDataSourceBuilder()
                 .type(HikariDataSource.class)
                 .build();
     }
@@ -39,8 +47,8 @@ public class AuditDataSourceConfig {
      * L'AuditService l'injecte par son nom de bean pour éviter toute ambiguïté.
      */
     @Bean(name = "auditJdbcTemplate")
-    public NamedParameterJdbcTemplate auditJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(auditDataSource());
+    public NamedParameterJdbcTemplate auditJdbcTemplate(DataSource auditDataSource) {
+        return new NamedParameterJdbcTemplate(auditDataSource);
     }
 }
 
