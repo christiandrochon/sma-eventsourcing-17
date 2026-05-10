@@ -2,16 +2,12 @@ package fr.cdrochon.thymeleaffrontend.controller.client;
 
 import fr.cdrochon.thymeleaffrontend.dtos.client.ClientThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
+import fr.cdrochon.thymeleaffrontend.security.FrontendTokenResolver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,8 +21,8 @@ public class ClientThymController {
     @Autowired
     private WebClient webClient;
 
-    @Autowired(required = false)
-    private OAuth2AuthorizedClientService authorizedClientService;
+    @Autowired
+    private FrontendTokenResolver tokenResolver;
 
     /**
      * Affiche les détails d'un client spécifique
@@ -38,14 +34,14 @@ public class ClientThymController {
      @GetMapping(value = "/client/{id}")
      public Mono<String> getClientByIdAsync(@PathVariable String id, Model model, Authentication authentication) {
          FrontendLoggers.business().info("UI_CLIENT_QUERY clientId={}", id);
-         String accessToken = getJwtTokenValue(authentication);
+         String accessToken = tokenResolver.resolveAccessToken(authentication);
          return webClient.get()
                          .uri("/queries/clients/" + id)
-                         .headers(httpHeaders -> {
-                             if (StringUtils.hasText(accessToken)) {
-                                 httpHeaders.set(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-                             }
-                         })
+                 .headers(httpHeaders -> {
+                     if (accessToken != null && !accessToken.isBlank()) {
+                         httpHeaders.setBearerAuth(accessToken);
+                     }
+                 })
                          .retrieve()
                          .bodyToMono(ClientThymConvertDTO.class)
                          .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du client")))
@@ -68,6 +64,7 @@ public class ClientThymController {
     @GetMapping(value = "/clients")
     public Mono<String> getClientsAsync(Model model, Authentication authentication) {
         FrontendLoggers.business().info("UI_CLIENTS_LIST_REQUEST");
+        String accessToken = tokenResolver.resolveAccessToken(authentication);
 
         // Ajouter le nom d'utilisateur au modèle
         if (authentication != null && authentication.isAuthenticated()) {
@@ -76,6 +73,11 @@ public class ClientThymController {
 
         return webClient.get()
                         .uri("/queries/clients")
+                        .headers(httpHeaders -> {
+                            if (accessToken != null && !accessToken.isBlank()) {
+                                httpHeaders.setBearerAuth(accessToken);
+                            }
+                        })
                         .retrieve()
                         .bodyToFlux(ClientThymConvertDTO.class)
                         .collectList()
@@ -125,17 +127,5 @@ public class ClientThymController {
         return numero.replaceAll("(\\d{2})(?=(\\d{2})+(?!\\d))", "$1 ");
     }
 
-    private String getJwtTokenValue(Authentication authentication) {
-        if (!(authentication instanceof OAuth2AuthenticationToken oauthToken) || authorizedClientService == null) {
-            return null;
-        }
-        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
-                oauthToken.getAuthorizedClientRegistrationId(),
-                oauthToken.getName()
-        );
-        if (client == null || client.getAccessToken() == null) {
-            return null;
-        }
-        return client.getAccessToken().getTokenValue();
-    }
 }
+
