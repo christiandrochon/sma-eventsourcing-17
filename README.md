@@ -646,9 +646,49 @@ ORDER BY event_time DESC;
    - en local : `external.service.url=http://localhost:8092`
    - en docker : `external.service.url=http://backend:8092`
 
-4. **Aucun log business visible**
+4. **Propagation JWT frontend incoherente (401/403 intermittents sur certaines pages)**
+   - la resolution du token est centralisee dans `frontend/src/main/java/fr/cdrochon/thymeleaffrontend/security/FrontendTokenResolver.java`
+   - les controllers frontend doivent appeler `tokenResolver.resolveAccessToken(authentication)` puis poser `setBearerAuth(...)`
+   - ne pas reintroduire d'anciens helpers locaux (`getJwtTokenValue`, `resolveAccessToken` inline)
+
+```bash
+# Verification rapide: aucune ancienne methode locale de token
+grep -R --line-number "getJwtTokenValue\|resolveAccessToken(Authentication" frontend/src/main/java
+
+# Verification rapide: pas de bearer mal forme
+grep -R --line-number "setBearerAuth(\"Bearer " frontend/src/main/java || true
+
+# Validation compilation frontend
+mvn -pl frontend -DskipTests compile
+```
+
+5. **Aucun log business visible**
    - verifier `logging.file.path` dans les fichiers `application-*.properties`
    - verifier la config de `backend/src/main/resources/logback-spring.xml`
+
+### 10.3 Smoke-check RBAC (USER / ADMIN / AUDITOR)
+
+Checklist fonctionnelle minimale apres changement securite/UI :
+
+- [ ] Se connecter avec `user-test` et verifier que le menu masque `Creer un dossier` et `Rechercher un client`
+- [ ] Se connecter avec `admin-test` et verifier que les deux entrees menu sont visibles
+- [ ] Se connecter avec `audit-test` et verifier les pages de lecture autorisees
+- [ ] Verifier qu'aucune page n'affiche `Erreur de connexion au serveur` sur les routes `clients`, `dossiers`, `vehicules`
+- [ ] Verifier les logs frontend/backend en cas d'echec (statut HTTP + cause)
+
+Commandes utiles pendant le smoke-check :
+
+```bash
+# Frontend
+tail -f frontend/logs/metier/ui-access.log
+tail -f frontend/logs/technique/ui-error.log
+tail -f frontend/logs/securite/ui-security.log
+
+# Backend
+tail -f backend/logs/metier/business.log
+tail -f backend/logs/technique/technical.log
+tail -f backend/logs/security.log
+```
 
 ### 10.1 FAQ audit (RGPD)
 
