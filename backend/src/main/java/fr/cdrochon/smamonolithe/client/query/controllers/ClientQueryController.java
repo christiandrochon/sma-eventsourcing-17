@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,8 +52,9 @@ public class ClientQueryController {
     @GetMapping(path = "/clients/{id}")
     @JsonView(Views.ClientView.class)
     @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
-    public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id) {
+    public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id, Authentication authentication) {
         BusinessLoggers.business().info("BIZ_CLIENT_READ_REQUEST clientId={}", id);
+        final Authentication auth = authentication;
         CompletableFuture<ClientQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
                     try {
@@ -63,14 +63,13 @@ public class ClientQueryController {
                                                                  .orElseThrow(() -> new RuntimeException("Client not found"));
 
                         // Vérifier que USER ne peut accéder qu'à ses propres clients
-                        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                        boolean isAdmin = auth.getAuthorities().stream()
+                        boolean isAdmin = auth != null && auth.getAuthorities() != null && auth.getAuthorities().stream()
                                 .map(GrantedAuthority::getAuthority)
                                 .anyMatch(a -> a.equals("ROLE_ADMIN"));
 
                         if (!isAdmin) {
                             // USER doit vérifier que le client lui appartient
-                            String currentUserId = auth.getName();
+                            String currentUserId = auth != null ? auth.getName() : null;
                             // TODO: ajouter un champ userId au Client et vérifier qu'il correspond
                             // if (!client.getUserId().equals(currentUserId)) {
                             //     throw new RuntimeException("Accès refusé: ce client ne vous appartient pas");
@@ -100,15 +99,15 @@ public class ClientQueryController {
       @GetMapping(path = "/clients")
       @JsonView(Views.ClientView.class)
       @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
-      public Flux<ClientQueryDTO> getClientsAsync() {
+      public Flux<ClientQueryDTO> getClientsAsync(Authentication authentication) {
           BusinessLoggers.business().info("BIZ_CLIENT_LIST_REQUEST");
+          final Authentication auth = authentication;
           CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
-              Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-              boolean isAdmin = auth.getAuthorities().stream()
+              boolean isAdmin = auth != null && auth.getAuthorities() != null && auth.getAuthorities().stream()
                       .map(GrantedAuthority::getAuthority)
                       .anyMatch(a -> a.equals("ROLE_ADMIN"));
 
-              boolean isAuditor = auth.getAuthorities().stream()
+              boolean isAuditor = auth != null && auth.getAuthorities() != null && auth.getAuthorities().stream()
                       .map(GrantedAuthority::getAuthority)
                       .anyMatch(a -> a.equals("ROLE_AUDITOR"));
 
@@ -121,7 +120,7 @@ public class ClientQueryController {
               // Si USER, filtrer pour ne voir que ses propres clients
               // TODO: ajouter un champ userId au Client pour pouvoir filtrer correctement
               if (!isAdmin && !isAuditor) {
-                  String currentUserId = auth.getName();
+                  String currentUserId = auth != null ? auth.getName() : null;
                   // clients = clients.stream()
                   //         .filter(c -> c.getUserId() != null && c.getUserId().equals(currentUserId))
                   //         .collect(Collectors.toList());
