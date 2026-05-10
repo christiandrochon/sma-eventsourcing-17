@@ -18,7 +18,7 @@ public class DocumentCommandService {
     private final CommandGateway commandGateway;
     //utiliser une CompletableFuture pour synchroniser l'attente du contrôleur jusqu'à ce que l'événement soit reçu et traité
     private CompletableFuture<DocumentCommandDTO> futureDTO;
-    
+
     public DocumentCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
