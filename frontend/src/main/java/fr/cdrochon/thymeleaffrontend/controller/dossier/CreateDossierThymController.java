@@ -11,13 +11,11 @@ import fr.cdrochon.thymeleaffrontend.dtos.vehicule.VehiculeThymConvertDTO;
 import jakarta.validation.Valid;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendSecurityLoggers;
+import fr.cdrochon.thymeleaffrontend.security.FrontendTokenResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -46,8 +44,8 @@ public class CreateDossierThymController {
     @Autowired
     private WebClient webClient;
 
-    @Autowired(required = false)
-    private OAuth2AuthorizedClientService authorizedClientService;
+    @Autowired
+    private FrontendTokenResolver tokenResolver;
 
     /**
      * Affiche le formulaire de création d'un dossier
@@ -57,6 +55,7 @@ public class CreateDossierThymController {
      */
      @GetMapping("/createDossier")
      public Mono<String> getDossier(Model model, RedirectAttributes redirectAttributes, Authentication authentication) {
+         String accessToken = tokenResolver.resolveAccessToken(authentication);
          if(!model.containsAttribute("dossierDTO")) {
              DossierThymDTO dossierDTO = new DossierThymDTO();
              // Pré-remplir l'ID utilisateur si authentifié
@@ -79,7 +78,7 @@ public class CreateDossierThymController {
          if (authentication != null && authentication.isAuthenticated()) {
              model.addAttribute("currentUsername", authentication.getName());
          }
-         return loadExistingClients(model)
+         return loadExistingClients(model, accessToken)
                     .thenReturn("dossier/createDossierForm")
                     .onErrorResume(WebClientResponseException.class, e -> {
                         FrontendLoggers.error().error("400 Bad Request: {}", e.getMessage());
@@ -102,6 +101,7 @@ public class CreateDossierThymController {
     @PostMapping(value = "/createDossier")
     public Mono<String> createDossierAsync(@Valid @ModelAttribute("dossierDTO") DossierThymDTO dossierThymDTO, BindingResult result,
                                            RedirectAttributes redirectAttributes, Model model, Authentication authentication) {
+        String accessToken = tokenResolver.resolveAccessToken(authentication);
         if(result.hasErrors()) {
             result.getAllErrors().forEach(err -> FrontendLoggers.error().error("LOG ERROR : {}", err.getDefaultMessage()));
             model.addAttribute("dossierDTO", dossierThymDTO);
@@ -109,7 +109,7 @@ public class CreateDossierThymController {
             return Mono.just("dossier/createDossierForm");
         }
         
-         return immatriculationExiste(dossierThymDTO.getVehicule().getImmatriculationVehicule())
+         return immatriculationExiste(dossierThymDTO.getVehicule().getImmatriculationVehicule(), accessToken)
                  .flatMap(exists -> {
                      if(exists) {
                          model.addAttribute("dossierDTO", dossierThymDTO);
@@ -134,7 +134,6 @@ public class CreateDossierThymController {
                     String jsonPayload = convertObjectToJson(dossierConvertThymDTO);
                     FrontendLoggers.access().info("JSON Payload: {}", jsonPayload);
                     
-                     String accessToken = resolveAccessToken(authentication);
                      WebClient.RequestHeadersSpec<?> requestSpec = webClient.post()
                              .uri("/commands/createDossier")
                              .contentType(MediaType.APPLICATION_JSON)
@@ -277,10 +276,15 @@ public class CreateDossierThymController {
         }
     }
 
-    private Mono<Void> loadExistingClients(Model model) {
+    private Mono<Void> loadExistingClients(Model model, String accessToken) {
         return webClient.get()
                 .uri("/queries/clients")
                 .accept(MediaType.APPLICATION_JSON)
+                .headers(headers -> {
+                    if (StringUtils.hasText(accessToken)) {
+                        headers.setBearerAuth(accessToken);
+                    }
+                })
                 .retrieve()
                 .bodyToFlux(ClientThymDTO.class)
                 .collectList()
@@ -293,20 +297,6 @@ public class CreateDossierThymController {
                 });
     }
 
-    private String resolveAccessToken(Authentication authentication) {
-        if (!(authentication instanceof OAuth2AuthenticationToken oauthToken) || authorizedClientService == null) {
-            return null;
-        }
-        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
-                oauthToken.getAuthorizedClientRegistrationId(),
-                oauthToken.getName()
-        );
-        if (client == null || client.getAccessToken() == null) {
-            return null;
-        }
-        return client.getAccessToken().getTokenValue();
-    }
-    
      /**
       * Conversion de DossierThymDTO en DossierThymConvertDTO
       * <p></p>
@@ -367,10 +357,15 @@ public class CreateDossierThymController {
      * @param immatriculation immatriculation du vehicule
      * @return Boolean
      */
-    private Mono<Boolean> immatriculationExiste(String immatriculation) {
+    private Mono<Boolean> immatriculationExiste(String immatriculation, String accessToken) {
         return webClient.get()
                         .uri("/queries/vehiculeExists/" + immatriculation)
                         .accept(MediaType.APPLICATION_JSON)
+                        .headers(headers -> {
+                            if (StringUtils.hasText(accessToken)) {
+                                headers.setBearerAuth(accessToken);
+                            }
+                        })
                         .retrieve()
                         .bodyToMono(Boolean.class);
     }

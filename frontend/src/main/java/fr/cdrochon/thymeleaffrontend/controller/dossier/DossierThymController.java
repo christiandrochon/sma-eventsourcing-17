@@ -3,14 +3,12 @@ package fr.cdrochon.thymeleaffrontend.controller.dossier;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymConvertDTO;
 import fr.cdrochon.thymeleaffrontend.dtos.dossier.DossierThymDTO;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
+import fr.cdrochon.thymeleaffrontend.security.FrontendTokenResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,8 +22,8 @@ public class DossierThymController {
     @Autowired
     private WebClient webClient;
 
-    @Autowired(required = false)
-    private OAuth2AuthorizedClientService authorizedClientService;
+    @Autowired
+    private FrontendTokenResolver tokenResolver;
 
     /**
      * Affiche les détails d'un dossier spécifique, ou renvoi les informations saisies par l'utilisateur en cas d'erreur
@@ -36,14 +34,14 @@ public class DossierThymController {
      */
     @GetMapping(value = "/dossier/{id}")
     public Mono<String> getClientByIdAsync(@PathVariable String id, Model model, Authentication authentication) {
-        String accessToken = getJwtTokenValue(authentication);
+        String accessToken = tokenResolver.resolveAccessToken(authentication);
         return webClient.get()
                         .uri("/queries/dossiers/" + id)
-                        .headers(httpHeaders -> {
-                            if (StringUtils.hasText(accessToken)) {
-                                httpHeaders.setBearerAuth(accessToken);
-                            }
-                        })
+                .headers(headers -> {
+                    if (StringUtils.hasText(accessToken)) {
+                        headers.setBearerAuth(accessToken);
+                    }
+                })
                         .retrieve()
                         .bodyToMono(DossierThymConvertDTO.class)
                         .onErrorResume(throwable -> Mono.error(new RuntimeException("Erreur lors de la récupération du dossier")))
@@ -61,9 +59,15 @@ public class DossierThymController {
      * @return la vue dossier/dossiers
      */
     @GetMapping(value = "/dossiers")
-    public Mono<String> getDossiersAsync(Model model) {
+    public Mono<String> getDossiersAsync(Model model, Authentication authentication) {
+        String accessToken = tokenResolver.resolveAccessToken(authentication);
         return webClient.get()
                         .uri("/queries/dossiers")
+                        .headers(headers -> {
+                            if (StringUtils.hasText(accessToken)) {
+                                headers.setBearerAuth(accessToken);
+                            }
+                        })
                         .retrieve()
                         .bodyToFlux(DossierThymDTO.class)
                         .collectList()
@@ -94,19 +98,5 @@ public class DossierThymController {
                             model.addAttribute("errorMessage", "Erreur de connexion au serveur : " + e.getMessage());
                             return Mono.just("error");
                         });
-    }
-
-    private String getJwtTokenValue(Authentication authentication) {
-        if (!(authentication instanceof OAuth2AuthenticationToken oauthToken) || authorizedClientService == null) {
-            return null;
-        }
-        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(
-                oauthToken.getAuthorizedClientRegistrationId(),
-                oauthToken.getName()
-        );
-        if (client == null || client.getAccessToken() == null) {
-            return null;
-        }
-        return client.getAccessToken().getTokenValue();
     }
 }
