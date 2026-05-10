@@ -7,11 +7,14 @@ import fr.cdrochon.thymeleaffrontend.dtos.document.TypeDocumentDTO;
 import jakarta.validation.Valid;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendSecurityLoggers;
+import fr.cdrochon.thymeleaffrontend.security.FrontendTokenResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,7 +40,10 @@ public class CreateDocumentThymController {
     
     @Autowired
     private WebClient webClient;
-    
+
+    @Autowired
+    private FrontendTokenResolver tokenResolver;
+
     /**
      * Affiche le formulaire de création de document, ou réaffiche les données saisies du formulaire en cas d'erreur de validation
      *
@@ -67,7 +73,7 @@ public class CreateDocumentThymController {
      */
     @PostMapping(value = "/createDocument")
     public Mono<String> createDocumentAsync(@Valid @ModelAttribute("documentDTO") DocumentThymDTO documentThymDTO, BindingResult result,
-                                            RedirectAttributes redirectAttributes, Model model) {
+                                            RedirectAttributes redirectAttributes, Model model, Authentication authentication) {
         if(result.hasErrors()) {
             result.getAllErrors().forEach(err -> FrontendLoggers.error().warn("UI_DOCUMENT_CREATE_VALIDATION_ERROR field={}", err.getDefaultMessage()));
             model.addAttribute("documentDTO", documentThymDTO);
@@ -79,7 +85,19 @@ public class CreateDocumentThymController {
         }
         
          //convertir les date  String > Instant
-         DocumentConvertThymDTO documentConvertThymDTO = convertThymDTO(documentThymDTO);
+         DocumentConvertThymDTO documentConvertThymDTO;
+         try {
+             documentConvertThymDTO = convertThymDTO(documentThymDTO);
+         } catch(RuntimeException e) {
+             FrontendLoggers.error().error("UI_DOCUMENT_CONVERT_FAILED message={}", e.getMessage(), e);
+             model.addAttribute("documentDTO", documentThymDTO);
+             model.addAttribute("typeDocuments", TypeDocumentDTO.PREDEFINED_VALUES);
+             model.addAttribute("documentStatuses", List.of(DocumentStatusDTO.values()));
+             model.addAttribute("errorMessage", "Le format de date du document est invalide.");
+             return Mono.just("document/createDocumentForm");
+         }
+
+         String accessToken = tokenResolver.resolveAccessToken(authentication);
          String jsonPayload = convertObjectToJson(documentConvertThymDTO);
          FrontendLoggers.access().info("UI_DOCUMENT_CREATE_REQUEST nomDocument={} titre={} emetteur={} type={} status={} payload={}",
                                        documentThymDTO.getNomDocument(), documentThymDTO.getTitreDocument(),
@@ -90,12 +108,17 @@ public class CreateDocumentThymController {
 
         return webClient.post()
                         .uri("/commands/createDocument")
+                        .headers(headers -> {
+                            if (StringUtils.hasText(accessToken)) {
+                                headers.setBearerAuth(accessToken);
+                            }
+                        })
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .bodyValue(jsonPayload)
                         .retrieve()
                         .bodyToMono(DocumentConvertThymDTO.class)
-                        .timeout(Duration.ofSeconds(3000))
+                        .timeout(Duration.ofSeconds(60))
                         .flatMap(doc -> {
                             if(doc == null || doc.getId() == null) {
                                 FrontendLoggers.error().error("UI_DOCUMENT_CREATE_FAILED message=response null or missing id");
@@ -107,7 +130,7 @@ public class CreateDocumentThymController {
                             FrontendLoggers.access().info("UI_DOCUMENT_CREATE_OK");
                             FrontendLoggers.business().info("UI_DOCUMENT_CREATE_OK documentId={} nomDocument={} type={}",
                                                             doc.getId(), doc.getNomDocument(), doc.getTypeDocument());
-                            redirectAttributes.addFlashAttribute("successMessage", "Dossier créé avec succès");
+                            redirectAttributes.addFlashAttribute("successMessage", "Document créé avec succès");
                             return Mono.just("redirect:/document/" + doc.getId());
                             // redirection vers la liste des clients
                             //                            redirectAttributes.addFlashAttribute("successMessage", "Client créé avec succès");
@@ -153,7 +176,7 @@ public class CreateDocumentThymController {
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage", "Ressource non trouvée. " + e
                                         .getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
                                 return Mono.just("redirect:/error");
                             } else if(e.getStatusCode() == HttpStatus.UNSUPPORTED_MEDIA_TYPE) {
                                 FrontendLoggers.error().error("UI_DOCUMENT_CREATE_FAILED status=415 message={}", e.getResponseBodyAsString());
@@ -174,7 +197,7 @@ public class CreateDocumentThymController {
                                 redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
                                 redirectAttributes.addFlashAttribute("errorMessage",
                                                                      "Erreur interne de serveur. " + e.getResponseBodyAsString());
-                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDossier");
+                                redirectAttributes.addFlashAttribute("urlRedirection", "/createDocument");
                                 return Mono.just("redirect:/error");
                             } else if(e.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
                                 FrontendLoggers.error().error("UI_DOCUMENT_CREATE_FAILED status=503 message={}", e.getMessage());
