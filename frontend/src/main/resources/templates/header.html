@@ -30,7 +30,7 @@
                             Créer
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a class="dropdown-item" th:href="@{/createDossier}">Créer un dossier</a></li>
+                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/createDossier}">Créer un dossier</a></li>
                             <li><a class="dropdown-item" th:href="@{/createDocument}">Créer un document</a></li>
                             <li><a class="dropdown-item" th:href="@{/createGarage}">Créer un garage</a></li>
 <!--                             <li><a class="dropdown-item" th:href="@{/createVehicule}">Créer un véhicule</a></li>-->
@@ -45,7 +45,7 @@
                             Rechercher
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                            <li><a class="dropdown-item" th:href="@{/searchclient}">Rechercher un client</a></li>
+                            <li sec:authorize="hasAnyRole('ADMIN','AUDITOR')"><a class="dropdown-item" th:href="@{/searchclient}">Rechercher un client</a></li>
                             <li><a class="dropdown-item" th:href="@{/searchvehiculesiv}">Rechercher un véhicule (SIV)</a></li>
                             <li><a class="dropdown-item" th:href="@{/showvehicule}">Rechercher un véhicule (saisie manuelle)</a></li>
                             <li><a class="dropdown-item" th:href="@{/searchvehiculelist}">Rechercher un véhicule (liste déroulante)</a></li>
