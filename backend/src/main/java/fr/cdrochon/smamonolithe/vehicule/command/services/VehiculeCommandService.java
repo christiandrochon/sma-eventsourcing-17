@@ -39,32 +39,40 @@ public class VehiculeCommandService {
     @Transactional
     public CompletableFuture<VehiculeCommandDTO> createVehicule(VehiculeCommandDTO vehiculeRestPostDTO) {
         String vehiculeId = UUID.randomUUID().toString();
+        String requestVehiculeId = vehiculeRestPostDTO != null ? vehiculeRestPostDTO.getId() : null;
         CompletableFuture<VehiculeCommandDTO> futureDTO = new CompletableFuture<>();
         pendingCreations.put(vehiculeId, futureDTO);
+        if(requestVehiculeId != null && !requestVehiculeId.isBlank()) {
+            pendingCreations.put(requestVehiculeId, futureDTO);
+        }
 
         BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status={}",
                                         vehiculeId,
                                         vehiculeRestPostDTO.getImmatriculationVehicule(),
                                         vehiculeRestPostDTO.getVehiculeStatus());
 
-        commandGateway.send(new VehiculeCreateCommand(vehiculeId,
-                                                      vehiculeRestPostDTO.getImmatriculationVehicule(),
-                                                      vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
-                                                      vehiculeRestPostDTO.getVehiculeStatus()
-        )).whenComplete((ignored, error) -> {
-            if(error != null) {
-                CompletableFuture<VehiculeCommandDTO> pending = pendingCreations.remove(vehiculeId);
-                if(pending != null) {
-                    BusinessLoggers.business().error("BIZ_VEHICULE_CREATE_FAILED vehiculeId={} message={}",
-                                                     vehiculeId,
-                                                     error.getMessage());
-                    pending.completeExceptionally(error);
+        CompletableFuture<Object> commandFuture = commandGateway.send(new VehiculeCreateCommand(vehiculeId,
+                                                                                                  vehiculeRestPostDTO.getImmatriculationVehicule(),
+                                                                                                  vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
+                                                                                                  vehiculeRestPostDTO.getVehiculeStatus()
+        ));
+
+        if(commandFuture != null) {
+            commandFuture.whenComplete((ignored, error) -> {
+                if(error != null) {
+                    CompletableFuture<VehiculeCommandDTO> pending = removePending(vehiculeId, requestVehiculeId);
+                    if(pending != null) {
+                        BusinessLoggers.business().error("BIZ_VEHICULE_CREATE_FAILED vehiculeId={} message={}",
+                                                         vehiculeId,
+                                                         error.getMessage());
+                        pending.completeExceptionally(error);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                        .whenComplete((ok, err) -> pendingCreations.remove(vehiculeId));
+                        .whenComplete((ok, err) -> removePending(vehiculeId, requestVehiculeId));
     }
     
     /**
@@ -73,7 +81,7 @@ public class VehiculeCommandService {
      * @param dto DTO de création d'un garage
      */
     public void completeVehiculeCreation(VehiculeCommandDTO dto) {
-        CompletableFuture<VehiculeCommandDTO> pending = pendingCreations.remove(dto.getId());
+        CompletableFuture<VehiculeCommandDTO> pending = removePending(dto != null ? dto.getId() : null, null);
         if(pending != null) {
             BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_CONFIRMED vehiculeId={} immatriculation={} status={}",
                                             dto.getId(),
@@ -103,5 +111,19 @@ public class VehiculeCommandService {
             
             completeVehiculeCreation(vehiculeDTO);
         }
+    }
+
+    private CompletableFuture<VehiculeCommandDTO> removePending(String primaryId, String secondaryId) {
+        CompletableFuture<VehiculeCommandDTO> pending = null;
+        if(primaryId != null && !primaryId.isBlank()) {
+            pending = pendingCreations.remove(primaryId);
+        }
+        if(secondaryId != null && !secondaryId.isBlank() && !secondaryId.equals(primaryId)) {
+            CompletableFuture<VehiculeCommandDTO> secondaryPending = pendingCreations.remove(secondaryId);
+            if(pending == null) {
+                pending = secondaryPending;
+            }
+        }
+        return pending;
     }
 }

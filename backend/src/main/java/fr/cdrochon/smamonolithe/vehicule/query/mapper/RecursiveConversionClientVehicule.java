@@ -24,14 +24,12 @@ public class RecursiveConversionClientVehicule {
      * @return ClientQueryDTO contenant les informations du client
      */
     public static ClientQueryDTO addClientQueryMapper(Client client) {
-        
-        if(clientMap.containsKey(client.getId())) {
-            return clientMap.get(client.getId());
+        if(client == null || client.getId() == null) {
+            return null;
         }
-        
-        ClientQueryDTO clientQueryDTO = new ClientQueryDTO();
-        //control de l'appel recursif des methodes elles-memes grace à la map
-        clientMap.put(client.getId(), clientQueryDTO);
+
+        // Réutilise l'instance DTO pour casser la récursion, mais recalcule son contenu à chaque appel.
+        ClientQueryDTO clientQueryDTO = clientMap.computeIfAbsent(client.getId(), ignored -> new ClientQueryDTO());
         
         clientQueryDTO.setId(client.getId());
         clientQueryDTO.setNomClient(client.getNomClient());
@@ -60,6 +58,12 @@ public class RecursiveConversionClientVehicule {
             }
             
             clientQueryDTO.setVehicule(vehiculeQueryDTO);
+        } else {
+            VehiculeQueryDTO previousVehicule = clientQueryDTO.getVehicule();
+            if(previousVehicule != null && previousVehicule.getClient() == clientQueryDTO) {
+                previousVehicule.setClient(null);
+            }
+            clientQueryDTO.setVehicule(null);
         }
         
         return clientQueryDTO;
@@ -73,12 +77,12 @@ public class RecursiveConversionClientVehicule {
      * @return VehiculeQueryDTO contenant les informations du vehicule
      */
     public static VehiculeQueryDTO addVehiculeQueryMapper(Vehicule vehicule) {
-        if(vehiculeMap.containsKey(vehicule.getId())) {
-            return vehiculeMap.get(vehicule.getId());
+        if(vehicule == null || vehicule.getId() == null) {
+            return null;
         }
-        VehiculeQueryDTO vehiculeQueryDTO = new VehiculeQueryDTO();
-        //control de l'appel recursif de la methode grace à la map
-        vehiculeMap.put(vehicule.getId(), vehiculeQueryDTO);
+
+        // Réutilise l'instance DTO pour casser la récursion, mais recalcule son contenu à chaque appel.
+        VehiculeQueryDTO vehiculeQueryDTO = vehiculeMap.computeIfAbsent(vehicule.getId(), ignored -> new VehiculeQueryDTO());
         
         vehiculeQueryDTO.setId(vehicule.getId());
         vehiculeQueryDTO.setImmatriculationVehicule(vehicule.getImmatriculationVehicule());
@@ -104,6 +108,12 @@ public class RecursiveConversionClientVehicule {
             
             // Établir la relation véhicule -> client
             vehiculeQueryDTO.setClient(clientQueryDTO);
+        } else {
+            ClientQueryDTO previousClient = vehiculeQueryDTO.getClient();
+            if(previousClient != null && previousClient.getVehicule() == vehiculeQueryDTO) {
+                previousClient.setVehicule(null);
+            }
+            vehiculeQueryDTO.setClient(null);
         }
         
         return vehiculeQueryDTO;
