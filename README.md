@@ -1,8 +1,13 @@
 # SMA - Application de Maintenance Automobile
 
-Application intranet de maintenance automobile basee sur Spring Boot, avec separation claire entre interface serveur (Thymeleaf) et coeur metier CQRS/Event Sourcing.
+Application intranet de maintenance automobile basée sur Spring Boot, avec separation claire entre interface serveur (Thymeleaf) et coeur metier CQRS/Event Sourcing.
 
-## Demarrage express (3 commandes)
+## Demarrage immediat (depuis zero)
+
+> **Important :** pour ce projet, le lancement standard se fait via `./scripts/dev.sh`.
+> N'utilisez pas `docker compose up` comme commande principale de run applicatif.
+
+Si vous partez de zero (volumes inexistants ou supprimés), lancez simplement :
 
 ```bash
 chmod +x scripts/dev.sh
@@ -10,7 +15,7 @@ chmod +x scripts/dev.sh
 ./scripts/dev.sh open
 ```
 
-Mode debug rapide sans login:
+Mode debug rapide (sans login frontend/backend) :
 
 ```bash
 ./scripts/dev.sh fast
@@ -26,7 +31,7 @@ Mode debug rapide sans login:
 - [3. Stack technique](#3-stack-technique)
 - [4. Structure des modules](#4-structure-des-modules)
 - [5. Demarrage rapide](#5-demarrage-rapide)
-- [5.1 Demarrage Docker Compose](#51-demarrage-docker-compose)
+- [5.1 Demarrage officiel via script](#51-demarrage-officiel-via-script)
 - [5.2 Demarrage local (sans conteneur app)](#52-demarrage-local-sans-conteneur-app)
 - [6. Build et tests](#6-build-et-tests)
 - [7. Configuration et profils Spring](#7-configuration-et-profils-spring)
@@ -184,19 +189,20 @@ sma-eventsourcing-17/
 
 Prerequis minimaux : Docker + Docker Compose + Java 17 + Maven.
 
-### 5.1 Demarrage Docker Compose
+### 5.1 Demarrage officiel via script
 
-**Methode recommandee (la plus simple) : utiliser le point d'entree unique `scripts/dev.sh`.**
+**Regle simple : pour lancer l'application, utilisez `scripts/dev.sh` (point d'entree unique).**
 
-Depuis la racine du projet :
+**Commande qui fonctionne en partant de rien :**
 
 ```bash
 chmod +x scripts/dev.sh
-
-# Lance la stack en mode securise (Keycloak ON)
 ./scripts/dev.sh secure
+```
 
-# Ouvre les URLs utiles + affiche les credentials
+Puis (optionnel) pour ouvrir les URLs utiles :
+
+```bash
 ./scripts/dev.sh open
 ```
 
@@ -210,19 +216,6 @@ Arret de la stack :
 
 ```bash
 ./scripts/dev.sh down
-```
-
-Voir les logs des services :
-
-```bash
-docker compose -f compose.yaml logs -f frontend
-docker compose -f compose.yaml logs -f backend
-```
-
-Rebuild complet des images :
-
-```bash
-docker compose -f compose.yaml up -d --build
 ```
 
 Commandes utiles via `dev.sh` :
@@ -239,8 +232,8 @@ Guide de choix rapide (quoi faire selon votre besoin) :
 
 | Je veux... | Commande | Ce que ca fait | Arrete la stack ? |
 |---|---|---|---|
-| Lancer l'appli en mode securise (Keycloak ON) | `./scripts/dev.sh secure` | `docker compose up -d` + seed users demo si possible | Non |
-| Lancer l'appli vite sans login (debug court) | `./scripts/dev.sh fast` | `up -d` avec securite frontend/backend desactivee | Non |
+| Lancer l'appli en mode securise (Keycloak ON) | `./scripts/dev.sh secure` | Lance la stack complete + seed users demo si possible | Non |
+| Lancer l'appli vite sans login (debug court) | `./scripts/dev.sh fast` | Lance la stack avec securite frontend/backend desactivee | Non |
 | Voir les URLs + credentials | `./scripts/dev.sh show` | Affiche frontend, backend, keycloak + comptes demo | Non |
 | Ouvrir directement l'appli et Keycloak | `./scripts/dev.sh open` | Meme affichage + tentative d'ouverture navigateur | Non |
 | Verifier que tout repond | `./scripts/dev.sh check` | Checks HTTP frontend/backend/keycloak | Non |
@@ -254,6 +247,8 @@ Guide de choix rapide (quoi faire selon votre besoin) :
 ### 5.2 Demarrage local (sans conteneur app)
 
 Option pratique : lancer seulement les dependances (PostgreSQL + Axon + pgAdmin) en Docker, puis demarrer les apps en local.
+
+> Cette section est un mode avance. Pour un lancement standard, revenez a `./scripts/dev.sh secure`.
 
 1) Lancer les dependances :
 
@@ -891,22 +886,18 @@ Configuration principale deja incluse dans `compose.yaml`:
 - Backend configure avec `issuer-uri` et `jwk-set-uri` pour valider les JWT
 
 ```bash
-# 1. Lancer toute la stack (backend + frontend + axon + postgres + keycloak)
-docker compose up -d
+# 1. Lancer toute la stack en mode standard
+./scripts/dev.sh secure
 
-# 2. Attendre ~60s que Keycloak soit pret, puis verifier
-./scripts/keycloak-realm.sh status
+# 2. Verifier l'etat du realm
+./scripts/dev.sh realm-status
 
-# 3. Creer les utilisateurs de test
-./scripts/keycloak-realm.sh seed-demo-users
-# cree par defaut :
-# - admin-test / admin123!   (ADMIN)
-# - user-test  / user123!    (USER)
-# - audit-test / audit123!   (AUDITOR)
+# 3. (Optionnel) reseeder les utilisateurs demo
+./scripts/dev.sh seed-users
 
-# 4. Sauvegarder le realm dans Git
+# 4. Sauvegarder le realm dans Git (si vous avez modifie sa config)
 ./scripts/keycloak-realm.sh backup
-git add docker/realm-export.json && git commit -m "chore: init realm avec utilisateurs"
+git add docker/realm-export.json && git commit -m "chore: backup realm"
 ```
 
 ---
@@ -915,13 +906,13 @@ git add docker/realm-export.json && git commit -m "chore: init realm avec utilis
 
 ```bash
 # Supprimer les conteneurs ET les volumes (reset total)
-docker compose down -v
+docker compose -f compose.yaml down -v
 
-# Relancer — le realm-export.json sera reimporte automatiquement
-docker compose up -d
+# Relancer avec le point d'entree officiel
+./scripts/dev.sh secure
 
-# Recreer les utilisateurs (non inclus dans l'export pour securite)
-./scripts/keycloak-realm.sh create-user
+# Recreer les utilisateurs si necessaire
+./scripts/dev.sh seed-users
 ```
 
 > **Pourquoi les utilisateurs ne sont-ils pas dans le JSON ?**
@@ -1010,13 +1001,6 @@ APP_URL=http://localhost:8091 KEYCLOAK_REALM=sma-realm ./scripts/dev-login.sh
 KC_DEMO_ADMIN_PASSWORD='ChangeMe1!' KC_DEMO_USER_PASSWORD='ChangeMe2!' KC_DEMO_AUDITOR_PASSWORD='ChangeMe3!' ./scripts/dev-login.sh
 ```
 
-```bash
-# Mode securise (par defaut)
-docker compose up -d
-
-# Mode dev rapide (sans login Keycloak)
-FRONTEND_SECURITY_ENABLED=false BACKEND_SECURITY_ENABLED=false docker compose up -d
-```
 
 Vous pouvez aussi surcharger les credentials de demo via variables d'environnement:
 
