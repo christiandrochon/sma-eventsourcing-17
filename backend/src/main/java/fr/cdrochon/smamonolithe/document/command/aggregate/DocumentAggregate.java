@@ -58,6 +58,9 @@ public class DocumentAggregate {
                                         createDocumentCommand.getNomDocument(),
                                         createDocumentCommand.getTypeDocument(),
                                         createDocumentCommand.getDocumentStatus());
+        // Defensive: ensure aggregate id is initialized before apply to satisfy Axon invariant.
+        this.idDocument = createDocumentCommand.getId();
+
         AggregateLifecycle.apply(new DocumentCreatedEvent(createDocumentCommand.getId(),
                                                           createDocumentCommand.getNomDocument(),
                                                           createDocumentCommand.getTitreDocument(),
