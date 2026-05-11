@@ -1064,7 +1064,79 @@ Principe cle:
 - il ecoute un evenement Spring interne emis seulement apres persistance validee
 - cela evite les dependances circulaires et stabilise le handshake commande/projection
 
-### 12.3 Ce qui a ete code exactement
+### 12.3 Qui subscribe quoi (classes et handlers)
+
+Cette partie est la plus importante pour comprendre le chainage.
+
+#### Cote Axon (commandes -> evenements)
+
+- **Aggregate command handler**: `@CommandHandler` dans les agregats (ex: `DossierAggregate`, `DocumentAggregate`, `VehiculeAggregate`)
+- **Emission d'evenement Axon**: `AggregateLifecycle.apply(...)` pour `*CreatedEvent`
+- **Bus utilise**: `CommandBus` / `EventBus` Axon via `CommandGateway`
+
+#### Cote projection/persistance (subscribe Axon)
+
+- `DossierEventHandlerService.on(DossierCreatedEvent)` (`@EventHandler`)
+- `ClientEventHandlerService.on(ClientCreatedEvent)` (`@EventHandler`)
+- `VehiculeEventHandlerService.on(VehiculeCreatedEvent)` (`@EventHandler`)
+- `GarageEventHandlerService.on(GarageCreatedEvent)` (`@EventHandler`)
+
+Role de ces handlers:
+
+1. ils **consomment** l'evenement Axon (`subscribe` event processing)
+2. ils **persistent** le read model en base (repositories JPA)
+3. ils publient un **Spring ApplicationEvent** de confirmation (`*CreatedApplicationEvent`)
+
+#### Cote retour commande (subscribe Spring)
+
+- `DossierCommandService.onDossierCreatedApplicationEvent(...)` (`@EventListener`)
+- `ClientCommandService.onClientCreatedApplicationEvent(...)` (`@EventListener`)
+- `VehiculeCommandService.onVehiculeCreatedApplicationEvent(...)` (`@EventListener`)
+- `GarageCommandService.onGarageCreatedApplicationEvent(...)` (`@EventListener`)
+
+Role de ces listeners:
+
+1. recuperer le DTO de confirmation
+2. appeler `complete*Creation(...)`
+3. terminer la `CompletableFuture` en attente
+
+### 12.4 Sequence detaillee (subscribe Axon + handlers Spring)
+
+```text
+[1] HTTP POST /commands/*
+    -> *CommandController
+
+[2] *CommandService.create*(dto)
+    -> cree future et l'indexe en map concurrente
+    -> envoie *CreateCommand via CommandGateway
+
+[3] *Aggregate (@CommandHandler)
+    -> valide la commande
+    -> apply(*CreatedEvent)
+
+[4] *EventHandlerService (@EventHandler Axon)
+    -> recoit l'evenement (subscribe event processor)
+    -> persiste dans les repositories JPA
+    -> publie *CreatedApplicationEvent (Spring)
+
+[5] *CommandService (@EventListener Spring)
+    -> recoit *CreatedApplicationEvent
+    -> complete*Creation(...)
+    -> future.complete(...)
+
+[6] Controller
+    -> retourne 201/OK sans timeout
+```
+
+### 12.5 Ce qui ne faut pas faire (anti-pattern)
+
+- faire appeler directement un `CommandService` depuis un `@EventHandler` Axon (couplage fort)
+- completer la future **avant** la persistance read model
+- melanger confirmation metier et simple succes d'envoi `CommandGateway.send`
+
+Le pattern choisi garantit que la commande n'est consideree "terminee" qu'apres persistance effective de la projection.
+
+### 12.6 Ce qui a ete code exactement
 
 1) **Wrappers de liste Axon pour les queries** (evite les erreurs de conversion `multipleInstancesOf`):
 
@@ -1116,7 +1188,7 @@ Regle actuelle:
 - valeur par defaut: `subscribing`
 - passer a `tracking` seulement si l'environnement supporte correctement le token store Axon
 
-### 12.4 Pourquoi on peut voir Commands/Queries mais pas Events dans Axon Server
+### 12.7 Pourquoi on peut voir Commands/Queries mais pas Events dans Axon Server
 
 Si `Commands` et `Queries` sont visibles mais pas les `Events`, verifier d'abord:
 
@@ -1134,7 +1206,7 @@ Mitigation appliquee ici:
 
 - bascule par defaut en `subscribing` pour stabiliser la consommation d'evenements
 
-### 12.5 Checklist de verification rapide
+### 12.8 Checklist de verification rapide
 
 ```bash
 tail -f backend/logs/metier/business.log
