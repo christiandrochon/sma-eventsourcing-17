@@ -2,22 +2,29 @@ package fr.cdrochon.smamonolithe.client.command.services;
 
 import fr.cdrochon.smamonolithe.client.command.commands.ClientCreateCommand;
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
+import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
+import fr.cdrochon.smamonolithe.client.query.events.ClientCreatedApplicationEvent;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class ClientCommandService {
     
+    private static final long CREATE_TIMEOUT_SECONDS = 20L;
+
     private final CommandGateway commandGateway;
-    //utiliser une CompletableFuture pour synchroniser l'attente du contrôleur jusqu'à ce que l'événement soit reçu et traité
-    private CompletableFuture<ClientCommandDTO> futureDTO;
+    private final ConcurrentMap<String, CompletableFuture<ClientCommandDTO>> pendingCreations = new ConcurrentHashMap<>();
     
     public ClientCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
@@ -31,20 +38,33 @@ public class ClientCommandService {
      */
     @Transactional
     public CompletableFuture<ClientCommandDTO> createClient(ClientCommandDTO clientrestPostDTO) {
-        //CompletableFuture<GarageCommandDTO> sera complétée lorsque l'événement sera reçu.
-        futureDTO = new CompletableFuture<>();
         String clientId = UUID.randomUUID().toString();
+        CompletableFuture<ClientCommandDTO> futureDTO = new CompletableFuture<>();
+        pendingCreations.put(clientId, futureDTO);
+
         BusinessLoggers.business().info("BIZ_CLIENT_CREATE_REQUEST clientId={} nomClient={}", clientId,
                                         clientrestPostDTO.getNomClient());
-        //envoyer la commande de création de garage -> @CommandHandler
-        //CHECKME : est ce ici que l'on créé l'id du garage ?
+
         commandGateway.send(new ClientCreateCommand(clientId,
                                                     clientrestPostDTO.getNomClient(),
                                                     clientrestPostDTO.getPrenomClient(),
                                                     clientrestPostDTO.getMailClient(),
                                                     clientrestPostDTO.getTelClient(),
-                                                    clientrestPostDTO.getAdresse()));
-        return futureDTO;
+                                                    clientrestPostDTO.getAdresse()))
+                      .whenComplete((ignored, error) -> {
+                          if(error != null) {
+                              CompletableFuture<ClientCommandDTO> pending = pendingCreations.remove(clientId);
+                              if(pending != null) {
+                                  BusinessLoggers.business().error("BIZ_CLIENT_CREATE_FAILED clientId={} message={}",
+                                                                  clientId,
+                                                                  error.getMessage());
+                                  pending.completeExceptionally(error);
+                              }
+                          }
+                      });
+
+        return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        .whenComplete((ok, err) -> pendingCreations.remove(clientId));
     }
     
     /**
@@ -53,10 +73,36 @@ public class ClientCommandService {
      * @param dto DTO de création d'un garage
      */
     public void completeClientCreation(ClientCommandDTO dto) {
-        if(futureDTO != null) {
+        CompletableFuture<ClientCommandDTO> pending = pendingCreations.remove(dto.getId());
+        if(pending != null) {
             BusinessLoggers.business().info("BIZ_CLIENT_CREATE_CONFIRMED clientId={} status={}", dto.getId(),
                                             dto.getClientStatus());
-            futureDTO.complete(dto);
+            pending.complete(dto);
+        } else {
+            log.warn("TECH_CLIENT_CREATE_FUTURE_MISSING clientId={} (event recu sans future en attente)", dto.getId());
+        }
+    }
+    
+    /**
+     * Listener Spring qui reçoit l'événement ClientCreatedApplicationEvent publié par ClientEventHandlerService
+     * après que le client ait été persiste en DB. Complète la CompletableFuture en attente.
+     *
+     * @param event ClientCreatedApplicationEvent contenant le DTO du client créé
+     */
+    @EventListener
+    public void onClientCreatedApplicationEvent(ClientCreatedApplicationEvent event) {
+        if(event != null && event.getClient() != null) {
+            ClientCommandDTO clientDTO = new ClientCommandDTO();
+            ClientQueryDTO queryDTO = event.getClient();
+            clientDTO.setId(queryDTO.getId());
+            clientDTO.setNomClient(queryDTO.getNomClient());
+            clientDTO.setPrenomClient(queryDTO.getPrenomClient());
+            clientDTO.setMailClient(queryDTO.getMailClient());
+            clientDTO.setTelClient(queryDTO.getTelClient());
+            clientDTO.setAdresse(queryDTO.getAdresse());
+            clientDTO.setClientStatus(queryDTO.getClientStatus());
+            
+            completeClientCreation(clientDTO);
         }
     }
 }

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +35,7 @@ class ClientEventHandlerServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new ClientEventHandlerService(clientRepository);
+        service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
     }
 
     @Test

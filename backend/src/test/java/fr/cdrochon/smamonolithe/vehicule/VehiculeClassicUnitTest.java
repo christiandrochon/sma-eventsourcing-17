@@ -36,6 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -249,14 +250,14 @@ class VehiculeClassicUnitTest {
 
     @Test
     void classic_22_eventHandlerServiceShouldSaveVehiculeOnEvent() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         service.on(sampleVehiculeCreatedEvent());
         verify(vehiculeRepository).save(any(Vehicule.class));
     }
 
     @Test
     void classic_23_eventHandlerServiceShouldReturnVehiculeById() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         when(vehiculeRepository.findById("veh-1")).thenReturn(Optional.of(sampleVehicule()));
         VehiculeQueryDTO dto = service.on(new GetVehiculeDTO("veh-1"));
         assertEquals("veh-1", dto.getId());
@@ -264,7 +265,7 @@ class VehiculeClassicUnitTest {
 
     @Test
     void classic_24_eventHandlerServiceShouldReturnVehiculeByImmatriculation() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         when(vehiculeRepository.findByImmatriculationVehicule("AA-123-BB")).thenReturn(sampleVehicule());
         VehiculeQueryDTO dto = service.on(new GetImmatDTO("AA-123-BB"));
         assertEquals("AA-123-BB", dto.getImmatriculationVehicule());
@@ -272,7 +273,7 @@ class VehiculeClassicUnitTest {
 
     @Test
     void classic_25_eventHandlerServiceShouldReturnAllVehicules() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         when(vehiculeRepository.findAll()).thenReturn(List.of(sampleVehicule()));
         assertEquals(1, service.on(new GetAllVehiculesDTO()).size());
     }

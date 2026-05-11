@@ -2,9 +2,12 @@ package fr.cdrochon.smamonolithe.dossier.command.services;
 
 import fr.cdrochon.smamonolithe.dossier.command.commands.DossierCreateCommand;
 import fr.cdrochon.smamonolithe.dossier.command.dtos.DossierCommandDTO;
+import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierQueryDTO;
+import fr.cdrochon.smamonolithe.dossier.query.events.DossierCreatedApplicationEvent;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -19,6 +22,8 @@ import static fr.cdrochon.smamonolithe.dossier.command.dtos.DossierCommandMapper
 @Slf4j
 public class DossierCommandService {
     
+    private static final long CREATE_TIMEOUT_SECONDS = 20L;
+
     private final CommandGateway commandGateway;
     private final java.util.Map<String, CompletableFuture<DossierCommandDTO>> dossierFutures = new java.util.concurrent.ConcurrentHashMap<>();
 
@@ -43,7 +48,6 @@ public class DossierCommandService {
                                         dossierCommandDTO.getVehicule() != null ? dossierCommandDTO.getVehicule().getId() : null,
                                         dossierCommandDTO.getDossierStatus());
 
-        // Créer une future qui sera résolue quand l'event handler appellera completeDossierCreation()
         CompletableFuture<DossierCommandDTO> dossierFuture = new CompletableFuture<>();
         dossierFutures.put(dossierId, dossierFuture);
 
@@ -60,10 +64,20 @@ public class DossierCommandService {
                 dossierCommandDTO.getUserId()
         );
 
-        commandGateway.send(command);
+        commandGateway.send(command).whenComplete((ignored, error) -> {
+            if(error != null) {
+                CompletableFuture<DossierCommandDTO> pending = dossierFutures.remove(dossierId);
+                if(pending != null) {
+                    BusinessLoggers.business().error("BIZ_DOSSIER_CREATE_FAILED dossierId={} message={}",
+                                                     dossierId,
+                                                     error.getMessage());
+                    pending.completeExceptionally(error);
+                }
+            }
+        });
 
-        // Retourner la future qui sera complétée par l'event handler
-        return dossierFuture;
+        return dossierFuture.orTimeout(CREATE_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS)
+                           .whenComplete((ok, err) -> dossierFutures.remove(dossierId));
     }
     
     /**
@@ -78,12 +92,34 @@ public class DossierCommandService {
                 dto != null && dto.getVehicule() != null ? dto.getVehicule().getId() : null,
                 dto != null ? dto.getDossierStatus() : null);
         
-        // Résoudre la future avec le DTO complet depuis l'event handler
-        if (dto != null && dto.getId() != null) {
+        if(dto != null && dto.getId() != null) {
             CompletableFuture<DossierCommandDTO> future = dossierFutures.remove(dto.getId());
-            if (future != null) {
+            if(future != null) {
                 future.complete(dto);
+            } else {
+                log.warn("TECH_DOSSIER_CREATE_FUTURE_MISSING dossierId={} (event recu sans future en attente)", dto.getId());
             }
+        }
+    }
+
+    /**
+     * Listener Spring qui reçoit l'événement DossierCreatedApplicationEvent publié par DossierEventHandlerService
+     * après que le dossier ait été persiste en DB. Complète la CompletableFuture en attente.
+     *
+     * @param event DossierCreatedApplicationEvent contenant le DTO du dossier créé
+     */
+    @EventListener
+    public void onDossierCreatedApplicationEvent(DossierCreatedApplicationEvent event) {
+        if(event != null && event.getDossier() != null) {
+            DossierCommandDTO dossierDTO = new DossierCommandDTO();
+            DossierQueryDTO queryDTO = event.getDossier();
+            dossierDTO.setId(queryDTO.getId());
+            dossierDTO.setNomDossier(queryDTO.getNomDossier());
+            dossierDTO.setDateCreationDossier(queryDTO.getDateCreationDossier());
+            dossierDTO.setDateModificationDossier(queryDTO.getDateModificationDossier());
+            dossierDTO.setDossierStatus(queryDTO.getDossierStatus());
+            
+            completeDossierCreation(dossierDTO);
         }
     }
 }

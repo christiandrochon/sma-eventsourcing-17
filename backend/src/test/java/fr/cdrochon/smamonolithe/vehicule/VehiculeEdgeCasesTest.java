@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -96,21 +97,21 @@ class VehiculeEdgeCasesTest {
 
     @Test
     void edge_06_eventHandlerServiceShouldThrowTransactionExceptionOnSaveFailure() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         when(vehiculeRepository.save(any(Vehicule.class))).thenThrow(new RuntimeException("db down"));
         assertThrows(TransactionException.class, () -> service.on(sampleVehiculeCreatedEvent()));
     }
 
     @Test
     void edge_07_eventHandlerServiceShouldThrowEntityNotFoundForUnknownId() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         when(vehiculeRepository.findById("unknown")).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> service.on(new GetVehiculeDTO("unknown")));
     }
 
     @Test
     void edge_08_eventHandlerServiceShouldThrowEntityNotFoundForUnknownImmat() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         when(vehiculeRepository.findByImmatriculationVehicule("not-found")).thenReturn(null);
         assertThrows(EntityNotFoundException.class, () -> service.on(new GetImmatDTO("not-found")));
     }
@@ -195,7 +196,7 @@ class VehiculeEdgeCasesTest {
 
     @Test
     void edge_20_eventHandlerServiceShouldSaveNullStatusAsIs() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         VehiculeCreatedEvent event = new VehiculeCreatedEvent("veh-null-status", "AA", sampleInstant(), null);
         service.on(event);
         ArgumentCaptor<Vehicule> captor = ArgumentCaptor.forClass(Vehicule.class);
@@ -205,7 +206,7 @@ class VehiculeEdgeCasesTest {
 
     @Test
     void edge_21_eventHandlerServiceShouldSaveNullDateAsIs() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         VehiculeCreatedEvent event = new VehiculeCreatedEvent("veh-null-date", "AA", null, VehiculeStatus.EN_ATTENTE);
         service.on(event);
         ArgumentCaptor<Vehicule> captor = ArgumentCaptor.forClass(Vehicule.class);
@@ -272,7 +273,7 @@ class VehiculeEdgeCasesTest {
 
     @Test
     void edge_31_eventHandlerServiceShouldReturnEmptyListWhenRepositoryEmpty() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         when(vehiculeRepository.findAll()).thenReturn(List.of());
         assertTrue(service.on(new GetAllVehiculesDTO()).isEmpty());
     }
@@ -303,7 +304,7 @@ class VehiculeEdgeCasesTest {
 
     @Test
     void edge_35_eventHandlerServiceShouldThrowTransactionExceptionForAnySaveError() {
-        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository);
+        VehiculeEventHandlerService service = new VehiculeEventHandlerService(vehiculeRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         when(vehiculeRepository.save(any(Vehicule.class))).thenThrow(new IllegalStateException("state"));
         assertThrows(TransactionException.class, () -> service.on(sampleVehiculeCreatedEvent()));
     }

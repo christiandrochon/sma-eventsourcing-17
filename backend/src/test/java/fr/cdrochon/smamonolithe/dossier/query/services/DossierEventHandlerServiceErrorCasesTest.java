@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -33,9 +34,12 @@ class DossierEventHandlerServiceErrorCasesTest {
     @Mock
     private VehiculeRepository vehiculeRepository;
 
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
     @Test
     void shouldHandleEventWhenVehiculeRepositoryThrowsException() {
-        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository);
+        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository, applicationEventPublisher);
         DossierCreatedEvent event = sampleDossierCreatedEvent();
         when(vehiculeRepository.save(any(Vehicule.class))).thenThrow(new RuntimeException("Database connection lost"));
 
@@ -45,7 +49,7 @@ class DossierEventHandlerServiceErrorCasesTest {
 
     @Test
     void shouldThrowEntityNotFoundWhenQueryingNonExistentDossier() {
-        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository);
+        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository, applicationEventPublisher);
         when(dossierRepository.findById("non-existent-id")).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
@@ -55,7 +59,7 @@ class DossierEventHandlerServiceErrorCasesTest {
 
     @Test
     void shouldReturnEmptyListWhenNoDossiersExist() {
-        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository);
+        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository, applicationEventPublisher);
         when(dossierRepository.findAll()).thenReturn(Collections.emptyList());
 
         var result = service.on();

@@ -2,22 +2,29 @@ package fr.cdrochon.smamonolithe.vehicule.command.services;
 
 import fr.cdrochon.smamonolithe.vehicule.command.commands.VehiculeCreateCommand;
 import fr.cdrochon.smamonolithe.vehicule.command.dtos.VehiculeCommandDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.events.VehiculeCreatedApplicationEvent;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class VehiculeCommandService {
     
+    private static final long CREATE_TIMEOUT_SECONDS = 20L;
+
     private final CommandGateway commandGateway;
-    //utiliser une CompletableFuture pour synchroniser l'attente du contrôleur jusqu'à ce que l'événement soit reçu et traité
-    private CompletableFuture<VehiculeCommandDTO> futureDTO;
+    private final ConcurrentMap<String, CompletableFuture<VehiculeCommandDTO>> pendingCreations = new ConcurrentHashMap<>();
     
     public VehiculeCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
@@ -31,19 +38,33 @@ public class VehiculeCommandService {
      */
     @Transactional
     public CompletableFuture<VehiculeCommandDTO> createVehicule(VehiculeCommandDTO vehiculeRestPostDTO) {
-        //CompletableFuture<DossierCommandDTO> sera complétée lorsque l'événement sera reçu.
-        futureDTO = new CompletableFuture<>();
         String vehiculeId = UUID.randomUUID().toString();
+        CompletableFuture<VehiculeCommandDTO> futureDTO = new CompletableFuture<>();
+        pendingCreations.put(vehiculeId, futureDTO);
+
         BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status={}",
                                         vehiculeId,
                                         vehiculeRestPostDTO.getImmatriculationVehicule(),
                                         vehiculeRestPostDTO.getVehiculeStatus());
+
         commandGateway.send(new VehiculeCreateCommand(vehiculeId,
                                                       vehiculeRestPostDTO.getImmatriculationVehicule(),
                                                       vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
                                                       vehiculeRestPostDTO.getVehiculeStatus()
-        ));
-        return futureDTO;
+        )).whenComplete((ignored, error) -> {
+            if(error != null) {
+                CompletableFuture<VehiculeCommandDTO> pending = pendingCreations.remove(vehiculeId);
+                if(pending != null) {
+                    BusinessLoggers.business().error("BIZ_VEHICULE_CREATE_FAILED vehiculeId={} message={}",
+                                                     vehiculeId,
+                                                     error.getMessage());
+                    pending.completeExceptionally(error);
+                }
+            }
+        });
+
+        return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        .whenComplete((ok, err) -> pendingCreations.remove(vehiculeId));
     }
     
     /**
@@ -52,12 +73,35 @@ public class VehiculeCommandService {
      * @param dto DTO de création d'un garage
      */
     public void completeVehiculeCreation(VehiculeCommandDTO dto) {
-        if(futureDTO != null) {
+        CompletableFuture<VehiculeCommandDTO> pending = pendingCreations.remove(dto.getId());
+        if(pending != null) {
             BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_CONFIRMED vehiculeId={} immatriculation={} status={}",
                                             dto.getId(),
                                             dto.getImmatriculationVehicule(),
                                             dto.getVehiculeStatus());
-            futureDTO.complete(dto);
+            pending.complete(dto);
+        } else {
+            log.warn("TECH_VEHICULE_CREATE_FUTURE_MISSING vehiculeId={} (event recu sans future en attente)", dto.getId());
+        }
+    }
+    
+    /**
+     * Listener Spring qui reçoit l'événement VehiculeCreatedApplicationEvent publié par VehiculeEventHandlerService
+     * après que le vehicule ait été persiste en DB. Complète la CompletableFuture en attente.
+     *
+     * @param event VehiculeCreatedApplicationEvent contenant le DTO du vehicule créé
+     */
+    @EventListener
+    public void onVehiculeCreatedApplicationEvent(VehiculeCreatedApplicationEvent event) {
+        if(event != null && event.getVehicule() != null) {
+            VehiculeCommandDTO vehiculeDTO = new VehiculeCommandDTO();
+            VehiculeQueryDTO queryDTO = event.getVehicule();
+            vehiculeDTO.setId(queryDTO.getId());
+            vehiculeDTO.setImmatriculationVehicule(queryDTO.getImmatriculationVehicule());
+            vehiculeDTO.setDateMiseEnCirculationVehicule(queryDTO.getDateMiseEnCirculationVehicule());
+            vehiculeDTO.setVehiculeStatus(queryDTO.getVehiculeStatus());
+            
+            completeVehiculeCreation(vehiculeDTO);
         }
     }
 }

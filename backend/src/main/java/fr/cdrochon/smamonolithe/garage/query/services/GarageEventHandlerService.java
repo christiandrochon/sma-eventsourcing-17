@@ -5,14 +5,18 @@ import fr.cdrochon.smamonolithe.garage.query.dto.GarageQueryDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GetAllGarageDTO;
 import fr.cdrochon.smamonolithe.garage.query.dto.GetGarageDTO;
 import fr.cdrochon.smamonolithe.garage.query.entities.Garage;
+import fr.cdrochon.smamonolithe.garage.query.events.GarageCreatedApplicationEvent;
 import fr.cdrochon.smamonolithe.garage.query.mapper.GarageMapperManuel;
 import fr.cdrochon.smamonolithe.garage.query.repositories.GarageRepository;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,9 +26,11 @@ import java.util.stream.Collectors;
 public class GarageEventHandlerService {
     
     private final GarageRepository garageQueryRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
     
-    public GarageEventHandlerService(GarageRepository garageQueryRepository) {
+    public GarageEventHandlerService(GarageRepository garageQueryRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.garageQueryRepository = garageQueryRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
     
     /**
@@ -49,6 +55,20 @@ public class GarageEventHandlerService {
                                             garage.getIdQuery(),
                                             garage.getNomGarage(),
                                             garage.getGarageStatus());
+            
+            // Publier un événement Spring APRÈS la transaction pour notifier les listeners (notamment GarageCommandService)
+            final GarageQueryDTO garageDTO = GarageMapperManuel.convertGarageToGarageDTO(garage);
+            if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        applicationEventPublisher.publishEvent(new GarageCreatedApplicationEvent(this, garageDTO));
+                    }
+                });
+            } else {
+                // Si pas de synchronisation active, publier immédiatement
+                applicationEventPublisher.publishEvent(new GarageCreatedApplicationEvent(this, garageDTO));
+            }
 
         } catch(Exception e) {
             log.error("TECH_GARAGE_PERSIST_ERROR garageId={} message={}", event.getId(), e.getMessage(), e);

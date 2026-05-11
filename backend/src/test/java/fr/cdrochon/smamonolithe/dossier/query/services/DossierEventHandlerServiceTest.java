@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -37,9 +38,12 @@ class DossierEventHandlerServiceTest {
     @Mock
     private VehiculeRepository vehiculeRepository;
 
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+
     @Test
     void shouldPersistVehiculeClientAndDossierWhenEventIsReceived() {
-        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository);
+        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository, applicationEventPublisher);
         DossierCreatedEvent event = sampleDossierCreatedEvent();
 
         when(vehiculeRepository.save(any(Vehicule.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -76,7 +80,7 @@ class DossierEventHandlerServiceTest {
 
     @Test
     void shouldWrapPersistenceErrorsInTransactionException() {
-        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository);
+        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository, applicationEventPublisher);
         DossierCreatedEvent event = sampleDossierCreatedEvent();
         when(vehiculeRepository.save(any(Vehicule.class))).thenThrow(new RuntimeException("db down"));
 
@@ -87,7 +91,7 @@ class DossierEventHandlerServiceTest {
 
     @Test
     void shouldReturnDossierByIdForQueryHandler() {
-        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository);
+        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository, applicationEventPublisher);
         when(dossierRepository.findById(DOSSIER_ID)).thenReturn(Optional.of(sampleDossierEntity()));
 
         DossierQueryDTO dto = service.on(new GetDossierDTO(DOSSIER_ID));
@@ -98,7 +102,7 @@ class DossierEventHandlerServiceTest {
 
     @Test
     void shouldThrowWhenDossierNotFoundForQueryHandler() {
-        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository);
+        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository, applicationEventPublisher);
         when(dossierRepository.findById(DOSSIER_ID)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> service.on(new GetDossierDTO(DOSSIER_ID)));
@@ -106,7 +110,7 @@ class DossierEventHandlerServiceTest {
 
     @Test
     void shouldReturnAllDossiersForListQueryHandler() {
-        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository);
+        DossierEventHandlerService service = new DossierEventHandlerService(dossierRepository, clientRepository, vehiculeRepository, applicationEventPublisher);
         when(dossierRepository.findAll()).thenReturn(List.of(sampleDossierEntity(), sampleDossierEntity()));
 
         List<DossierQueryDTO> result = service.on();

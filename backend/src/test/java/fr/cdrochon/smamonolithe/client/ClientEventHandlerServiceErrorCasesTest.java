@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ class ClientEventHandlerServiceErrorCasesTest {
     void shouldNotPropagateExceptionWhenRepositorySaveThrows() {
         // Le catch dans le service avale l'exception → ne doit pas throw vers l'appelant
         when(clientRepository.save(any(Client.class))).thenThrow(new RuntimeException("DB down"));
-        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository);
+        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         ClientCreatedEvent event = sampleClientCreatedEvent();
         assertDoesNotThrow(() -> service.on(event));
     }
@@ -36,14 +37,14 @@ class ClientEventHandlerServiceErrorCasesTest {
     @Test
     void shouldThrowEntityNotFoundForUnknownId() {
         when(clientRepository.findById("ghost-id")).thenReturn(Optional.empty());
-        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository);
+        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         assertThrows(EntityNotFoundException.class, () -> service.on(new GetClientDTO("ghost-id")));
     }
 
     @Test
     void shouldThrowEntityNotFoundForNullId() {
         when(clientRepository.findById(null)).thenReturn(Optional.empty());
-        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository);
+        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         assertThrows(EntityNotFoundException.class, () -> service.on(new GetClientDTO(null)));
     }
 
@@ -51,7 +52,7 @@ class ClientEventHandlerServiceErrorCasesTest {
     void shouldHandleConstraintViolationOnDuplicateSave() {
         when(clientRepository.save(any(Client.class)))
                 .thenThrow(new org.springframework.dao.DataIntegrityViolationException("Duplicate entry"));
-        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository);
+        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         // Le catch interne avale → pas de throw
         assertDoesNotThrow(() -> service.on(sampleClientCreatedEvent()));
     }
@@ -59,7 +60,7 @@ class ClientEventHandlerServiceErrorCasesTest {
     @Test
     void shouldReturnEmptyListWhenFindAllReturnsEmpty() {
         when(clientRepository.findAll()).thenReturn(java.util.Collections.emptyList());
-        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository);
+        ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         assertTrue(service.on().isEmpty());
     }
 }
