@@ -2,10 +2,13 @@ package fr.cdrochon.smamonolithe.dossier.query.services;
 
 import fr.cdrochon.smamonolithe.client.query.entities.Client;
 import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
-import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
 import fr.cdrochon.smamonolithe.dossier.events.DossierCreatedEvent;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierQueryDTO;
+import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierListResponse;
+import fr.cdrochon.smamonolithe.dossier.query.dtos.GetAllDossiersDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
+import fr.cdrochon.smamonolithe.dossier.query.entities.Dossier;
+import fr.cdrochon.smamonolithe.dossier.query.events.DossierCreatedApplicationEvent;
 import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierQueryMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
@@ -15,8 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.hibernate.TransactionException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -30,11 +36,13 @@ public class DossierEventHandlerService {
     private final DossierRepository dossierRepository;
     private final ClientRepository clientRepository;
     private final VehiculeRepository vehiculeRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
     
-    public DossierEventHandlerService(DossierRepository dossierRepository, ClientRepository clientRepository, VehiculeRepository vehiculeRepository) {
+    public DossierEventHandlerService(DossierRepository dossierRepository, ClientRepository clientRepository, VehiculeRepository vehiculeRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.dossierRepository = dossierRepository;
         this.clientRepository = clientRepository;
         this.vehiculeRepository = vehiculeRepository;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
     
     /**
@@ -85,14 +93,29 @@ public class DossierEventHandlerService {
             dossier.setClient(client);
             dossier.setVehicule(vehicule);
             
-            //SAVE le dossier en final
-            dossierRepository.save(dossier);
-            BusinessLoggers.business().info("BIZ_DOSSIER_CREATED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
-                                            dossier.getId(),
-                                            dossier.getNomDossier(),
-                                            client.getId(),
-                                            vehicule.getId(),
-                                            dossier.getDossierStatus());
+              //SAVE le dossier en final
+              dossierRepository.save(dossier);
+              BusinessLoggers.business().info("BIZ_DOSSIER_CREATED dossierId={} nomDossier={} clientId={} vehiculeId={} status={}",
+                                              dossier.getId(),
+                                              dossier.getNomDossier(),
+                                              client.getId(),
+                                              vehicule.getId(),
+                                              dossier.getDossierStatus());
+
+              // Publier un événement Spring APRÈS la transaction pour notifier les listeners (notamment DossierCommandService)
+              final DossierQueryDTO dossierDTO = DossierQueryMapper.convertDossierToDossierDTO(dossier);
+              if (TransactionSynchronizationManager.isSynchronizationActive()) {
+                  TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                      @Override
+                      public void afterCommit() {
+                          applicationEventPublisher.publishEvent(new DossierCreatedApplicationEvent(this, dossierDTO));
+                      }
+                  });
+              } else {
+                  // Si pas de synchronisation active, publier immédiatement
+                  applicationEventPublisher.publishEvent(new DossierCreatedApplicationEvent(this, dossierDTO));
+              }
+
 
         } catch(Exception e) {
             log.error("TECH_DOSSIER_PERSIST_ERROR dossierId={} message={}", event.getId(), e.getMessage(), e);
@@ -115,11 +138,18 @@ public class DossierEventHandlerService {
     /**
      * Recupere tous les dossiers
      *
-     * @return List<DossierResponseDTO> contenant les informations de tous les dossiers
+     * @param query requete Axon de recuperation de tous les dossiers
+     * @return DossierListResponse contenant la liste des dossiers
      */
     @QueryHandler
-    public List<DossierQueryDTO> on() {
+    public DossierListResponse on(GetAllDossiersDTO query) {
         List<Dossier> dossiers = dossierRepository.findAll();
-        return dossiers.stream().map(DossierQueryMapper::convertDossierToDossierDTO).collect(Collectors.toList());
+        List<DossierQueryDTO> dtos = dossiers.stream().map(DossierQueryMapper::convertDossierToDossierDTO).collect(Collectors.toList());
+        return new DossierListResponse(dtos);
+    }
+
+    // Compatibilite tests/unit legacy: conserve la signature historique sans argument.
+    public List<DossierQueryDTO> on() {
+        return on(new GetAllDossiersDTO()).getItems();
     }
 }

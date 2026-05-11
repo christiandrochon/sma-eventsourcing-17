@@ -1,6 +1,8 @@
 package fr.cdrochon.smamonolithe.dossier.query.controllers;
 
 import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierQueryDTO;
+import fr.cdrochon.smamonolithe.dossier.query.dtos.DossierListResponse;
+import fr.cdrochon.smamonolithe.dossier.query.dtos.GetAllDossiersDTO;
 import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
 import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierQueryMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
@@ -48,9 +50,7 @@ public class DossierQueryController {
         BusinessLoggers.business().info("BIZ_DOSSIER_READ_REQUEST dossierId={}", id);
         CompletableFuture<DossierQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
-                    val dossier = dossierRepository.findById(id)
-                                                   .map(DossierQueryMapper::convertDossierToDossierDTO)
-                                                   .orElse(null);
+                    val dossier = queryGateway.query(new GetDossierDTO(id), ResponseTypes.instanceOf(DossierQueryDTO.class)).join();
                     if(dossier == null) {
                         BusinessLoggers.business().info("BIZ_DOSSIER_READ_NOT_FOUND dossierId={}", id);
                     } else {
@@ -77,17 +77,10 @@ public class DossierQueryController {
         BusinessLoggers.business().info("BIZ_DOSSIER_LIST_REQUEST isAdmin={} email={}", isAdmin, email);
 
         CompletableFuture<List<DossierQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
-            List<DossierQueryDTO> dossiers;
-            if (isAdmin || email == null) {
-                dossiers = dossierRepository.findAll()
-                        .stream()
-                        .map(DossierQueryMapper::convertDossierToDossierDTO)
-                        .collect(Collectors.toList());
-            } else {
-                dossiers = dossierRepository.findByClientMailClient(email)
-                        .stream()
-                        .map(DossierQueryMapper::convertDossierToDossierDTO)
-                        .collect(Collectors.toList());
+            DossierListResponse response = queryGateway.query(new GetAllDossiersDTO(), ResponseTypes.instanceOf(DossierListResponse.class)).join();
+            List<DossierQueryDTO> dossiers = response.getItems();
+            if (!isAdmin && email != null) {
+                dossiers = dossiers.stream().filter(dossier -> dossier.getClient() != null && email.equals(dossier.getClient().getMailClient())).collect(Collectors.toList());
             }
             BusinessLoggers.business().info("BIZ_DOSSIER_LIST_SUCCESS count={}", dossiers.size());
             return dossiers;

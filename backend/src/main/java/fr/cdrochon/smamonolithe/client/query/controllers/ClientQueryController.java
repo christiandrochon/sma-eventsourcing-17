@@ -2,9 +2,10 @@ package fr.cdrochon.smamonolithe.client.query.controllers;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientQueryDTO;
+import fr.cdrochon.smamonolithe.client.query.dtos.ClientListResponse;
+import fr.cdrochon.smamonolithe.client.query.dtos.GetAllClientsDTO;
 import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.mapper.ClientQueryMapper;
-import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import fr.cdrochon.smamonolithe.json.Views;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +33,9 @@ import java.util.stream.Collectors;
 public class ClientQueryController {
     
     private final QueryGateway queryGateway;
-    private final ClientRepository clientRepository;
     
-    public ClientQueryController(QueryGateway queryGateway, ClientRepository clientRepository) {
+    public ClientQueryController(QueryGateway queryGateway) {
         this.queryGateway = queryGateway;
-        this.clientRepository = clientRepository;
     }
     
     //FIXME: 2021-08-25 - CDROCHON - A REVOIR -> VALIDATION DU FORMULAIRE PAS TERRIBLE au niveau des animations et des messages d'erreurs
@@ -58,9 +57,7 @@ public class ClientQueryController {
         CompletableFuture<ClientQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
                     try {
-                        ClientQueryDTO client = clientRepository.findById(id)
-                                                                 .map(ClientQueryMapper::convertClientToClientDTO)
-                                                                 .orElseThrow(() -> new RuntimeException("Client not found"));
+                        ClientQueryDTO client = queryGateway.query(new GetClientDTO(id), ResponseTypes.instanceOf(ClientQueryDTO.class)).join();
 
                         // Vérifier que USER ne peut accéder qu'à ses propres clients
                         boolean isAdmin = auth != null && auth.getAuthorities() != null && auth.getAuthorities().stream()
@@ -111,11 +108,8 @@ public class ClientQueryController {
                       .map(GrantedAuthority::getAuthority)
                       .anyMatch(a -> a.equals("ROLE_AUDITOR"));
 
-              List<ClientQueryDTO> clients =
-                      clientRepository.findAll()
-                                      .stream()
-                                      .map(ClientQueryMapper::convertClientToClientDTO)
-                                      .collect(Collectors.toList());
+              ClientListResponse response = queryGateway.query(new GetAllClientsDTO(), ResponseTypes.instanceOf(ClientListResponse.class)).join();
+              List<ClientQueryDTO> clients = response.getItems();
 
               // Si USER, filtrer pour ne voir que ses propres clients
               // TODO: ajouter un champ userId au Client pour pouvoir filtrer correctement
