@@ -1,10 +1,12 @@
 package fr.cdrochon.smamonolithe.audit.infrastructure;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
@@ -23,6 +25,23 @@ import javax.sql.DataSource;
 public class AuditDataSourceConfig {
 
     @Bean
+    @Primary
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSourceProperties mainDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean(name = "dataSource")
+    @Primary
+    @ConfigurationProperties(prefix = "spring.datasource.hikari")
+    public DataSource dataSource(@Qualifier("mainDataSourceProperties") DataSourceProperties mainDataSourceProperties) {
+        return mainDataSourceProperties
+                .initializeDataSourceBuilder()
+                .type(HikariDataSource.class)
+                .build();
+    }
+
+    @Bean
     @ConfigurationProperties(prefix = "audit.datasource")
     public DataSourceProperties auditDataSourceProperties() {
         return new DataSourceProperties();
@@ -34,7 +53,7 @@ public class AuditDataSourceConfig {
      */
     @Bean(name = "auditDataSource")
     @ConfigurationProperties(prefix = "audit.datasource.hikari")
-    public DataSource auditDataSource(DataSourceProperties auditDataSourceProperties) {
+    public DataSource auditDataSource(@Qualifier("auditDataSourceProperties") DataSourceProperties auditDataSourceProperties) {
         // DataSourceProperties gere correctement la conversion url -> jdbcUrl pour Hikari.
         return auditDataSourceProperties
                 .initializeDataSourceBuilder()
@@ -47,7 +66,7 @@ public class AuditDataSourceConfig {
      * L'AuditService l'injecte par son nom de bean pour éviter toute ambiguïté.
      */
     @Bean(name = "auditJdbcTemplate")
-    public NamedParameterJdbcTemplate auditJdbcTemplate(DataSource auditDataSource) {
+    public NamedParameterJdbcTemplate auditJdbcTemplate(@Qualifier("auditDataSource") DataSource auditDataSource) {
         return new NamedParameterJdbcTemplate(auditDataSource);
     }
 }

@@ -40,6 +40,13 @@ Decision rapide (quel script selon mon objectif) :
 
 Gestion du cycle de vie local de la stack (Docker Compose) : mode securise avec Keycloak ou mode rapide sans login.
 
+Depuis la version actuelle, `secure` et `fast` font aussi automatiquement :
+
+- build Docker de `backend` et `frontend` (`docker compose up --build`)
+- verification/creation des bases PostgreSQL attendues (`monolithe`, `audit`, `keycloak`)
+- verification/import du realm Keycloak depuis `docker/realm-export.json`
+- seed idempotent des users de demo (`admin-test`, `user-test`, `audit-test`) en mode `secure`
+
 Exemples :
 
 ```bash
@@ -81,6 +88,17 @@ Comptes demo crees par `seed-demo-users` (si absents) :
 - `admin-test / admin123!` (`ADMIN`)
 - `user-test / user123!` (`USER`)
 - `audit-test / audit123!` (`AUDITOR`)
+
+Baseline RBAC appliquee automatiquement par `seed-demo-users` :
+
+- roles realm : `USER`, `ADMIN`, `AUDITOR`
+- role par defaut realm (`default-roles-sma-realm`) inclut `USER`
+- `ADMIN` herite de `USER`
+- par client (`sma-monolithe`, `sma-thymeleaf-frontend`) :
+  - user standard : `app-user`
+  - administration : `app-admin`, `manage-users`, `manage-settings`, `manage-reports`
+  - audit/conformite (lecture/export/analyse/verification) : `app-auditor`, `audit-read`, `audit-export`, `audit-analyze`, `audit-verify`
+- inscription self-service activee (`registrationAllowed=true`)
 
 ## `audit-check.sh`
 

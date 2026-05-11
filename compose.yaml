@@ -88,7 +88,7 @@ services:
     environment:
       AXONIQ_AXONSERVER_STANDALONE: "true"
     healthcheck:
-      test: [ "CMD-SHELL", "curl -fsS http://localhost:8092/actuator/health | grep -q '\"status\":\"UP\"'" ]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8024/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 20

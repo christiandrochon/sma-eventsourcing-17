@@ -42,6 +42,278 @@ admin_token() {
 }
 
 # -------------------------------------------------------------------------
+# Baseline realm (roles + defaults) pour eviter toute config manuelle
+# -------------------------------------------------------------------------
+ensure_role_exists() {
+  local token="$1"
+  local role_name="$2"
+  local role_desc="$3"
+  local http
+
+  http=$(curl -so /dev/null -w "%{http_code}" \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/${role_name}" 2>/dev/null || echo "000")
+
+  if [[ "${http}" == "200" ]]; then
+    ok "Role '${role_name}' deja present"
+    return 0
+  fi
+
+  http=$(curl -so /dev/null -w "%{http_code}" \
+    -X POST \
+    -H "Authorization: Bearer ${token}" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\":\"${role_name}\",\"description\":\"${role_desc}\"}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles")
+
+  if [[ "${http}" == "201" ]]; then
+    ok "Role '${role_name}' cree"
+  else
+    fail "Creation role '${role_name}' echouee (HTTP ${http})"
+    return 1
+  fi
+}
+
+get_client_uuid() {
+  local token="$1"
+  local client_id="$2"
+
+  curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/clients?clientId=${client_id}" \
+    | python3 -c "import sys,json; cs=json.load(sys.stdin); print(cs[0]['id']) if cs else print('')"
+}
+
+ensure_client_role_exists() {
+  local token="$1"
+  local client_id="$2"
+  local role_name="$3"
+  local role_desc="$4"
+  local client_uuid http
+
+  client_uuid=$(get_client_uuid "${token}" "${client_id}")
+  [[ -n "${client_uuid}" ]] || { warn "Client '${client_id}' introuvable, role '${role_name}' saute"; return 0; }
+
+  http=$(curl -so /dev/null -w "%{http_code}" \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/clients/${client_uuid}/roles/${role_name}" 2>/dev/null || echo "000")
+
+  if [[ "${http}" == "200" ]]; then
+    ok "Client role '${client_id}:${role_name}' deja present"
+    return 0
+  fi
+
+  http=$(curl -so /dev/null -w "%{http_code}" \
+    -X POST \
+    -H "Authorization: Bearer ${token}" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\":\"${role_name}\",\"description\":\"${role_desc}\"}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/clients/${client_uuid}/roles")
+
+  if [[ "${http}" == "201" ]]; then
+    ok "Client role '${client_id}:${role_name}' cree"
+  else
+    fail "Creation client role '${client_id}:${role_name}' echouee (HTTP ${http})"
+    return 1
+  fi
+}
+
+ensure_realm_composite_role() {
+  local token="$1"
+  local parent_role="$2"
+  local child_role="$3"
+  local has_child child_data http
+
+  has_child=$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/${parent_role}/composites" \
+    | python3 -c "import sys,json; cs=json.load(sys.stdin); print('yes' if any((not c.get('clientRole', False)) and c.get('name')=='${child_role}' for c in cs) else 'no')")
+
+  if [[ "${has_child}" == "yes" ]]; then
+    ok "Composite realm '${parent_role}' contient deja '${child_role}'"
+    return 0
+  fi
+
+  child_data=$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/${child_role}" 2>/dev/null || echo "")
+  [[ -n "${child_data}" ]] || { fail "Role realm '${child_role}' introuvable"; return 1; }
+
+  http=$(curl -so /dev/null -w "%{http_code}" \
+    -X POST \
+    -H "Authorization: Bearer ${token}" \
+    -H "Content-Type: application/json" \
+    -d "[${child_data}]" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/${parent_role}/composites")
+
+  if [[ "${http}" == "204" ]]; then
+    ok "Composite realm ajoute: '${child_role}' -> '${parent_role}'"
+  else
+    fail "Ajout composite realm '${child_role}' -> '${parent_role}' echoue (HTTP ${http})"
+    return 1
+  fi
+}
+
+ensure_realm_has_client_role() {
+  local token="$1"
+  local realm_role="$2"
+  local client_id="$3"
+  local client_role="$4"
+  local client_uuid has_child child_data http
+
+  client_uuid=$(get_client_uuid "${token}" "${client_id}")
+  [[ -n "${client_uuid}" ]] || { warn "Client '${client_id}' introuvable, composite '${realm_role}' <- '${client_role}' saute"; return 0; }
+
+  has_child=$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/${realm_role}/composites" \
+    | python3 -c "import sys,json; cs=json.load(sys.stdin); print('yes' if any(c.get('clientRole', False) and c.get('containerId')=='${client_uuid}' and c.get('name')=='${client_role}' for c in cs) else 'no')")
+
+  if [[ "${has_child}" == "yes" ]]; then
+    ok "Composite client '${realm_role}' contient deja '${client_id}:${client_role}'"
+    return 0
+  fi
+
+  child_data=$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/clients/${client_uuid}/roles/${client_role}" 2>/dev/null || echo "")
+  [[ -n "${child_data}" ]] || { fail "Client role '${client_id}:${client_role}' introuvable"; return 1; }
+
+  http=$(curl -so /dev/null -w "%{http_code}" \
+    -X POST \
+    -H "Authorization: Bearer ${token}" \
+    -H "Content-Type: application/json" \
+    -d "[${child_data}]" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/${realm_role}/composites")
+
+  if [[ "${http}" == "204" ]]; then
+    ok "Composite client ajoute: '${client_id}:${client_role}' -> '${realm_role}'"
+  else
+    fail "Ajout composite client '${client_id}:${client_role}' -> '${realm_role}' echoue (HTTP ${http})"
+    return 1
+  fi
+}
+
+ensure_application_roles_baseline() {
+  local token="$1"
+  local clients=("sma-monolithe" "sma-thymeleaf-frontend")
+  local client
+
+  info "Verification baseline RBAC applicatif (roles client + composites)"
+
+  for client in "${clients[@]}"; do
+    ensure_client_role_exists "${token}" "${client}" "app-user" "Acces aux fonctionnalites standard"
+    ensure_client_role_exists "${token}" "${client}" "app-admin" "Administration applicative"
+    ensure_client_role_exists "${token}" "${client}" "app-auditor" "Audit et conformite en lecture"
+    ensure_client_role_exists "${token}" "${client}" "manage-users" "Gestion des utilisateurs applicatifs"
+    ensure_client_role_exists "${token}" "${client}" "manage-settings" "Gestion de la configuration applicative"
+    ensure_client_role_exists "${token}" "${client}" "manage-reports" "Gestion des rapports applicatifs"
+    ensure_client_role_exists "${token}" "${client}" "audit-read" "Lecture des traces d'audit"
+    ensure_client_role_exists "${token}" "${client}" "audit-export" "Export des traces d'audit"
+    ensure_client_role_exists "${token}" "${client}" "audit-analyze" "Analyse des donnees d'audit"
+    ensure_client_role_exists "${token}" "${client}" "audit-verify" "Verification conformite/audit"
+
+    ensure_realm_has_client_role "${token}" "USER" "${client}" "app-user"
+
+    ensure_realm_has_client_role "${token}" "ADMIN" "${client}" "app-admin"
+    ensure_realm_has_client_role "${token}" "ADMIN" "${client}" "manage-users"
+    ensure_realm_has_client_role "${token}" "ADMIN" "${client}" "manage-settings"
+    ensure_realm_has_client_role "${token}" "ADMIN" "${client}" "manage-reports"
+
+    ensure_realm_has_client_role "${token}" "AUDITOR" "${client}" "app-auditor"
+    ensure_realm_has_client_role "${token}" "AUDITOR" "${client}" "audit-read"
+    ensure_realm_has_client_role "${token}" "AUDITOR" "${client}" "audit-export"
+    ensure_realm_has_client_role "${token}" "AUDITOR" "${client}" "audit-analyze"
+    ensure_realm_has_client_role "${token}" "AUDITOR" "${client}" "audit-verify"
+  done
+
+  # ADMIN herite de USER pour inclure les droits standards.
+  ensure_realm_composite_role "${token}" "ADMIN" "USER"
+}
+
+ensure_self_registration_enabled() {
+  local token="$1"
+  local http
+
+  http=$(curl -so /tmp/sma-realm-update.json -w "%{http_code}" \
+    -X PUT \
+    -H "Authorization: Bearer ${token}" \
+    -H "Content-Type: application/json" \
+    -d '{"registrationAllowed":true}' \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}")
+
+  if [[ "${http}" == "204" ]]; then
+    ok "Inscription utilisateur activee (registrationAllowed=true)"
+  else
+    warn "Impossible d'activer registrationAllowed (HTTP ${http})"
+    cat /tmp/sma-realm-update.json 2>/dev/null || true
+  fi
+}
+
+ensure_default_role_includes_user() {
+  local token="$1"
+  local default_role_name default_role_id user_role_data has_user http
+
+  default_role_name=$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}" \
+    | python3 -c "import sys,json; r=json.load(sys.stdin); d=r.get('defaultRole') or {}; print(d.get('name',''))")
+
+  if [[ -z "${default_role_name}" ]]; then
+    fail "Impossible de determiner le role par defaut du realm"
+    return 1
+  fi
+
+  default_role_id=$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/${default_role_name}" \
+    | python3 -c "import sys,json; print(json.load(sys.stdin).get('id',''))")
+
+  [[ -n "${default_role_id}" ]] || { fail "Role par defaut introuvable: ${default_role_name}"; return 1; }
+
+  has_user=$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/${default_role_name}/composites" \
+    | python3 -c "import sys,json; cs=json.load(sys.stdin); print('yes' if any(c.get('name')=='USER' for c in cs) else 'no')")
+
+  if [[ "${has_user}" == "yes" ]]; then
+    ok "Le role par defaut '${default_role_name}' contient deja USER"
+    return 0
+  fi
+
+  user_role_data=$(curl -sf \
+    -H "Authorization: Bearer ${token}" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles/USER" 2>/dev/null || echo "")
+  [[ -n "${user_role_data}" ]] || { fail "Role USER introuvable"; return 1; }
+
+  http=$(curl -so /dev/null -w "%{http_code}" \
+    -X POST \
+    -H "Authorization: Bearer ${token}" \
+    -H "Content-Type: application/json" \
+    -d "[${user_role_data}]" \
+    "${KEYCLOAK_BASE_URL}/admin/realms/${REALM}/roles-by-id/${default_role_id}/composites")
+
+  if [[ "${http}" == "204" ]]; then
+    ok "Role USER ajoute au role par defaut '${default_role_name}'"
+  else
+    fail "Ajout USER au role par defaut echoue (HTTP ${http})"
+    return 1
+  fi
+}
+
+ensure_realm_baseline() {
+  local token="$1"
+
+  info "Verification baseline realm (roles + defaults)"
+  ensure_role_exists "${token}" "ADMIN" "Administrateur applicatif"
+  ensure_role_exists "${token}" "USER" "Utilisateur applicatif"
+  ensure_role_exists "${token}" "AUDITOR" "Auditeur lecture seule"
+  ensure_application_roles_baseline "${token}"
+  ensure_self_registration_enabled "${token}"
+  ensure_default_role_includes_user "${token}"
+}
+
+# -------------------------------------------------------------------------
 # status : verifier que le realm repond
 # -------------------------------------------------------------------------
 cmd_status() {
@@ -345,6 +617,8 @@ cmd_seed_demo_users() {
 
   local token
   token=$(admin_token 2>/dev/null) || { fail "Token admin impossible"; exit 1; }
+
+  ensure_realm_baseline "${token}"
 
   # Credentials par defaut, surchargables via variables d'environnement
   local admin_user="${KC_DEMO_ADMIN_USER:-admin-test}"

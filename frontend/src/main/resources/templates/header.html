@@ -15,7 +15,7 @@
 
                 <!-- Menu principal-->
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a class="nav-link px-2 link-primary" href="#" th:href="@{/}">Accueil</a></li>
+                    <li sec:authorize="!isAuthenticated()"><a class="nav-link px-2 link-primary" href="#" th:href="@{/}">Accueil</a></li>
                     <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/dossiers}">Dossiers</a></li>
                     <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/vehicules}">Vehicules</a></li>
                     <li><a href="#" class="nav-link px-2 link-body-emphasis" th:href="@{/clients}">Clients</a></li>
@@ -62,7 +62,7 @@
                                         ? ${#authentication.principal.claims['preferred_username']}
                                         : ${#authentication.name})">user</strong>
                         </span>
-                        <form th:action="@{/logout}" method="post" class="ms-2 mb-0">
+                        <form th:action="@{/se-deconnecter}" method="post" class="ms-2 mb-0">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <button type="submit" class="btn btn-outline-secondary btn-sm">Se deconnecter</button>
                         </form>
