@@ -39,9 +39,7 @@ Mode debug rapide (sans login frontend/backend) :
 - [9. Grille d'audit independant (RGPD + gouvernance data)](#9-grille-daudit-independant-rgpd--gouvernance-data)
 - [10. Troubleshooting rapide](#10-troubleshooting-rapide)
 - [11. Keycloak - Realm, persistance et gestion sans login manuel](#11-keycloak---realm-persistance-et-gestion-sans-login-manuel)
-- [12. Matrice RBAC metier](#12-matrice-rbac-metier)
-- [13. Deployement Kubernetes (optionnel)](#13-deployement-kubernetes-optionnel)
-- [14. Licence](#14-licence)
+- [12. Pattern de creation CQRS/Axon (ce qui a ete implemente)](#12-pattern-de-creation-cqrsaxon-ce-qui-a-ete-implemente)
 
 ## 1. Vue d'ensemble
 
@@ -1021,4 +1019,139 @@ export KEYCLOAK_ADMIN="admin"                       # defaut
 export KEYCLOAK_ADMIN_PASSWORD="admin"              # defaut
 export KEYCLOAK_REALM="sma-realm"                  # defaut
 ```
+
+## 12. Pattern de creation CQRS/Axon (ce qui a ete implemente)
+
+Cette section documente le pattern exact mis en place pour les creations `Dossier`, `Client`, `Vehicule`, `Garage`.
+
+### 12.1 Probleme initial
+
+Symptome observe:
+
+- la commande est bien envoyee (visible cote Axon)
+- l'evenement de creation Axon est emis
+- mais l'API attend une confirmation de persistance qui n'arrive jamais
+- resultat: timeout au bout de 20s (`BIZ_*_CREATE_FAILED`)
+
+Cause technique:
+
+- le `CommandService` attendait une `CompletableFuture`
+- le `Query/EventHandlerService` persistait bien en base
+- mais aucun signal robuste n'etait renvoye au `CommandService` apres commit DB
+
+### 12.2 Pattern applique (flux de bout en bout)
+
+Flux retenu:
+
+```text
+HTTP POST
+  -> CommandController
+  -> CommandService.create*(...) [cree une CompletableFuture par aggregateId]
+  -> Axon CommandBus
+  -> Aggregate (@CommandHandler -> apply Event)
+  -> Query/EventHandlerService (@EventHandler)
+       -> persistance JPA
+       -> publication d'un Spring ApplicationEvent APRES COMMIT
+  -> CommandService (@EventListener)
+       -> complete*(dto)
+       -> CompletableFuture.complete(dto)
+  -> reponse HTTP sans timeout
+```
+
+Principe cle:
+
+- le `CommandService` n'ecoute pas directement Axon pour la confirmation finale
+- il ecoute un evenement Spring interne emis seulement apres persistance validee
+- cela evite les dependances circulaires et stabilise le handshake commande/projection
+
+### 12.3 Ce qui a ete code exactement
+
+1) **Wrappers de liste Axon pour les queries** (evite les erreurs de conversion `multipleInstancesOf`):
+
+- `backend/src/main/java/fr/cdrochon/smamonolithe/dossier/query/dtos/DossierListResponse.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/dtos/ClientListResponse.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/dossier/query/dtos/GetAllDossiersDTO.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/dtos/GetAllClientsDTO.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/dossier/query/controllers/DossierQueryController.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/controllers/ClientQueryController.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/dossier/query/services/DossierEventHandlerService.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/services/ClientEventHandlerService.java`
+
+2) **Evenements Spring de confirmation post-persistance**:
+
+- `backend/src/main/java/fr/cdrochon/smamonolithe/dossier/query/events/DossierCreatedApplicationEvent.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/events/ClientCreatedApplicationEvent.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/vehicule/query/events/VehiculeCreatedApplicationEvent.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/garage/query/events/GarageCreatedApplicationEvent.java`
+
+3) **Publication apres commit dans les EventHandlerService**:
+
+- `backend/src/main/java/fr/cdrochon/smamonolithe/dossier/query/services/DossierEventHandlerService.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/services/ClientEventHandlerService.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/vehicule/query/services/VehiculeEventHandlerService.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/garage/query/services/GarageEventHandlerService.java`
+
+4) **Completion asynchrone cote CommandService**:
+
+- `backend/src/main/java/fr/cdrochon/smamonolithe/dossier/command/services/DossierCommandService.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/command/services/ClientCommandService.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/vehicule/command/services/VehiculeCommandService.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/garage/command/services/GarageCommandService.java`
+
+Details communs implementes dans ces services:
+
+- map concurrente `aggregateId -> CompletableFuture`
+- `orTimeout(20s)` pour eviter l'attente infinie
+- gestion d'erreur `commandGateway.send(...).whenComplete(...)`
+- `@EventListener` Spring pour terminer la future sur confirmation post-commit
+
+5) **Configuration Axon des processors**:
+
+- `backend/src/main/java/fr/cdrochon/smamonolithe/infrastructure/AxonConfiguration.java`
+- `backend/src/main/resources/application.properties`
+
+Regle actuelle:
+
+- mode global configure par `app.axon.default-event-processor-mode`
+- valeur par defaut: `subscribing`
+- passer a `tracking` seulement si l'environnement supporte correctement le token store Axon
+
+### 12.4 Pourquoi on peut voir Commands/Queries mais pas Events dans Axon Server
+
+Si `Commands` et `Queries` sont visibles mais pas les `Events`, verifier d'abord:
+
+1. la connexion backend -> Axon Server est bien active
+2. le stockage des events (Axon Server event store vs autre event store)
+3. les logs d'event processing (erreurs SQL de token store)
+
+Exemple de symptome deja rencontre:
+
+- erreur SQL sur `token_entry` avec `for no key update`
+- dans ce cas, les `TrackingEventProcessor` peuvent tomber en erreur
+- impact: projection non alimentee ou comportement partiel selon le groupe
+
+Mitigation appliquee ici:
+
+- bascule par defaut en `subscribing` pour stabiliser la consommation d'evenements
+
+### 12.5 Checklist de verification rapide
+
+```bash
+tail -f backend/logs/metier/business.log
+```
+
+```bash
+tail -f backend/logs/technique/technical.log
+```
+
+```bash
+grep -n "BIZ_.*_CREATE_REQUEST\|BIZ_.*_CREATED\|BIZ_.*_CREATE_CONFIRMED\|BIZ_.*_CREATE_FAILED" backend/logs/metier/business.log
+```
+
+Attendu pour une creation saine:
+
+- `BIZ_*_CREATE_REQUEST`
+- puis `BIZ_*_CREATED`
+- puis `BIZ_*_CREATE_CONFIRMED`
+- et **pas** de `BIZ_*_CREATE_FAILED`
 
