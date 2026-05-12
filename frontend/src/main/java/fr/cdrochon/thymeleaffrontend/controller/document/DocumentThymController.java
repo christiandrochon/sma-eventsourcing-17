@@ -2,10 +2,13 @@ package fr.cdrochon.thymeleaffrontend.controller.document;
 
 import fr.cdrochon.thymeleaffrontend.dtos.document.DocumentConvertThymDTO;
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
+import fr.cdrochon.thymeleaffrontend.security.FrontendTokenResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,6 +21,9 @@ public class DocumentThymController {
     @Autowired
     private WebClient webClient;
 
+    @Autowired
+    private FrontendTokenResolver tokenResolver;
+
     /**
      * Affiche la vue de création d'un document, avec eventuellement les details dejà saisis par l'user en cas d'erreur
      *
@@ -26,9 +32,15 @@ public class DocumentThymController {
      * @return la vue de création d'un document
      */
     @GetMapping(value = "/document/{id}")
-    public Mono<String> getDocumentByIdAsync(@PathVariable String id, Model model) {
+    public Mono<String> getDocumentByIdAsync(@PathVariable String id, Model model, Authentication authentication) {
+        String accessToken = tokenResolver.resolveAccessToken(authentication);
         return webClient.get()
                         .uri("/queries/documents/" + id)
+                        .headers(headers -> {
+                            if (StringUtils.hasText(accessToken)) {
+                                headers.setBearerAuth(accessToken);
+                            }
+                        })
                         .retrieve()
                         .bodyToMono(DocumentConvertThymDTO.class)
                         .flatMap(dto -> {
@@ -52,9 +64,15 @@ public class DocumentThymController {
      * @return la vue des documents
      */
     @GetMapping(value = "/documents")
-    public Mono<String> getDocumentsAsync(Model model) {
+    public Mono<String> getDocumentsAsync(Model model, Authentication authentication) {
+        String accessToken = tokenResolver.resolveAccessToken(authentication);
         return webClient.get()
                         .uri("/queries/documents")
+                        .headers(headers -> {
+                            if (StringUtils.hasText(accessToken)) {
+                                headers.setBearerAuth(accessToken);
+                            }
+                        })
                         .retrieve()
                         .bodyToFlux(DocumentConvertThymDTO.class)
                         .collectList()

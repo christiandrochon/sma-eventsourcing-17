@@ -45,7 +45,7 @@ services:
       postgres-monolithe:
         condition: service_healthy
       axon-server:
-        condition: service_healthy
+        condition: service_started
       keycloak:
         condition: service_healthy
     environment:
