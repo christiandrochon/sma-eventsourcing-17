@@ -12,14 +12,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -53,36 +56,43 @@ public class ClientQueryController {
     @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
     public Mono<ClientQueryDTO> getClientByIdAsync(@PathVariable String id, Authentication authentication) {
         BusinessLoggers.business().info("BIZ_CLIENT_READ_REQUEST clientId={}", id);
-        final Authentication auth = authentication;
-        CompletableFuture<ClientQueryDTO> future =
-                CompletableFuture.supplyAsync(() -> {
-                    try {
-                        ClientQueryDTO client = queryGateway.query(new GetClientDTO(id), ResponseTypes.instanceOf(ClientQueryDTO.class)).join();
 
-                        // Vérifier que USER ne peut accéder qu'à ses propres clients
-                        boolean isAdmin = auth != null && auth.getAuthorities() != null && auth.getAuthorities().stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .anyMatch(a -> a.equals("ROLE_ADMIN"));
+        Jwt jwt = authentication instanceof JwtAuthenticationToken jwtAuth ? jwtAuth.getToken() : null;
+        boolean isPrivileged = jwt != null && (hasRole(jwt, "ADMIN") || hasRole(jwt, "AUDITOR"));
+        String email = jwt != null ? jwt.getClaimAsString("email") : null;
 
-                        if (!isAdmin) {
-                            // USER doit vérifier que le client lui appartient
-                            String currentUserId = auth != null ? auth.getName() : null;
-                            // TODO: ajouter un champ userId au Client et vérifier qu'il correspond
-                            // if (!client.getUserId().equals(currentUserId)) {
-                            //     throw new RuntimeException("Accès refusé: ce client ne vous appartient pas");
-                            // }
-                        }
+        CompletableFuture<ClientQueryDTO> future = CompletableFuture.supplyAsync(() -> {
+            try {
+                ClientQueryDTO client = queryGateway.query(new GetClientDTO(id), ResponseTypes.instanceOf(ClientQueryDTO.class)).join();
+                if (client == null) {
+                    BusinessLoggers.business().info("BIZ_CLIENT_READ_NOT_FOUND clientId={}", id);
+                    return null;
+                }
 
-                        BusinessLoggers.business().info("BIZ_CLIENT_READ_SUCCESS clientId={}", id);
-                        return client;
-                    } catch(Exception e) {
-                        BusinessLoggers.business().error("BIZ_CLIENT_READ_FAILED clientId={} message={}", id, e.getMessage());
-                        log.error("Error retrieving client with id {}: {}", id, e.getMessage(), e);
-                        throw new RuntimeException("Error retrieving client", e);
+                if (!isPrivileged) {
+                    if (email == null) {
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                "Acces refuse: utilisateur sans email JWT");
                     }
-                });
-        Mono<ClientQueryDTO> mono = Mono.fromFuture(future);
-        return mono;
+                    String ownerEmail = client.getMailClient();
+                    if (!email.equals(ownerEmail)) {
+                        BusinessLoggers.business().warn("BIZ_CLIENT_READ_FORBIDDEN clientId={} email={}", id, email);
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                "Accès refusé : ce client ne vous appartient pas");
+                    }
+                }
+
+                BusinessLoggers.business().info("BIZ_CLIENT_READ_SUCCESS clientId={}", id);
+                return client;
+            } catch(ResponseStatusException e) {
+                throw e;
+            } catch(Exception e) {
+                BusinessLoggers.business().error("BIZ_CLIENT_READ_FAILED clientId={} message={}", id, e.getMessage());
+                log.error("Error retrieving client with id {}: {}", id, e.getMessage(), e);
+                throw new RuntimeException("Error retrieving client", e);
+            }
+        });
+        return Mono.fromFuture(future);
     }
     
       /**
@@ -98,35 +108,30 @@ public class ClientQueryController {
       @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
       public Flux<ClientQueryDTO> getClientsAsync(Authentication authentication) {
           BusinessLoggers.business().info("BIZ_CLIENT_LIST_REQUEST");
-          final Authentication auth = authentication;
+          Jwt jwt = authentication instanceof JwtAuthenticationToken jwtAuth ? jwtAuth.getToken() : null;
+          boolean isPrivileged = jwt != null && (hasRole(jwt, "ADMIN") || hasRole(jwt, "AUDITOR"));
+          String email = jwt != null ? jwt.getClaimAsString("email") : null;
+
           CompletableFuture<List<ClientQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
-              boolean isAdmin = auth != null && auth.getAuthorities() != null && auth.getAuthorities().stream()
-                      .map(GrantedAuthority::getAuthority)
-                      .anyMatch(a -> a.equals("ROLE_ADMIN"));
-
-              boolean isAuditor = auth != null && auth.getAuthorities() != null && auth.getAuthorities().stream()
-                      .map(GrantedAuthority::getAuthority)
-                      .anyMatch(a -> a.equals("ROLE_AUDITOR"));
-
               ClientListResponse response = queryGateway.query(new GetAllClientsDTO(), ResponseTypes.instanceOf(ClientListResponse.class)).join();
               List<ClientQueryDTO> clients = response.getItems();
 
-              // Si USER, filtrer pour ne voir que ses propres clients
-              // TODO: ajouter un champ userId au Client pour pouvoir filtrer correctement
-              if (!isAdmin && !isAuditor) {
-                  String currentUserId = auth != null ? auth.getName() : null;
-                  // clients = clients.stream()
-                  //         .filter(c -> c.getUserId() != null && c.getUserId().equals(currentUserId))
-                  //         .collect(Collectors.toList());
-                  BusinessLoggers.business().info("BIZ_CLIENT_LIST_FILTERED userId={} count={}", currentUserId, clients.size());
+              if (!isPrivileged) {
+                  if (email == null) {
+                      throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                              "Acces refuse: utilisateur sans email JWT");
+                  }
+                  clients = clients.stream()
+                          .filter(c -> email.equals(c.getMailClient()))
+                          .collect(Collectors.toList());
+                  BusinessLoggers.business().info("BIZ_CLIENT_LIST_FILTERED email={} count={}", email, clients.size());
               } else {
                   BusinessLoggers.business().info("BIZ_CLIENT_LIST_SUCCESS count={}", clients.size());
               }
 
               return clients;
           });
-          Flux<ClientQueryDTO> flux = Flux.fromStream(future.join().stream());
-          return flux;
+          return Mono.fromFuture(future).flatMapMany(Flux::fromIterable);
       }
 
     
@@ -152,5 +157,19 @@ public class ClientQueryController {
                                                                               id,
                                                                               error.getMessage()));
         }
+    }
+
+    private boolean hasRole(Jwt jwt, String role) {
+        try {
+            java.util.Map<String, Object> realmAccess = jwt.getClaimAsMap("realm_access");
+            if (realmAccess != null) {
+                Object roles = realmAccess.get("roles");
+                if (roles instanceof java.util.List<?> list) {
+                    return list.contains(role) || list.contains("ROLE_" + role);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
     }
 }
