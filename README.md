@@ -39,6 +39,8 @@ Mode debug rapide (sans login frontend/backend) :
 - [9. Grille d'audit independant (RGPD + gouvernance data)](#9-grille-daudit-independant-rgpd--gouvernance-data)
 - [10. Troubleshooting rapide](#10-troubleshooting-rapide)
 - [11. Keycloak - Realm, persistance et gestion sans login manuel](#11-keycloak---realm-persistance-et-gestion-sans-login-manuel)
+  - [11.1 Roles metier (RBAC)](#111-roles-metier-rbac)
+  - [11.2 Correction IDOR (lecture)](#112-correction-idor-lecture)
 - [12. Pattern de creation CQRS/Axon (ce qui a ete implemente)](#12-pattern-de-creation-cqrsaxon-ce-qui-a-ete-implemente)
 
 ## 1. Vue d'ensemble
@@ -784,6 +786,274 @@ TOKEN="$(./scripts/keycloak-token.sh)"
 curl -H "Authorization: Bearer ${TOKEN}" "http://localhost:8092/audit/compliance/dashboard"
 ```
 
+## 11. Sécurité RBAC, propriété des ressources et corrections IDOR
+
+### 11.0 Vue d'ensemble des règles métier
+
+Le projet applique un modèle de sécurité à deux niveaux :
+
+1. **Authentification JWT** : validation des tokens Keycloak, extraction des rôles via `realm_access.roles`
+2. **RBAC + Ownership** : vérification que l'utilisateur peut accéder/modifier une ressource (rôle + propriété de la ressource)
+
+Principes fondamentaux :
+
+- **ADMIN** : accès global à toutes les ressources (clients, véhicules, documents, dossiers)
+- **USER** : accès restreint aux ressources qu'il possède ou pour lesquelles il est autorisé (véhicules de son client, documents créés par son client, etc.)
+- **AUDITOR** : accès lecture globale pour audit, pas de modification de données métier
+
+### 11.1 Matrice d'accès : qui accède à quoi
+
+#### Clients
+- **ADMIN LIST** : tous les clients  
+- **USER LIST** : uniquement si propriétaire du client (selon `mailClient`)
+- **ADMIN BY-ID** : n'importe quel client  
+- **USER BY-ID** : uniquement si propriétaire (`403 FORBIDDEN` sinon)
+- **CREATE** : ADMIN uniquement (l'ownership client est attribué à la création)
+
+#### Véhicules
+- **ADMIN LIST** : tous les véhicules  
+- **USER LIST** : uniquement les véhicules du client propriétaire (`vehicule.client.mailClient == JWT email`)
+- **ADMIN BY-ID** : n'importe quel véhicule  
+- **USER BY-ID** : uniquement si `vehicule.client.mailClient == JWT email` (`403 FORBIDDEN` sinon)
+- **CREATE** : ADMIN ou USER (le véhicule est rattaché au client JWT)
+
+#### Documents
+- **ADMIN LIST** : tous les documents  
+- **USER LIST** : uniquement les documents du client propriétaire (`document.client.mailClient == JWT email`)
+- **ADMIN BY-ID** : n'importe quel document  
+- **USER BY-ID** : uniquement si `document.client.mailClient == JWT email` (`403 FORBIDDEN` sinon)
+- **CREATE** : ADMIN ou USER (le document est rattaché au client JWT; voir propagation `clientId` ci-dessous)
+
+#### Dossiers
+- **ADMIN LIST** : tous les dossiers  
+- **USER LIST** : uniquement les dossiers du client propriétaire (`dossier.client.mailClient == JWT email`)
+- **ADMIN BY-ID** : n'importe quel dossier  
+- **USER BY-ID** : uniquement si `dossier.client.mailClient == JWT email` (`403 FORBIDDEN` sinon)
+- **CREATE** : ADMIN ou USER (le dossier est rattaché au client JWT)
+
+| Ressource | ADMIN LIST | USER LIST (filtré) | ADMIN BY-ID | USER BY-ID (ownership) | CREATION | Propriété |
+|---|---|---|---|---|---|---|
+| Client | ✅ tous | ⚠️ filtre email | ✅ n'importe quel | ⚠️ email JWT | ❌ ADMIN seul | `mailClient` |
+| Véhicule | ✅ tous | ✅ `client.mailClient` | ✅ n'importe quel | ✅ `client.mailClient` | ✅ lié au JWT | `client.id` |
+| Document | ✅ tous | ✅ `client.mailClient` | ✅ n'importe quel | ✅ `client.mailClient` | ✅ lié au JWT | `client.id` |
+| Dossier | ✅ tous | ✅ `client.mailClient` | ✅ n'importe quel | ✅ `client.mailClient` | ✅ lié au JWT | `client.id` |
+
+### 11.2 Implémentation IDOR (Insecure Direct Object Reference)
+
+#### Endpoints protégés et comportement
+
+Tous les endpoints query appliquent la logique suivante :
+
+```java
+// Extraire l'email JWT et déterminer si admin
+String email = authentication.getName();  // email du JWT
+boolean isAdmin = authentication.getAuthorities().stream()
+    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+// Si lecture par-id
+if (id != null) {
+    Resource resource = findById(id);
+    if (!isAdmin) {
+        String ownerEmail = resource.getClient().getMailClient();  // ou resource.owner
+        if (!email.equals(ownerEmail)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+                "Acces refuse: ressource appartient a " + ownerEmail);
+        }
+    }
+    return resource;
+}
+
+// Si lecture liste
+if (!isAdmin) {
+    return findByClientMailClient(email);  // retourner uniquement les ressources du propriétaire
+} else {
+    return findAll();  // admin = tout voir
+}
+```
+
+#### Validation JWT et extraction d'email
+
+Dans le backend, toute méthode de query controller reçoit un paramètre `Authentication` :
+
+```java
+@GetMapping("/queries/vehicules")
+public ResponseEntity<List<VehiculeDTO>> getAll(@ParameterObject Authentication authentication) {
+    if (authentication == null || !authentication.isAuthenticated()) {
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    }
+    String email = authentication.getName();
+    boolean isAdmin = hasRole(authentication, "ADMIN");
+    // ...
+}
+```
+
+Les réjectes de USER sans JWT email :
+
+```java
+if (!isAdmin) {
+    if (email == null || email.isEmpty()) {
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+            "Acces refuse: utilisateur sans email JWT");
+    }
+    // ...
+}
+```
+
+### 11.3 Propagation `clientId` en création (CQRS flow)
+
+#### Flux complet document (applicable à véhicule/dossier)
+
+Quand un USER crée un document, le `clientId` doit être déduit et propagé jusqu'à la persistance :
+
+```text
+[1] Frontend POST /commands/documents
+    {name: "...", content: "..."}
+
+[2] DocumentCommandController
+    -> Authentication -> JWT email
+    -> ClientRepository.findByMailClient(email)
+    -> documentDTO.setClientId(client.id)
+
+[3] DocumentCreateCommand
+    constructor(name, content, clientId)
+
+[4] DocumentAggregate @CommandHandler
+    -> apply(new DocumentCreatedEvent(id, name, content, clientId))
+
+[5] DocumentEventHandlerService @EventHandler(DocumentCreatedEvent)
+    -> documentEntity.setClient(clientRepository.findById(clientId))
+    -> documentRepository.save(documentEntity)
+    -> publish(new DocumentCreatedApplicationEvent(documentDTO))
+
+[6] DocumentQueryController (later read)
+    -> document.getClient().getMailClient() == JWT email? OK : 403
+
+```
+
+Classes clés :
+
+- `backend/src/main/java/.../document/command/dtos/DocumentCommandDTO.java` : ajout `clientId`
+- `backend/src/main/java/.../document/command/commands/DocumentCreateCommand.java` : ajout constructeur avec `clientId`
+- `backend/src/main/java/.../document/events/DocumentCreatedEvent.java` : ajout paramètre `clientId`
+- `backend/src/main/java/.../document/query/entities/Document.java` : `@ManyToOne Client client`
+- `backend/src/main/java/.../document/query/services/DocumentEventHandlerService.java` : setter `client` après query
+
+#### Gestion du cas USER sans client
+
+Si un USER n'a pas de client associé (cas d'erreur) :
+
+```java
+Optional<Client> clientOpt = clientRepository.findByMailClient(email);
+if (clientOpt.isEmpty()) {
+    throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+        "Aucun client associe au mail JWT : " + email);
+}
+documentDTO.setClientId(clientOpt.get().getId());
+// ... poursuivre
+```
+
+### 11.4 Schéma et migrations Flyway
+
+#### Modifications apportées
+
+Le schéma d'ownership a été introduit progressivement via Flyway :
+
+- **V1__create_schema.sql** : crée tous les rôles avec FK client_id dès la création
+  ```sql
+  CREATE TABLE document (
+      id VARCHAR(255) PRIMARY KEY,
+      client_id VARCHAR(255),
+      ...
+      CONSTRAINT fk_document_client FOREIGN KEY (client_id) REFERENCES client(id)
+  );
+  ```
+
+- **V2__insert_sample_data.sql** : seed data cohérent
+  - 4 clients (`cli-0001-demo` à `cli-0004-demo`)
+  - 6 véhicules (2 à 3 par client)
+  - 6 dossiers (1-2 par client)
+  - 14 documents (2-4 par client)
+  - Chaque entité inclut `client_id`
+
+- **V3__add_client_to_document.sql** : migration de rattrapage (idempotente) pour les bases existantes
+  ```sql
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.columns 
+      WHERE table_name = 'document' AND column_name = 'client_id'
+    ) THEN
+      ALTER TABLE document ADD COLUMN client_id VARCHAR(255);
+      ALTER TABLE document ADD CONSTRAINT fk_document_client 
+        FOREIGN KEY (client_id) REFERENCES client(id);
+    END IF;
+  END $$;
+  ```
+
+#### Basculer sur Flyway
+
+Après implémentation, la config de chaque profil (`local`, `prod`, `test`) inclut :
+
+```properties
+# application.properties (default)
+spring.jpa.hibernate.ddl-auto=none
+spring.flyway.enabled=true
+spring.flyway.locations=classpath:db/migration
+spring.flyway.baseline-on-migrate=true
+spring.flyway.baseline-version=0
+
+# application-test.properties (pour tests unitaires)
+spring.flyway.enabled=false
+```
+
+### 11.5 Tests RBAC et IDOR (50 cas)
+
+Fichier : `backend/src/test/java/.../security/RbacUserAdminMatrix50Test.java`
+
+Couverture : 50 tests dynamiques couvrant les scénarios RBAC/IDOR :
+
+- **Création (8 cas)** : USER/ADMIN crée document/vehicule/dossier, vérification ownership
+- **Lecture liste (12 cas)** : USER/ADMIN reçoit données filtrées/complètes
+- **Lecture par-id (12 cas)** : USER/ADMIN accède/refuse sur propriété
+- **Cas limites (18 cas)** : USER sans JWT, sans client, ADMIN bypassé, etc.
+
+Exemples concrets :
+
+```java
+@Test
+@DisplayName("USER_CREATE_DOC_THEN_READ_OWN")
+public void testUserCreatesDocumentThenReadsOwn() {
+    // Crée un document avec JWT email user@client-0001.demo
+    // Relit le document, vérifie que c'est le bon client.id
+    // Assertion : status OK, document.client.id == cli-0001-demo
+}
+
+@Test
+@DisplayName("USER_CREATE_DOC_THEN_CANNOT_READ_OTHER_CLIENT")
+public void testUserCreatesDocumentButCannotReadOtherClient() {
+    // User A crée un document avec client A
+    // User B tente de lire ce document avec JWT email user@client-0002.demo
+    // Assertion : status 403 FORBIDDEN, message "ressource appartient à ..."
+}
+
+@Test
+@DisplayName("ADMIN_READ_ALL_DOCS_NO_FILTER")
+public void testAdminCanReadAllDocumentsNoFilter() {
+    // Admin lit /queries/documents sans filtre
+    // Assertion : status OK, 14+ documents de tous les clients
+}
+```
+
+Exécution :
+
+```bash
+mvn -pl backend -Dtest=RbacUserAdminMatrix50Test test
+```
+
+Attendu : **50/50 passed** ✅
+
+---
+
 ## 11. Keycloak — Realm, persistance et gestion sans login manuel
 
 ### Pourquoi le realm ne s'effondre pas au redemarrage ?
@@ -834,6 +1104,73 @@ Si le realm existe deja en base, `--import-realm` l'ignore (pas d'ecrasement). I
 
 > **Pourquoi AUDITOR = lecture seule et non tous les droits ?**
 > Un auditeur independant doit pouvoir **tout lire** (acces aux preuves, aux logs, aux attentes RGPD) mais **jamais ecrire** : s'il pouvait modifier les donnees ou les logs, il pourrait falsifier les preuves qu'il est cense controler. C'est le principe fondamental de **l'independance de l'audit**. L'auditeur observe, il ne touche pas.
+
+### 11.1 Roles metier (RBAC)
+
+Le projet utilise une RBAC a 2 niveaux :
+
+1. **Roles realm** (globaux) : portes par le JWT (`realm_access.roles`), consommes par Spring via `hasRole(...)` / `hasAnyRole(...)`.
+2. **Roles client** (fins) : attaches aux clients `sma-monolithe` et `sma-thymeleaf-frontend`, composes dans les roles realm via `scripts/keycloak-realm.sh`.
+
+Roles realm metier :
+
+| Role realm | Usage metier | Droits principaux |
+|---|---|---|
+| `USER` | Utilisateur standard applicatif | Acces standard en lecture/ecriture sur son perimetre |
+| `ADMIN` | Administration applicative | Tous les droits metier + gestion |
+| `AUDITOR` | Audit/conformite | Lecture globale + export/analyse audit (pas d'ecriture metier) |
+
+Baseline des roles client (creee/maintenue automatiquement par `./scripts/keycloak-realm.sh seed-demo-users`) :
+
+| Client role | Attribue via | Finalite |
+|---|---|---|
+| `app-user` | `USER` | Acces aux fonctionnalites standard |
+| `app-admin` | `ADMIN` | Administration applicative |
+| `manage-users` | `ADMIN` | Gestion des utilisateurs applicatifs |
+| `manage-settings` | `ADMIN` | Gestion de la configuration |
+| `manage-reports` | `ADMIN` | Gestion des rapports |
+| `app-auditor` | `AUDITOR` | Perimetre audit/conformite |
+| `audit-read` | `AUDITOR` | Lecture des traces d'audit |
+| `audit-export` | `AUDITOR` | Export des traces d'audit |
+| `audit-analyze` | `AUDITOR` | Analyse des donnees d'audit |
+| `audit-verify` | `AUDITOR` | Verification de conformite |
+
+Regles de composition appliquees :
+
+- `default-roles-sma-realm` inclut `USER` (nouveaux comptes = capacites minimales)
+- `ADMIN` herite de `USER`
+- les roles client ci-dessus sont composes dans `USER`, `ADMIN` ou `AUDITOR` selon la table precedente
+
+### 11.2 Correction IDOR (lecture)
+
+Objectif : eviter qu'un utilisateur authentifie puisse lire un objet qui ne lui appartient pas (Insecure Direct Object Reference).
+
+Regle metier appliquee cote backend :
+
+- `ADMIN` : acces global
+- `USER` : acces restreint a ses propres donnees (verifiees par email JWT vs proprietaire de la ressource)
+- `AUDITOR` : acces lecture selon regles endpoint/role (ex. clients/audit), sans ecriture
+
+Etat de la correction par endpoint :
+
+| Endpoint lecture | Etat IDOR | Comportement |
+|---|---|---|
+| `GET /queries/dossiers/{id}` | ✅ corrige | `USER` refuse (`403`) si email JWT != `dossier.client.mailClient` |
+| `GET /queries/dossiers` | ✅ corrige | `USER` recoit uniquement ses dossiers |
+| `GET /queries/vehicules/{id}` | ✅ corrige | `USER` refuse (`403`) si email JWT != `vehicule.client.mailClient` |
+| `GET /queries/vehicules` | ✅ corrige | `USER` recoit uniquement ses vehicules |
+| `GET /queries/documents/{id}` | ✅ corrige | `USER` refuse (`403`) si email JWT != `document.client.mailClient` |
+| `GET /queries/documents` | ✅ corrige | `USER` recoit uniquement ses documents |
+| `GET /queries/clients/{id}` | ✅ corrige | `USER` refuse (`403`) si email JWT != `client.mailClient` |
+| `GET /queries/clients` | ✅ corrige | `USER` recoit uniquement ses clients |
+
+Fichiers backend de reference :
+
+- `backend/src/main/java/fr/cdrochon/smamonolithe/dossier/query/controllers/DossierQueryController.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/vehicule/query/controllers/VehiculeQueryController.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/document/query/controllers/DocumentQueryController.java`
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/controllers/ClientQueryController.java`
+- `backend/src/test/java/fr/cdrochon/smamonolithe/client/query/controllers/ClientQueryControllerTest.java`
 
 ---
 
