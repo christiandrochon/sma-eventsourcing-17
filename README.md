@@ -564,6 +564,46 @@ Points de vigilance pour l'audit independant :
 - la preuve "pourquoi / resultat / plan de remediation" est dans `audit_expectation_checks`
 - tant que l'auth JWT n'est pas reactivee, l'acteur peut apparaitre `ANONYMOUS` dans certaines traces
 
+### Campagne audit externe complete (40 cas)
+
+Une campagne complete est scriptable et rejouable via `scripts/audit-external-40.sh`.
+
+Cette campagne execute 40 cas couvrant :
+
+- infrastructure et sante runtime
+- existence schema audit (`audit_events`, `audit_expectations`, `audit_expectation_checks`, vue latest)
+- contraintes d'integrite (FK)
+- immutabilite append-only (blocage `UPDATE/DELETE`)
+- matrice RBAC API audit (`sans token`, `USER`, `AUDITOR`, `ADMIN`)
+- creation d'un verdict independant et verification de persistance
+- verification `scripts/audit-check.sh` et bundle export `scripts/audit-export.sh`
+
+Execution :
+
+```bash
+cd /home/cdn/IdeaProjects/sma-eventsourcing-17
+chmod +x scripts/audit-external-40.sh
+./scripts/audit-external-40.sh
+```
+
+Sorties generees :
+
+- `audit-exports/<timestamp>/audit_external_40_results.csv` (resultats case par case)
+- `audit-exports/<timestamp>/audit_external_40_proof.md` (preuves lisibles)
+- `audit-exports/<timestamp>/<timestamp>/...csv` (bundle export auditeur)
+
+Derniere execution verifiee (2026-05-18) :
+
+- preuve CSV: `audit-exports/20260518_213006/audit_external_40_results.csv`
+- preuve MD: `audit-exports/20260518_213006/audit_external_40_proof.md`
+- synthese: `PASS=40`, `FAIL=0`, `WARN=0`, `TOTAL=40`
+
+Resultat :
+
+- la campagne couvre 40 cas et passe integralement
+- les checks independants sont persistes dans `audit_expectation_checks`
+- les exports auditeur (CSV + manifest) sont generes dans le dossier de run
+
 ### Initialiser la grille sur une base existante (volume deja cree)
 
 Si ton conteneur PostgreSQL utilise deja un volume, le script `initdb_postgres.sh` ne se rejoue pas automatiquement.
