@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS document (
     date_creation_document      TIMESTAMP WITHOUT TIME ZONE  NOT NULL,
     date_modification_document  TIMESTAMP WITHOUT TIME ZONE  NOT NULL,
     document_status             INTEGER,                 -- @Enumerated ORDINAL
+    client_id                   VARCHAR(255),            -- FK -> client.id
 
     CONSTRAINT pk_document PRIMARY KEY (id)
 );
@@ -131,28 +132,33 @@ CREATE TABLE IF NOT EXISTS garage_transaction (
 
 -- client.vehicule_id → vehicule.id_vehicule
 ALTER TABLE client
-    ADD CONSTRAINT IF NOT EXISTS fk_client_vehicule
+    ADD CONSTRAINT fk_client_vehicule
     FOREIGN KEY (vehicule_id) REFERENCES vehicule(id_vehicule);
 
 -- vehicule.client_id → client.id
 ALTER TABLE vehicule
-    ADD CONSTRAINT IF NOT EXISTS fk_vehicule_client
+    ADD CONSTRAINT fk_vehicule_client
     FOREIGN KEY (client_id) REFERENCES client(id);
 
 -- dossier.client_id → client.id
 ALTER TABLE dossier
-    ADD CONSTRAINT IF NOT EXISTS fk_dossier_client
+    ADD CONSTRAINT fk_dossier_client
     FOREIGN KEY (client_id) REFERENCES client(id);
 
 -- dossier.vehicule_id → vehicule.id_vehicule
 ALTER TABLE dossier
-    ADD CONSTRAINT IF NOT EXISTS fk_dossier_vehicule
+    ADD CONSTRAINT fk_dossier_vehicule
     FOREIGN KEY (vehicule_id) REFERENCES vehicule(id_vehicule);
 
 -- garage_transaction.garage_query_id_query → garage.id_query
 ALTER TABLE garage_transaction
-    ADD CONSTRAINT IF NOT EXISTS fk_garagetx_garage
+    ADD CONSTRAINT fk_garagetx_garage
     FOREIGN KEY (garage_query_id_query) REFERENCES garage(id_query);
+
+-- document.client_id -> client.id
+ALTER TABLE document
+    ADD CONSTRAINT fk_document_client
+    FOREIGN KEY (client_id) REFERENCES client(id);
 
 -- =============================================================================
 -- INDEX utiles (recherches fréquentes)
@@ -163,5 +169,6 @@ CREATE INDEX IF NOT EXISTS idx_vehicule_immat    ON vehicule(immatriculation_veh
 CREATE INDEX IF NOT EXISTS idx_dossier_status    ON dossier(dossier_status);
 CREATE INDEX IF NOT EXISTS idx_document_status   ON document(document_status);
 CREATE INDEX IF NOT EXISTS idx_document_type     ON document(nom_type_document);
+CREATE INDEX IF NOT EXISTS idx_document_client   ON document(client_id);
 CREATE INDEX IF NOT EXISTS idx_garage_nom        ON garage(nom_garage);
 
