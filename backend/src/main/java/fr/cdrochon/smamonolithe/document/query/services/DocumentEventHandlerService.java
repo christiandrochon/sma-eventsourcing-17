@@ -1,5 +1,6 @@
 package fr.cdrochon.smamonolithe.document.query.services;
 
+import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import fr.cdrochon.smamonolithe.document.events.DocumentCreatedEvent;
 import fr.cdrochon.smamonolithe.document.query.dtos.DocumentQueryDTO;
 import fr.cdrochon.smamonolithe.document.query.dtos.GetDocumentDTO;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.hibernate.TransactionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +25,19 @@ import java.util.stream.Collectors;
 public class DocumentEventHandlerService {
     
     private final DocumentRepository documentRepository;
-    
-    public DocumentEventHandlerService(DocumentRepository documentRepository) {
+    private final ClientRepository clientRepository;
+
+    @Autowired
+    public DocumentEventHandlerService(DocumentRepository documentRepository,
+                                       ClientRepository clientRepository) {
         this.documentRepository = documentRepository;
+        this.clientRepository = clientRepository;
     }
-    
+
+    public DocumentEventHandlerService(DocumentRepository documentRepository) {
+        this(documentRepository, null);
+    }
+
     /**
      * subscribe sur le service DocumentQueryCreatedEvent
      *
@@ -46,7 +56,10 @@ public class DocumentEventHandlerService {
             document.setDateCreationDocument(event.getDateCreationDocument());
             document.setDateModificationDocument(event.getDateModificationDocument());
             document.setDocumentStatus(event.getDocumentStatus());
-            
+            if (event.getClientId() != null && clientRepository != null) {
+                clientRepository.findById(event.getClientId()).ifPresent(document::setClient);
+            }
+
             documentRepository.save(document);
             BusinessLoggers.business().info("BIZ_DOCUMENT_CREATED documentId={} nomDocument={} type={} status={}",
                                             document.getId(),

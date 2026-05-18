@@ -32,7 +32,8 @@ public class DocumentAggregate {
     private Instant dateCreationDocument;
     private Instant dateModificationDocument;
     private DocumentStatusDTO documentStatus;
-    
+    private String clientId;
+
     public DocumentAggregate() {
         //requis par Axon
     }
@@ -68,7 +69,8 @@ public class DocumentAggregate {
                                                           createDocumentCommand.getTypeDocument(),
                                                           createDocumentCommand.getDateCreationDocument(),
                                                           createDocumentCommand.getDateModificationDocument(),
-                                                          createDocumentCommand.getDocumentStatus()
+                                                          createDocumentCommand.getDocumentStatus(),
+                                                          createDocumentCommand.getClientId()
         ));
     }
     
@@ -87,5 +89,6 @@ public class DocumentAggregate {
         this.dateCreationDocument = event.getDateCreationDocument();
         this.dateModificationDocument = event.getDateModificationDocument();
         this.documentStatus = event.getDocumentStatus();
+        this.clientId = event.getClientId();
     }
 }

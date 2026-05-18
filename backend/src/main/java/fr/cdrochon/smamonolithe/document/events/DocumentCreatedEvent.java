@@ -22,9 +22,11 @@ public class DocumentCreatedEvent extends DocumentBaseEvent<String> {
     private final Instant dateCreationDocument;
     private final Instant dateModificationDocument;
     private final DocumentStatusDTO documentStatus;
-    
+    private final String clientId;
+
     public DocumentCreatedEvent(String id, String nomDocument, String titreDocument, String emetteurDuDocument, TypeDocument typeDocument,
-                                Instant dateCreationDocument, Instant  dateModificationDocument, DocumentStatusDTO documentStatus) {
+                                Instant dateCreationDocument, Instant  dateModificationDocument, DocumentStatusDTO documentStatus,
+                                String clientId) {
         super(id);
         this.nomDocument = nomDocument;
         this.titreDocument = titreDocument;
@@ -33,7 +35,20 @@ public class DocumentCreatedEvent extends DocumentBaseEvent<String> {
         this.dateCreationDocument = dateCreationDocument;
         this.dateModificationDocument = dateModificationDocument;
         this.documentStatus = documentStatus;
+        this.clientId = clientId;
     }
-    
+
+    public DocumentCreatedEvent(String id,
+                                String nomDocument,
+                                String titreDocument,
+                                String emetteurDuDocument,
+                                TypeDocument typeDocument,
+                                Instant dateCreationDocument,
+                                Instant dateModificationDocument,
+                                DocumentStatusDTO documentStatus) {
+        this(id, nomDocument, titreDocument, emetteurDuDocument, typeDocument,
+                dateCreationDocument, dateModificationDocument, documentStatus, null);
+    }
+
 
 }

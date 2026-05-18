@@ -53,7 +53,8 @@ public class DocumentCommandService {
                                                                   documentRestDTO.getTypeDocument(),
                                                                   documentRestDTO.getDateCreationDocument(),
                                                                   documentRestDTO.getDateModificationDocument(),
-                                                                  documentRestDTO.getDocumentStatus());
+                                                                  documentRestDTO.getDocumentStatus(),
+                                                                  documentRestDTO.getClientId());
 
         DocumentCommandDTO ackDTO = new DocumentCommandDTO(documentId,
                                                            documentRestDTO.getNomDocument(),
@@ -62,7 +63,8 @@ public class DocumentCommandService {
                                                            documentRestDTO.getTypeDocument(),
                                                            documentRestDTO.getDateCreationDocument(),
                                                            documentRestDTO.getDateModificationDocument(),
-                                                           documentRestDTO.getDocumentStatus());
+                                                           documentRestDTO.getDocumentStatus(),
+                                                           documentRestDTO.getClientId());
 
         commandGateway.send(command).whenComplete((ignored, error) -> {
             CompletableFuture<DocumentCommandDTO> pending = pendingCreations.get(documentId);

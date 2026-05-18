@@ -36,7 +36,8 @@ public class DocumentEventHandler {
                                                                event.getTypeDocument(),
                                                                event.getDateCreationDocument(),
                                                                event.getDateModificationDocument(),
-                                                               event.getDocumentStatus());
+                                                               event.getDocumentStatus(),
+                                                               event.getClientId());
         // Compléter la future dans le service
         documentCommandService.completeDocumentCreation(commandDTO);
     }

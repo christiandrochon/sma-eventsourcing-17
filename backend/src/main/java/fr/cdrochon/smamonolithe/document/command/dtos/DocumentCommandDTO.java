@@ -23,4 +23,17 @@ public class DocumentCommandDTO {
     private Instant dateCreationDocument;
     private Instant dateModificationDocument;
     private DocumentStatusDTO documentStatus;
+    private String clientId;
+
+    public DocumentCommandDTO(String id,
+                              String nomDocument,
+                              String titreDocument,
+                              String emetteurDuDocument,
+                              TypeDocument typeDocument,
+                              Instant dateCreationDocument,
+                              Instant dateModificationDocument,
+                              DocumentStatusDTO documentStatus) {
+        this(id, nomDocument, titreDocument, emetteurDuDocument, typeDocument,
+                dateCreationDocument, dateModificationDocument, documentStatus, null);
+    }
 }
