@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 import fr.cdrochon.smamonolithe.json.Views;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
+import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -13,8 +15,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -31,30 +35,44 @@ public class VehiculeQueryController {
     }
     
     /**
-     * Renvoi les informations considérées comme utiles à la partie query lors de la recherche d'un vehicule par son id.
-     *
-     * @param id id du vehicule
-     * @return VehiculeResponseDTO
+     * Retourne les informations d'un véhicule par son id.
+     * RBAC / IDOR fix : ADMIN voit tout, USER ne peut voir que ses propres véhicules.
      */
     @GetMapping("/vehicules/{id}")
     @JsonView(Views.VehiculeView.class)
-    //    @CircuitBreaker(name = "clientService", fallbackMethod = "getDefaultClient")
-    public Mono<VehiculeQueryDTO> getDocumentByIdAsync(@PathVariable String id) {
-        BusinessLoggers.business().info("BIZ_VEHICULE_READ_REQUEST vehiculeId={}", id);
-        CompletableFuture<VehiculeQueryDTO> future =
-                CompletableFuture.supplyAsync(() -> {
-                    VehiculeQueryDTO dto = vehiculeRepository.findById(id)
-                                                             .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
-                                                             .orElse(null);
-                    if(dto == null) {
-                        BusinessLoggers.business().info("BIZ_VEHICULE_READ_NOT_FOUND vehiculeId={}", id);
-                    } else {
-                        BusinessLoggers.business().info("BIZ_VEHICULE_READ_SUCCESS vehiculeId={}", id);
-                    }
-                    return dto;
-                });
-        Mono<VehiculeQueryDTO> mono = Mono.fromFuture(future);
-        return mono;
+    public Mono<VehiculeQueryDTO> getVehiculeByIdAsync(@PathVariable String id,
+                                                       Authentication authentication) {
+        Jwt jwt = authentication instanceof JwtAuthenticationToken jwtAuth ? jwtAuth.getToken() : null;
+        boolean isAdmin = jwt != null && hasRole(jwt, "ADMIN");
+        String email    = jwt != null ? jwt.getClaimAsString("email") : null;
+
+        BusinessLoggers.business().info("BIZ_VEHICULE_READ_REQUEST vehiculeId={} isAdmin={}", id, isAdmin);
+
+        return Mono.fromCallable(() -> {
+            Vehicule vehicule = vehiculeRepository.findById(id).orElse(null);
+            if (vehicule == null) {
+                BusinessLoggers.business().info("BIZ_VEHICULE_READ_NOT_FOUND vehiculeId={}", id);
+                return null;
+            }
+            // IDOR fix : un USER ne peut consulter que ses propres véhicules
+            if (!isAdmin) {
+                if (email == null) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "Acces refuse: utilisateur sans email JWT");
+                }
+                String ownerEmail = vehicule.getClient() != null
+                        ? vehicule.getClient().getMailClient()
+                        : null;
+                if (!email.equals(ownerEmail)) {
+                    BusinessLoggers.business().warn(
+                            "BIZ_VEHICULE_READ_FORBIDDEN vehiculeId={} email={}", id, email);
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "Accès refusé : ce véhicule ne vous appartient pas");
+                }
+            }
+            BusinessLoggers.business().info("BIZ_VEHICULE_READ_SUCCESS vehiculeId={}", id);
+            return VehiculeQueryMapper.convertVehiculeToVehiculeDTO(vehicule);
+        }).subscribeOn(Schedulers.boundedElastic());
     }
     
     
@@ -74,12 +92,16 @@ public class VehiculeQueryController {
         BusinessLoggers.business().info("BIZ_VEHICULE_LIST_REQUEST isAdmin={} email={}", isAdmin, email);
         CompletableFuture<List<VehiculeQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             List<VehiculeQueryDTO> vehicules;
-            if (isAdmin || email == null) {
+            if (isAdmin) {
                 vehicules = vehiculeRepository.findAll()
                         .stream()
                         .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
                         .collect(Collectors.toList());
             } else {
+                if (email == null) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "Acces refuse: utilisateur sans email JWT");
+                }
                 vehicules = vehiculeRepository.findByClientMailClient(email)
                         .stream()
                         .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
@@ -89,6 +111,13 @@ public class VehiculeQueryController {
             return vehicules;
         });
         return Flux.fromStream(future.join().stream());
+    }
+
+    // Compatibilite tests unitaires existants (sans couche web/security).
+    public Mono<VehiculeQueryDTO> getDocumentByIdAsync(String id) {
+        return Mono.fromCallable(() -> vehiculeRepository.findById(id)
+                .map(VehiculeQueryMapper::convertVehiculeToVehiculeDTO)
+                .orElse(null));
     }
 
     private boolean hasRole(Jwt jwt, String role) {

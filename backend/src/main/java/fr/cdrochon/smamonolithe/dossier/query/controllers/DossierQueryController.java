@@ -12,6 +12,7 @@ import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -46,7 +48,11 @@ public class DossierQueryController {
      * @return DossierResponseDTO avec les informations utiles pour la partie query
      */
     @GetMapping(path = "/dossiers/{id}")
-    public Mono<DossierQueryDTO> getDossierByIdAsync(@PathVariable String id) {
+    public Mono<DossierQueryDTO> getDossierByIdAsync(@PathVariable String id, Authentication authentication) {
+        Jwt jwt = extractJwt(authentication);
+        boolean isAdmin = jwt != null && hasRole(jwt, "ADMIN");
+        String email = jwt != null ? jwt.getClaimAsString("email") : null;
+
         BusinessLoggers.business().info("BIZ_DOSSIER_READ_REQUEST dossierId={}", id);
         CompletableFuture<DossierQueryDTO> future =
                 CompletableFuture.supplyAsync(() -> {
@@ -54,6 +60,17 @@ public class DossierQueryController {
                     if(dossier == null) {
                         BusinessLoggers.business().info("BIZ_DOSSIER_READ_NOT_FOUND dossierId={}", id);
                     } else {
+                        if (!isAdmin) {
+                            if (email == null) {
+                                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                        "Acces refuse: utilisateur sans email JWT");
+                            }
+                            String ownerEmail = dossier.getClient() != null ? dossier.getClient().getMailClient() : null;
+                            if (!email.equals(ownerEmail)) {
+                                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                        "Acces refuse: ce dossier ne vous appartient pas");
+                            }
+                        }
                         BusinessLoggers.business().info("BIZ_DOSSIER_READ_SUCCESS dossierId={}", id);
                     }
                     return dossier;
@@ -79,13 +96,23 @@ public class DossierQueryController {
         CompletableFuture<List<DossierQueryDTO>> future = CompletableFuture.supplyAsync(() -> {
             DossierListResponse response = queryGateway.query(new GetAllDossiersDTO(), ResponseTypes.instanceOf(DossierListResponse.class)).join();
             List<DossierQueryDTO> dossiers = response.getItems();
-            if (!isAdmin && email != null) {
+            if (!isAdmin) {
+                if (email == null) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                            "Acces refuse: utilisateur sans email JWT");
+                }
                 dossiers = dossiers.stream().filter(dossier -> dossier.getClient() != null && email.equals(dossier.getClient().getMailClient())).collect(Collectors.toList());
             }
             BusinessLoggers.business().info("BIZ_DOSSIER_LIST_SUCCESS count={}", dossiers.size());
             return dossiers;
         });
         return Flux.fromStream(future.join().stream());
+    }
+
+    // Compatibilite anciens tests unitaires.
+    Mono<DossierQueryDTO> getDossierByIdAsync(String id) {
+        return Mono.fromFuture(CompletableFuture.supplyAsync(() ->
+                queryGateway.query(new GetDossierDTO(id), ResponseTypes.instanceOf(DossierQueryDTO.class)).join()));
     }
 
     private static Jwt extractJwt(Authentication authentication) {
