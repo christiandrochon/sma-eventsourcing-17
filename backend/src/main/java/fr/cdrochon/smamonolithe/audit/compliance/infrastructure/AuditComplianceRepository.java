@@ -80,7 +80,7 @@ public class AuditComplianceRepository {
                     l.findings, l.remediation_plan, l.evidence_uri
                 FROM audit_expectations e
                 LEFT JOIN audit_expectations_latest l ON l.code = e.code
-                WHERE (:domain IS NULL OR e.domain = :domain)
+                WHERE (CAST(:domain AS VARCHAR) IS NULL OR e.domain = CAST(:domain AS VARCHAR))
                   AND (:enabledOnly = FALSE OR e.enabled = TRUE)
                 ORDER BY e.domain, e.code
                 """;
