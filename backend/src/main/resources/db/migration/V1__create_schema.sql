@@ -157,8 +157,21 @@ ALTER TABLE garage_transaction
 
 -- document.client_id -> client.id
 ALTER TABLE document
-    ADD CONSTRAINT fk_document_client
-    FOREIGN KEY (client_id) REFERENCES client(id);
+    ADD COLUMN IF NOT EXISTS client_id VARCHAR(255);
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_constraint
+        WHERE conname = 'fk_document_client'
+    ) THEN
+        ALTER TABLE document
+            ADD CONSTRAINT fk_document_client
+            FOREIGN KEY (client_id) REFERENCES client(id);
+    END IF;
+END
+$$;
 
 -- =============================================================================
 -- INDEX utiles (recherches fréquentes)
