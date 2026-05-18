@@ -44,6 +44,7 @@ Mode debug rapide (sans login frontend/backend) :
   - [2.1 Runtime local (Docker Compose)](#21-runtime-local-docker-compose)
   - [2.2 Structure du depot](#22-structure-du-depot)
   - [2.3 Flux CQRS simplifie](#23-flux-cqrs-simplifie)
+  - [2.4 Schema global unifie (ASCII)](#24-schema-global-unifie-ascii)
 - [3. Stack technique](#3-stack-technique)
 - [4. Structure des modules](#4-structure-des-modules)
 - [5. Demarrage rapide](#5-demarrage-rapide)
@@ -75,31 +76,28 @@ Objectif principal de cette architecture : isoler les responsabilites, fiabilise
 ### 2.1 Runtime local (Docker Compose)
 
 ```text
-+-----------------------------------------------------------------------------------+
-| NIVEAU 1 - CLIENT                                                                 |
-|   [ Navigateur ]                                                                  |
-+-----------------------------------------------------------------------------------+
-                                      |
-                                      | HTTP :8091
-                                      v
-+-----------------------------------------------------------------------------------+
-| NIVEAU 2 - PRESENTATION                                                           |
-|   [ Frontend - Spring MVC + Thymeleaf ]                                           |
-+-----------------------------------------------------------------------------------+
-                                      |
-                                      | REST HTTP :8092
-                                      v
-+-----------------------------------------------------------------------------------+
-| NIVEAU 3 - COEUR METIER                                                           |
-|   [ Backend - Spring WebFlux + Axon ]                                             |
-|      |                                                                            |
-|      +--> Commandes + evenements --> [ Axon Server ] (:8024 / :8124)             |
-|      |                                                                            |
-|      +--> Projections lecture -----> [ PostgreSQL ] (:5432)                       |
-+-----------------------------------------------------------------------------------+
-                                      ^
-                                      |
-                         [ pgAdmin ] (:6002)
+UTILISATEUR
+  |
+  | HTTP :8091
+  v
+[ FRONTEND ]  Spring MVC + Thymeleaf
+  |
+  | REST :8092
+  v
+[ BACKEND ]  Spring WebFlux + Axon
+  |\
+  | +--> Commandes/Evenements --> [ AXON SERVER ] (:8024 / :8124)
+  |
+  +----> Projections lecture ----> [ POSTGRESQL ] (:5432)
+                                    ^
+                                    |
+                               [ PGADMIN ] (:6002)
+
+SECURITE / IAM (mode secure)
+  [ KEYCLOAK ] (:8080) <--> [ POSTGRES-KEYCLOAK ] (:5433)
+
+ORCHESTRATION
+  docker compose -f compose.yaml up ...
 ```
 
 ### 2.2 Structure du depot
@@ -108,6 +106,8 @@ Objectif principal de cette architecture : isoler les responsabilites, fiabilise
 sma-eventsourcing-17/
 |
 +-- pom.xml                              (parent Maven, packaging pom)
+|
++-- README.md                            (documentation principale)
 |
 +-- backend/                             (module metier)
 |   |
@@ -128,6 +128,21 @@ sma-eventsourcing-17/
 |   `-- src/
 |       +-- main/
 |       `-- test/
+|
++-- scripts/                             (outillage run/audit)
+|   |
+|   +-- README.scripts.md                (guide des scripts)
+|   +-- dev.sh / dev-up.sh / dev-login.sh
+|   +-- keycloak-realm.sh / keycloak-token.sh
+|   `-- audit-*.sh
+|
++-- docs/                                (documentation detaillee)
+|   |
+|   +-- README.docs.md                   (entree unique docs)
+|   +-- DOCS_STRUCTURE.md
+|   +-- LOGGING_STRATEGY.md
+|   +-- QUICK_START_LOGGING.md
+|   `-- FEATURE_*/CHANGELOG_*/MODIFIED_FILES.md
 |
 +-- compose.yaml                         (stack locale)
 +-- docker/                              (fichiers annexes)
@@ -165,6 +180,60 @@ sma-eventsourcing-17/
               [ Read Model PostgreSQL ]
 ```
 
+### 2.4 Schema global unifie (ASCII)
+
+```text
+                                   SMA-EVENTSOURCING-17
+
+             +-----------------------------------------------------------+
+             |                        RUNTIME                            |
+             +-----------------------------------------------------------+
+
+ [ Utilisateur ]
+       |
+       | HTTP :8091
+       v
+ [ Frontend ]  Spring MVC + Thymeleaf
+       |
+       | REST :8092
+       v
+ [ Backend ]  Spring WebFlux + Axon
+    |  \
+    |   +--> Commandes/Evenements --> [ Axon Server ] (:8024/:8124)
+    |
+    +------> Projections / Read Model --> [ PostgreSQL ] (:5432)
+                                             ^
+                                             |
+                                        [ pgAdmin ] (:6002)
+
+ IAM (mode secure)
+ [ Keycloak ] (:8080) <--> [ postgres-keycloak ] (:5433)
+
+
+             +-----------------------------------------------------------+
+             |                    REPOSITORY                             |
+             +-----------------------------------------------------------+
+
+ sma-eventsourcing-17/
+   |
+   +-- README.md                    (guide principal)
+   +-- pom.xml                      (agregateur Maven)
+   +-- compose.yaml                 (orchestration locale)
+   |
+   +-- backend/                     (coeur metier CQRS/Axon)
+   +-- frontend/                    (UI Thymeleaf)
+   +-- docker/                      (schema/init/compose annexes)
+   +-- komp-smb/                    (manifests Kubernetes)
+   |
+   +-- scripts/
+   |    +-- README.scripts.md       (guide scripts)
+   |    `-- *.sh                    (run, IAM, audit)
+   |
+   `-- docs/
+        +-- README.docs.md          (guide doc detaillee)
+        `-- *.md                    (strategie, features, changelog)
+```
+
 ## 3. Stack technique
 
 - Java 17
@@ -180,6 +249,7 @@ sma-eventsourcing-17/
 ```text
 sma-eventsourcing-17/
   pom.xml
+  README.md
   backend/
     pom.xml
     Dockerfile
@@ -196,6 +266,12 @@ sma-eventsourcing-17/
     src/main
     src/test
     logs/
+  scripts/
+    README.scripts.md
+    *.sh
+  docs/
+    README.docs.md
+    *.md
   compose.yaml
   docker/
   komp-smb/
