@@ -34,7 +34,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -191,7 +195,7 @@ class VehiculeEdgeCasesTest {
     void edge_19_queryControllerShouldReturnEmptyFluxWhenNoVehicule() {
         VehiculeQueryController controller = new VehiculeQueryController(vehiculeRepository);
         when(vehiculeRepository.findAll()).thenReturn(List.of());
-        assertEquals(0, controller.getDossiersAsync(null).collectList().block().size());
+        assertEquals(0, controller.getDossiersAsync(adminAuth()).collectList().block().size());
     }
 
     @Test
@@ -346,6 +350,15 @@ class VehiculeEdgeCasesTest {
 
         return Stream.of(unknownStatusTests, createCommandStringTests, dtoNullFieldTests)
                 .flatMap(s -> s);
+    }
+
+    private Authentication adminAuth() {
+        java.util.Map<String, Object> claims = java.util.Map.of(
+                "realm_access", java.util.Map.of("roles", List.of("ADMIN")),
+                "email", "admin@mail"
+        );
+        Jwt jwt = new Jwt("veh-edge-admin", Instant.now(), Instant.now().plusSeconds(3600), java.util.Map.of("alg", "none"), claims);
+        return new JwtAuthenticationToken(jwt);
     }
 }
 

@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import static fr.cdrochon.smamonolithe.dossier.DossierTestDataFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,8 @@ class DossierCommandServiceTest {
     @BeforeEach
     void setUp() {
         service = new DossierCommandService(commandGateway);
+        org.mockito.Mockito.lenient().when(commandGateway.send(any(DossierCreateCommand.class)))
+                .thenReturn(CompletableFuture.completedFuture("ok"));
     }
 
     @Test
@@ -57,12 +60,14 @@ class DossierCommandServiceTest {
     @Test
     void shouldCompleteCreationFutureWhenEventHandlerCallsComplete() {
         DossierCommandDTO request = sampleDossierCommandDto();
-        DossierCommandDTO completion = sampleDossierCommandDto();
-
-        service.createDossier(request);
-        service.completeDossierCreation(completion);
-
         CompletableFuture<DossierCommandDTO> result = service.createDossier(request);
+
+        ArgumentCaptor<DossierCreateCommand> captor = ArgumentCaptor.forClass(DossierCreateCommand.class);
+        verify(commandGateway, times(1)).send(captor.capture());
+        String generatedId = captor.getValue().getId();
+
+        DossierCommandDTO completion = sampleDossierCommandDto();
+        completion.setId(generatedId);
         service.completeDossierCreation(completion);
 
         assertTrue(result.isDone());

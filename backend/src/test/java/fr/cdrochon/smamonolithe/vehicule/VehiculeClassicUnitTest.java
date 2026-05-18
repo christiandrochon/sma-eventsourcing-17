@@ -39,6 +39,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -290,7 +293,7 @@ class VehiculeClassicUnitTest {
     void classic_27_queryControllerShouldReturnFluxForAllVehicules() {
         VehiculeQueryController controller = new VehiculeQueryController(vehiculeRepository);
         when(vehiculeRepository.findAll()).thenReturn(List.of(sampleVehicule(), sampleVehicule("veh-2", "BB", VehiculeStatus.VENDU)));
-        List<VehiculeQueryDTO> dtos = controller.getDossiersAsync(null).collectList().block();
+        List<VehiculeQueryDTO> dtos = controller.getDossiersAsync(adminAuth()).collectList().block();
         assertEquals(2, dtos.size());
     }
 
@@ -426,6 +429,15 @@ class VehiculeClassicUnitTest {
 
         return Stream.of(statusTests, collectionTests, eventTests, commandDtoTests, vehiculeEntityTests)
                 .flatMap(s -> s);
+    }
+
+    private Authentication adminAuth() {
+        java.util.Map<String, Object> claims = java.util.Map.of(
+                "realm_access", java.util.Map.of("roles", List.of("ADMIN")),
+                "email", "admin@mail"
+        );
+        Jwt jwt = new Jwt("veh-classic-admin", Instant.now(), Instant.now().plusSeconds(3600), java.util.Map.of("alg", "none"), claims);
+        return new JwtAuthenticationToken(jwt);
     }
 }
 

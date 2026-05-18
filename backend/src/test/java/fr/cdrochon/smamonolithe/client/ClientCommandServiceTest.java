@@ -27,6 +27,7 @@ class ClientCommandServiceTest {
     @BeforeEach
     void setUp() {
         service = new ClientCommandService(commandGateway);
+        lenient().when(commandGateway.send(any())).thenReturn(CompletableFuture.completedFuture(null));
     }
 
     @Test

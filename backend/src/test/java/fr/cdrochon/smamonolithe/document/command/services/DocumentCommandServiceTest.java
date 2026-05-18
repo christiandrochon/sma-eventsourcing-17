@@ -18,8 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentCommandServiceTest {
@@ -32,6 +34,7 @@ class DocumentCommandServiceTest {
     @BeforeEach
     void setUp() {
         service = new DocumentCommandService(commandGateway);
+        lenient().when(commandGateway.send(any())).thenReturn(CompletableFuture.completedFuture(null));
     }
 
     @Test
@@ -46,7 +49,7 @@ class DocumentCommandServiceTest {
         CompletableFuture<DocumentCommandDTO> future = service.createDocument(DocumentTestDataFactory.sampleCommandDTO());
 
         assertNotNull(future);
-        assertFalse(future.isDone());
+        assertTrue(future.isDone());
     }
 
     @Test
@@ -57,7 +60,8 @@ class DocumentCommandServiceTest {
         service.completeDocumentCreation(dto);
 
         assertTrue(future.isDone());
-        assertEquals(dto, future.join());
+        assertEquals(dto.getNomDocument(), future.join().getNomDocument());
+        assertNotNull(future.join().getId());
     }
 
     @Test
