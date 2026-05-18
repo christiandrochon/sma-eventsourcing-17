@@ -45,7 +45,7 @@ services:
       postgres-monolithe:
         condition: service_healthy
       axon-server:
-        condition: service_started
+        condition: service_healthy
       keycloak:
         condition: service_healthy
     environment:
@@ -94,7 +94,7 @@ services:
       - axonserver_data:/axonserver/data
       - axonserver_events:/axonserver/events
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8024/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8024/actuator/health/liveness || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 20
