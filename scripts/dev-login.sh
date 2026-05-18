@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
-# dev-login.sh — Affiche les URLs/credentials utiles et peut ouvrir le navigateur
+# dev-login.sh — Affiche les URLs de l'appli + credentials et peut ouvrir le navigateur
+# Utilité : Affichage rapide des URLs (frontend, backend, Keycloak) avec identifiants demo
+# Options : show (affichage), open (affichage + ouvre navigateur), check (affichage + test HTTP)
+# Comptes : admin-test / user-test / audit-test (tous créés par dev.sh secure)
+# À exécuter : Après dev.sh secure pour voir comment se connecter
 # =============================================================================
 set -euo pipefail
 

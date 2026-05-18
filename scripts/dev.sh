@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # =============================================================================
-# dev.sh — Point d'entree unique pour le run local
+# dev.sh — Point d'entrée unique pour lancer la stack et accéder à l'appli
+# Utilité : Façade simplifiée qui délègue à dev-up.sh (stack) et dev-login.sh (accès)
+# Commandes : secure/fast (lancer), down (arrêter), open/show/check (afficher URLs), seed-users (créer comptes)
+# À exécuter : Toujours celui-ci en premier (./scripts/dev.sh secure)
 # =============================================================================
 set -euo pipefail
 

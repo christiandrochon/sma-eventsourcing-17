@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
+# =============================================================================
+# audit-external-40.sh — Campagne d'audit externe complète : 40 cas de test
+# Utilité : Valider que tout fonctionne pour un auditeur indépendant (infra, API, immuabilité)
+# Couverture : Infrastructure, schéma audit, intégrité FK, append-only, RBAC, créa verdict, exports
+# Résultat : Génère audit_external_40_results.csv + audit_external_40_proof.md (détails passés/échoués)
+# À exécuter : Avant certification externe (produit un dossier de preuves dans ./audit-exports)
+# =============================================================================
 set -u
 set -o pipefail
-
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONTAINER_NAME="${AUDIT_PG_CONTAINER:-postgres-monolithe}"
 POSTGRES_USER="${AUDIT_POSTGRES_USER:-postgres}"
 BACKEND_URL="${AUDIT_BACKEND_URL:-http://localhost:8092}"

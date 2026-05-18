@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
+# =============================================================================
+# keycloak-token.sh — Récupère un JWT depuis Keycloak sans login interactif
+# Utilité : Obtenir un token pour utiliser dans des scripts automatisés ou appels curl
+# Supports : client_credentials (service account) et password grant (dev/fallback)
+# Résultat : Affiche le JWT pur (à utiliser dans -H "Authorization: Bearer $TOKEN")
+# À exécuter : Depuis d'autres scripts (audit-load-test.sh, audit-external-40.sh, etc.)
+# =============================================================================
 set -euo pipefail
 
-# Fetches an access token from Keycloak without interactive login.
-# Supports:
-# - client_credentials (service account)
-# - password grant (legacy/dev fallback)
 
 KEYCLOAK_BASE_URL="${KEYCLOAK_BASE_URL:-http://localhost:8080}"
 KEYCLOAK_REALM="${KEYCLOAK_REALM:-sma-realm}"

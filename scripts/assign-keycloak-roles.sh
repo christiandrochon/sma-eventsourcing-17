@@ -1,7 +1,9 @@
 #!/bin/bash
-
-# Script pour assigner les rôles aux utilisateurs dans Keycloak
-# À exécuter après que Keycloak soit en cours d'exécution
+# =============================================================================
+# assign-keycloak-roles.sh — Assigner les rôles (ADMIN/USER/AUDITOR) aux utilisateurs dans Keycloak
+# Utilité : Ajouter des rôles à des utilisateurs existants après leur création
+# À exécuter : Après que Keycloak soit lancé (docker compose up keycloak)
+# =============================================================================
 
 KEYCLOAK_URL="http://localhost:8080"
 REALM="sma-realm"

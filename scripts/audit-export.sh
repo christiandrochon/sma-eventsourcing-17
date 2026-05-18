@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
+# =============================================================================
+# audit-export.sh — Exporte les preuves d'audit en fichiers CSV pour auditeur externe
+# Utilité : Générer un bundle complet des données d'audit (expectations, events, checks, cross-garage)
+# Options : --days N (plage temporelle, défaut 30) et --output-dir DIR (destination, défaut ./audit-exports)
+# Résultat : Crée un dossier avec 4 CSV : expectations_latest, events_Nd, checks, cross_garage_Nd + README.txt
+# À exécuter : Avant de transmettre un dossier à un auditeur externe
+# =============================================================================
 set -u
 set -o pipefail
 
-# Export helper for independent audit evidence.
-# Generates CSV files from audit database:
-# - audit_expectations_latest
-# - audit_events over N days
-# - cross-garage events over N days
-# - audit_expectation_checks history
 
 CONTAINER_NAME="${AUDIT_PG_CONTAINER:-postgres-monolithe}"
 POSTGRES_USER="${AUDIT_POSTGRES_USER:-postgres}"

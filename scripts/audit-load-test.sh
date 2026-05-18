@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
+# =============================================================================
+# audit-load-test.sh — Génère ~180 événements d'audit en boucle sur les endpoints GET
+# Utilité : Charger la table audit_events avec des événements crédibles (30+ par entité)
+# Couverture : Fait 30 boucles sur /queries/{clients,vehicules,documents,dossiers} avec différents rôles
+# Résultat : ~180 événements audit = preuve opérationnelle complète
+# À exécuter : Après dev.sh secure (Keycloak et backend doivent tourner)
+# =============================================================================
 set -u
 set -o pipefail
 
-# Script de charge d'audit : genere des événements en appelant les endpoints GET
-# Objectif : remplir audit_events avec une trentaine d'événements par entité (clients, vehicules, documents, dossiers)
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND_URL="${AUDIT_BACKEND_URL:-http://localhost:8092}"

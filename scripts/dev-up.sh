@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # =============================================================================
-# dev-up.sh — Lance la stack en mode securise (Keycloak) ou mode rapide (sans IAM)
+# dev-up.sh — Lance la stack Docker (infra + appli) en mode securisé ou rapide
+# Utilité : Orchestrer tous les conteneurs (PostgreSQL, Keycloak, Axon, Backend, Frontend)
+# Modes : secure (avec Keycloak + JWT), fast (sans IAM), status, down, restart-*
+# Gère : Vérif startup, seed users, audit schema init, health checks
+# À exécuter : dev.sh secure/fast (qui délègue à dev-up.sh)
 # =============================================================================
 set -euo pipefail
 

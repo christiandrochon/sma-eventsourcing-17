@@ -1,17 +1,19 @@
 #!/usr/bin/env bash
 # =============================================================================
-# keycloak-realm.sh — Gestion du realm Keycloak sma-realm
+# keycloak-realm.sh — Gestion complète du realm Keycloak sma-realm (créa users, rôles, export/import)
 #
-# Usage:
-#   ./scripts/keycloak-realm.sh status          # Verifier que le realm est vivant
-#   ./scripts/keycloak-realm.sh backup          # Exporter le realm (mise a jour realm-export.json)
-#   ./scripts/keycloak-realm.sh restore         # Forcer la reimportation du realm depuis le JSON
-#   ./scripts/keycloak-realm.sh create-user     # Creer un utilisateur interactivement
-#   ./scripts/keycloak-realm.sh list-users      # Lister les utilisateurs du realm
-#   ./scripts/keycloak-realm.sh add-role        # Assigner un role a un utilisateur
-#   ./scripts/keycloak-realm.sh seed-demo-users # Creer 3 comptes (ADMIN/USER/AUDITOR)
+# Utilité : Gérer le realm sans ouvrir l'interface Keycloak web (automatisation)
+# Commandes principales :
+#   status          → Vérifier que le realm est vivant
+#   backup          → Exporter le realm dans docker/realm-export.json (mise à jour Git)
+#   restore         → Forcer la réimportation du realm depuis le JSON
+#   create-user     → Créer un utilisateur interactivement
+#   list-users      → Lister tous les utilisateurs du realm
+#   add-role        → Assigner un rôle (ADMIN/USER/AUDITOR) à un utilisateur
+#   seed-demo-users → Créer les 3 comptes de démo (admin-test, user-test, audit-test)
 #
-# Prerequis : Docker Compose lance (keycloak + postgres-keycloak)
+# Préalable : Docker Compose lancé (keycloak + postgres-keycloak)
+# À exécuter : dev.sh seed-users le lance automatiquement
 # =============================================================================
 set -euo pipefail
 

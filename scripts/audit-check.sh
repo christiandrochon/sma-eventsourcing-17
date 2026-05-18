@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
+# =============================================================================
+# audit-check.sh — Diagnostic complet de la base d'audit (santé, schéma, données)
+# Utilité : Vérifier rapidement que l'audit DB est présente et remplie
+# Vérifications : backend health, DB audit existe, tables existent, seed appliqué, derniers événements
+# Options : --apply-schema pour créer automatiquement le schéma s'il manque
+# Résultat : Affiche PASS/WARN/FAIL pour chaque vérification
+# À exécuter : Anytime pour diagnostiquer l'état d'audit
+# =============================================================================
 set -u
 set -o pipefail
 
-# Audit diagnostic helper for RGPD evidence pipeline.
-# - Checks backend health
-# - Checks audit database/tables/seed
-# - Checks latest audit events
-# - Optionally applies schema if missing (--apply-schema)
 
 CONTAINER_NAME="${AUDIT_PG_CONTAINER:-postgres-monolithe}"
 BACKEND_URL="${AUDIT_BACKEND_URL:-http://localhost:8092}"
