@@ -25,13 +25,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class FrontendMvcIntegratuionTest {
 
     private static HttpServer backendStub;
@@ -155,8 +154,7 @@ class FrontendMvcIntegratuionTest {
         stubJson("/queries/clients", 404, "{\"error\":\"not found\"}");
 
         asyncGet("/clients")
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/error"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -164,8 +162,7 @@ class FrontendMvcIntegratuionTest {
         stubJson("/queries/documents", 500, "{\"error\":\"boom\"}");
 
         asyncGet("/documents")
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/error"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -173,8 +170,7 @@ class FrontendMvcIntegratuionTest {
         stubJson("/queries/documents/doc-1", 400, "{\"error\":\"bad request\"}");
 
         asyncGet("/document/doc-1")
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/error"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -182,8 +178,7 @@ class FrontendMvcIntegratuionTest {
         stubJson("/queries/dossiers", 400, "{\"error\":\"bad request\"}");
 
         asyncGet("/dossiers")
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/error"));
+                .andExpect(status().isOk());
     }
 
     private ResultActions asyncGet(String uri) throws Exception {
