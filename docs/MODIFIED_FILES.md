@@ -1,3 +1,15 @@
+<!-- 
+═════════════════════════════════════════════════════════════════════════════
+📝 MODIFIED_FILES.md
+═════════════════════════════════════════════════════════════════════════════
+Qu'il contient : Inventaire détaillé des fichiers modifiés (13 fichiers / 2026-05-09)
+Utilité : Changelog techique pour audit/merge, pour comprendre l'impact des changes
+Public : Développeurs, reviewers, project managers (documentation d'impact)
+À consulter : Avant un git commit, pour documenter les changements
+À archiver : Oui (rapport de changement = historique)
+═════════════════════════════════════════════════════════════════════════════
+-->
+
 # Fichiers Modifiés - Logging Métier (2026-05-09)
 
 ## Résumé Exécutif

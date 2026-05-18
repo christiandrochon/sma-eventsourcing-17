@@ -1,3 +1,15 @@
+<!-- 
+═════════════════════════════════════════════════════════════════════════════
+🔐 FEATURE_USER_CLIENT_ACCESS.md
+═════════════════════════════════════════════════════════════════════════════
+Qu'il contient : Spécification feature pour filtrage client par USER (RBAC)
+Utilité : Documentation des droits d'accès per rôle (USER voit ses clients, ADMIN voit tous)
+Public : Développeurs, testeurs (documentation technique de feature)
+À consulter : Avant de modifier l'accès aux clients / RBAC
+À archiver : Non (spécification active)
+═════════════════════════════════════════════════════════════════════════════
+-->
+
 # Feature: Espace Personnel Client pour Utilisateurs
 
 ## 📋 Description

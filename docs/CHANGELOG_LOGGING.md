@@ -1,3 +1,16 @@
+<!-- 
+═════════════════════════════════════════════════════════════════════════════
+📋 CHANGELOG_LOGGING.md
+═════════════════════════════════════════════════════════════════════════════
+Qu'il contient : Rapport détaillé des changements pour implémenter le logging métier
+Utilité : Traçabilité des modifications (quelle version, quels fichiers, pourquoi)
+Public : Développeurs, auditeurs, project managers (documentation historique)
+Date : 2026-05-09
+À consulter : Pour comprendre l'évolution du logging métier dans le projet
+À archiver : Oui (rapport de release/version)
+═════════════════════════════════════════════════════════════════════════════
+-->
+
 # Rapport de Mise à Jour - Logging Métier (2026-05-09)
 
 ## Résumé

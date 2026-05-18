@@ -1,3 +1,15 @@
+<!-- 
+═════════════════════════════════════════════════════════════════════════════
+👤 FEATURE_USERID_DOSSIER.md
+═════════════════════════════════════════════════════════════════════════════
+Qu'il contient : Spécification feature pour tracer userId dans les dossiers
+Utilité : Documentation de la capture automatique du créateur (userId) lors de création
+Public : Développeurs, testeurs (documentation technique de feature)
+À consulter : Avant de modifier la création de dossiers / traçabilité utilisateur
+À archiver : Non (spécification active)
+═════════════════════════════════════════════════════════════════════════════
+-->
+
 # Feature: Ajout du userId à la création de dossiers
 ## 📋 Description
 Intégration complète du traçage de l'utilisateur pour chaque dossier créé. L'ID de l'utilisateur authentifié via OAuth2/Keycloak est automatiquement capturé et associé à chaque nouveau dossier.
@@ -38,7 +50,7 @@ Intégration complète du traçage de l'utilisateur pour chaque dossier créé. 
 | 5 | feat | DTOs frontend | UserThymDTO, DossierThymDTO, DossierThymConvertDTO |
 | 6 | feat | Contrôleur frontend | CreateDossierThymController |
 | 7 | feat | Template HTML | createDossierForm.html |
-| 8 | chore | Config et docs | application.properties, scripts/README.md |
+| 8 | chore | Config et docs | application.properties, scripts/README.scripts.md |
 | 9 | refactor | Autres templates | error.html, header.html, index.html |
 ## ✅ Status
 - [x] Backend compile avec succès

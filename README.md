@@ -1,6 +1,22 @@
+<!-- 
+═════════════════════════════════════════════════════════════════════════════
+📖 README.md
+═════════════════════════════════════════════════════════════════════════════
+Qu'il contient : Documentation principale du projet (architecture, démarrage, tech stack)
+Utilité : Reference complète du projet (1600+ lignes détaillées)
+Public : Tous (guide complet pour tous les profils)
+À consulter : Toujours commencer par là
+À archiver : Non (documentation vivante, mise à jour régulièrement)
+═════════════════════════════════════════════════════════════════════════════
+📍 Documentation détaillée : Consultez le dossier docs/README.docs.md pour les guides complémentaires
+═════════════════════════════════════════════════════════════════════════════
+-->
+
 # SMA - Application de Maintenance Automobile
 
 Application intranet de maintenance automobile basée sur Spring Boot, avec separation claire entre interface serveur (Thymeleaf) et coeur metier CQRS/Event Sourcing.
+
+> **📚 Pour plus de documentation** : Consultez [docs/README.docs.md](docs/README.docs.md) pour les guides détaillés (architecture logs, features, troubleshooting)
 
 ## Demarrage immediat (depuis zero)
 

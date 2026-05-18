@@ -1,3 +1,15 @@
+<!-- 
+═════════════════════════════════════════════════════════════════════════════
+🚀 QUICK_START_LOGGING.md
+═════════════════════════════════════════════════════════════════════════════
+Qu'il contient : Guide rapide pour afficher/suivre les logs métier
+Utilité : Cheat-sheet pour déboguer, chercher des traces en prod
+Public : Tous (guide d'utilisation pratique)
+À consulter : Quand vous voulez voir les logs (tail -f, grep, etc.)
+À archiver : Non (aide opérationnelle)
+═════════════════════════════════════════════════════════════════════════════
+-->
+
 # Guide Rapide - Logging Métier SMA
 
 ## 🎯 Objectif

@@ -1,3 +1,15 @@
+<!-- 
+═════════════════════════════════════════════════════════════════════════════
+🔑 KEYCLOAK_ROLES_SETUP.md
+═════════════════════════════════════════════════════════════════════════════
+Qu'il contient : Guide de configuration des rôles Keycloak (ADMIN, USER, AUDITOR)
+Utilité : Troubleshooting quand les users n'ont pas leurs rôles assignés
+Public : Devops, développeurs (guide opérationnel d'IAM)
+À consulter : Si les comptes de démo ne fonctionnent pas
+À archiver : Non (information opérationnelle)
+═════════════════════════════════════════════════════════════════════════════
+-->
+
 # Configuration des Rôles Keycloak - SOLUTION RAPIDE
 
 ## ⚠️ PROBLÈME

@@ -1,3 +1,15 @@
+<!-- 
+═════════════════════════════════════════════════════════════════════════════
+📊 LOGGING_STRATEGY.md
+═════════════════════════════════════════════════════════════════════════════
+Qu'il contient : Guide stratégique complet du logging (métier + technique)
+Utilité : Architecture de logs, conventions de nommage, fichiers générés, configuration
+Public : Développeurs, architects (documentation de design)
+À consulter : Avant d'ajouter des logs, pour suivre la stratégie
+À archiver : Non (spécification technique en vigueur)
+═════════════════════════════════════════════════════════════════════════════
+-->
+
 # Stratégie de Logging Métier - SMA Event Sourcing
 
 ## Vue d'ensemble
