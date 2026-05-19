@@ -8,9 +8,22 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+ENV_FILE="${ROOT_DIR}/backend/.env"
+
+if [[ -f "$ENV_FILE" ]]; then
+  set -a
+  source "$ENV_FILE"
+  set +a
+else
+  echo "Fichier .env introuvable: $ENV_FILE" >&2
+  exit 1
+fi
+
 DEV_UP_SCRIPT="${ROOT_DIR}/scripts/dev-up.sh"
 DEV_LOGIN_SCRIPT="${ROOT_DIR}/scripts/dev-login.sh"
 REALM_SCRIPT="${ROOT_DIR}/scripts/keycloak-realm.sh"
+BACKEND_DEV_RUN_SCRIPT="${ROOT_DIR}/scripts/dev-env.sh"
 
 usage() {
   cat <<'EOF'
@@ -58,6 +71,7 @@ main() {
   ensure_script "$DEV_UP_SCRIPT"
   ensure_script "$DEV_LOGIN_SCRIPT"
   ensure_script "$REALM_SCRIPT"
+  ensure_script "$BACKEND_DEV_RUN_SCRIPT"
 
   case "$cmd" in
     secure|fast|status|down|restart-secure|restart-fast)
