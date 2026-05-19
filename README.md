@@ -16,7 +16,13 @@ Public : Tous (guide complet pour tous les profils)
 
 Application intranet de maintenance automobile basée sur Spring Boot, avec separation claire entre interface serveur (Thymeleaf) et coeur metier CQRS/Event Sourcing.
 
-> **📚 Pour plus de documentation** : Consultez [docs/README.docs.md](docs/README.docs.md) pour les guides détaillés (architecture logs, features, troubleshooting)
+> ** Pour plus de documentation** : Consultez [docs/README.docs.md](docs/README.docs.md) pour les guides détaillés (architecture logs, features, troubleshooting)
+>
+> - [docs/README.docs.md](docs/README.docs.md) → documentation technique détaillée
+> - [backend/README.md](backend/README.md) → configuration backend et variables d’environnement
+> - [scripts/README.scripts.md](scripts/README.scripts.md) → documentation des scripts
+ 
+
 
 ## Demarrage immediat (depuis zero)
 
@@ -31,11 +37,87 @@ chmod +x scripts/dev.sh
 ./scripts/dev.sh open
 ```
 
+Ne pas utiliser directement `docker compose up` comme point d’entrée principal.
+
 Mode debug rapide (sans login frontend/backend) :
 
 ```bash
 ./scripts/dev.sh fast
 ```
+
+# Variables d’environnement et secrets
+
+Le backend utilise des variables d’environnement locales stockées dans :
+
+```text
+backend/.env
+```
+
+Ce fichier :
+- contient les secrets locaux
+- est ignoré par Git
+- ne doit jamais être commité
+
+## Création du fichier local
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+Puis éditer :
+
+```bash
+backend/.env
+```
+
+Exemple :
+
+```env
+POSTGRES_PASSWORD=monMotDePasse
+POSTGRES_USER=postgres
+POSTGRES_DB=monolithe
+```
+
+## Important
+
+Ne jamais committer :
+- `.env`
+- `.env.prod`
+- tout fichier contenant des secrets
+
+Le `.gitignore` doit contenir :
+
+```gitignore
+.env
+.env.*
+!.env.example
+```
+
+---
+
+# Configuration Spring Boot
+
+Le backend utilise :
+
+```text
+backend/src/main/resources/application.properties
+```
+
+comme configuration principale commune.
+
+La surcharge production se fait via :
+
+```text
+backend/src/main/resources/application-prod.properties
+```
+
+Activation du profil production :
+
+```bash
+SPRING_PROFILES_ACTIVE=prod
+```
+
+---
 
 ## Sommaire
 
@@ -243,6 +325,8 @@ sma-eventsourcing-17/
 - Base de donnees : PostgreSQL
 - Orchestration locale : Docker Compose
 - Build : Maven
+- Sécurité : Keycloak
+- Migration db : Flyway 
 
 ## 4. Structure des modules
 
@@ -308,6 +392,17 @@ Arret de la stack :
 
 ```bash
 ./scripts/dev.sh down
+```
+
+Vérification de la stack :
+
+```bash
+./scripts/dev.sh status
+```
+## Vérification endpoints
+
+```bash
+./scripts/dev.sh check
 ```
 
 Commandes utiles via `dev.sh` :
@@ -421,6 +516,57 @@ Fichiers principaux :
 - `frontend/application-prod.properties`
 
 Important : `application-local.properties` et `application-prod.properties` sont des fichiers externes aux resources Spring standards. Pour les prendre en compte de facon explicite, utiliser `--spring.config.additional-location=file:...` comme dans la section demarrage.
+
+## Configuration locale et secrets
+
+Le backend utilise des variables d’environnement locales stockées dans :
+
+```text
+backend/.env
+```
+
+Ne jamais committer ce fichier.
+
+Exemple :
+```bash 
+cp backend/.env.example backend/.env
+```
+
+Puis renseigner les secrets locaux :
+* POSTGRES_PASSWORD
+* KEYCLOAK_ISSUER_URL
+* etc.
+
+Le backend charge automatiquement ce fichier via :
+```bash 
+./scripts/dev.sh 
+```
+
+ou :
+
+```bash 
+./scripts/dev-env.sh 
+```
+
+Documentation backend détaillée :
+```text 
+backend/README.md 
+```
+
+### Gestion des secrets
+
+Le `.env` est réservé au développement local.
+
+En production :
+- variables CI/CD
+- Docker secrets
+- Vault
+- Kubernetes Secrets
+- Secret Manager cloud
+
+sont préférables.
+
+---
 
 ## 8. Logs
 
