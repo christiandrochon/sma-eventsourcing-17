@@ -38,3 +38,8 @@ build/
 ### VS Code ###
 .vscode/
 
+
+# Local env files (do NOT commit secrets)
+.env
+.env.local
+
