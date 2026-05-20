@@ -538,15 +538,10 @@ Puis renseigner les secrets locaux :
 * etc.
 
 Le backend charge automatiquement ce fichier via :
-```bash 
-./scripts/dev.sh 
+```bash
+./scripts/dev.sh
 ```
 
-ou :
-
-```bash 
-./scripts/dev-env.sh 
-```
 
 Documentation backend détaillée :
 ```text 
