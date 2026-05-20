@@ -14,6 +14,17 @@ KEYCLOAK_REALM_SCRIPT="${ROOT_DIR}/scripts/keycloak-realm.sh"
 AUDIT_SCHEMA_SQL="${ROOT_DIR}/docker/audit_schema.sql"
 PROJECT_NAME="${COMPOSE_PROJECT_NAME:-}"
 
+# Charger les variables locales depuis backend/.env si present (export pour docker compose)
+ENV_FILE="${ROOT_DIR}/backend/.env"
+if [[ -f "${ENV_FILE}" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "${ENV_FILE}"
+  set +a
+else
+  echo "[WARN] Fichier ${ENV_FILE} introuvable — docker-compose utilisera ses valeurs par defaut ou les variables d'environnement existantes."
+fi
+
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; CYAN='\033[0;36m'; NC='\033[0m'
 ok()   { echo -e "${GREEN}[OK]${NC}   $*"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
