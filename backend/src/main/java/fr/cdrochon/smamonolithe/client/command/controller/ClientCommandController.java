@@ -3,6 +3,12 @@ package fr.cdrochon.smamonolithe.client.command.controller;
 import fr.cdrochon.smamonolithe.client.command.dtos.ClientCommandDTO;
 import fr.cdrochon.smamonolithe.client.command.services.ClientCommandService;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +19,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.stream.Stream;
 
+@Tag(name = "Clients - Commands", description = "Commandes CQRS liées aux clients")
 @RestController
 @RequestMapping("/commands")
 public class ClientCommandController {
@@ -33,7 +40,22 @@ public class ClientCommandController {
      * @param clientCommandDTO DTO de création d'un client
      * @return ResponseEntity<ClientCommandDTO> DTO de création d'un client
      */
-    /** Création d'un client : réservé à l'ADMIN. */
+    /**
+     * Création d'un client : réservé à l'ADMIN.
+     */
+    @Operation(
+            summary = "Créer un client",
+            description = "Crée un client via une commande Axon. Endpoint réservé au rôle ADMIN."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Client créé",
+                    content = @Content(schema = @Schema(implementation = ClientCommandDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @PostMapping("/createClient")
     @PreAuthorize("hasRole('ADMIN')")
     public Mono<ResponseEntity<ClientCommandDTO>> createClientAsync(@RequestBody ClientCommandDTO clientCommandDTO) {
@@ -60,6 +82,14 @@ public class ClientCommandController {
      * @param id id de l'agregat
      * @return Stream
      */
+    @Operation(
+            summary = "Lire les événements d’un client",
+            description = "Retourne les événements stockés dans l’EventStore Axon pour un aggregate id donné."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Événements trouvés"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(path = "/eventStoreClient/{id}") //consumes = MediaType.TEXT_EVENT_STREAM_VALUE
     public Stream readClientsInEventStore(@PathVariable String id) {
         return eventStore.readEvents(id).asStream();
