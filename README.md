@@ -554,23 +554,92 @@ backend/README.md
 
 Le backend expose la documentation API via `springdoc-openapi-starter-webflux-ui`.
 
-Points importants à retenir :
+#### 📍 Accès à la documentation Swagger
 
-- les propriétés Swagger sont présentes dans `backend/src/main/resources/application.properties`
-- elles sont aussi répétées dans `backend/src/main/resources/application-prod.properties`
-- idéalement, ces paramètres communs devraient être regroupés dans la configuration générale, puis seulement surchargés si nécessaire par profil
-- l'URL déclarée `springdoc.swagger-ui.path=/swagger-ui.html` est un point d'entrée pratique ; Springdoc redirige ensuite vers le chemin réel `http://localhost:8092/swagger-ui/index.html`
-
-En local, la documentation est donc accessible via :
+En local, la documentation est accessible via :
 
 ```text
 http://localhost:8092/swagger-ui/index.html
 ```
 
-et, selon la configuration, via :
+ou via le point d'entrée configuré :
 
 ```text
 http://localhost:8092/swagger-ui.html
+```
+
+#### 🏷️ Annotations Swagger/OpenAPI complètes
+
+L'API est documentée de façon exhaustive avec les annotations OpenAPI 3.0 :
+
+**Au niveau des controllers :**
+- `@Tag(name, description)` : étiquette de groupe pour les endpoints
+- `@Operation(summary, description)` : documentation de chaque méthode
+- `@ApiResponses` + `@ApiResponse` : codes HTTP et descriptions des réponses
+
+**Au niveau des DTOs :**
+- `@Schema(description, example)` : documentation des objets et de leurs champs
+
+**Domaines couverts :**
+- Client (command, query, event sourcing)
+- Dossier (command, query, event sourcing)
+- Vehicule (command, query, event sourcing, search)
+- Document (command, query, event sourcing)
+- Garage (command, query, event sourcing)
+
+**Couverture :** 22 controllers et 24 DTOs annotés (100% des endpoints publics)
+
+#### 📝 Exemple d'annotation
+
+```java
+@Tag(name = "Clients - Commands", description = "Commandes CQRS liées aux clients")
+@RestController
+public class ClientCommandController {
+    
+    @Operation(summary = "Créer un client", description = "Crée un client...")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Client créé", 
+            content = @Content(schema = @Schema(implementation = ClientCommandDTO.class))),
+        @ApiResponse(responseCode = "403", description = "Accès refusé"),
+        @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
+    @PostMapping("/createClient")
+    public Mono<ResponseEntity<ClientCommandDTO>> createClient(...) { }
+}
+```
+
+#### ⚙️ Configuration
+
+Points importants :
+
+- les propriétés Swagger sont présentes dans `backend/src/main/resources/application.properties`
+- elles sont aussi répétées dans `backend/src/main/resources/application-prod.properties`
+- idéalement, ces paramètres communs devraient être regroupés dans la configuration générale, puis seulement surchargés si nécessaire par profil
+- l'URL déclarée `springdoc.swagger-ui.path=/swagger-ui.html` est un point d'entrée pratique ; Springdoc redirige ensuite vers le chemin réel `/swagger-ui/index.html`
+
+#### 📚 Accéder et générer la documentation
+
+**Via Swagger UI (dynamique)**
+
+La documentation est générée automatiquement lors du démarrage :
+
+```bash
+./scripts/dev.sh secure
+# Accès : http://localhost:8092/swagger-ui/index.html
+```
+
+**Exporter en JSON/YAML**
+
+```bash
+curl http://localhost:8092/v3/api-docs > openapi.json
+curl http://localhost:8092/v3/api-docs.yaml > openapi.yaml
+```
+
+**Générer la Javadoc (source)**
+
+```bash
+cd backend && mvn javadoc:javadoc
+# Résultat : backend/target/site/apidocs/index.html
 ```
 
 ### Gestion des secrets
