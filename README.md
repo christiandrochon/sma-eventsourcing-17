@@ -631,14 +631,29 @@ La documentation est générée automatiquement lors du démarrage :
 **Exporter en JSON/YAML**
 
 ```bash
-curl http://localhost:8092/v3/api-docs > openapi.json
-curl http://localhost:8092/v3/api-docs.yaml > openapi.yaml
+# Export local (fichiers ignores par Git)
+./scripts/export-openapi.sh --mode local
+
+# Export canonique versionne
+./scripts/export-openapi.sh --mode canonical
 ```
+
+Convention adoptee :
+
+- `openapi.json` et `openapi.yaml` a la racine sont des exports locaux (ignores via `.gitignore`)
+- la specification versionnee est `docs/openapi/openapi.json`
+- details et mode operatoire dans `docs/openapi/README.md`
 
 **Générer la Javadoc (source)**
 
 ```bash
-cd backend && mvn javadoc:javadoc
+# Necessite un JDK (pas seulement un JRE) et JAVA_HOME configure
+java -version
+javac -version
+javadoc -version
+
+cd backend
+mvn javadoc:javadoc
 # Résultat : backend/target/site/apidocs/index.html
 ```
 

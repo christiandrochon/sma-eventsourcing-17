@@ -41,3 +41,12 @@ frontend/src/test/java/fr/cdrochon/thymeleaffrontend/security/
 # Backup files
 *.bak
 
+# Exports OpenAPI locaux (curl en racine)
+/openapi.json
+/openapi.yaml
+
+# Fichiers temporaires éventuels d'export
+/openapi-*.json
+/openapi-*.yaml
+
+
