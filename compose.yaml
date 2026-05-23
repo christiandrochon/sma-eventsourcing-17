@@ -72,7 +72,8 @@ services:
     healthcheck:
       start_period: 30s
 #      test: ["CMD", "curl", "-f", "http://backend:8092/actuator/health"]
-      test: ["CMD", "curl", "-f", "http://localhost:8092/actuator/health"]
+      # La liveness confirme que l'application tourne; le health global peut rester DOWN si AxonServer n'est pas encore prêt.
+      test: ["CMD", "curl", "-f", "http://localhost:8092/actuator/health/liveness"]
       interval: 20s
       retries: 5
     networks:
