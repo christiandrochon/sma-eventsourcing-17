@@ -1,5 +1,8 @@
 package fr.cdrochon.smamonolithe.document.command.enums;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Énumération des statuts possibles pour un document")
 public enum DocumentStatusDTO {
     CREATED,
     SENT,

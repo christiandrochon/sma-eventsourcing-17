@@ -5,6 +5,12 @@ import fr.cdrochon.smamonolithe.document.query.entities.Document;
 import fr.cdrochon.smamonolithe.document.query.mapper.DocumentQueryMapper;
 import fr.cdrochon.smamonolithe.document.query.repositories.DocumentRepository;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -21,6 +27,7 @@ import reactor.core.scheduler.Schedulers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Tag(name = "Documents - Queries", description = "Requêtes de lecture CQRS liées aux documents")
 @RestController
 @RequestMapping(path = "/queries")
 public class DocumentQueryController {
@@ -39,6 +46,20 @@ public class DocumentQueryController {
      * Retourne un document par son id.
      * RBAC : ADMIN voit tout. USER ne peut consulter que ses propres documents.
      */
+    @Operation(
+            summary = "Récupérer un document par ID",
+            description = "Récupère les informations d'un document spécifique. Les utilisateurs USER ne peuvent accéder qu'à leurs propres documents."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Document trouvé",
+                    content = @Content(schema = @Schema(implementation = DocumentQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé - document non autorisé"),
+            @ApiResponse(responseCode = "404", description = "Document non trouvé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(path = "/documents/{id}")
     public Mono<DocumentQueryDTO> getDocumentByIdAsync(@PathVariable String id,
                                                        Authentication authentication) {
@@ -84,6 +105,19 @@ public class DocumentQueryController {
      * ADMIN → tous les documents.
      * USER  → uniquement les documents où client.mailClient == email JWT.
      */
+    @Operation(
+            summary = "Lister tous les documents",
+            description = "Récupère la liste de tous les documents. Les utilisateurs USER ne voient que leurs propres documents, les ADMIN voient tous les documents."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Liste des documents",
+                    content = @Content(schema = @Schema(implementation = DocumentQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(path = "/documents")
     public Flux<DocumentQueryDTO> getDocumentsAsync(Authentication authentication) {
         Jwt jwt = authentication instanceof JwtAuthenticationToken jwtAuth ? jwtAuth.getToken() : null;

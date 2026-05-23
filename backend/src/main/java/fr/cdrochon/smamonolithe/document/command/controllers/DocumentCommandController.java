@@ -5,6 +5,12 @@ import fr.cdrochon.smamonolithe.client.query.repositories.ClientRepository;
 import fr.cdrochon.smamonolithe.document.command.dtos.DocumentCommandDTO;
 import fr.cdrochon.smamonolithe.document.command.services.DocumentCommandService;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +25,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.stream.Stream;
 
+@Tag(name = "Documents - Commands", description = "Commandes CQRS liées aux documents")
 @RestController
 @RequestMapping("/commands")
 public class DocumentCommandController {
@@ -48,6 +55,19 @@ public class DocumentCommandController {
      * @param documentCommandDTO DTO de création d'un document
      * @return ResponseEntity<DocumentCommandDTO> DTO de création d'un document
      */
+    @Operation(
+            summary = "Créer un document",
+            description = "Crée un document via une commande Axon. Accessible aux rôles ADMIN et USER."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Document créé",
+                    content = @Content(schema = @Schema(implementation = DocumentCommandDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @PostMapping(value = "/createDocument")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public Mono<ResponseEntity<DocumentCommandDTO>> createClientAsync(@RequestBody DocumentCommandDTO documentCommandDTO,
