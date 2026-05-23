@@ -21,13 +21,17 @@ Application intranet de maintenance automobile basée sur Spring Boot, avec sepa
 > - [docs/README.docs.md](docs/README.docs.md) → documentation technique détaillée
 > - [backend/README.md](backend/README.md) → configuration backend et variables d’environnement
 > - [scripts/README.scripts.md](scripts/README.scripts.md) → documentation des scripts
+> - [docs/RUNBOOK_PROD.md](docs/RUNBOOK_PROD.md) → runbook d'exploitation prod
+> - [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) → baseline observabilite
+> - [docs/CONFIG_PROFILES.md](docs/CONFIG_PROFILES.md) → repartition des profils Spring
+> - [docs/SECURITY_REVIEW_CHECKLIST.md](docs/SECURITY_REVIEW_CHECKLIST.md) → checklist revue securite
  
 
 
 ## Demarrage immediat (depuis zero)
 
 > **Important :** pour ce projet, le lancement standard se fait via `./scripts/dev.sh`.
-> N'utilisez pas `docker compose up` comme commande principale de run applicatif.
+> N'utilisez pas `docker compose up` habituel comme commande principale de run applicatif.
 
 Si vous partez de zero (volumes inexistants ou supprimés), lancez simplement :
 
@@ -476,6 +480,20 @@ Build complet (racine) :
 
 ```bash
 mvn clean verify
+```
+
+Smoke-check post-deploiement :
+
+```bash
+PROFILE=dev ./scripts/smoke-check.sh
+PROFILE=prod ./scripts/smoke-check.sh
+```
+
+Verification contrat OpenAPI canonique :
+
+```bash
+./scripts/openapi-verify.sh canonical-only
+./scripts/openapi-verify.sh compare-live
 ```
 
 Build par module :
