@@ -568,6 +568,8 @@ ou via le point d'entrée configuré :
 http://localhost:8092/swagger-ui.html
 ```
 
+Quand la securite backend est activee, la doc reste accessible sans token si `app.security.swagger-public=true` (valeur par defaut hors prod).
+
 #### 🏷️ Annotations Swagger/OpenAPI complètes
 
 L'API est documentée de façon exhaustive avec les annotations OpenAPI 3.0 :
@@ -616,6 +618,8 @@ Points importants :
 - elles sont aussi répétées dans `backend/src/main/resources/application-prod.properties`
 - idéalement, ces paramètres communs devraient être regroupés dans la configuration générale, puis seulement surchargés si nécessaire par profil
 - l'URL déclarée `springdoc.swagger-ui.path=/swagger-ui.html` est un point d'entrée pratique ; Springdoc redirige ensuite vers le chemin réel `/swagger-ui/index.html`
+- en securite activee, les routes `/swagger-ui.html`, `/swagger-ui/**` et `/v3/api-docs/**` sont publiques uniquement si `app.security.swagger-public=true`
+- en `prod`, la doc est desactivee par defaut (`springdoc.swagger-ui.enabled=false`, `springdoc.api-docs.enabled=false`)
 
 #### 📚 Accéder et générer la documentation
 

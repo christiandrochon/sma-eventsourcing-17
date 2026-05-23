@@ -32,6 +32,9 @@ public class SecurityConfig {
 	@Value("${app.security.audit-writer-roles:ADMIN}")
 	private String auditWriterRoles;
 
+	@Value("${app.security.swagger-public:true}")
+	private boolean swaggerPublic;
+
 	private final KeycloakReactiveJwtAuthenticationConverter jwtAuthenticationConverter;
 
 	public SecurityConfig(KeycloakReactiveJwtAuthenticationConverter jwtAuthenticationConverter) {
@@ -46,8 +49,15 @@ public class SecurityConfig {
 				.authorizeExchange(authorize -> {
 					authorize
 							.pathMatchers("/actuator/health", "/actuator/info").permitAll()
-							.pathMatchers("/v3/**", "/swagger-ui/**").permitAll()
 							.pathMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+
+					if (swaggerPublic) {
+						authorize
+								.pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll();
+					} else {
+						authorize
+								.pathMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").authenticated();
+					}
 
 					if (auditEndpointsAuthenticated) {
 						authorize
