@@ -7,6 +7,12 @@ import fr.cdrochon.smamonolithe.dossier.query.dtos.GetDossierDTO;
 import fr.cdrochon.smamonolithe.dossier.query.mapper.DossierQueryMapper;
 import fr.cdrochon.smamonolithe.dossier.query.repositories.DossierRepository;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.val;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -28,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@Tag(name = "Dossiers - Queries", description = "Requêtes de lecture CQRS liées aux dossiers")
 @RestController
 @RequestMapping(path = "/queries")
 public class DossierQueryController {
@@ -47,6 +54,20 @@ public class DossierQueryController {
      * @param id id du dossier
      * @return DossierResponseDTO avec les informations utiles pour la partie query
      */
+    @Operation(
+            summary = "Récupérer un dossier par ID",
+            description = "Récupère les informations d'un dossier spécifique. Les utilisateurs USER ne peuvent accéder qu'aux dossiers de leurs clients."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Dossier trouvé",
+                    content = @Content(schema = @Schema(implementation = DossierQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé - dossier non autorisé"),
+            @ApiResponse(responseCode = "404", description = "Dossier non trouvé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(path = "/dossiers/{id}")
     public Mono<DossierQueryDTO> getDossierByIdAsync(@PathVariable String id, Authentication authentication) {
         Jwt jwt = extractJwt(authentication);
@@ -85,6 +106,19 @@ public class DossierQueryController {
      *
      * @return List<DossierResponseDTO> liste des dossiers sous forme de DTO
      */
+    @Operation(
+            summary = "Lister tous les dossiers",
+            description = "Récupère la liste de tous les dossiers. Les utilisateurs USER ne voient que les dossiers de leurs clients, les ADMIN voient tous les dossiers."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Liste des dossiers",
+                    content = @Content(schema = @Schema(implementation = DossierQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(path = "/dossiers")
     public Flux<DossierQueryDTO> getDossiersAsync(Authentication authentication) {
         Jwt jwt = extractJwt(authentication);
@@ -142,6 +176,18 @@ public class DossierQueryController {
      * @param id id du dossier
      * @return Mono<DossierQueryDTO> le dossier quand il est disponible
      */
+    @Operation(
+            summary = "Attendre que le dossier soit prêt",
+            description = "Attend que le dossier soit disponible dans la projection (read model) après sa création. Utile pour la synchronisation de l'event sourcing."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Dossier prêt",
+                    content = @Content(schema = @Schema(implementation = DossierQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(path = "/dossiers/{id}/wait-ready")
     public Mono<DossierQueryDTO> waitForDossierReady(@PathVariable String id) {
         BusinessLoggers.business().info("BIZ_DOSSIER_WAIT_READY_REQUEST dossierId={}", id);
@@ -186,6 +232,18 @@ public class DossierQueryController {
      * @param id id du dossier
      * @return Flux de DossierResponseDTO
      */
+    @Operation(
+            summary = "Regarder les mises à jour d'un dossier en temps réel",
+            description = "Retourne un flux d'événements en temps réel pour les mises à jour d'un dossier via Server-Sent Events (SSE)."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Flux de mises à jour du dossier",
+                    content = @Content(schema = @Schema(implementation = DossierQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(value = "/dossier/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<DossierQueryDTO> watch(@PathVariable String id) {
         BusinessLoggers.business().info("BIZ_DOSSIER_READ_STREAM_REQUEST dossierId={}", id);

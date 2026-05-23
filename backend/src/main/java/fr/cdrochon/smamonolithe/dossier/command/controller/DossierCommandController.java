@@ -3,6 +3,12 @@ package fr.cdrochon.smamonolithe.dossier.command.controller;
 import fr.cdrochon.smamonolithe.dossier.command.dtos.DossierCommandDTO;
 import fr.cdrochon.smamonolithe.dossier.command.services.DossierCommandService;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +19,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.stream.Stream;
 
+@Tag(name = "Dossiers - Commands", description = "Commandes CQRS liées aux dossiers")
 @RestController
 @RequestMapping("/commands")
 public class DossierCommandController {
@@ -34,6 +41,19 @@ public class DossierCommandController {
      * @return ResponseEntity<DossierCommandDTO> DTO de création d'un dossier
      */
     /** Création d'un dossier : réservé à l'ADMIN. */
+    @Operation(
+            summary = "Créer un dossier",
+            description = "Crée un dossier via une commande Axon. Endpoint réservé au rôle ADMIN."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Dossier créé",
+                    content = @Content(schema = @Schema(implementation = DossierCommandDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @PostMapping(value = "/createDossier")
     @PreAuthorize("hasRole('ADMIN')")
     public Mono<ResponseEntity<DossierCommandDTO>> createClientAsync(@RequestBody DossierCommandDTO dossierCommandDTO) {
@@ -59,6 +79,14 @@ public class DossierCommandController {
      * @param id id de l'agregat
      * @return Stream
      */
+    @Operation(
+            summary = "Lire les événements d'un dossier",
+            description = "Retourne les événements stockés dans l'EventStore Axon pour un dossier donné."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Événements trouvés"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(path = "/eventStoreDossier/{id}")
     public Stream readDossiersInEventStore(@PathVariable String id) {
         return eventStore.readEvents(id).asStream();
