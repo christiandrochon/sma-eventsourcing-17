@@ -10,6 +10,8 @@ set -euo pipefail
 
 APP_URL="${APP_URL:-http://localhost:8091}"
 BACKEND_HEALTH_URL="${BACKEND_HEALTH_URL:-http://localhost:8092/actuator/health}"
+SWAGGER_URL="${SWAGGER_URL:-http://localhost:8092/swagger-ui/index.html}"
+AXON_DASHBOARD_URL="${AXON_DASHBOARD_URL:-http://localhost:8024}"
 KEYCLOAK_URL="${KEYCLOAK_URL:-http://localhost:8080}"
 KEYCLOAK_REALM="${KEYCLOAK_REALM:-sma-realm}"
 REALM_ACCOUNT_URL="${REALM_ACCOUNT_URL:-${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/account}"
@@ -36,13 +38,15 @@ usage() {
 Usage: ./scripts/dev-login.sh [show|open|check|help]
 
   show   Affiche URLs + credentials (defaut)
-  open   Affiche puis tente d'ouvrir App + Keycloak dans le navigateur
+  open   Affiche puis tente d'ouvrir Frontend + Swagger + Axon + Keycloak dans le navigateur
   check  Affiche un check HTTP rapide (app/backend/keycloak)
   help   Affiche cette aide
 
 Variables utiles:
   NO_OPEN=true            N'ouvre pas le navigateur meme en mode open
   APP_URL                 URL frontend (defaut: http://localhost:8091)
+  SWAGGER_URL             URL Swagger UI (defaut: http://localhost:8092/swagger-ui/index.html)
+  AXON_DASHBOARD_URL      URL dashboard Axon (defaut: http://localhost:8024)
   KEYCLOAK_URL            URL Keycloak (defaut: http://localhost:8080)
   KEYCLOAK_REALM          Realm Keycloak (defaut: sma-realm)
   KC_DEMO_*               Surcharge des users/passwords demo
@@ -54,6 +58,8 @@ print_block() {
   info "=== URLs utiles ==="
   echo "  App frontend         : ${APP_URL}"
   echo "  Backend health       : ${BACKEND_HEALTH_URL}"
+  echo "  Swagger UI           : ${SWAGGER_URL}"
+  echo "  Axon dashboard       : ${AXON_DASHBOARD_URL}"
   echo "  Keycloak             : ${KEYCLOAK_URL}"
   echo "  Keycloak admin       : ${ADMIN_CONSOLE_URL}"
   echo "  Keycloak account     : ${REALM_ACCOUNT_URL}"
@@ -97,6 +103,18 @@ open_block() {
     warn "Impossible d'ouvrir automatiquement ${APP_URL}"
   fi
 
+  if open_url "$SWAGGER_URL"; then
+    ok "Ouverture Swagger UI: ${SWAGGER_URL}"
+  else
+    warn "Impossible d'ouvrir automatiquement ${SWAGGER_URL}"
+  fi
+
+  if open_url "$AXON_DASHBOARD_URL"; then
+    ok "Ouverture Axon dashboard: ${AXON_DASHBOARD_URL}"
+  else
+    warn "Impossible d'ouvrir automatiquement ${AXON_DASHBOARD_URL}"
+  fi
+
   if open_url "$KEYCLOAK_URL"; then
     ok "Ouverture Keycloak: ${KEYCLOAK_URL}"
   else
@@ -121,6 +139,8 @@ check_block() {
   info "=== Check rapide disponibilite HTTP ==="
   check_url "Frontend" "$APP_URL"
   check_url "Backend health" "$BACKEND_HEALTH_URL"
+  check_url "Swagger UI" "$SWAGGER_URL"
+  check_url "Axon dashboard" "$AXON_DASHBOARD_URL"
   check_url "Keycloak" "$KEYCLOAK_URL"
 }
 
