@@ -548,6 +548,29 @@ Documentation backend détaillée :
 backend/README.md 
 ```
 
+### Swagger / OpenAPI
+
+Le backend expose la documentation API via `springdoc-openapi-starter-webflux-ui`.
+
+Points importants à retenir :
+
+- les propriétés Swagger sont présentes dans `backend/src/main/resources/application.properties`
+- elles sont aussi répétées dans `backend/src/main/resources/application-prod.properties`
+- idéalement, ces paramètres communs devraient être regroupés dans la configuration générale, puis seulement surchargés si nécessaire par profil
+- l'URL déclarée `springdoc.swagger-ui.path=/swagger-ui.html` est un point d'entrée pratique ; Springdoc redirige ensuite vers le chemin réel `http://localhost:8092/swagger-ui/index.html`
+
+En local, la documentation est donc accessible via :
+
+```text
+http://localhost:8092/swagger-ui/index.html
+```
+
+et, selon la configuration, via :
+
+```text
+http://localhost:8092/swagger-ui.html
+```
+
 ### Gestion des secrets
 
 Le `.env` est réservé au développement local.
