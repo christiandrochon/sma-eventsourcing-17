@@ -8,6 +8,12 @@ import fr.cdrochon.smamonolithe.client.query.dtos.GetClientDTO;
 import fr.cdrochon.smamonolithe.client.query.mapper.ClientQueryMapper;
 import fr.cdrochon.smamonolithe.json.Views;
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -30,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@Tag(name = "Clients - Queries", description = "Requêtes de lecture CQRS liées aux clients")
 @RestController
 @RequestMapping(path = "/queries")
 @Slf4j
@@ -42,7 +49,7 @@ public class ClientQueryController {
     }
     
     //FIXME: 2021-08-25 - CDROCHON - A REVOIR -> VALIDATION DU FORMULAIRE PAS TERRIBLE au niveau des animations et des messages d'erreurs
-    
+
     /**
      * Méthode asynchrone qui renvoi un client dto.
      * ADMIN peut lire tous les clients
@@ -51,6 +58,20 @@ public class ClientQueryController {
      * @param id id du client
      * @return Mono de ClientResponseDTO
      */
+    @Operation(
+            summary = "Récupérer un client par ID",
+            description = "Récupère les informations d'un client spécifique. Les utilisateurs USER ne peuvent accéder qu'à leurs propres données."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Client trouvé",
+                    content = @Content(schema = @Schema(implementation = ClientQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé - client non autorisé"),
+            @ApiResponse(responseCode = "404", description = "Client non trouvé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(path = "/clients/{id}")
     @JsonView(Views.ClientView.class)
     @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
@@ -103,6 +124,19 @@ public class ClientQueryController {
        *
        * @return Flux de ClientResponseDTO
        */
+      @Operation(
+              summary = "Lister tous les clients",
+              description = "Récupère la liste de tous les clients. Les utilisateurs USER ne voient que leurs propres données, les ADMIN et AUDITOR voient tous les clients."
+      )
+      @ApiResponses({
+              @ApiResponse(
+                      responseCode = "200",
+                      description = "Liste des clients",
+                      content = @Content(schema = @Schema(implementation = ClientQueryDTO.class))
+              ),
+              @ApiResponse(responseCode = "403", description = "Accès refusé"),
+              @ApiResponse(responseCode = "500", description = "Erreur serveur")
+      })
       @GetMapping(path = "/clients")
       @JsonView(Views.ClientView.class)
       @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")
@@ -141,6 +175,18 @@ public class ClientQueryController {
      * @param id id du garage
      * @return Flux de GarageResponseDTO
      */
+    @Operation(
+            summary = "Regarder les mises à jour d'un client en temps réel",
+            description = "Retourne un flux d'événements en temps réel pour les mises à jour d'un client via Server-Sent Events (SSE)."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Flux de mises à jour du client",
+                    content = @Content(schema = @Schema(implementation = ClientQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(value = "/client/{id}/watch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ClientQueryDTO> watch(@PathVariable String id) {
         BusinessLoggers.business().info("BIZ_CLIENT_READ_STREAM_REQUEST clientId={}", id);
