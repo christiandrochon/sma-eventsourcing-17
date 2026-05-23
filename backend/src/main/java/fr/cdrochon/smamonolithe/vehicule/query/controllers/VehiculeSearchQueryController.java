@@ -7,6 +7,12 @@ import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +24,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CompletableFuture;
 
+@Tag(name = "Vehicules - Search", description = "Recherche avancée pour les véhicules")
 @RestController
 @RequestMapping(path = "/queries")
 @Slf4j
@@ -59,6 +66,19 @@ public class VehiculeSearchQueryController {
      * @param immatriculation immatriculation du vehicule
      * @return VehiculeResponseDTO
      */
+    @Operation(
+            summary = "Récupérer un véhicule par immatriculation",
+            description = "Retourne les informations d'un véhicule recherché via son immatriculation."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Véhicule trouvé",
+                    content = @Content(schema = @Schema(implementation = VehiculeQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Véhicule non trouvé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping(value = "/vehicules/immatriculation/{immatriculation}")
     @JsonView(Views.VehiculeView.class)
     public Mono<ResponseEntity<?>> getVehiculeByImmatriculationAsync(@PathVariable String immatriculation) {

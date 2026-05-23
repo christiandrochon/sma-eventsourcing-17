@@ -7,7 +7,14 @@ import fr.cdrochon.smamonolithe.vehicule.query.dtos.VehiculeQueryDTO;
 import fr.cdrochon.smamonolithe.vehicule.query.entities.Vehicule;
 import fr.cdrochon.smamonolithe.vehicule.query.mapper.VehiculeQueryMapper;
 import fr.cdrochon.smamonolithe.vehicule.query.repositories.VehiculeRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -24,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@Tag(name = "Vehicules - Queries", description = "Requêtes de lecture CQRS liées aux véhicules")
 @RestController
 @RequestMapping(path = "/queries")
 public class VehiculeQueryController {
@@ -38,6 +46,20 @@ public class VehiculeQueryController {
      * Retourne les informations d'un véhicule par son id.
      * RBAC / IDOR fix : ADMIN voit tout, USER ne peut voir que ses propres véhicules.
      */
+    @Operation(
+            summary = "Récupérer un véhicule par ID",
+            description = "Récupère les informations d'un véhicule spécifique. Les utilisateurs USER ne peuvent accéder qu'à leurs propres véhicules."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Véhicule trouvé",
+                    content = @Content(schema = @Schema(implementation = VehiculeQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé - véhicule non autorisé"),
+            @ApiResponse(responseCode = "404", description = "Véhicule non trouvé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping("/vehicules/{id}")
     @JsonView(Views.VehiculeView.class)
     public Mono<VehiculeQueryDTO> getVehiculeByIdAsync(@PathVariable String id,
@@ -82,6 +104,19 @@ public class VehiculeQueryController {
      *
      * @return List<VehiculeResponseDTO> comprenant l'adresse sous forme de DTO
      */
+    @Operation(
+            summary = "Lister tous les véhicules",
+            description = "Récupère la liste de tous les véhicules. Les utilisateurs USER ne voient que leurs propres véhicules, les ADMIN voient tous les véhicules."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Liste des véhicules",
+                    content = @Content(schema = @Schema(implementation = VehiculeQueryDTO.class))
+            ),
+            @ApiResponse(responseCode = "403", description = "Accès refusé"),
+            @ApiResponse(responseCode = "500", description = "Erreur serveur")
+    })
     @GetMapping("/vehicules")
     @JsonView(Views.VehiculeView.class)
     public Flux<VehiculeQueryDTO> getDossiersAsync(Authentication authentication) {
