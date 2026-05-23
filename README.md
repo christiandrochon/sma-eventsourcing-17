@@ -382,6 +382,8 @@ Puis (optionnel) pour ouvrir les URLs utiles :
 ./scripts/dev.sh open
 ```
 
+Cette commande ouvre notamment le frontend, Swagger UI, le dashboard Axon et Keycloak.
+
 Mode rapide (sans login frontend/backend, pratique pour debug court) :
 
 ```bash
