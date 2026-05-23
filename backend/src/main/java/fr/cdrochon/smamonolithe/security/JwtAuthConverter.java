@@ -7,8 +7,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -40,13 +40,28 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
      * @return
      */
     private Collection<GrantedAuthority> extractResourceRoles(Jwt jwt) {
-        Map<String, Object> realmAccess;
-        Collection<String> roles;
-        if (jwt.getClaim("realm_access") == null) {
+        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+        if (realmAccess == null) {
             return Set.of();
         }
-        realmAccess = jwt.getClaim("realm_access");
-        roles = (Collection<String>) realmAccess.get("roles");
+
+        Object rolesClaim = realmAccess.get("roles");
+        if (!(rolesClaim instanceof Collection<?> rawRoles)) {
+            return Set.of();
+        }
+
+        // Filtre defensif: ignore les valeurs non-string du claim roles.
+        Collection<String> roles = new ArrayList<>();
+        for (Object role : rawRoles) {
+            if (role instanceof String roleName && !roleName.isBlank()) {
+                roles.add(roleName);
+            }
+        }
+
+        if (roles.isEmpty()) {
+            return Set.of();
+        }
+
         return roles.stream().map(role -> new SimpleGrantedAuthority(role)).collect(Collectors.toSet());
     }
 
