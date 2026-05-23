@@ -105,9 +105,10 @@ backend/src/main/resources/application.properties
 
 comme configuration principale commune.
 
-La surcharge production se fait via :
+Les surcharges par profil se font via :
 
 ```text
+backend/src/main/resources/application-dev.properties
 backend/src/main/resources/application-prod.properties
 ```
 
@@ -195,20 +196,24 @@ sma-eventsourcing-17/
 |   |
 |   +-- pom.xml
 |   +-- Dockerfile
-|   +-- application-local.properties
-|   +-- application-prod.properties
 |   `-- src/
 |       +-- main/
+|       |   `-- resources/
+|       |       +-- application.properties
+|       |       +-- application-dev.properties
+|       |       `-- application-prod.properties
 |       `-- test/
 |
 +-- frontend/                            (module UI Thymeleaf)
 |   |
 |   +-- pom.xml
 |   +-- Dockerfile
-|   +-- application-local.properties
-|   +-- application-prod.properties
 |   `-- src/
 |       +-- main/
+|       |   `-- resources/
+|       |       +-- application.properties
+|       |       +-- application-dev.properties
+|       |       `-- application-prod.properties
 |       `-- test/
 |
 +-- scripts/                             (outillage run/audit)
@@ -337,16 +342,12 @@ sma-eventsourcing-17/
   backend/
     pom.xml
     Dockerfile
-    application-local.properties
-    application-prod.properties
     src/main
     src/test
     logs/
   frontend/
     pom.xml
     Dockerfile
-    application-local.properties
-    application-prod.properties
     src/main
     src/test
     logs/
@@ -445,18 +446,18 @@ Option pratique : lancer seulement les dependances (PostgreSQL + Axon + pgAdmin)
 docker compose -f compose.yaml up -d postgres-monolithe axon-server pgadmin4
 ```
 
-2) Lancer le backend en local avec surcharge `application-local.properties` :
+2) Lancer le backend en local avec le profil `dev` :
 
 ```bash
 cd /home/cdn/IdeaProjects/sma-eventsourcing-17/backend
-mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=local,--spring.config.additional-location=file:application-local.properties"
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-3) Lancer le frontend en local avec surcharge `application-local.properties` :
+3) Lancer le frontend en local avec le profil `dev` :
 
 ```bash
 cd /home/cdn/IdeaProjects/sma-eventsourcing-17/frontend
-mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=local,--spring.config.additional-location=file:application-local.properties"
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 Acces utiles :
@@ -507,17 +508,19 @@ mvn -pl backend -Dtest=TechnicalRequestWebFilterTest,GlobalTechnicalExceptionHan
 Profils utilises :
 
 - `default` : valeurs de base dans `src/main/resources/application.properties`
-- `local` : surcharge locale via `application-local.properties` (fichiers a la racine des modules)
-- `prod` : surcharge conteneur via `application-prod.properties`
+- `dev` : surcharge locale via `src/main/resources/application-dev.properties`
+- `prod` : surcharge conteneur via `src/main/resources/application-prod.properties`
 
 Fichiers principaux :
 
-- `backend/application-local.properties`
-- `backend/application-prod.properties`
-- `frontend/application-local.properties`
-- `frontend/application-prod.properties`
+- `backend/src/main/resources/application.properties`
+- `backend/src/main/resources/application-dev.properties`
+- `backend/src/main/resources/application-prod.properties`
+- `frontend/src/main/resources/application.properties`
+- `frontend/src/main/resources/application-dev.properties`
+- `frontend/src/main/resources/application-prod.properties`
 
-Important : `application-local.properties` et `application-prod.properties` sont des fichiers externes aux resources Spring standards. Pour les prendre en compte de facon explicite, utiliser `--spring.config.additional-location=file:...` comme dans la section demarrage.
+Important : les profils `dev` et `prod` sont des fichiers standards Spring Boot sous `src/main/resources`; ils sont charges automatiquement via `spring.profiles.active`.
 
 ## Configuration locale et secrets
 
