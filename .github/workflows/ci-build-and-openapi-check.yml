@@ -27,9 +27,17 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
       SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-    steps:
+      steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Create frontend logging directories
+        # Certains tests / l'application attendent des fichiers de log sous frontend/logs
+        # et parfois sous frontend/frontend/logs en local. Crée les répertoires attendus
+        # pour éviter les FileNotFoundException de Logback en CI.
+        run: |
+          mkdir -p frontend/logs/technique frontend/logs/metier frontend/logs/securite || true
+          mkdir -p frontend/frontend/logs || true
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
