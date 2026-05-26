@@ -37,6 +37,24 @@ jobs:
       - name: Run frontend tests
         run: mvn -pl frontend test
 
+      - name: Upload frontend test reports (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-surefire-reports
+          path: frontend/target/surefire-reports
+
+      - name: Tail frontend surefire failures (on failure)
+        if: failure()
+        run: |
+          echo "-- Listing surefire report files --"
+          ls -l frontend/target/surefire-reports || true
+          echo "-- Showing first 200 lines of each failure report --"
+          for f in frontend/target/surefire-reports/*.txt; do
+            echo "== $f ==";
+            sed -n '1,200p' "$f" || true;
+          done
+
       - name: SonarCloud Scan (optionnel)
         if: ${{ env.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarcloud-github-action@master
@@ -94,4 +112,11 @@ jobs:
           echo "Arrêt du backend (PID=$MVN_PID)"
           kill $MVN_PID || true
           sleep 3 || true
+
+      - name: Upload backend openapi log (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-openapi-log
+          path: backend-openapi.log
 
