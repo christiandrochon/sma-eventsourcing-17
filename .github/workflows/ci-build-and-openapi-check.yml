@@ -28,102 +28,102 @@ jobs:
       SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
       SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Create frontend logging directories
-      # Certains tests / l'application attendent des fichiers de log sous frontend/logs
-      # et parfois sous frontend/frontend/logs en local. Crée les répertoires attendus
-      # pour éviter les FileNotFoundException de Logback en CI.
-      run: |
-        mkdir -p frontend/logs/technique frontend/logs/metier frontend/logs/securite || true
-        mkdir -p frontend/frontend/logs || true
+      - name: Create frontend logging directories
+        # Certains tests / l'application attendent des fichiers de log sous frontend/logs
+        # et parfois sous frontend/frontend/logs en local. Crée les répertoires attendus
+        # pour éviter les FileNotFoundException de Logback en CI.
+        run: |
+          mkdir -p frontend/logs/technique frontend/logs/metier frontend/logs/securite || true
+          mkdir -p frontend/frontend/logs || true
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: "17"
-        cache: maven
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
 
-    - name: Compile backend and frontend
-      run: mvn -pl backend,frontend -DskipTests compile
+      - name: Compile backend and frontend
+        run: mvn -pl backend,frontend -DskipTests compile
 
-    - name: Run backend tests
-      run: mvn -pl backend test
+      - name: Run backend tests
+        run: mvn -pl backend test
 
-    - name: Run frontend tests
-      run: mvn -pl frontend test
+      - name: Run frontend tests
+        run: mvn -pl frontend test
 
-    - name: Analyse SonarQube (optionnel)
-      if: ${{ env.SONAR_TOKEN != '' }}
-      # Cette étape lance l'analyse Sonar (ne s'exécute que si le secret
-      # SONAR_TOKEN est défini). Configurez `SONAR_HOST_URL` et `SONAR_TOKEN`
-      # dans les secrets du dépôt pour activer.
-      run: |
-        mvn -B -DskipTests -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
-          -Dsonar.login=${{ env.SONAR_TOKEN }} sonar:sonar
+      - name: Analyse SonarQube (optionnel)
+        if: ${{ env.SONAR_TOKEN != '' }}
+        # Cette étape lance l'analyse Sonar (ne s'exécute que si le secret
+        # SONAR_TOKEN est défini). Configurez `SONAR_HOST_URL` et `SONAR_TOKEN`
+        # dans les secrets du dépôt pour activer.
+        run: |
+          mvn -B -DskipTests -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ env.SONAR_TOKEN }} sonar:sonar
 
-    - name: Valider OpenAPI canonique (présence + format)
-      # Vérifie simplement la présence du fichier canonical et sa clé `openapi`.
-      run: |
-        python3 - <<'PY'
-        import json
-        from pathlib import Path
-        p = Path("docs/openapi/openapi.json")
-        if not p.exists():
-            raise SystemExit("docs/openapi/openapi.json est manquant")
-        data = json.loads(p.read_text(encoding="utf-8"))
-        if "openapi" not in data:
-            raise SystemExit("docs/openapi/openapi.json ne ressemble pas à OpenAPI")
-        print("Version OpenAPI canonique:", data["openapi"])
-        PY
+      - name: Valider OpenAPI canonique (présence + format)
+        # Vérifie simplement la présence du fichier canonical et sa clé `openapi`.
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("docs/openapi/openapi.json")
+          if not p.exists():
+              raise SystemExit("docs/openapi/openapi.json est manquant")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          if "openapi" not in data:
+              raise SystemExit("docs/openapi/openapi.json ne ressemble pas à OpenAPI")
+          print("Version OpenAPI canonique:", data["openapi"])
+          PY
 
-    - name: Générer et comparer OpenAPI (mode doc-only)
-      # Démarre le backend en mode allégé (sans DB réelle) pour récupérer la
-      # spec via /v3/api-docs, puis compare la spec live avec la spec canonique.
-      # Ce mode évite d'avoir besoin d'une base PostgreSQL en CI.
-      run: |
-        set -euo pipefail
-        # Démarre le backend avec des arguments Spring qui désactivent Flyway,
-        # AxonServer, et la sécurité, et utilisent une base H2 en mémoire.
-        # On exécute en arrière-plan et on capture le PID pour l'arrêter après.
-        nohup mvn -pl backend -DskipTests \
-          -Dspring.flyway.enabled=false \
-          -Daxon.axonserver.enabled=false \
-          -Dapp.security.enabled=false \
-          -Dspring.datasource.url=jdbc:h2:mem:ciopenapi \
-          -Dspring.datasource.username=sa \
-          -Dspring.datasource.password= \
-          -Dspring.main.allow-bean-definition-overriding=true \
-          spring-boot:run > backend-openapi.log 2>&1 &
-        MVN_PID=$!
-        echo "Backend démarré (PID=$MVN_PID), attente de /v3/api-docs..."
+      - name: Générer et comparer OpenAPI (mode doc-only)
+        # Démarre le backend en mode allégé (sans DB réelle) pour récupérer la
+        # spec via /v3/api-docs, puis compare la spec live avec la spec canonique.
+        # Ce mode évite d'avoir besoin d'une base PostgreSQL en CI.
+        run: |
+          set -euo pipefail
+          # Démarre le backend avec des arguments Spring qui désactivent Flyway,
+          # AxonServer, et la sécurité, et utilisent une base H2 en mémoire.
+          # On exécute en arrière-plan et on capture le PID pour l'arrêter après.
+          nohup mvn -pl backend -DskipTests \
+            -Dspring.flyway.enabled=false \
+            -Daxon.axonserver.enabled=false \
+            -Dapp.security.enabled=false \
+            -Dspring.datasource.url=jdbc:h2:mem:ciopenapi \
+            -Dspring.datasource.username=sa \
+            -Dspring.datasource.password= \
+            -Dspring.main.allow-bean-definition-overriding=true \
+            spring-boot:run > backend-openapi.log 2>&1 &
+          MVN_PID=$!
+          echo "Backend démarré (PID=$MVN_PID), attente de /v3/api-docs..."
 
-        # Attente de disponibilité de l'endpoint OpenAPI (timeout 120s)
-        for i in $(seq 1 120); do
-          if curl -fsS http://localhost:8092/v3/api-docs >/dev/null 2>&1; then
-            echo "OpenAPI disponible"
-            break
+          # Attente de disponibilité de l'endpoint OpenAPI (timeout 120s)
+          for i in $(seq 1 120); do
+            if curl -fsS http://localhost:8092/v3/api-docs >/dev/null 2>&1; then
+              echo "OpenAPI disponible"
+              break
+            fi
+            sleep 1
+          done
+
+          # Si non disponible après timeout, afficher les logs et échouer
+          if ! curl -fsS http://localhost:8092/v3/api-docs >/dev/null 2>&1; then
+            echo "Erreur: /v3/api-docs non disponible dans le délai imparti"
+            echo "=== logs backend ==="
+            tail -n +1 backend-openapi.log || true
+            kill $MVN_PID || true
+            exit 1
           fi
-          sleep 1
-        done
 
-        # Si non disponible après timeout, afficher les logs et échouer
-        if ! curl -fsS http://localhost:8092/v3/api-docs >/dev/null 2>&1; then
-          echo "Erreur: /v3/api-docs non disponible dans le délai imparti"
-          echo "=== logs backend ==="
-          tail -n +1 backend-openapi.log || true
+          # Comparer la spec live avec la spec canonical
+          ./scripts/openapi-verify.sh compare-live
+
+          # Arrêter proprement le backend
+          echo "Arrêt du backend (PID=$MVN_PID)"
           kill $MVN_PID || true
-          exit 1
-        fi
-
-        # Comparer la spec live avec la spec canonical
-        ./scripts/openapi-verify.sh compare-live
-
-        # Arrêter proprement le backend
-        echo "Arrêt du backend (PID=$MVN_PID)"
-        kill $MVN_PID || true
-        sleep 3 || true
+          sleep 3 || true
 
 
