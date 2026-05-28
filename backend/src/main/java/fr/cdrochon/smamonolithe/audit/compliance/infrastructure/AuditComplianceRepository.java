@@ -16,6 +16,11 @@ import java.util.Optional;
 @Repository
 public class AuditComplianceRepository {
 
+    // Colonnes réutilisées dans les RowMapper / paramètres SQL -> éviter les littéraux dupliqués
+    private static final String COL_STATUS = "status";
+    private static final String COL_SCORE = "score";
+
+
     private static final RowMapper<AuditExpectationItem> EXPECTATION_MAPPER = new RowMapper<>() {
         @Override
         public AuditExpectationItem mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -26,8 +31,8 @@ public class AuditComplianceRepository {
                         checkId,
                         toInstant(rs.getObject("checked_at")),
                         rs.getString("checked_by"),
-                        rs.getString("status"),
-                        (Integer) rs.getObject("score"),
+                        rs.getString(COL_STATUS),
+                        (Integer) rs.getObject(COL_SCORE),
                         rs.getString("findings"),
                         rs.getString("remediation_plan"),
                         rs.getString("evidence_uri")
@@ -54,8 +59,8 @@ public class AuditComplianceRepository {
             rs.getString("expectation_code"),
             toInstant(rs.getObject("checked_at")),
             rs.getString("checked_by"),
-            rs.getString("status"),
-            (Integer) rs.getObject("score"),
+            rs.getString(COL_STATUS),
+            (Integer) rs.getObject(COL_SCORE),
             rs.getString("scope"),
             rs.getString("findings"),
             rs.getString("remediation_plan"),
@@ -142,8 +147,8 @@ public class AuditComplianceRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("expectationCode", code)
                 .addValue("checkedBy", request.checkedBy())
-                .addValue("status", request.status().name())
-                .addValue("score", request.score())
+                .addValue(COL_STATUS, request.status().name())
+                .addValue(COL_SCORE, request.score())
                 .addValue("scope", request.scope())
                 .addValue("findings", request.findings())
                 .addValue("remediationPlan", request.remediationPlan())

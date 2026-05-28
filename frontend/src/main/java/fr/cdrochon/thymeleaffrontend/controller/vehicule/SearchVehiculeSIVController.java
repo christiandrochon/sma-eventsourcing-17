@@ -20,22 +20,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static fr.cdrochon.thymeleaffrontend.dtos.vehicule.siv.VehiculeDTOMapper.toVehiculeSIVConvertDTO;
 
 @Controller
 public class SearchVehiculeSIVController {
-    
+    private static final Logger logger = LoggerFactory.getLogger(SearchVehiculeSIVController.class);
+
     @Value("${vehicule.json.path}") // URL du fichier JSON configuré dans application.properties
     private String vehiculeJsonPath;
     private final ResourceLoader resourceLoader;
     private final ObjectMapper objectMapper;
-    
+
     public SearchVehiculeSIVController(ResourceLoader resourceLoader, ObjectMapper objectMapper) {
         this.resourceLoader = resourceLoader;
         this.objectMapper = objectMapper;
     }
-    
+
     /**
      * Affiche le formulaire de recherche d'un véhicule par son numéro d'immatriculation
      *
@@ -49,7 +52,7 @@ public class SearchVehiculeSIVController {
         }
         return "vehicule/siv/searchVehiculeSIVForm";
     }
-    
+
     /**
      * Recherche d'un véhicule par son numéro d'immatriculation
      *
@@ -67,7 +70,7 @@ public class SearchVehiculeSIVController {
             model.addAttribute("getImmatDTO", getImmatriculationDTO);
             return "vehicule/siv/searchVehiculeSIVForm";
         }
-        
+
         String immatriculation = getImmatriculationDTO.getImmatriculation();
         Resource resource = resourceLoader.getResource(vehiculeJsonPath);
         try(InputStream inputStream = resource.getInputStream()) {
@@ -76,7 +79,7 @@ public class SearchVehiculeSIVController {
                 if(vehicule.getImmatriculation().equalsIgnoreCase(immatriculation)) {
                     //Envoi vers serveur partie Command pour enregistrement
                     VehiculeSIVConvertDTO vehiculeConverted = toVehiculeSIVConvertDTO(vehicule);
-                    
+
                     // Conversion des formats de date et envoi vers la vue
                     SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
                     SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM yyyy");
@@ -84,19 +87,20 @@ public class SearchVehiculeSIVController {
                         Date date = inputFormat.parse(vehicule.getDateDeMiseEnCirculation());
                         String dateMiseEnCirculationVehicule = outputFormat.format(date);
                         vehicule.setDateDeMiseEnCirculation(dateMiseEnCirculationVehicule);
-                        
+
                         Date date2 = inputFormat.parse(vehicule.getDateValiditeControleTechnique());
                         String dateValiditeControleTechnique = outputFormat.format(date2);
                         vehicule.setDateValiditeControleTechnique(dateValiditeControleTechnique);
                     } catch(Exception e) {
-                        e.printStackTrace();
+                        // Ne pas exposer la stacktrace en production : journaliser l'erreur de manière contrôlée
+                        logger.error("Erreur lors du parsing des dates pour le véhicule immatriculé {}", immatriculation, e);
                     }
 
                     model.addAttribute("vehiculeConverted", vehicule);
                     return "vehicule/siv/resultSearchVehiculeSIVView"; // Affiche le résultat de la recherche
                 }
             }
-            
+
             redirectAttributes.addFlashAttribute("errorMessage",
                                                  "Erreur de recherche. Le numéro d'immatriculation '" + immatriculation + "' n'a pas été trouvé.");
             redirectAttributes.addFlashAttribute("alertClass", "alert-danger");
