@@ -20,16 +20,16 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class VehiculeCommandService {
-    
+
     private static final long CREATE_TIMEOUT_SECONDS = 20L;
 
     private final CommandGateway commandGateway;
     private final ConcurrentMap<String, CompletableFuture<VehiculeCommandDTO>> pendingCreations = new ConcurrentHashMap<>();
-    
+
     public VehiculeCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
-    
+
     /**
      * Genere un UUID aleatoirement pour la creation d'un id de vehicule
      *
@@ -46,15 +46,29 @@ public class VehiculeCommandService {
             pendingCreations.put(requestVehiculeId, futureDTO);
         }
 
-        BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status={}",
+        // Avoid dereferencing a possibly-null DTO (fix Sonar S2259)
+        String immatriculationVehicule = vehiculeRestPostDTO != null ? vehiculeRestPostDTO.getImmatriculationVehicule() : null;
+        String dateMiseEnCirculationVehicule = vehiculeRestPostDTO != null ? vehiculeRestPostDTO.getDateMiseEnCirculationVehicule() : null;
+        String vehiculeStatus = vehiculeRestPostDTO != null ? vehiculeRestPostDTO.getVehiculeStatus() : null;
+
+        if (vehiculeRestPostDTO == null) {
+            BusinessLoggers.business().error("BIZ_VEHICULE_CREATE_REQUEST_INVALID vehiculeId={} payload=null", vehiculeId);
+            // Cleanup pending entries and complete exceptionally
+            removePending(vehiculeId, requestVehiculeId);
+            futureDTO.completeExceptionally(new IllegalArgumentException("vehiculeRestPostDTO must not be null"));
+            return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                            .whenComplete((ok, err) -> removePending(vehiculeId, requestVehiculeId));
+        }
+
+        BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status= {}",
                                         vehiculeId,
-                                        vehiculeRestPostDTO.getImmatriculationVehicule(),
-                                        vehiculeRestPostDTO.getVehiculeStatus());
+                                        immatriculationVehicule,
+                                        vehiculeStatus);
 
         CompletableFuture<Object> commandFuture = commandGateway.send(new VehiculeCreateCommand(vehiculeId,
-                                                                                                  vehiculeRestPostDTO.getImmatriculationVehicule(),
-                                                                                                  vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
-                                                                                                  vehiculeRestPostDTO.getVehiculeStatus()
+                                                                                                  immatriculationVehicule,
+                                                                                                  dateMiseEnCirculationVehicule,
+                                                                                                  vehiculeStatus
         ));
 
         if(commandFuture != null) {
@@ -74,7 +88,7 @@ public class VehiculeCommandService {
         return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                         .whenComplete((ok, err) -> removePending(vehiculeId, requestVehiculeId));
     }
-    
+
     /**
      * Compléter la future dans le service. Méthode appelée par @EventHandler
      *
@@ -92,7 +106,7 @@ public class VehiculeCommandService {
             log.warn("TECH_VEHICULE_CREATE_FUTURE_MISSING vehiculeId={} (event recu sans future en attente)", dto.getId());
         }
     }
-    
+
     /**
      * Listener Spring qui reçoit l'événement VehiculeCreatedApplicationEvent publié par VehiculeEventHandlerService
      * après que le vehicule ait été persiste en DB. Complète la CompletableFuture en attente.
@@ -108,7 +122,7 @@ public class VehiculeCommandService {
             vehiculeDTO.setImmatriculationVehicule(queryDTO.getImmatriculationVehicule());
             vehiculeDTO.setDateMiseEnCirculationVehicule(queryDTO.getDateMiseEnCirculationVehicule());
             vehiculeDTO.setVehiculeStatus(queryDTO.getVehiculeStatus());
-            
+
             completeVehiculeCreation(vehiculeDTO);
         }
     }
