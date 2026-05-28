@@ -29,7 +29,7 @@ jobs:
         run: mvn -B -pl frontend -DskipTests compile
 
       - name: Run frontend tests
-        run: mvn -B -pl frontend test
+        run: mvn -B -pl frontend test -e -Dspring.test.context.failure.threshold=1000000
 
       - name: Upload frontend test reports
         if: always()
