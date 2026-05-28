@@ -1,0 +1,20 @@
+name: CI Sanity Check
+
+on:
+  push:
+    branches: ["test/trigger-ci"]
+  pull_request:
+    branches: ["test/trigger-ci"]
+
+jobs:
+  sanity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Print info
+        run: |
+          echo "Sanity workflow running"
+          echo "Branch: $GITHUB_REF"
+          echo "Actor: $GITHUB_ACTOR"
+
