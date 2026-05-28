@@ -5,18 +5,11 @@ name: CI — build, tests et vérification OpenAPI + SonarCloud
 # reconnaître indépendamment de l'ancienne validation qui bloquait.
 
 on:
-  push:
-    branches: ["main", "test/trigger-ci"]
-  pull_request:
+  workflow_dispatch: {}
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    env:
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -62,16 +55,7 @@ jobs:
             sed -n '1,200p' "$f" || true;
           done
 
-      - name: SonarCloud Scan (optionnel)
-        if: ${{ env.SONAR_TOKEN != '' }}
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          args: >
-            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
-            -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
-        env:
-          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+      # SonarCloud step removed to disable automatic Sonar executions.
 
       - name: Valider OpenAPI canonique (présence + format)
         run: |

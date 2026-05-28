@@ -15,18 +15,11 @@ name: CI — build, tests et vérification OpenAPI canonique
 #   `SONAR_HOST_URL` et `SONAR_TOKEN` sont fournis dans le repo).
 
 on:
-  push:
-    branches: ["main"]
-  pull_request:
+  workflow_dispatch: {}
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    env:
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,14 +48,7 @@ jobs:
       - name: Run frontend tests
         run: mvn -pl frontend test
 
-      - name: Analyse SonarQube (optionnel)
-        if: ${{ env.SONAR_TOKEN != '' }}
-        # Cette étape lance l'analyse Sonar (ne s'exécute que si le secret
-        # SONAR_TOKEN est défini). Configurez `SONAR_HOST_URL` et `SONAR_TOKEN`
-        # dans les secrets du dépôt pour activer.
-        run: |
-          mvn -B -DskipTests -Dsonar.host.url=${{ env.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ env.SONAR_TOKEN }} sonar:sonar
+      # Sonar analysis removed to disable automatic CI Sonar scans.
 
       - name: Valider OpenAPI canonique (présence + format)
         # Vérifie simplement la présence du fichier canonical et sa clé `openapi`.
