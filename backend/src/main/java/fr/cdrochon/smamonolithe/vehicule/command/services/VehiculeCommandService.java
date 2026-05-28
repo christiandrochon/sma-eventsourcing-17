@@ -46,29 +46,15 @@ public class VehiculeCommandService {
             pendingCreations.put(requestVehiculeId, futureDTO);
         }
 
-        // Avoid dereferencing a possibly-null DTO (fix Sonar S2259)
-        String immatriculationVehicule = vehiculeRestPostDTO != null ? vehiculeRestPostDTO.getImmatriculationVehicule() : null;
-        String dateMiseEnCirculationVehicule = vehiculeRestPostDTO != null ? vehiculeRestPostDTO.getDateMiseEnCirculationVehicule() : null;
-        String vehiculeStatus = vehiculeRestPostDTO != null ? vehiculeRestPostDTO.getVehiculeStatus() : null;
-
-        if (vehiculeRestPostDTO == null) {
-            BusinessLoggers.business().error("BIZ_VEHICULE_CREATE_REQUEST_INVALID vehiculeId={} payload=null", vehiculeId);
-            // Cleanup pending entries and complete exceptionally
-            removePending(vehiculeId, requestVehiculeId);
-            futureDTO.completeExceptionally(new IllegalArgumentException("vehiculeRestPostDTO must not be null"));
-            return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                            .whenComplete((ok, err) -> removePending(vehiculeId, requestVehiculeId));
-        }
-
-        BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status= {}",
+        BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status={}",
                                         vehiculeId,
-                                        immatriculationVehicule,
-                                        vehiculeStatus);
+                                        vehiculeRestPostDTO.getImmatriculationVehicule(),
+                                        vehiculeRestPostDTO.getVehiculeStatus());
 
         CompletableFuture<Object> commandFuture = commandGateway.send(new VehiculeCreateCommand(vehiculeId,
-                                                                                                  immatriculationVehicule,
-                                                                                                  dateMiseEnCirculationVehicule,
-                                                                                                  vehiculeStatus
+                                                                                                  vehiculeRestPostDTO.getImmatriculationVehicule(),
+                                                                                                  vehiculeRestPostDTO.getDateMiseEnCirculationVehicule(),
+                                                                                                  vehiculeRestPostDTO.getVehiculeStatus()
         ));
 
         if(commandFuture != null) {
@@ -95,21 +81,22 @@ public class VehiculeCommandService {
      * @param dto DTO de création d'un garage
      */
     public void completeVehiculeCreation(VehiculeCommandDTO dto) {
-        // Guard against null DTO to avoid potential NPEs (Sonar S2259)
+        // Guard against null dto to prevent NPEs flagged by Sonar S2259
         if (dto == null) {
             log.warn("TECH_VEHICULE_CREATE_EVENT_NULL (event received with null dto)");
             return;
         }
 
-        CompletableFuture<VehiculeCommandDTO> pending = removePending(dto.getId(), null);
+        String id = dto.getId();
+        CompletableFuture<VehiculeCommandDTO> pending = removePending(id, null);
         if (pending != null) {
             BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_CONFIRMED vehiculeId={} immatriculation={} status={}",
-                                            dto.getId(),
+                                            id,
                                             dto.getImmatriculationVehicule(),
                                             dto.getVehiculeStatus());
             pending.complete(dto);
         } else {
-            log.warn("TECH_VEHICULE_CREATE_FUTURE_MISSING vehiculeId={} (event recu sans future en attente)", dto.getId());
+            log.warn("TECH_VEHICULE_CREATE_FUTURE_MISSING vehiculeId={} (event recu sans future en attente)", id);
         }
     }
 
