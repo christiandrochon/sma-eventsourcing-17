@@ -23,8 +23,8 @@ public class TestSecurityConfig {
     @ConditionalOnProperty(name = "app.security.enabled", havingValue = "false", matchIfMissing = true)
     public ClientRegistrationRepository clientRegistrationRepository() {
         // Fournit un mock par défaut. Les tests qui ont besoin d'enregistrements
-        // réels doivent déclarer leur propre ClientRegistrationRepository ;
-        // la condition @ConditionalOnMissingBean permettra l'override.
+        // réels doivent déclarer leur propre ClientRegistrationRepository
+        // (la condition @ConditionalOnMissingBean permettra l'override).
         return Mockito.mock(ClientRegistrationRepository.class);
     }
 }
