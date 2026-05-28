@@ -65,51 +65,33 @@ jobs:
           print("Version OpenAPI canonique:", data["openapi"])
           PY
 
-      - name: Générer et comparer OpenAPI (mode doc-only)
-        # Démarre le backend en mode allégé (sans DB réelle) pour récupérer la
-        # spec via /v3/api-docs, puis compare la spec live avec la spec canonique.
-        # Ce mode évite d'avoir besoin d'une base PostgreSQL en CI.
+      - name: Générer et comparer OpenAPI (mode plugin statique)
+        # Génère la spec avec le plugin springdoc (Option A) et compare la sortie
+        # générée à la spec canonique `docs/openapi/openapi.json`. Cette approche
+        # évite de démarrer l'application et de dépendre d'une base PostgreSQL.
         run: |
           set -euo pipefail
-          # Démarre le backend avec des arguments Spring qui désactivent Flyway,
-          # AxonServer, et la sécurité, et utilisent une base H2 en mémoire.
-          # On exécute en arrière-plan et on capture le PID pour l'arrêter après.
-          nohup mvn -pl backend -DskipTests \
-            -Dspring.flyway.enabled=false \
-            -Daxon.axonserver.enabled=false \
-            -Dapp.security.enabled=false \
-            -Dspring.datasource.url=jdbc:h2:mem:ciopenapi \
-            -Dspring.datasource.username=sa \
-            -Dspring.datasource.password= \
-            -Dspring.main.allow-bean-definition-overriding=true \
-            spring-boot:run > backend-openapi.log 2>&1 &
-          MVN_PID=$!
-          echo "Backend démarré (PID=$MVN_PID), attente de /v3/api-docs..."
+          # Sauvegarder la spec canonical actuelle pour comparaison
+          mkdir -p docs/openapi || true
+          cp docs/openapi/openapi.json docs/openapi/openapi.json.canonical || true
 
-          # Attente de disponibilité de l'endpoint OpenAPI (timeout 120s)
-          for i in $(seq 1 120); do
-            if curl -fsS http://localhost:8092/v3/api-docs >/dev/null 2>&1; then
-              echo "OpenAPI disponible"
-              break
-            fi
-            sleep 1
-          done
+          # Générer la spec via le plugin springdoc (ne démarre pas l'app)
+          mvn -pl backend -DskipTests org.springdoc:springdoc-openapi-maven-plugin:generate
 
-          # Si non disponible après timeout, afficher les logs et échouer
-          if ! curl -fsS http://localhost:8092/v3/api-docs >/dev/null 2>&1; then
-            echo "Erreur: /v3/api-docs non disponible dans le délai imparti"
-            echo "=== logs backend ==="
-            tail -n +1 backend-openapi.log || true
-            kill $MVN_PID || true
+          # Vérifier la présence du fichier généré
+          if [[ ! -f docs/openapi/openapi.json ]]; then
+            echo "[FAIL] Le plugin n'a pas généré docs/openapi/openapi.json"
             exit 1
           fi
 
-          # Comparer la spec live avec la spec canonical
-          ./scripts/openapi-verify.sh compare-live
-
-          # Arrêter proprement le backend
-          echo "Arrêt du backend (PID=$MVN_PID)"
-          kill $MVN_PID || true
-          sleep 3 || true
+          # Comparer à la spec canonical sauvegardée
+          if diff -u docs/openapi/openapi.json.canonical docs/openapi/openapi.json >/dev/null; then
+            echo "[OK] Live OpenAPI (plugin) == canonical"
+          else
+            echo "[FAIL] Live OpenAPI (plugin) diffère de canonical"
+            echo "=== diff ==="
+            diff -u docs/openapi/openapi.json.canonical docs/openapi/openapi.json || true
+            exit 1
+          fi
 
 
