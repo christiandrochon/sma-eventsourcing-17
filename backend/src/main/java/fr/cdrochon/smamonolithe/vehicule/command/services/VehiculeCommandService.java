@@ -95,8 +95,14 @@ public class VehiculeCommandService {
      * @param dto DTO de création d'un garage
      */
     public void completeVehiculeCreation(VehiculeCommandDTO dto) {
-        CompletableFuture<VehiculeCommandDTO> pending = removePending(dto != null ? dto.getId() : null, null);
-        if(pending != null) {
+        // Guard against null DTO to avoid potential NPEs (Sonar S2259)
+        if (dto == null) {
+            log.warn("TECH_VEHICULE_CREATE_EVENT_NULL (event received with null dto)");
+            return;
+        }
+
+        CompletableFuture<VehiculeCommandDTO> pending = removePending(dto.getId(), null);
+        if (pending != null) {
             BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_CONFIRMED vehiculeId={} immatriculation={} status={}",
                                             dto.getId(),
                                             dto.getImmatriculationVehicule(),
