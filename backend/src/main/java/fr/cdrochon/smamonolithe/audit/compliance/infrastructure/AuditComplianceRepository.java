@@ -18,6 +18,7 @@ public class AuditComplianceRepository {
 
     // Colonnes réutilisées dans les RowMapper / paramètres SQL -> éviter les littéraux dupliqués
     private static final String COL_STATUS = "status";
+    private static final String COL_SCORE = "score";
 
 
     private static final RowMapper<AuditExpectationItem> EXPECTATION_MAPPER = new RowMapper<>() {
@@ -31,7 +32,7 @@ public class AuditComplianceRepository {
                         toInstant(rs.getObject("checked_at")),
                         rs.getString("checked_by"),
                         rs.getString(COL_STATUS),
-                        (Integer) rs.getObject("score"),
+                        (Integer) rs.getObject(COL_SCORE),
                         rs.getString("findings"),
                         rs.getString("remediation_plan"),
                         rs.getString("evidence_uri")
@@ -59,7 +60,7 @@ public class AuditComplianceRepository {
             toInstant(rs.getObject("checked_at")),
             rs.getString("checked_by"),
             rs.getString(COL_STATUS),
-            (Integer) rs.getObject("score"),
+            (Integer) rs.getObject(COL_SCORE),
             rs.getString("scope"),
             rs.getString("findings"),
             rs.getString("remediation_plan"),
@@ -147,7 +148,7 @@ public class AuditComplianceRepository {
                 .addValue("expectationCode", code)
                 .addValue("checkedBy", request.checkedBy())
                 .addValue(COL_STATUS, request.status().name())
-                .addValue("score", request.score())
+                .addValue(COL_SCORE, request.score())
                 .addValue("scope", request.scope())
                 .addValue("findings", request.findings())
                 .addValue("remediationPlan", request.remediationPlan())
