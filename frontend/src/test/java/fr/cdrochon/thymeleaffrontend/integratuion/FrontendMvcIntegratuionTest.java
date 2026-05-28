@@ -3,6 +3,7 @@ package fr.cdrochon.thymeleaffrontend.integratuion;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import fr.cdrochon.thymeleaffrontend.configuration.TestWebClientConfig;
+import fr.cdrochon.thymeleaffrontend.security.FrontendTokenResolver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,13 @@ class FrontendMvcIntegratuionTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    // Utiliser le bean mocké fourni par TestWebClientConfig au lieu de @MockBean afin
+    // d'éviter l'utilisation d'une annotation dépréciée dans l'IDE et pour
+    // centraliser les mocks des tests.
+    @org.springframework.beans.factory.annotation.Autowired
+    @SuppressWarnings("unused")
+    private FrontendTokenResolver frontendTokenResolver;
 
     @BeforeAll
     static void startStubServer() throws IOException {
@@ -290,4 +298,3 @@ class FrontendMvcIntegratuionTest {
     private record StubResponse(int status, String contentType, String body) {
     }
 }
-
