@@ -1,0 +1,23 @@
+# Normalize text files and mark binaries
+* text=auto
+# Force specific text file encodings and eol
+*.java text eol=lf
+*.xml text eol=lf
+*.properties text eol=lf
+*.md text eol=lf
+*.adoc text eol=lf
+# Mark common binary/resource files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+# Node / frontend build outputs
+/frontend/target/** binary
+/target/** binary
+
+# Prevent accidental normalization of compiled/generated files
+*.class binary
+*.jar binary
+
