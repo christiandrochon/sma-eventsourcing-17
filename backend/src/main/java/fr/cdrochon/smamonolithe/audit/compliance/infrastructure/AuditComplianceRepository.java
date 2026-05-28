@@ -16,6 +16,10 @@ import java.util.Optional;
 @Repository
 public class AuditComplianceRepository {
 
+    // Colonnes réutilisées dans les RowMapper / paramètres SQL -> éviter les littéraux dupliqués
+    private static final String COL_STATUS = "status";
+
+
     private static final RowMapper<AuditExpectationItem> EXPECTATION_MAPPER = new RowMapper<>() {
         @Override
         public AuditExpectationItem mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -26,7 +30,7 @@ public class AuditComplianceRepository {
                         checkId,
                         toInstant(rs.getObject("checked_at")),
                         rs.getString("checked_by"),
-                        rs.getString("status"),
+                        rs.getString(COL_STATUS),
                         (Integer) rs.getObject("score"),
                         rs.getString("findings"),
                         rs.getString("remediation_plan"),
@@ -54,7 +58,7 @@ public class AuditComplianceRepository {
             rs.getString("expectation_code"),
             toInstant(rs.getObject("checked_at")),
             rs.getString("checked_by"),
-            rs.getString("status"),
+            rs.getString(COL_STATUS),
             (Integer) rs.getObject("score"),
             rs.getString("scope"),
             rs.getString("findings"),
@@ -142,7 +146,7 @@ public class AuditComplianceRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("expectationCode", code)
                 .addValue("checkedBy", request.checkedBy())
-                .addValue("status", request.status().name())
+                .addValue(COL_STATUS, request.status().name())
                 .addValue("score", request.score())
                 .addValue("scope", request.scope())
                 .addValue("findings", request.findings())
