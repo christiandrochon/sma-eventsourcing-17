@@ -18,13 +18,14 @@ Application intranet de maintenance automobile basée sur Spring Boot, avec sepa
 
 > ** Pour plus de documentation** : Consultez [docs/README.docs.md](docs/README.docs.md) pour les guides détaillés (architecture logs, features, troubleshooting)
 >
-> - [docs/README.docs.md](docs/README.docs.md) → documentation technique détaillée
-> - [backend/README.md](backend/README.md) → configuration backend et variables d’environnement
-> - [scripts/README.scripts.md](scripts/README.scripts.md) → documentation des scripts
-> - [docs/RUNBOOK_PROD.md](docs/RUNBOOK_PROD.md) → runbook d'exploitation prod
-> - [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) → baseline observabilite
-> - [docs/CONFIG_PROFILES.md](docs/CONFIG_PROFILES.md) → repartition des profils Spring
-> - [docs/SECURITY_REVIEW_CHECKLIST.md](docs/SECURITY_REVIEW_CHECKLIST.md) → checklist revue securite
+ > - [docs/README.docs.md](docs/README.docs.md) → documentation technique détaillée
+ > - [backend/README.md](backend/README.md) → configuration backend et variables d’environnement
+ > - [scripts/README.scripts.md](scripts/README.scripts.md) → documentation des scripts
+ > - [docs/RUNBOOK_PROD.md](docs/RUNBOOK_PROD.md) → runbook d'exploitation prod
+ > - [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) → baseline observabilite
+ > - [docs/CONFIG_PROFILES.md](docs/CONFIG_PROFILES.md) → repartition des profils Spring
+ > - [docs/SECURITY_REVIEW_CHECKLIST.md](docs/SECURITY_REVIEW_CHECKLIST.md) → checklist revue securite
+ > - [docs/CI.md](docs/CI.md) → guide CI & SonarCloud (procédures, secrets, PRs et commandes)
 
 
 
@@ -138,7 +139,8 @@ SPRING_PROFILES_ACTIVE=prod
 - [5.1 Demarrage officiel via script](#51-demarrage-officiel-via-script)
 - [5.2 Demarrage local (sans conteneur app)](#52-demarrage-local-sans-conteneur-app)
 - [6. Build et tests](#6-build-et-tests)
- - [CI et SonarQube — guide pratique](#ci-et-sonarqube---guide-pratique-comment-faire-fonctionner-sonar-et-lancer-le-ci)
+  - [CI et SonarQube — guide pratique](#ci-et-sonarqube---guide-pratique-comment-faire-fonctionner-sonar-et-lancer-le-ci)
+  - [Documentation CI détaillée (docs/CI.md)](docs/CI.md)
 - [7. Configuration et profils Spring](#7-configuration-et-profils-spring)
 - [8. Logs](#8-logs)
 - [9. Grille d'audit independant (RGPD + gouvernance data)](#9-grille-daudit-independant-rgpd--gouvernance-data)
