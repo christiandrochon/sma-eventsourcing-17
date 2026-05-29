@@ -70,15 +70,18 @@ jobs:
         env:
           SONAR_HOST_URL: https://sonarcloud.io
         run: |
-          if [ -n "${{ secrets.SONAR_TOKEN }}" ]; then
-            echo "SONAR_TOKEN present — running mvn sonar:sonar"
+          # Run SonarCloud only when all required secrets are present
+          if [ -n "${{ secrets.SONAR_TOKEN }}" ] && [ -n "${{ secrets.SONAR_ORGANIZATION }}" ] && [ -n "${{ secrets.SONAR_PROJECT_KEY }}" ]; then
+            echo "Sonar secrets present — running mvn sonar:sonar"
             mvn -B -DskipTests \
               -Dsonar.host.url="$SONAR_HOST_URL" \
               -Dsonar.login="${{ secrets.SONAR_TOKEN }}" \
-              -Dsonar.projectKey="christiandrochon_sma-eventsourcing-17" \
+              -Dsonar.organization="${{ secrets.SONAR_ORGANIZATION }}" \
+              -Dsonar.projectKey="${{ secrets.SONAR_PROJECT_KEY }}" \
               sonar:sonar
           else
-            echo "SONAR_TOKEN not set — skipping SonarCloud analysis"
+            echo "Sonar secrets missing — skipping SonarCloud analysis"
+            echo "Set secrets: SONAR_TOKEN, SONAR_ORGANIZATION and SONAR_PROJECT_KEY to enable analysis"
           fi
 
       - name: Valider OpenAPI canonique (présence + format)
