@@ -16,6 +16,16 @@ import java.util.Optional;
 @Repository
 public class AuditComplianceRepository {
 
+    // Colonnes réutilisées dans les RowMapper / paramètres SQL -> éviter les littéraux dupliqués
+    private static final String COL_STATUS = "status";
+    private static final String COL_SCORE = "score";
+    // Statuts utilisés dans les requêtes (ex: dashboard)
+    private static final String STATUS_COMPLIANT = "COMPLIANT";
+    private static final String STATUS_PARTIAL = "PARTIAL";
+    private static final String STATUS_NON_COMPLIANT = "NON_COMPLIANT";
+    private static final String STATUS_NOT_APPLICABLE = "NOT_APPLICABLE";
+
+
     private static final RowMapper<AuditExpectationItem> EXPECTATION_MAPPER = new RowMapper<>() {
         @Override
         public AuditExpectationItem mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -26,8 +36,8 @@ public class AuditComplianceRepository {
                         checkId,
                         toInstant(rs.getObject("checked_at")),
                         rs.getString("checked_by"),
-                        rs.getString("status"),
-                        (Integer) rs.getObject("score"),
+                        rs.getString(COL_STATUS),
+                        (Integer) rs.getObject(COL_SCORE),
                         rs.getString("findings"),
                         rs.getString("remediation_plan"),
                         rs.getString("evidence_uri")
@@ -54,8 +64,8 @@ public class AuditComplianceRepository {
             rs.getString("expectation_code"),
             toInstant(rs.getObject("checked_at")),
             rs.getString("checked_by"),
-            rs.getString("status"),
-            (Integer) rs.getObject("score"),
+            rs.getString(COL_STATUS),
+            (Integer) rs.getObject(COL_SCORE),
             rs.getString("scope"),
             rs.getString("findings"),
             rs.getString("remediation_plan"),
@@ -142,8 +152,8 @@ public class AuditComplianceRepository {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("expectationCode", code)
                 .addValue("checkedBy", request.checkedBy())
-                .addValue("status", request.status().name())
-                .addValue("score", request.score())
+                .addValue(COL_STATUS, request.status().name())
+                .addValue(COL_SCORE, request.score())
                 .addValue("scope", request.scope())
                 .addValue("findings", request.findings())
                 .addValue("remediationPlan", request.remediationPlan())
@@ -156,18 +166,24 @@ public class AuditComplianceRepository {
     }
 
     public AuditComplianceDashboard dashboard() {
-        String sql = """
+        String sqlTemplate = """
                 SELECT
                     (SELECT COUNT(*) FROM audit_expectations WHERE enabled = TRUE) AS enabled_expectations,
                     (SELECT COUNT(*) FROM audit_expectations_latest WHERE check_id IS NOT NULL) AS expectations_with_any_check,
-                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = 'COMPLIANT') AS compliant_latest,
-                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = 'PARTIAL') AS partial_latest,
-                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = 'NON_COMPLIANT') AS non_compliant_latest,
-                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = 'NOT_APPLICABLE') AS not_applicable_latest,
+                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = '%s') AS compliant_latest,
+                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = '%s') AS partial_latest,
+                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = '%s') AS non_compliant_latest,
+                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = '%s') AS not_applicable_latest,
                     (SELECT COUNT(*) FROM audit_events WHERE action = 'ACCESS_DENIED' AND event_time >= now() - INTERVAL '30 days') AS access_denied_30d,
                     (SELECT COUNT(*) FROM audit_events WHERE action = 'ANOMALY' AND event_time >= now() - INTERVAL '30 days') AS anomalies_30d,
                     (SELECT COUNT(*) FROM audit_events WHERE cross_garage = TRUE AND event_time >= now() - INTERVAL '30 days') AS cross_garage_30d
                 """;
+
+        String sql = String.format(sqlTemplate,
+                STATUS_COMPLIANT,
+                STATUS_PARTIAL,
+                STATUS_NON_COMPLIANT,
+                STATUS_NOT_APPLICABLE);
 
         return auditJdbc.queryForObject(sql, new MapSqlParameterSource(), (rs, rowNum) -> new AuditComplianceDashboard(
                 rs.getLong("enabled_expectations"),

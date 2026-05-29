@@ -1,0 +1,30 @@
+################################################################################
+# Workflow: ci-build-only.yml
+# But : build minimal (compilation) — utilisé pour vérifications rapides sur PR
+# Compatibilité : Complémentaire aux workflows de tests. Ne lance pas les tests
+#                ni la génération OpenAPI. Utile pour des vérifications rapides
+#                de compilation sur les PR vers `main`.
+# Recommandation : Garder si vous voulez un job rapied de compilation distinct
+#                  des autres workflows plus lourds.
+################################################################################
+name: CI - build only
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Compile all modules
+        run: mvn -B -DskipTests compile

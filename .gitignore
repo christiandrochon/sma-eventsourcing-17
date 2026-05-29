@@ -49,4 +49,7 @@ frontend/src/test/java/fr/cdrochon/thymeleaffrontend/security/
 /openapi-*.json
 /openapi-*.yaml
 
+# Local runtime PID for backend OpenAPI exporter
+backend-openapi.pid
+
 

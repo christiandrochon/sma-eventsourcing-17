@@ -9,6 +9,16 @@
     <packaging>pom</packaging>
     <name>sma-eventsourcing-17-parent</name>
     <description>Parent Maven multi-modules pour backend et frontend</description>
+    <properties>
+        <!-- Définit l'encodage source du projet : utile pour Maven, Sonar et éditeurs -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Propriété Sonar pour forcer l'encodage lors de l'analyse -->
+        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+        <!-- Java source/target par défaut (peut être surchargé dans modules) -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
     <modules>
         <module>backend</module>
         <module>frontend</module>

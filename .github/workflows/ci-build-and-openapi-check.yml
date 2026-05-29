@@ -1,0 +1,99 @@
+################################################################################
+# Workflow: ci-build-and-openapi-check.yml
+# But : build + tests + génération/comparaison OpenAPI canonique
+# Compatibilité : Compatible avec les autres workflows. Conçu pour être lancé
+#                manuellement (workflow_dispatch) ou en PR selon les triggers.
+# Détails :
+# - Compile backend & frontend, exécute tests module par module.
+# - Valide la présence de `docs/openapi/openapi.json` et compare la spec
+#   générée (plugin springdoc ou démarrage doc-only) avec le canonical.
+# - L'analyse Sonar est volontairement désactivée ici par défaut. Elle peut
+#   être activée en ajoutant les secrets GitHub (`SONAR_HOST_URL`, `SONAR_TOKEN`,
+#   `SONAR_ORGANIZATION`) ou en décommentant la section correspondante.
+# Recommandation : Conserver ce workflow; il est le plus complet pour la vérif
+#                  OpenAPI et les tests d'intégration légers.
+################################################################################
+name: CI — build, tests et vérification OpenAPI canonique
+
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create frontend logging directories
+        # Certains tests / l'application attendent des fichiers de log sous frontend/logs
+        # et parfois sous frontend/frontend/logs en local. Crée les répertoires attendus
+        # pour éviter les FileNotFoundException de Logback en CI.
+        run: |
+          mkdir -p frontend/logs/technique frontend/logs/metier frontend/logs/securite || true
+          mkdir -p frontend/frontend/logs || true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Compile backend and frontend
+        run: mvn -pl backend,frontend -DskipTests compile
+
+      - name: Run backend tests
+        run: mvn -pl backend test
+
+      - name: Run frontend tests
+        run: mvn -pl frontend test
+
+      # Sonar analysis removed to disable automatic CI Sonar scans.
+
+      - name: Valider OpenAPI canonique (présence + format)
+        # Vérifie simplement la présence du fichier canonical et sa clé `openapi`.
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("docs/openapi/openapi.json")
+          if not p.exists():
+              raise SystemExit("docs/openapi/openapi.json est manquant")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          if "openapi" not in data:
+              raise SystemExit("docs/openapi/openapi.json ne ressemble pas à OpenAPI")
+          print("Version OpenAPI canonique:", data["openapi"])
+          PY
+
+      - name: Générer et comparer OpenAPI (mode plugin statique)
+        # Génère la spec avec le plugin springdoc (Option A) et compare la sortie
+        # générée à la spec canonique `docs/openapi/openapi.json`. Cette approche
+        # évite de démarrer l'application et de dépendre d'une base PostgreSQL.
+        run: |
+          set -euo pipefail
+          # Sauvegarder la spec canonical actuelle pour comparaison
+          mkdir -p docs/openapi || true
+          cp docs/openapi/openapi.json docs/openapi/openapi.json.canonical || true
+
+          # Générer la spec via le plugin springdoc (ne démarre pas l'app)
+          mvn -pl backend -DskipTests org.springdoc:springdoc-openapi-maven-plugin:generate
+
+          # Vérifier la présence du fichier généré
+          if [[ ! -f docs/openapi/openapi.json ]]; then
+            echo "[FAIL] Le plugin n'a pas généré docs/openapi/openapi.json"
+            exit 1
+          fi
+
+          # Comparer à la spec canonical sauvegardée
+          if diff -u docs/openapi/openapi.json.canonical docs/openapi/openapi.json >/dev/null; then
+            echo "[OK] Live OpenAPI (plugin) == canonical"
+          else
+            echo "[FAIL] Live OpenAPI (plugin) diffère de canonical"
+            echo "=== diff ==="
+            diff -u docs/openapi/openapi.json.canonical docs/openapi/openapi.json || true
+            exit 1
+          fi
+
+
