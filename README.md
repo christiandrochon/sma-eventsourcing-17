@@ -504,6 +504,8 @@ Cette section décrit concrètement ce que vous devez faire pour :
 - configurer les secrets GitHub nécessaires,
 - lancer l'ensemble du pipeline (build, tests, génération OpenAPI, vérification) localement ou via GitHub Actions.
 
+Pour une procédure pas‑à‑pas, des exemples de commandes et la liste consolidée des modifications/PRs liées à l'intégration CI/Sonar, consultez également `docs/CI.md` (documentation dédiée). Ce fichier contient des extraits de commandes, la façon d'ajouter les secrets GitHub et les liens vers les PRs de correction.
+
 1) Choix Sonar : SonarCloud (service cloud) ou SonarQube self-hosted
 
 - SonarCloud (recommandé pour simplicité) : créez un compte sur https://sonarcloud.io, créez un projet lié à votre repo GitHub et récupérez le token d'analyse.
