@@ -52,4 +52,20 @@ frontend/src/test/java/fr/cdrochon/thymeleaffrontend/security/
 # Local runtime PID for backend OpenAPI exporter
 backend-openapi.pid
 
+# CI et Sonar
+.sonar/
+.sonar/cache/
+.sonar/report-task.txt
+.sonar/sonar-scanner-cli-*.zip
+.sonar/sonar-scanner-cli-*/bin/sonar-scanner
+.sonar/sonar-scanner-cli-*/bin/sonar-scanner.bat
+.sonar/sonar-scanner-cli-*/bin/sonar-scanner.cmd
+.sonar/sonar-scanner-cli-*/bin/sonar-scanner.ps1
+.sonar/sonar-scanner-cli-*/bin/sonar-scanner.sh
+.sonar/sonar-scanner-cli-*/bin/sonar-scanner.bat
+**/target/
+**/logs/
+*.gz
+*.class
+
 
