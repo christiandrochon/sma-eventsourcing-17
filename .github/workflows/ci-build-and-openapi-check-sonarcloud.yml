@@ -65,7 +65,21 @@ jobs:
             sed -n '1,200p' "$f" || true;
           done
 
-      # SonarCloud step removed to disable automatic Sonar executions.
+      # SonarCloud analysis - runs conditionally if SONAR_TOKEN secret is available
+      - name: SonarCloud analysis (conditional)
+        env:
+          SONAR_HOST_URL: https://sonarcloud.io
+        run: |
+          if [ -n "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "SONAR_TOKEN present — running mvn sonar:sonar"
+            mvn -B -DskipTests \
+              -Dsonar.host.url="$SONAR_HOST_URL" \
+              -Dsonar.login="${{ secrets.SONAR_TOKEN }}" \
+              -Dsonar.projectKey="christiandrochon_sma-eventsourcing-17" \
+              sonar:sonar
+          else
+            echo "SONAR_TOKEN not set — skipping SonarCloud analysis"
+          fi
 
       - name: Valider OpenAPI canonique (présence + format)
         run: |
