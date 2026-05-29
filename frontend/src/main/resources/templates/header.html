@@ -25,25 +25,21 @@
                 <ul class="nav">
                     <!-- 1 Dropdown Creation -->
                     <li class="nav-item dropdown ms-auto">
-                        <a class="nav-link dropdown-toggle px-2 link-body-emphasis" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown"
-                           aria-expanded="false">
-                            Créer
-                        </a>
+                        <button type="button" class="nav-link dropdown-toggle px-2 link-body-emphasis btn btn-link" id="dropdownMenu1" data-bs-toggle="dropdown" aria-expanded="false">
+                             Créer
+                        </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                             <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/createDossier}">Créer un dossier</a></li>
                             <li><a class="dropdown-item" th:href="@{/createDocument}">Créer un document</a></li>
                             <li><a class="dropdown-item" th:href="@{/createGarage}">Créer un garage</a></li>
-                            <!--                             <li><a class="dropdown-item" th:href="@{/createVehicule}">Créer un véhicule</a></li>-->
-                            <!--                             <li><a class="dropdown-item" th:href="@{/createClient}">Créer un client</a></li>-->
                         </ul>
                     </li>
 
                     <!-- 2 Dropdown Recherche -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle px-2 link-body-emphasis" href="#" id="dropdownMenu2" role="button" data-bs-toggle="dropdown"
-                           aria-expanded="false" style="margin-left: 50px">
-                            Rechercher
-                        </a>
+                        <button type="button" class="nav-link dropdown-toggle px-2 link-body-emphasis btn btn-link" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" style="margin-left: 50px">
+                             Rechercher
+                        </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
                             <li sec:authorize="hasAnyRole('ADMIN','AUDITOR')"><a class="dropdown-item" th:href="@{/searchclient}">Rechercher un client</a></li>
                             <li><a class="dropdown-item" th:href="@{/searchvehiculesiv}">Rechercher un véhicule (SIV)</a></li>
