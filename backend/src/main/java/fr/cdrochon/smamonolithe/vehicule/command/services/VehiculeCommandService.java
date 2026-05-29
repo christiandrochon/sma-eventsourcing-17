@@ -20,16 +20,16 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class VehiculeCommandService {
-    
+
     private static final long CREATE_TIMEOUT_SECONDS = 20L;
 
     private final CommandGateway commandGateway;
     private final ConcurrentMap<String, CompletableFuture<VehiculeCommandDTO>> pendingCreations = new ConcurrentHashMap<>();
-    
+
     public VehiculeCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
-    
+
     /**
      * Genere un UUID aleatoirement pour la creation d'un id de vehicule
      *
@@ -74,25 +74,32 @@ public class VehiculeCommandService {
         return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                         .whenComplete((ok, err) -> removePending(vehiculeId, requestVehiculeId));
     }
-    
+
     /**
      * Compléter la future dans le service. Méthode appelée par @EventHandler
      *
      * @param dto DTO de création d'un garage
      */
     public void completeVehiculeCreation(VehiculeCommandDTO dto) {
-        CompletableFuture<VehiculeCommandDTO> pending = removePending(dto != null ? dto.getId() : null, null);
-        if(pending != null) {
+        // Guard against null dto to prevent NPEs flagged by Sonar S2259
+        if (dto == null) {
+            log.warn("TECH_VEHICULE_CREATE_EVENT_NULL (event received with null dto)");
+            return;
+        }
+
+        String id = dto.getId();
+        CompletableFuture<VehiculeCommandDTO> pending = removePending(id, null);
+        if (pending != null) {
             BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_CONFIRMED vehiculeId={} immatriculation={} status={}",
-                                            dto.getId(),
+                                            id,
                                             dto.getImmatriculationVehicule(),
                                             dto.getVehiculeStatus());
             pending.complete(dto);
         } else {
-            log.warn("TECH_VEHICULE_CREATE_FUTURE_MISSING vehiculeId={} (event recu sans future en attente)", dto.getId());
+            log.warn("TECH_VEHICULE_CREATE_FUTURE_MISSING vehiculeId={} (event recu sans future en attente)", id);
         }
     }
-    
+
     /**
      * Listener Spring qui reçoit l'événement VehiculeCreatedApplicationEvent publié par VehiculeEventHandlerService
      * après que le vehicule ait été persiste en DB. Complète la CompletableFuture en attente.
@@ -108,7 +115,7 @@ public class VehiculeCommandService {
             vehiculeDTO.setImmatriculationVehicule(queryDTO.getImmatriculationVehicule());
             vehiculeDTO.setDateMiseEnCirculationVehicule(queryDTO.getDateMiseEnCirculationVehicule());
             vehiculeDTO.setVehiculeStatus(queryDTO.getVehiculeStatus());
-            
+
             completeVehiculeCreation(vehiculeDTO);
         }
     }

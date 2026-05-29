@@ -2,6 +2,8 @@ package fr.cdrochon.thymeleaffrontend.integratuion;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import fr.cdrochon.thymeleaffrontend.configuration.TestWebClientConfig;
+import fr.cdrochon.thymeleaffrontend.security.FrontendTokenResolver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,8 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
+@Import(TestWebClientConfig.class)
 class FrontendMvcIntegratuionTest {
 
     private static HttpServer backendStub;
@@ -39,6 +45,13 @@ class FrontendMvcIntegratuionTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    // Utiliser le bean mocké fourni par TestWebClientConfig au lieu de @MockBean afin
+    // d'éviter l'utilisation d'une annotation dépréciée dans l'IDE et pour
+    // centraliser les mocks des tests.
+    @org.springframework.beans.factory.annotation.Autowired
+    @SuppressWarnings("unused")
+    private FrontendTokenResolver frontendTokenResolver;
 
     @BeforeAll
     static void startStubServer() throws IOException {
@@ -285,4 +298,3 @@ class FrontendMvcIntegratuionTest {
     private record StubResponse(int status, String contentType, String body) {
     }
 }
-
