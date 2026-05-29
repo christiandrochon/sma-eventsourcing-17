@@ -38,23 +38,19 @@ public class VehiculeCommandService {
      */
     @Transactional
     public CompletableFuture<VehiculeCommandDTO> createVehicule(VehiculeCommandDTO vehiculeRestPostDTO) {
+        // Behaviour required by legacy tests: throw NPE immediately when null is passed.
+        if (vehiculeRestPostDTO == null) {
+            throw new NullPointerException("vehiculeRestPostDTO must not be null");
+        }
+
         String vehiculeId = UUID.randomUUID().toString();
-        String requestVehiculeId = vehiculeRestPostDTO != null ? vehiculeRestPostDTO.getId() : null;
+        String requestVehiculeId = vehiculeRestPostDTO.getId();
         CompletableFuture<VehiculeCommandDTO> futureDTO = new CompletableFuture<>();
         pendingCreations.put(vehiculeId, futureDTO);
-        if(requestVehiculeId != null && !requestVehiculeId.isBlank()) {
+        if (requestVehiculeId != null && !requestVehiculeId.isBlank()) {
             pendingCreations.put(requestVehiculeId, futureDTO);
         }
 
-        // Guard: vehiculeRestPostDTO must not be null (avoid NPEs when accessing its getters)
-        if (vehiculeRestPostDTO == null) {
-            BusinessLoggers.business().error("BIZ_VEHICULE_CREATE_REQUEST_INVALID vehiculeId={} payload=null", vehiculeId);
-            // cleanup and complete exceptionally so callers receive a clear failure
-            removePending(vehiculeId, requestVehiculeId);
-            futureDTO.completeExceptionally(new IllegalArgumentException("vehiculeRestPostDTO must not be null"));
-            return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                    .whenComplete((ok, err) -> removePending(vehiculeId, requestVehiculeId));
-        }
 
         BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status={}",
                                         vehiculeId,
