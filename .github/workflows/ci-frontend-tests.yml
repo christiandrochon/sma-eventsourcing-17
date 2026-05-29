@@ -1,0 +1,48 @@
+################################################################################
+# Workflow: ci-frontend-tests.yml
+# But : exécuter uniquement les tests du module `frontend` (rapide / ciblé)
+# Compatibilité : Complète les autres workflows en isolant les tests UI. Peut
+#                être déclenché sur PR pour valider uniquement le frontend.
+# Recommandation : Garder pour accélérer la validation des changements UI sans
+#                  lancer le pipeline backend complet.
+################################################################################
+name: CI minimal - frontend tests
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch: {}
+
+jobs:
+  frontend-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Create frontend logging directories
+        run: |
+          mkdir -p "$RUNNER_TEMP/sma-eventsourcing-frontend/logs/metier"
+          mkdir -p "$RUNNER_TEMP/sma-eventsourcing-frontend/logs/technique"
+          mkdir -p "$RUNNER_TEMP/sma-eventsourcing-frontend/logs/securite"
+
+      - name: Compile frontend
+        run: mvn -B -pl frontend -DskipTests compile
+
+      - name: Run frontend tests
+        run: mvn -B -pl frontend test -e -Dspring.test.context.failure.threshold=1000000 -Dlogging.file.path="$RUNNER_TEMP/sma-eventsourcing-frontend/logs"
+
+      - name: Upload frontend test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-surefire-reports
+          path: frontend/target/surefire-reports

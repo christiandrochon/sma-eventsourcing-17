@@ -147,11 +147,16 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- SWAGGER -->
+        <!-- SWAGGER et H2 pour tests ci sans besoin de postgresql -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-            <version>3.0.3</version>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- CD -->
@@ -178,11 +183,7 @@
             <artifactId>axon-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
+
 
         <dependency>
             <groupId>io.projectreactor</groupId>
