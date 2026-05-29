@@ -138,6 +138,7 @@ SPRING_PROFILES_ACTIVE=prod
 - [5.1 Demarrage officiel via script](#51-demarrage-officiel-via-script)
 - [5.2 Demarrage local (sans conteneur app)](#52-demarrage-local-sans-conteneur-app)
 - [6. Build et tests](#6-build-et-tests)
+ - [CI et SonarQube — guide pratique](#ci-et-sonarqube---guide-pratique-comment-faire-fonctionner-sonar-et-lancer-le-ci)
 - [7. Configuration et profils Spring](#7-configuration-et-profils-spring)
 - [8. Logs](#8-logs)
 - [9. Grille d'audit independant (RGPD + gouvernance data)](#9-grille-daudit-independant-rgpd--gouvernance-data)
@@ -496,6 +497,187 @@ Verification contrat OpenAPI canonique :
 ./scripts/openapi-verify.sh compare-live
 ```
 
+## CI et SonarQube — guide pratique (comment faire fonctionner Sonar et lancer le CI)
+
+Cette section décrit concrètement ce que vous devez faire pour :
+- activer l'analyse Sonar (SonarQube local ou SonarCloud),
+- configurer les secrets GitHub nécessaires,
+- lancer l'ensemble du pipeline (build, tests, génération OpenAPI, vérification) localement ou via GitHub Actions.
+
+1) Choix Sonar : SonarCloud (service cloud) ou SonarQube self-hosted
+
+- SonarCloud (recommandé pour simplicité) : créez un compte sur https://sonarcloud.io, créez un projet lié à votre repo GitHub et récupérez le token d'analyse.
+- SonarQube (self-hosted) : vous pouvez démarrer une instance locale (Docker) si vous préférez garder les données en interne.
+
+2) Démarrer SonarQube localement (optionnel)
+
+```bash
+# démarrer SonarQube (nécessite >= 2GB RAM, peut être lent au premier démarrage)
+docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+# attendre que l'interface soit prête (http://localhost:9000)
+```
+
+3) Créer un token Sonar
+
+- Ouvrez SonarQube / SonarCloud dans le navigateur et connectez-vous (SonarCloud : OAuth GitHub possible).
+- Dans votre compte utilisateur → Security → Generate Tokens : copiez le token (ce token ne sera plus affiché ensuite).
+
+4) Ajouter les secrets GitHub (pour que le workflow CI puisse exécuter Sonar)
+
+- Allez dans Settings → Secrets and variables → Actions du dépôt GitHub.
+- Ajoutez au minimum :
+  - `SONAR_HOST_URL` : l'URL (ex. `https://sonarcloud.io` ou `http://<votre-sonarqube>:9000`).
+  - `SONAR_TOKEN` : le token généré.
+  - (optionnel SonarCloud) `SONAR_ORGANIZATION` : votre organisation SonarCloud.
+  - (optionnel) `SONAR_PROJECT_KEY` si vous préférez fixer le key dans les secrets.
+
+5) Lancer l'analyse Sonar localement (commande Maven)
+
+Vous pouvez lancer l'analyse depuis la racine ou depuis `backend/` selon la configuration Maven.
+
+```bash
+# exemple depuis la racine pour analyser le module backend
+cd backend
+mvn clean verify sonar:sonar \
+  -Dsonar.host.url="$SONAR_HOST_URL" \
+  -Dsonar.login="$SONAR_TOKEN" \
+  -Dsonar.projectKey="<votre_project_key>" \
+  -Dsonar.organization="<votre_org_optional>"
+```
+
+Remplacez `<votre_project_key>` par la clé que vous avez choisie dans Sonar ou définie dans `sonar-project.properties`.
+
+6) Activer Sonar dans GitHub Actions
+
+- Le workflow `.github/workflows/ci-build-and-openapi-check.yml` contient déjà une étape Sonar conditionnelle.
+- Pour l'activer dans CI, créez les secrets listés plus haut (`SONAR_HOST_URL`, `SONAR_TOKEN`, éventuellement `SONAR_ORGANIZATION`). Le workflow exécutera alors l'étape Sonar automatiquement.
+
+7) Lancer l'intégralité du CI localement (séquence équivalente à GitHub Actions)
+
+Prérequis locaux : Java 17, Maven, Docker (pour services dépendants si nécessaire).
+
+- Pour exécuter les étapes principales localement (build + tests) :
+
+```bash
+# build + tests (tout le repo)
+mvn clean verify
+
+# ou par module si vous préférez
+mvn -pl backend test
+mvn -pl frontend test
+```
+
+- Générer / vérifier OpenAPI (deux approches):
+
+  Option A — génération statique (plugin springdoc) :
+
+  ```bash
+  # exécuter le plugin (si présent et résolvable dans votre environnement Maven)
+  mvn -pl backend org.springdoc:springdoc-openapi-maven-plugin:generate
+  # puis comparez/committez docs/openapi/openapi.json si ok
+  ```
+
+  Option B — mode "doc-only" (démarrer l'application de façon légère et comparer le /v3/api-docs)
+
+  ```bash
+  # démarrer le backend en mode doc-only (attention : selon la configuration de l'app, un DB réel peut être nécessaire)
+  cd backend
+  nohup mvn -Dspring.flyway.enabled=false \
+    -Daxon.axonserver.enabled=false \
+    -Dapp.security.enabled=false \
+    -Dspring.datasource.url=jdbc:h2:mem:ciopenapi \
+    -Dspring.datasource.username=sa \
+    -Dspring.datasource.password= \
+    -Dspring.main.allow-bean-definition-overriding=true \
+    spring-boot:run > ../backend-openapi.log 2>&1 &
+  MVN_PID=$!
+
+  # attendre que /v3/api-docs réponde, puis lancer la vérification fournie
+  ./scripts/openapi-verify.sh compare-live
+
+  # arrêter
+  kill $MVN_PID || true
+  ```
+
+  Remarque : si le démarrage en mode doc-only échoue (l'application tente encore d'initialiser JPA/Flyway), utilisez l'Option A (plugin) ou exécutez des tests ciblés `@WebFluxTest/@WebMvcTest` qui moquent les dépendances JPA.
+
+8) Lancer l'intégralité du CI comme sur GitHub (déclencher le workflow)
+
+- Le moyen standard est de pousser vos commits/branches sur GitHub : le workflow dans `.github/workflows/ci-build-and-openapi-check.yml` se déclenchera selon sa configuration (PR / push sur branches configurées).
+- Si vous voulez simuler le workflow localement, utilisez `act` (outil communautaire) ou exécutez manuellement les étapes listées plus haut dans le même ordre.
+
+9) Points d'attention et dépannage
+
+- Sonar : si vous utilisez SonarQube local, vérifiez que l'instance a suffisamment de mémoire (2+ Go) et que l'URL/port sont accessibles depuis le runner CI.
+- Plugin springdoc dans Maven : certains environnements ont des problèmes de résolution de plugin (cache Maven corrompu). En cas d'erreur de résolution, essayez `mvn -U` ou nettoyez `~/.m2/repository/org/springdoc`.
+- Doc-only : l'app peut exiger des beans JPA / repositories. Si c'est le cas, vous avez trois options :
+  1. fournir une base en mémoire (H2 runtime) et forcer les propriétés pour éviter Flyway (parfois insuffisant),
+  2. utiliser le plugin de génération statique (Option A),
+  3. ajouter des tests controller (`@WebFluxTest` / `@WebMvcTest`) avec `@MockBean` pour tester les endpoints sans DB.
+
+10) Récapitulatif rapide — ce que TU dois faire
+
+- Choisir SonarCloud (simple) ou SonarQube local.
+- Générer un token Sonar et l'ajouter en secret GitHub (`SONAR_TOKEN`).
+- Remplir `SONAR_HOST_URL` (et `SONAR_ORGANIZATION` si SonarCloud) dans Secrets GitHub.
+- Pousser une branche / PR : le workflow CI exécutera le build, les tests, la génération OpenAPI (selon configuration) et, si les secrets existent, l'analyse Sonar.
+- Pour lancer tout localement : `mvn clean verify`, puis `./scripts/export-openapi.sh --mode canonical` et (optionnel) le mode doc-only décrit plus haut.
+
+Si vous confirmez, j'applique aussi une petite section dans `docs/README.docs.md` (ou un fichier séparé) avec une procédure pas-à-pas pour créer le projet SonarCloud et configurer les secrets GitHub (captures de commandes et copier-coller). Voulez-vous que je l'ajoute ?
+
+### Procédure pas‑à‑pas (rapide) — SonarCloud + GitHub Actions
+
+Suivez ces étapes dans l'ordre pour permettre à GitHub Actions d'envoyer les résultats d'analyse vers SonarCloud.
+
+1) Générer un token SonarCloud
+- Ouvrez https://sonarcloud.io → connectez‑vous → Avatar → My Account → Security → Generate Tokens.
+- Donnez un nom (ex. `sma-ci-token`) et copiez la valeur affichée (vous ne pourrez plus la revoir).
+
+2) Ajouter les secrets dans GitHub (méthode recommandée : UI)
+- Repo → Settings → Secrets and variables → Actions → New repository secret.
+- Créez les 4 secrets séparés :
+  - `SONAR_HOST_URL` = `https://sonarcloud.io`
+  - `SONAR_TOKEN` = `<LE_TOKEN_GENERÉ>`
+  - `SONAR_ORGANIZATION` = `christiandrochon`
+  - `SONAR_PROJECT_KEY` = `christiandrochon`
+
+3) (Optionnel) ajouter les secrets via la CLI `gh`
+- Authentifiez‑vous d'abord : `gh auth login` (ou `echo "<PAT>" | gh auth login --with-token`).
+- Puis :
+```bash
+gh secret set SONAR_HOST_URL --body "https://sonarcloud.io"
+gh secret set SONAR_TOKEN --body "<LE_TOKEN_GENERÉ>"
+gh secret set SONAR_ORGANIZATION --body "christiandrochon"
+gh secret set SONAR_PROJECT_KEY --body "christiandrochon"
+```
+
+4) Nettoyage local (sécurité)
+- Assurez‑vous que le token n'est pas présent dans le repo commité. Si vous avez mis une valeur dans `backend/.env`, supprimez‑la et committez la suppression (ne laissez pas de secret dans le dépôt).
+
+5) Déclencher le workflow CI (push / PR)
+- Créez une branche locale et poussez un commit léger pour déclencher les Actions :
+```bash
+git checkout -b test/trigger-ci
+# modifier un fichier léger (ex: README.md) ou `git commit --allow-empty -m "ci: trigger"`
+git commit -am "chore: trigger CI" || git commit --allow-empty -m "chore: trigger CI"
+git push origin test/trigger-ci
+```
+- Ouvrez une Pull Request ou mergez selon votre processus ; le workflow s'exécutera.
+
+6) Vérifier les logs GitHub Actions
+- GitHub → Actions → sélectionnez le run → Job `build-test` → vérifiez l'étape "Analyse SonarQube (optionnel)".
+- Si `SONAR_TOKEN` est défini, l'étape s'exécutera et publiera les résultats sur SonarCloud.
+
+7) Vérifier SonarCloud
+- SonarCloud → Projects : le projet doit apparaître (ou utilisez Import from GitHub si besoin).
+
+Rappels sécurité
+- Ne commitez jamais un token dans Git. Utilisez GitHub Secrets pour CI.
+- Si vous pensez qu'un token a été exposé, révoquez‑le immédiatement dans SonarCloud (My Account → Security) et générez‑en un nouveau.
+
+Si vous le souhaitez je peux :
+- préparer un petit `docs/SONARCLOUD.md` détaillé avec captures et commandes prêtes à copier, ou
+- modifier le workflow pour utiliser l'action officielle SonarCloud (plus simple à maintenir). Dites "docs" ou "patch workflow".
 Build par module :
 
 ```bash
