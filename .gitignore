@@ -35,8 +35,8 @@ audit-exports/
 **/src/main/resources/META-INF/
 **/src/test/resources/META-INF/
 
-# Test security files (generated)
-frontend/src/test/java/fr/cdrochon/thymeleaffrontend/security/
+# Test security files (generated) - REMOVED: this directory contains real test sources and must not be ignored
+# frontend/src/test/java/fr/cdrochon/thymeleaffrontend/security/  # previously ignored by mistake
 
 # Backup files
 *.bak
