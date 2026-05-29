@@ -26,7 +26,6 @@
                     <!-- 1 Dropdown Creation -->
                     <li class="nav-item dropdown ms-auto">
                         <a class="nav-link dropdown-toggle px-2 link-body-emphasis" href="#" id="dropdownMenu1" role="button" data-bs-toggle="dropdown"
-                           onkeydown="if(event.key==='Enter' || event.key===' '){ event.preventDefault(); this.click(); }"
                            aria-expanded="false">
                             Créer
                         </a>
@@ -34,15 +33,15 @@
                             <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/createDossier}">Créer un dossier</a></li>
                             <li><a class="dropdown-item" th:href="@{/createDocument}">Créer un document</a></li>
                             <li><a class="dropdown-item" th:href="@{/createGarage}">Créer un garage</a></li>
-                            <!--                             <li><a class="dropdown-item" th:href="@{/createVehicule}">Créer un véhicule</a></li>-->
-                            <!--                             <li><a class="dropdown-item" th:href="@{/createClient}">Créer un client</a></li>-->
                         </ul>
                     </li>
 
                     <!-- 2 Dropdown Recherche -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle px-2 link-body-emphasis" href="#" id="dropdownMenu2" role="button" data-bs-toggle="dropdown"
-                           aria-expanded="false" style="margin-left: 50px">
+                           aria-expanded="false" style="margin-left: 50px"
+                           tabindex="0"
+                           onkeydown="if(event.key==='Enter' || event.key===' '){ event.preventDefault(); this.click(); }">
                             Rechercher
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
