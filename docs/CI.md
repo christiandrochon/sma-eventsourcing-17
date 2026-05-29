@@ -111,7 +111,7 @@ But: fournir une documentation concise pour les workflows GitHub Actions présen
 +  - #10 `consolidate/ci-reliability` (regroupe les commentaires CI + corrections reliability)
 +  - #11 `docs/ci-update` (mise à jour de la doc CI)
 +
-Si tu veux que j'ajoute explicitement le diff/les commits (hashs) pour chaque fichier dans la doc, je peux l'insérer également.
+Ajouter explicitement le diff/les commits (hashs) pour chaque fichier dans la doc.
 
 Comment je procède pour insérer les diffs / hashes automatiquement
 - Générer la liste de commits par fichier (exemple, à lancer depuis la racine du repo) :
@@ -151,8 +151,6 @@ gh pr create --title "titre de la PR" --body "description courte" --base main
   - ouvrir l'URL automatique : `https://github.com/<owner>/<repo>/pull/new/my-branch`
 
 - Depuis l'interface web : pousser la branche, ouvrir GitHub → votre repo → bouton "Compare & pull request" sur la branche poussée.
-
-Si tu veux que je crée la PR maintenant, réponds "Crée la PR" ; si tu veux que j'ajoute aussi les fichiers `.gitattributes` et `.editorconfig`, réponds "Ajoute les fichiers config".
 
 ---
 Fait le: 2026-05-29
