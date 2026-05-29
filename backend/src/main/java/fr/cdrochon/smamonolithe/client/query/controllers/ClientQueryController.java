@@ -41,14 +41,12 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/queries")
 @Slf4j
 public class ClientQueryController {
-    
+
     private final QueryGateway queryGateway;
-    
+
     public ClientQueryController(QueryGateway queryGateway) {
         this.queryGateway = queryGateway;
     }
-    
-    //FIXME: 2021-08-25 - CDROCHON - A REVOIR -> VALIDATION DU FORMULAIRE PAS TERRIBLE au niveau des animations et des messages d'erreurs
 
     /**
      * Méthode asynchrone qui renvoi un client dto.
@@ -115,7 +113,7 @@ public class ClientQueryController {
         });
         return Mono.fromFuture(future);
     }
-    
+
       /**
        * Retourne la liste de tous les clients de manière asynchrone
        * ADMIN voit tous les clients
@@ -168,7 +166,7 @@ public class ClientQueryController {
           return Mono.fromFuture(future).flatMapMany(Flux::fromIterable);
       }
 
-    
+
     /**
      * Renvoi un flux de GarageResponseDTO qui sera mis à jour en temps réel avec de nouvelles données chaque fois qu'un nouvel événement est publié.
      *

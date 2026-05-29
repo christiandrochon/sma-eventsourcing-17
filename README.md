@@ -1,4 +1,4 @@
-<!-- 
+<!--
 ═════════════════════════════════════════════════════════════════════════════
 📖 README.md
 ═════════════════════════════════════════════════════════════════════════════
@@ -25,7 +25,7 @@ Application intranet de maintenance automobile basée sur Spring Boot, avec sepa
 > - [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) → baseline observabilite
 > - [docs/CONFIG_PROFILES.md](docs/CONFIG_PROFILES.md) → repartition des profils Spring
 > - [docs/SECURITY_REVIEW_CHECKLIST.md](docs/SECURITY_REVIEW_CHECKLIST.md) → checklist revue securite
- 
+
 
 
 ## Demarrage immediat (depuis zero)
@@ -336,7 +336,7 @@ sma-eventsourcing-17/
 - Orchestration locale : Docker Compose
 - Build : Maven
 - Sécurité : Keycloak
-- Migration db : Flyway 
+- Migration db : Flyway
 
 ## 4. Structure des modules
 
@@ -678,6 +678,90 @@ Rappels sécurité
 Si vous le souhaitez je peux :
 - préparer un petit `docs/SONARCLOUD.md` détaillé avec captures et commandes prêtes à copier, ou
 - modifier le workflow pour utiliser l'action officielle SonarCloud (plus simple à maintenir). Dites "docs" ou "patch workflow".
+
+## CI GitHub Actions — inventaire des workflows et recommandations (nouvelle section)
+
+J'ai ajouté des commentaires explicatifs dans chacun des fichiers sous `.github/workflows/`.
+Ils sont compatibles entre eux et peuvent coexister : certains sont ciblés (frontend, build-only),
+un autre est complet (build + tests + OpenAPI) et il existe une variante historiquement liée à SonarCloud.
+
+Résumé des workflows présents :
+
+- `.github/workflows/ci-build-and-openapi-check.yml` — workflow principal : compile backend+frontend,
+  exécute tests, génère/compare OpenAPI (plugin ou doc-only). Sonar est désactivé par défaut ;
+  conserver : oui (workflow de référence pour tests et OpenAPI).
+- `.github/workflows/ci-build-and-openapi-check-sonarcloud.yml` — variante destinée à SonarCloud :
+  historique utile si vous préférez l'action officielle SonarCloud. Sonar step est retirée pour éviter
+  exécutions non souhaitées si les secrets manquent. Conserver : oui (référence / activable).
+- `.github/workflows/ci-build-only.yml` — compilation rapide sur PR (`main`) et dispatch manuel :
+  utile pour vérifications rapides de compilation. Conserver si vous voulez un job léger distinct.
+- `.github/workflows/ci-frontend-tests.yml` — exécute uniquement les tests du module `frontend` :
+  utile pour isoler les problèmes UI et accélérer la validation PR. Conserver : oui.
+- `.github/workflows/ci-sanity.yml` — sanity check léger déclenché sur `test/trigger-ci` :
+  utile pour valider qu'Actions fonctionne et pour tests manuels. Conserver : optionnel mais pratique.
+
+Compatibilité & recommandations :
+
+- Ces workflows ne sont pas incompatibles entre eux — ils sont complémentaires. Le seul risque est
+  la redondance ou des runs inutiles (ex: plusieurs workflows déclenchés pour le même événement).
+- Si vous voulez réduire le nombre d'exécutions sur chaque PR, pensez à centraliser les étapes ou à
+  limiter les triggers (par ex. n'exécuter le workflow complet que sur push/merge vers `main` et garder
+  des workflows légers sur PRs).
+
+Que vérifier dans une Pull Request (checklist recommandée)
+
+1. CI GitHub Actions
+   - Ouvrir l'onglet Actions → sélectionner le run correspondant → vérifier que les jobs `build-test`,
+     `frontend-tests` ou `build` sont passés.
+   - En cas d'échec : inspecter la première étape échouée (log détaillé disponible), télécharger
+     les artefacts si fournis (ex: surefire reports, backend-openapi-log).
+
+2. Sonar (si activé)
+   - Vérifier le Quality Gate : doit être PASSED (ou Green). Si FAIL -> corriger les issues bloquantes.
+   - Vérifier les nouvelles issues introduites par la PR : Bugs, Vulnerabilities, Code Smells.
+   - Vérifier la couverture (Coverage) si mesurée : baisse significative peut indiquer un problème.
+   - Examiner les Security Hotspots et Vulnerabilities critiques/majeures.
+
+3. OpenAPI
+   - Si la PR modifie des contrôleurs ou DTOs, vérifier que la génération OpenAPI (plugin ou doc-only)
+     ne produit pas de différences inattendues par rapport à `docs/openapi/openapi.json`.
+
+4. Logs et tests
+   - Télécharger et lire les surefire reports (frontend/target/surefire-reports) si tests frontend échouent.
+   - Consulter `backend-openapi.log` si la génération `doc-only` du backend a échoué.
+
+Comment relancer un run CI
+
+- Re-run via l'UI GitHub Actions : Actions → run → Re-run jobs.
+- Pousser un commit vide :
+
+```bash
+git commit --allow-empty -m "ci: rerun" && git push
+```
+
+PR / procédures pratiques
+
+- Pour déclencher le CI depuis votre machine : créez une branche, push et ouvrez une PR.
+  Exemple rapide :
+
+```bash
+git checkout -b feat/ma-fonction
+# modifier des fichiers
+git add .
+git commit -m "feat: ajout ..."
+git push origin feat/ma-fonction
+# ouvrir une PR via l'interface GitHub ou `gh pr create`
+```
+
+- Pour ajouter Sonar dans le CI (si vous n'avez pas encore configuré) :
+  1) générer un token SonarCloud/SonarQube
+  2) ajouter les secrets repo GitHub : `SONAR_HOST_URL`, `SONAR_TOKEN`, `SONAR_ORGANIZATION` (optionnel), `SONAR_PROJECT_KEY` (optionnel)
+  3) réactiver l'étape Sonar dans le workflow (ou utiliser la variante `ci-build-and-openapi-check-sonarcloud.yml`).
+
+Remarque : j'ai ajouté des commentaires explicatifs dans chacun des workflows YAML. Si vous voulez,
+je peux centraliser ces informations dans `docs/CI.md` avec captures d'écran et une procédure pas-à-pas
+pour créer un projet SonarCloud et ajouter les secrets GitHub.
+
 Build par module :
 
 ```bash
@@ -733,7 +817,7 @@ backend/.env
 Ne jamais committer ce fichier.
 
 Exemple :
-```bash 
+```bash
 cp backend/.env.example backend/.env
 ```
 
@@ -749,8 +833,8 @@ Le backend charge automatiquement ce fichier via :
 
 
 Documentation backend détaillée :
-```text 
-backend/README.md 
+```text
+backend/README.md
 ```
 
 ### Swagger / OpenAPI
@@ -800,10 +884,10 @@ L'API est documentée de façon exhaustive avec les annotations OpenAPI 3.0 :
 @Tag(name = "Clients - Commands", description = "Commandes CQRS liées aux clients")
 @RestController
 public class ClientCommandController {
-    
+
     @Operation(summary = "Créer un client", description = "Crée un client...")
     @ApiResponses({
-        @ApiResponse(responseCode = "201", description = "Client créé", 
+        @ApiResponse(responseCode = "201", description = "Client créé",
             content = @Content(schema = @Schema(implementation = ClientCommandDTO.class))),
         @ApiResponse(responseCode = "403", description = "Accès refusé"),
         @ApiResponse(responseCode = "500", description = "Erreur serveur")
@@ -1393,30 +1477,30 @@ Principes fondamentaux :
 ### 11.1 Matrice d'accès : qui accède à quoi
 
 #### Clients
-- **ADMIN LIST** : tous les clients  
+- **ADMIN LIST** : tous les clients
 - **USER LIST** : uniquement si propriétaire du client (selon `mailClient`)
-- **ADMIN BY-ID** : n'importe quel client  
+- **ADMIN BY-ID** : n'importe quel client
 - **USER BY-ID** : uniquement si propriétaire (`403 FORBIDDEN` sinon)
 - **CREATE** : ADMIN uniquement (l'ownership client est attribué à la création)
 
 #### Véhicules
-- **ADMIN LIST** : tous les véhicules  
+- **ADMIN LIST** : tous les véhicules
 - **USER LIST** : uniquement les véhicules du client propriétaire (`vehicule.client.mailClient == JWT email`)
-- **ADMIN BY-ID** : n'importe quel véhicule  
+- **ADMIN BY-ID** : n'importe quel véhicule
 - **USER BY-ID** : uniquement si `vehicule.client.mailClient == JWT email` (`403 FORBIDDEN` sinon)
 - **CREATE** : ADMIN ou USER (le véhicule est rattaché au client JWT)
 
 #### Documents
-- **ADMIN LIST** : tous les documents  
+- **ADMIN LIST** : tous les documents
 - **USER LIST** : uniquement les documents du client propriétaire (`document.client.mailClient == JWT email`)
-- **ADMIN BY-ID** : n'importe quel document  
+- **ADMIN BY-ID** : n'importe quel document
 - **USER BY-ID** : uniquement si `document.client.mailClient == JWT email` (`403 FORBIDDEN` sinon)
 - **CREATE** : ADMIN ou USER (le document est rattaché au client JWT; voir propagation `clientId` ci-dessous)
 
 #### Dossiers
-- **ADMIN LIST** : tous les dossiers  
+- **ADMIN LIST** : tous les dossiers
 - **USER LIST** : uniquement les dossiers du client propriétaire (`dossier.client.mailClient == JWT email`)
-- **ADMIN BY-ID** : n'importe quel dossier  
+- **ADMIN BY-ID** : n'importe quel dossier
 - **USER BY-ID** : uniquement si `dossier.client.mailClient == JWT email` (`403 FORBIDDEN` sinon)
 - **CREATE** : ADMIN ou USER (le dossier est rattaché au client JWT)
 
@@ -1445,7 +1529,7 @@ if (id != null) {
     if (!isAdmin) {
         String ownerEmail = resource.getClient().getMailClient();  // ou resource.owner
         if (!email.equals(ownerEmail)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                 "Acces refuse: ressource appartient a " + ownerEmail);
         }
     }
@@ -1481,7 +1565,7 @@ Les réjectes de USER sans JWT email :
 ```java
 if (!isAdmin) {
     if (email == null || email.isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
             "Acces refuse: utilisateur sans email JWT");
     }
     // ...
@@ -1534,7 +1618,7 @@ Si un USER n'a pas de client associé (cas d'erreur) :
 ```java
 Optional<Client> clientOpt = clientRepository.findByMailClient(email);
 if (clientOpt.isEmpty()) {
-    throw new ResponseStatusException(HttpStatus.FORBIDDEN, 
+    throw new ResponseStatusException(HttpStatus.FORBIDDEN,
         "Aucun client associe au mail JWT : " + email);
 }
 documentDTO.setClientId(clientOpt.get().getId());
@@ -1569,11 +1653,11 @@ Le schéma d'ownership a été introduit progressivement via Flyway :
   DO $$
   BEGIN
     IF NOT EXISTS (
-      SELECT 1 FROM information_schema.columns 
+      SELECT 1 FROM information_schema.columns
       WHERE table_name = 'document' AND column_name = 'client_id'
     ) THEN
       ALTER TABLE document ADD COLUMN client_id VARCHAR(255);
-      ALTER TABLE document ADD CONSTRAINT fk_document_client 
+      ALTER TABLE document ADD CONSTRAINT fk_document_client
         FOREIGN KEY (client_id) REFERENCES client(id);
     END IF;
   END $$;
