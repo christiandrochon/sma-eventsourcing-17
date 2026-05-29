@@ -24,6 +24,15 @@ But: fournir une documentation concise pour les workflows GitHub Actions présen
 - /home/cdn/IdeaProjects/sma-eventsourcing-17/.github/workflows/ci-sanity.yml
   - Petit job de sanity: vérifie que l'environnement runner et les scripts sont ok (création de répertoires, permissions…).
 
+2.1) Fichiers de configuration recommandés
+- `.gitattributes` (racine)
+  - Objectif: normaliser les fins de ligne (EOL), marquer les fichiers binaires, et aider les outils (dont Sonar) à ignorer les fichiers non pertinents pour l'analyse. Important pour éviter des diffs bruyants entre OS (LF vs CRLF) et pour garantir un traitement cohérent des encodages.
+- `.editorconfig` (racine)
+  - Objectif: partager des règles d'édition (indentation, encodage, fin de ligne, taille de tabulation) entre IDEs/éditeurs. Facilite la cohérence du style et réduit les changements non-significatifs dans les PRs.
+- `sonar-project.properties` (racine ou config CI)
+  - Objectif: fichier de configuration utilisé par `sonar-scanner` (CLI) pour définir le `projectKey`, les sources, exclusions, et autres propriétés Sonar lorsque l'analyse est lancée hors d'un build Maven/Gradle.
+  - Pourquoi à la racine: le scanner Sonar s'exécute typiquement depuis la racine du dépôt et cherche `sonar-project.properties` à cet endroit — c'est la convention. Placer ce fichier ailleurs (p.ex. sous `src/main/resources`) oblige à fournir explicitement `-Dsonar.projectBaseDir=...` ou `-Dproject.settings=...` dans la commande, ce qui complique l'intégration CI.
+  - Alternatives: pour un projet Maven, on peut définir les propriétés Sonar dans le `pom.xml` (plugin `sonar-maven-plugin`) et/ou passer des propriétés au runtime via `-Dsonar.*`. Cela évite un fichier supplémentaire à la racine si vous préférez centraliser la config dans Maven.
 3) SonarCloud / SonarQube — mode opératoire
 - Pour SonarCloud (cloud) : créez un token dans SonarCloud (Account → Security) puis stockez-le dans GitHub Secrets comme `SONAR_TOKEN`.
 - Le workflow Sonar du repo est conditionnel: s'il trouve `SONAR_TOKEN` il exécute `mvn sonar:sonar` et pousse le résultat vers SonarCloud.
