@@ -110,8 +110,24 @@ But: fournir une documentation concise pour les workflows GitHub Actions présen
 +  - #9 `fix/vehicule-null-guard`
 +  - #10 `consolidate/ci-reliability` (regroupe les commentaires CI + corrections reliability)
 +  - #11 `docs/ci-update` (mise à jour de la doc CI)
-+
-+Si tu veux que j'ajoute explicitement le diff/les commits (hashs) pour chaque fichier dans la doc, je peux l'insérer également.
+
+Si tu veux que j'ajoute explicitement le diff/les commits (hashs) pour chaque fichier dans la doc, je peux l'insérer également.
+
+8) Commits associés (hashs)
+Ci‑dessous la liste des fichiers modifiés avec le commit court (hash) et le message de commit correspondant — utile pour la traçabilité et la revue :
+
+- `backend/src/test/resources/application-test.properties` -> 4335f7c (test(h2): remove MODE=PostgreSQL from H2 test datasource URL)
+- `frontend/src/test/java/fr/cdrochon/thymeleaffrontend/configuration/TestSecurityConfig.java` -> a250369 (fix(tests): cleanup TestSecurityConfig comment; fix client event minor change)
+- `.gitignore` -> c8176fd (chore: ignore backend-openapi.pid (local runtime file))
+- `frontend/src/main/java/fr/cdrochon/thymeleaffrontend/controller/vehicule/SearchVehiculeSIVController.java` -> c4e8e10 (fix(security): replace printStackTrace with logger.error to avoid leaking stack traces (Sonar S4507))
+- `backend/src/main/java/fr/cdrochon/smamonolithe/vehicule/command/services/VehiculeCommandService.java` -> e6176c2 (fix(vehicule): guard against null create payload in createVehicule (avoid NPE))
+- `frontend/src/main/resources/templates/header.html` -> b7c2b44 (fix(accessibility): use <button> for dropdown toggles (S6819))
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/command/dtos/ClientCommandDTO.java` -> f4eaebd (fix(client): defensive copy in ClientCommandDTO constructor for adresse (avoid exposing internal representation))
+- `backend/src/main/java/fr/cdrochon/smamonolithe/audit/compliance/infrastructure/AuditComplianceRepository.java` -> c592adb (refactor(audit): extract status literals to constants and use template for dashboard SQL)
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/controllers/ClientQueryController.java` -> 9bf7892 (fix(reliability): apply Sonar-recommended reliability fixes to client classes; update README)
+- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/services/ClientEventHandlerService.java` -> 9bf7892 (fix(reliability): apply Sonar-recommended reliability fixes to client classes; update README)
+- `docs/CI.md` -> 35c687a (docs(ci): list all modified files and PR references; document pom/build changes)
+- `pom.xml` -> 9948daa (chore: set project and Sonar encoding to UTF-8; add .editorconfig and sonar-project.properties)
 
 Contact
 -------
