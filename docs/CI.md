@@ -110,28 +110,49 @@ But: fournir une documentation concise pour les workflows GitHub Actions présen
 +  - #9 `fix/vehicule-null-guard`
 +  - #10 `consolidate/ci-reliability` (regroupe les commentaires CI + corrections reliability)
 +  - #11 `docs/ci-update` (mise à jour de la doc CI)
-
++
 Si tu veux que j'ajoute explicitement le diff/les commits (hashs) pour chaque fichier dans la doc, je peux l'insérer également.
 
-8) Commits associés (hashs)
-Ci‑dessous la liste des fichiers modifiés avec le commit court (hash) et le message de commit correspondant — utile pour la traçabilité et la revue :
+Comment je procède pour insérer les diffs / hashes automatiquement
+- Générer la liste de commits par fichier (exemple, à lancer depuis la racine du repo) :
 
-- `backend/src/test/resources/application-test.properties` -> 4335f7c (test(h2): remove MODE=PostgreSQL from H2 test datasource URL)
-- `frontend/src/test/java/fr/cdrochon/thymeleaffrontend/configuration/TestSecurityConfig.java` -> a250369 (fix(tests): cleanup TestSecurityConfig comment; fix client event minor change)
-- `.gitignore` -> c8176fd (chore: ignore backend-openapi.pid (local runtime file))
-- `frontend/src/main/java/fr/cdrochon/thymeleaffrontend/controller/vehicule/SearchVehiculeSIVController.java` -> c4e8e10 (fix(security): replace printStackTrace with logger.error to avoid leaking stack traces (Sonar S4507))
-- `backend/src/main/java/fr/cdrochon/smamonolithe/vehicule/command/services/VehiculeCommandService.java` -> e6176c2 (fix(vehicule): guard against null create payload in createVehicule (avoid NPE))
-- `frontend/src/main/resources/templates/header.html` -> b7c2b44 (fix(accessibility): use <button> for dropdown toggles (S6819))
-- `backend/src/main/java/fr/cdrochon/smamonolithe/client/command/dtos/ClientCommandDTO.java` -> f4eaebd (fix(client): defensive copy in ClientCommandDTO constructor for adresse (avoid exposing internal representation))
-- `backend/src/main/java/fr/cdrochon/smamonolithe/audit/compliance/infrastructure/AuditComplianceRepository.java` -> c592adb (refactor(audit): extract status literals to constants and use template for dashboard SQL)
-- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/controllers/ClientQueryController.java` -> 9bf7892 (fix(reliability): apply Sonar-recommended reliability fixes to client classes; update README)
-- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/services/ClientEventHandlerService.java` -> 9bf7892 (fix(reliability): apply Sonar-recommended reliability fixes to client classes; update README)
-- `docs/CI.md` -> 35c687a (docs(ci): list all modified files and PR references; document pom/build changes)
-- `pom.xml` -> 9948daa (chore: set project and Sonar encoding to UTF-8; add .editorconfig and sonar-project.properties)
+```bash
+# pour un seul fichier
+git log -n1 --pretty=format:'%h (%ci) %s' -- path/to/file
+
+# pour plusieurs fichiers et formater en Markdown (ex : fichier -> hash + message)
+for f in file1 file2 file3; do \
+  h=$(git log -n1 --pretty=format:'%h' -- "$f"); \
+  msg=$(git log -n1 --pretty=format:'%s' -- "$f"); \
+  echo "- \\`$f\\` -> $h ($msg)"; \
+done
+```
+
+- Copier/coller la sortie dans `docs/CI.md` ou automatiser l'insertion (script). Pour fournir des liens directs vers le commit sur GitHub, on peut formater `https://github.com/<owner>/<repo>/commit/<hash>`.
 
 Contact
 -------
-Si tu veux que je crée la PR maintenant, réponds "Crée la PR". Si tu préfères que j'ajoute aussi des commentaires en-tête dans les fichiers YAML, réponds "Ajoute les commentaires CI".
+Créer une PR — commandes utiles
+- Depuis la ligne de commande (avec `gh` installé) :
+
+```bash
+# créer une branche locale
+git checkout -b my-branch
+# ajouter/modifier fichiers
+git add <files>
+git commit -m "mon message"
+git push -u origin my-branch
+# créer la PR non-interactively
+gh pr create --title "titre de la PR" --body "description courte" --base main
+```
+
+- Depuis la ligne de commande sans `gh` :
+  - pousser la branche : `git push -u origin my-branch`
+  - ouvrir l'URL automatique : `https://github.com/<owner>/<repo>/pull/new/my-branch`
+
+- Depuis l'interface web : pousser la branche, ouvrir GitHub → votre repo → bouton "Compare & pull request" sur la branche poussée.
+
+Si tu veux que je crée la PR maintenant, réponds "Crée la PR" ; si tu veux que j'ajoute aussi les fichiers `.gitattributes` et `.editorconfig`, réponds "Ajoute les fichiers config".
 
 ---
 Fait le: 2026-05-29
