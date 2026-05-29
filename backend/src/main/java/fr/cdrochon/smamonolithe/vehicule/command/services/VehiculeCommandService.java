@@ -46,6 +46,16 @@ public class VehiculeCommandService {
             pendingCreations.put(requestVehiculeId, futureDTO);
         }
 
+        // Guard: vehiculeRestPostDTO must not be null (avoid NPEs when accessing its getters)
+        if (vehiculeRestPostDTO == null) {
+            BusinessLoggers.business().error("BIZ_VEHICULE_CREATE_REQUEST_INVALID vehiculeId={} payload=null", vehiculeId);
+            // cleanup and complete exceptionally so callers receive a clear failure
+            removePending(vehiculeId, requestVehiculeId);
+            futureDTO.completeExceptionally(new IllegalArgumentException("vehiculeRestPostDTO must not be null"));
+            return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .whenComplete((ok, err) -> removePending(vehiculeId, requestVehiculeId));
+        }
+
         BusinessLoggers.business().info("BIZ_VEHICULE_CREATE_REQUEST vehiculeId={} immatriculation={} status={}",
                                         vehiculeId,
                                         vehiculeRestPostDTO.getImmatriculationVehicule(),
