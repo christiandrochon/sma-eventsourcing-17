@@ -23,74 +23,95 @@ But: fournir une documentation concise pour les workflows GitHub Actions présen
 
 - /home/cdn/IdeaProjects/sma-eventsourcing-17/.github/workflows/ci-sanity.yml
   - Petit job de sanity: vérifie que l'environnement runner et les scripts sont ok (création de répertoires, permissions…).
-
-2.1) Fichiers de configuration recommandés
-- `.gitattributes` (racine)
-  - Objectif: normaliser les fins de ligne (EOL), marquer les fichiers binaires, et aider les outils (dont Sonar) à ignorer les fichiers non pertinents pour l'analyse. Important pour éviter des diffs bruyants entre OS (LF vs CRLF) et pour garantir un traitement cohérent des encodages.
-- `.editorconfig` (racine)
-  - Objectif: partager des règles d'édition (indentation, encodage, fin de ligne, taille de tabulation) entre IDEs/éditeurs. Facilite la cohérence du style et réduit les changements non-significatifs dans les PRs.
-- `sonar-project.properties` (racine ou config CI)
-  - Objectif: fichier de configuration utilisé par `sonar-scanner` (CLI) pour définir le `projectKey`, les sources, exclusions, et autres propriétés Sonar lorsque l'analyse est lancée hors d'un build Maven/Gradle.
-  - Pourquoi à la racine: le scanner Sonar s'exécute typiquement depuis la racine du dépôt et cherche `sonar-project.properties` à cet endroit — c'est la convention. Placer ce fichier ailleurs (p.ex. sous `src/main/resources`) oblige à fournir explicitement `-Dsonar.projectBaseDir=...` ou `-Dproject.settings=...` dans la commande, ce qui complique l'intégration CI.
-  - Alternatives: pour un projet Maven, on peut définir les propriétés Sonar dans le `pom.xml` (plugin `sonar-maven-plugin`) et/ou passer des propriétés au runtime via `-Dsonar.*`. Cela évite un fichier supplémentaire à la racine si vous préférez centraliser la config dans Maven.
-3) SonarCloud / SonarQube — mode opératoire
-- Pour SonarCloud (cloud) : créez un token dans SonarCloud (Account → Security) puis stockez-le dans GitHub Secrets comme `SONAR_TOKEN`.
-- Le workflow Sonar du repo est conditionnel: s'il trouve `SONAR_TOKEN` il exécute `mvn sonar:sonar` et pousse le résultat vers SonarCloud.
-- Lancement local (exemple) sans exposer le token dans l'historique shell :
-
-```bash
-cd /home/cdn/IdeaProjects/sma-eventsourcing-17/backend
-read -s SONAR_TOKEN
-export SONAR_TOKEN
-mvn clean verify -Daxon.axonserver.enabled=false \
-  -Dsonar.host.url="https://sonarcloud.io" \
-  -Dsonar.login="$SONAR_TOKEN" \
-  sonar:sonar
-```
-
-4) Commandes utiles (CI / debug)
-- Forcer un rerun des workflows (rapide): pousser un commit vide
-
-```bash
-git checkout -b docs/ci-add
-git add docs/CI.md
-git commit -m "docs(ci): add CI & SonarCloud documentation"
-git push -u origin docs/ci-add
-# puis créer la PR (si gh CLI est configuré)
-gh pr create --title "docs(ci): add CI & Sonar documentation" --body "Ajoute docs/CI.md : description des workflows et procédure SonarCloud." --base main
-```
-
-- Alternative pour relancer CI sans PR: dans GitHub Actions → choisir le run → "Re-run jobs". Avec `gh` :
-  - lister runs : `gh run list --repo christiandrochon/sma-eventsourcing-17`
-  - rerun : `gh run rerun <run-id>`
-
-5) Changements que j'ai déjà appliqués (branche `fix/h2-test-url`, PR #4)
-- /home/cdn/IdeaProjects/sma-eventsourcing-17/backend/src/test/resources/application-test.properties
-  - Suppression de `MODE=PostgreSQL` dans l'URL H2 (évite Unknown data type "TINYINT" pendant la création du schéma H2).
-
-- /home/cdn/IdeaProjects/sma-eventsourcing-17/frontend/src/test/java/fr/cdrochon/thymeleaffrontend/configuration/TestSecurityConfig.java
-  - Nettoyage des commentaires pour éviter l'avertissement Sonar S125 (code commenté). Le bean reste conditionnel.
-
-- /home/cdn/IdeaProjects/sma-eventsourcing-17/.gitignore
-  - Ajout de `backend-openapi.pid` pour éviter un fichier runtime en suivi.
-
-- /home/cdn/IdeaProjects/sma-eventsourcing-17/frontend/src/main/java/fr/cdrochon/thymeleaffrontend/controller/vehicule/SearchVehiculeSIVController.java
-  - Remplacement de `e.printStackTrace()` par `logger.error(...)` (évite hotspot S4507).
-
-- /home/cdn/IdeaProjects/sma-eventsourcing-17/backend/src/main/java/fr/cdrochon/smamonolithe/vehicule/command/services/VehiculeCommandService.java
-  - Ajout de gardes null-safe dans `createVehicule` et `completeVehiculeCreation` pour corriger S2259 (NPE possible).
-
-6) Que vérifier dans SonarCloud / GitHub après PR
-- Dans l'onglet «Checks» de la PR, vérifier que les workflows se terminent en «success».
-- Dans SonarCloud :
-  - Quality Gate (Passed/Failed) — défini par le projet SonarCloud.
-  - Issues ouvertes sur la branche : filtrer par type (Bug, Vulnerability, Code Smell), règle (ex: S125,S2259,S4507).
-  - Coverage on New Code : générer rapports JaCoCo si vous voulez voir coverage.
-
-7) Próchaines actions proposées
-- Si tu confirmes, je vais :
-  1) créer la branche `docs/ci-add`, committer `docs/CI.md`, la pousser et ouvrir une PR (titre + description). (action que je peux faire maintenant)
-  2) (optionnel) annoter les 5 fichiers de workflow en insérant un court commentaire header décrivant leur but — je peux l'ajouter dans la PR de documentation.
++
++3) SonarCloud / SonarQube — mode opératoire
++
++Pour SonarCloud (cloud) : créez un token dans SonarCloud (Account → Security) puis stockez-le dans GitHub Secrets comme `SONAR_TOKEN`.
++Le workflow Sonar du repo est conditionnel: s'il trouve `SONAR_TOKEN` il exécute `mvn sonar:sonar` et pousse le résultat vers SonarCloud.
++Lancement local (exemple) sans exposer le token dans l'historique shell :
++
++```bash
++cd /home/cdn/IdeaProjects/sma-eventsourcing-17/backend
++read -s SONAR_TOKEN
++export SONAR_TOKEN
++mvn clean verify -Daxon.axonserver.enabled=false \
++  -Dsonar.host.url="https://sonarcloud.io" \
++  -Dsonar.login="$SONAR_TOKEN" \
++  sonar:sonar
++```
++
++4) Commandes utiles (CI / debug)
++
++Forcer un rerun des workflows (rapide): pousser un commit vide
++
++```bash
++git checkout -b docs/ci-add
++git add docs/CI.md
++git commit -m "docs(ci): add CI & SonarCloud documentation"
++git push -u origin docs/ci-add
++# puis créer la PR (si gh CLI est configuré)
++gh pr create --title "docs(ci): add CI & Sonar documentation" --body "Ajoute docs/CI.md : description des workflows et procédure SonarCloud." --base main
++```
++
++Alternative pour relancer CI sans PR: dans GitHub Actions → choisir le run → "Re-run jobs". Avec `gh` :
++  - lister runs : `gh run list --repo christiandrochon/sma-eventsourcing-17`
++  - rerun : `gh run rerun <run-id>`
++
++5) Changements que j'ai déjà appliqués (PRs récentes)
++
++J'ai appliqué plusieurs corrections et améliorations dans des branches/PRs séparées. Ci‑dessous la liste consolidée (fichier -> raison -> PR) :
++
++- `backend/src/test/resources/application-test.properties`
++  - Suppression de `MODE=PostgreSQL` dans l'URL H2 pour éviter l'erreur H2 Unknown data type "TINYINT" lors de la création du schéma en tests. (PR #4 — branch `fix/h2-test-url`)
++
++- `frontend/src/test/java/fr/cdrochon/thymeleaffrontend/configuration/TestSecurityConfig.java`
++  - Nettoyage de commentaires supprimant du code commenté trop long (corrige Sonar S125). (PR #4 — `fix/h2-test-url`)
++
++- `.gitignore`
++  - Ajout de `backend-openapi.pid` pour éviter de suivre un fichier runtime local. (PR #4 — `fix/h2-test-url`)
++
++- `frontend/src/main/java/fr/cdrochon/thymeleaffrontend/controller/vehicule/SearchVehiculeSIVController.java`
++  - Remplacement de `e.printStackTrace()` par `logger.error(...)` pour éviter les hotspots Sonar et améliorer le logging. (PR #4)
++
++- `backend/src/main/java/fr/cdrochon/smamonolithe/vehicule/command/services/VehiculeCommandService.java`
++  - Ajout de gardes null-safe dans `createVehicule` et `completeVehiculeCreation` pour corriger des NPE possibles signalés par Sonar (S2259). (PR #9 — `fix/vehicule-null-guard`)
++
++- `frontend/src/main/resources/templates/header.html`
++  - Accessibilité: remplacement des ancres utilisées comme toggles de dropdown par des `<button>` sémantiques, et ajout de handlers clavier (Enter/Espace) pour résoudre S6819. (PR #6 — `fix/header-keydown`)
++
++- `backend/src/main/java/fr/cdrochon/smamonolithe/client/command/dtos/ClientCommandDTO.java`
++  - Implémentation d'une copie défensive dans le constructeur `ClientCommandDTO(ClientAdresseDTO)` pour éviter d'exposer la référence interne de l'adresse. (PR #7 — `fix/clientdto-defensive-copy`)
++
++- `backend/src/main/java/fr/cdrochon/smamonolithe/audit/compliance/infrastructure/AuditComplianceRepository.java`
++  - Extraction des littéraux de statut (`COMPLIANT`, `PARTIAL`, `NON_COMPLIANT`, `NOT_APPLICABLE`) en constantes et refactor du SQL du dashboard pour réutiliser ces constantes. (PR #8 — `fix/audit-status-constants`)
++
++- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/controllers/ClientQueryController.java`
++  - Corrections de fiabilité recommandées par Sonar (NPE guards / logging). (inclus dans PR #10 — `consolidate/ci-reliability`)
++
++- `backend/src/main/java/fr/cdrochon/smamonolithe/client/query/services/ClientEventHandlerService.java`
++  - Corrections de fiabilité recommandées par Sonar (NPE guards / defensive copies). (inclus dans PR #10)
++
++- `.github/workflows/*` (5 workflows)
++  - Ajout d'en‑têtes commentés expliquant le rôle de chaque workflow et comment activer Sonar via Secrets (documentation). (PR #10)
++
++- `docs/CI.md`
++  - Ajout de la documentation CI/Sonar et description des fichiers de configuration (`.gitattributes`, `.editorconfig`, `sonar-project.properties`). (PR #11 — `docs/ci-update`)
++
++- `pom.xml` et fichiers de build
++  - Modifications mineures (encodage UTF‑8, exclusions Sonar, configuration d'analyse) introduites pour rendre l'analyse Sonar plus stable et éviter des warnings d'encodage. Ces changements ont été inclus dans les commits liés à la consolidation et à la préparation de Sonar (voir PR #10). (branchs : divers)
++
++Notes :
++- Chaque changement a été poussé dans une branche dédiée et ouvert en PR. Liste des PRs créées :
++  - #4 `fix/h2-test-url`
++  - #5 `docs/ci-add`
++  - #6 `fix/header-keydown`
++  - #7 `fix/clientdto-defensive-copy`
++  - #8 `fix/audit-status-constants`
++  - #9 `fix/vehicule-null-guard`
++  - #10 `consolidate/ci-reliability` (regroupe les commentaires CI + corrections reliability)
++  - #11 `docs/ci-update` (mise à jour de la doc CI)
++
++Si tu veux que j'ajoute explicitement le diff/les commits (hashs) pour chaque fichier dans la doc, je peux l'insérer également.
 
 Contact
 -------
@@ -98,4 +119,3 @@ Si tu veux que je crée la PR maintenant, réponds "Crée la PR". Si tu préfèr
 
 ---
 Fait le: 2026-05-29
-
