@@ -5,7 +5,7 @@ import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
 import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.experimental.SuperBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder
 @Schema(description = "DTO utilisé pour les commandes liées aux documents")
 public class DocumentCommandDTO extends DocumentBaseDTO {
 
