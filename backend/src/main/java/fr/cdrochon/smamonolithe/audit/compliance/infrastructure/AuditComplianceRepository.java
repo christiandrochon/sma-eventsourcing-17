@@ -19,6 +19,11 @@ public class AuditComplianceRepository {
     // Colonnes réutilisées dans les RowMapper / paramètres SQL -> éviter les littéraux dupliqués
     private static final String COL_STATUS = "status";
     private static final String COL_SCORE = "score";
+    // Statuts utilisés dans les requêtes (ex: dashboard)
+    private static final String STATUS_COMPLIANT = "COMPLIANT";
+    private static final String STATUS_PARTIAL = "PARTIAL";
+    private static final String STATUS_NON_COMPLIANT = "NON_COMPLIANT";
+    private static final String STATUS_NOT_APPLICABLE = "NOT_APPLICABLE";
 
 
     private static final RowMapper<AuditExpectationItem> EXPECTATION_MAPPER = new RowMapper<>() {
@@ -161,18 +166,24 @@ public class AuditComplianceRepository {
     }
 
     public AuditComplianceDashboard dashboard() {
-        String sql = """
+        String sqlTemplate = """
                 SELECT
                     (SELECT COUNT(*) FROM audit_expectations WHERE enabled = TRUE) AS enabled_expectations,
                     (SELECT COUNT(*) FROM audit_expectations_latest WHERE check_id IS NOT NULL) AS expectations_with_any_check,
-                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = 'COMPLIANT') AS compliant_latest,
-                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = 'PARTIAL') AS partial_latest,
-                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = 'NON_COMPLIANT') AS non_compliant_latest,
-                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = 'NOT_APPLICABLE') AS not_applicable_latest,
+                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = '%s') AS compliant_latest,
+                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = '%s') AS partial_latest,
+                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = '%s') AS non_compliant_latest,
+                    (SELECT COUNT(*) FROM audit_expectations_latest WHERE status = '%s') AS not_applicable_latest,
                     (SELECT COUNT(*) FROM audit_events WHERE action = 'ACCESS_DENIED' AND event_time >= now() - INTERVAL '30 days') AS access_denied_30d,
                     (SELECT COUNT(*) FROM audit_events WHERE action = 'ANOMALY' AND event_time >= now() - INTERVAL '30 days') AS anomalies_30d,
                     (SELECT COUNT(*) FROM audit_events WHERE cross_garage = TRUE AND event_time >= now() - INTERVAL '30 days') AS cross_garage_30d
                 """;
+
+        String sql = String.format(sqlTemplate,
+                STATUS_COMPLIANT,
+                STATUS_PARTIAL,
+                STATUS_NON_COMPLIANT,
+                STATUS_NOT_APPLICABLE);
 
         return auditJdbc.queryForObject(sql, new MapSqlParameterSource(), (rs, rowNum) -> new AuditComplianceDashboard(
                 rs.getLong("enabled_expectations"),
