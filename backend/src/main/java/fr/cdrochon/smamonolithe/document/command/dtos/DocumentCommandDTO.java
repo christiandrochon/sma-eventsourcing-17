@@ -1,12 +1,15 @@
 package fr.cdrochon.smamonolithe.document.command.dtos;
 
 import fr.cdrochon.smamonolithe.document.common.dtos.DocumentBaseDTO;
+import fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO;
+import fr.cdrochon.smamonolithe.document.query.entities.TypeDocument;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import java.time.Instant;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,10 +26,23 @@ public class DocumentCommandDTO extends DocumentBaseDTO {
                               String nomDocument,
                               String titreDocument,
                               String emetteurDuDocument,
-                              fr.cdrochon.smamonolithe.document.query.entities.TypeDocument typeDocument,
-                              java.time.Instant dateCreationDocument,
-                              java.time.Instant dateModificationDocument,
-                              fr.cdrochon.smamonolithe.document.command.enums.DocumentStatusDTO documentStatus) {
+                              TypeDocument typeDocument,
+                              Instant dateCreationDocument,
+                              Instant dateModificationDocument,
+                              DocumentStatusDTO documentStatus,
+                              String clientId) {
+        super(id, nomDocument, titreDocument, emetteurDuDocument, typeDocument, dateCreationDocument, dateModificationDocument, documentStatus);
+        this.clientId = clientId;
+    }
+
+    public DocumentCommandDTO(String id,
+                              String nomDocument,
+                              String titreDocument,
+                              String emetteurDuDocument,
+                              TypeDocument typeDocument,
+                              Instant dateCreationDocument,
+                              Instant dateModificationDocument,
+                              DocumentStatusDTO documentStatus) {
         super(id, nomDocument, titreDocument, emetteurDuDocument, typeDocument, dateCreationDocument, dateModificationDocument, documentStatus);
         this.clientId = null;
     }
