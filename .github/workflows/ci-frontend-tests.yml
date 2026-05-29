@@ -1,3 +1,11 @@
+################################################################################
+# Workflow: ci-frontend-tests.yml
+# But : exécuter uniquement les tests du module `frontend` (rapide / ciblé)
+# Compatibilité : Complète les autres workflows en isolant les tests UI. Peut
+#                être déclenché sur PR pour valider uniquement le frontend.
+# Recommandation : Garder pour accélérer la validation des changements UI sans
+#                  lancer le pipeline backend complet.
+################################################################################
 name: CI minimal - frontend tests
 
 on:

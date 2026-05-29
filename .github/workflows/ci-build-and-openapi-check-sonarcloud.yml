@@ -1,8 +1,18 @@
+################################################################################
+# Workflow: ci-build-and-openapi-check-sonarcloud.yml
+# But : build, tests, vérification OpenAPI et (historique) intégration SonarCloud
+# Compatibilité : Compatible avec les autres workflows du dossier. Ne bloque pas
+#                les autres workflows, ils peuvent coexister. Ce fichier est une
+#                variante destinée à utiliser l'action officielle SonarCloud.
+# Remarques :
+# - Le fichier a été conservé pour historicité et pour un usage explicite SonarCloud.
+# - L'étape Sonar est actuellement retirée (commentée ou supprimée) dans ce repo
+#   pour éviter des exécutions automatiques si les secrets ne sont pas fournis.
+# - Garder ce workflow est recommandé : il sert de référence et peut être activé
+#   simplement en ré-introduisant l'étape Sonar ou en ajoutant les secrets GitHub.
+################################################################################
 name: CI — build, tests et vérification OpenAPI + SonarCloud
 
-# Variante du workflow principale utilisant l'action officielle SonarCloud.
-# Cette version est ajoutée sous un nouveau nom pour forcer GitHub à la
-# reconnaître indépendamment de l'ancienne validation qui bloquait.
 
 on:
   workflow_dispatch: {}

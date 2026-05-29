@@ -1,3 +1,10 @@
+################################################################################
+# Workflow: ci-sanity.yml
+# But : simple sanity check minimal déclenché sur la branche `test/trigger-ci`.
+# Ceci sert à valider l'intégration GitHub Actions et à déclencher manuellement
+# un run léger pour debug (ne compile pas, ne teste pas). Conservé pour tests
+# de déclenchement et debug runner.
+################################################################################
 name: CI Sanity Check
 
 on:

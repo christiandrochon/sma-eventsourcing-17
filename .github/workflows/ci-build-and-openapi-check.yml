@@ -1,18 +1,20 @@
+################################################################################
+# Workflow: ci-build-and-openapi-check.yml
+# But : build + tests + génération/comparaison OpenAPI canonique
+# Compatibilité : Compatible avec les autres workflows. Conçu pour être lancé
+#                manuellement (workflow_dispatch) ou en PR selon les triggers.
+# Détails :
+# - Compile backend & frontend, exécute tests module par module.
+# - Valide la présence de `docs/openapi/openapi.json` et compare la spec
+#   générée (plugin springdoc ou démarrage doc-only) avec le canonical.
+# - L'analyse Sonar est volontairement désactivée ici par défaut. Elle peut
+#   être activée en ajoutant les secrets GitHub (`SONAR_HOST_URL`, `SONAR_TOKEN`,
+#   `SONAR_ORGANIZATION`) ou en décommentant la section correspondante.
+# Recommandation : Conserver ce workflow; il est le plus complet pour la vérif
+#                  OpenAPI et les tests d'intégration légers.
+################################################################################
 name: CI — build, tests et vérification OpenAPI canonique
 
-# Objectif :
-# - Compiler le projet (backend & frontend) et exécuter les tests.
-# - Vérifier que le fichier OpenAPI canonique `docs/openapi/openapi.json` est
-#   présent et ressemble bien à un document OpenAPI (clé `openapi`).
-#
-# Remarques :
-# - Ce workflow compile et exécute les tests. Il génère ou compare la spec OpenAPI
-#   en mode « doc-only » : le backend est démarré avec une configuration
-#   allégée (base en mémoire, Flyway désactivé, Axon désactivé, sécurité
-#   désactivée) afin d'extraire `/v3/api-docs` sans dépendre d'une DB réelle.
-# - L'étape de comparaison live vs canonical est activée par défaut ici.
-# - Il existe aussi une étape SonarQube conditionnelle (exécutée si les secrets
-#   `SONAR_HOST_URL` et `SONAR_TOKEN` sont fournis dans le repo).
 
 on:
   workflow_dispatch: {}
