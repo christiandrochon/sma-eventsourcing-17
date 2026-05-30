@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class DocumentEventHandler {
-    
+
     private final DocumentCommandService documentCommandService;
-    
+
     public DocumentEventHandler(DocumentCommandService documentCommandService) {
         this.documentCommandService = documentCommandService;
     }
-    
+
     /**
      * Complete le future dans le service DocumentCommandService lorsqu'un DocumentCreatedEvent est reçu
      *
@@ -24,20 +24,22 @@ public class DocumentEventHandler {
      */
     @EventHandler
     public void on(DocumentCreatedEvent event) {
-        
+
         log.info("Received event: {}", event);
         BusinessLoggers.business().info("BIZ_DOCUMENT_CREATED documentId={} nomDocument={} type={} status={}",
                                        event.getId(), event.getNomDocument(), event.getTypeDocument(), event.getDocumentStatus());
         //conversion du dto du dossier en entité dossier
-        DocumentCommandDTO commandDTO = new DocumentCommandDTO(event.getId(),
-                                                               event.getNomDocument(),
-                                                               event.getTitreDocument(),
-                                                               event.getEmetteurDuDocument(),
-                                                               event.getTypeDocument(),
-                                                               event.getDateCreationDocument(),
-                                                               event.getDateModificationDocument(),
-                                                               event.getDocumentStatus(),
-                                                               event.getClientId());
+        DocumentCommandDTO commandDTO = DocumentCommandDTO.builder()
+                                                          .id(event.getId())
+                                                          .nomDocument(event.getNomDocument())
+                                                          .titreDocument(event.getTitreDocument())
+                                                          .emetteurDuDocument(event.getEmetteurDuDocument())
+                                                          .typeDocument(event.getTypeDocument())
+                                                          .dateCreationDocument(event.getDateCreationDocument())
+                                                          .dateModificationDocument(event.getDateModificationDocument())
+                                                          .documentStatus(event.getDocumentStatus())
+                                                          .clientId(event.getClientId())
+                                                          .build();
         // Compléter la future dans le service
         documentCommandService.completeDocumentCreation(commandDTO);
     }

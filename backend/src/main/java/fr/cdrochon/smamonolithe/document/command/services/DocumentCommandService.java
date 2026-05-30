@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class DocumentCommandService {
-    
+
     private static final long CREATE_TIMEOUT_SECONDS = 20L;
 
     private final CommandGateway commandGateway;
@@ -27,7 +27,7 @@ public class DocumentCommandService {
     public DocumentCommandService(CommandGateway commandGateway) {
         this.commandGateway = commandGateway;
     }
-    
+
     /**
      * Genere un UUID aleatoirement pour la creation d'un id de document
      *
@@ -56,15 +56,17 @@ public class DocumentCommandService {
                                                                   documentRestDTO.getDocumentStatus(),
                                                                   documentRestDTO.getClientId());
 
-        DocumentCommandDTO ackDTO = new DocumentCommandDTO(documentId,
-                                                           documentRestDTO.getNomDocument(),
-                                                           documentRestDTO.getTitreDocument(),
-                                                           documentRestDTO.getEmetteurDuDocument(),
-                                                           documentRestDTO.getTypeDocument(),
-                                                           documentRestDTO.getDateCreationDocument(),
-                                                           documentRestDTO.getDateModificationDocument(),
-                                                           documentRestDTO.getDocumentStatus(),
-                                                           documentRestDTO.getClientId());
+        DocumentCommandDTO ackDTO = DocumentCommandDTO.builder()
+                                                     .id(documentId)
+                                                     .nomDocument(documentRestDTO.getNomDocument())
+                                                     .titreDocument(documentRestDTO.getTitreDocument())
+                                                     .emetteurDuDocument(documentRestDTO.getEmetteurDuDocument())
+                                                     .typeDocument(documentRestDTO.getTypeDocument())
+                                                     .dateCreationDocument(documentRestDTO.getDateCreationDocument())
+                                                     .dateModificationDocument(documentRestDTO.getDateModificationDocument())
+                                                     .documentStatus(documentRestDTO.getDocumentStatus())
+                                                     .clientId(documentRestDTO.getClientId())
+                                                     .build();
 
         commandGateway.send(command).whenComplete((ignored, error) -> {
             CompletableFuture<DocumentCommandDTO> pending = pendingCreations.get(documentId);
@@ -93,7 +95,7 @@ public class DocumentCommandService {
         return futureDTO.orTimeout(CREATE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                         .whenComplete((ok, err) -> pendingCreations.remove(documentId));
     }
-    
+
     /**
      * Compléter la future dans le service. Méthode appelée par @EventHandler
      *
@@ -111,5 +113,5 @@ public class DocumentCommandService {
             log.warn("TECH_DOCUMENT_CREATE_FUTURE_MISSING documentId={} (event recu sans future en attente)", dto.getId());
         }
     }
-    
+
 }

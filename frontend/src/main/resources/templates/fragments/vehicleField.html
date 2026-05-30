@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- Fragments réutilisables pour bloc véhicule (immatriculation + date + statut) -->
+<div xmlns:th="http://www.thymeleaf.org">
+
+  <!-- fragment pour createVehiculeForm: utilise les champs *{...} du formulaire de création de véhicule -->
+  <div th:fragment="vehicle_createVehicule">
+    <div th:replace="fragments/immatField :: immat_createVehicule"></div>
+
+    <div class="w-100">
+      <label for="dateMiseEnCirculationVehiculeCreate" class="form-label">Date de mise en circulation</label>
+      <input th:id="'dateMiseEnCirculationVehiculeCreate'" class="form-control" type="date" oninput="validationDeDate(this)"
+             th:field="*{dateMiseEnCirculationVehicule}" required>
+      <div class="is-invalid" th:if="${#fields.hasErrors('dateMiseEnCirculationVehicule')}"
+           th:errors="*{dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
+      </div>
+    </div>
+
+    <div>
+      <label for="statusVehiculeCreate" class="form-label">Statut du véhicule</label>
+      <select th:id="'statusVehiculeCreate'" class="form-select" th:field="*{vehiculeStatus}">
+        <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}">Status</option>
+      </select>
+      <div class="is-invalid" th:if="${#fields.hasErrors('vehiculeStatus')}" th:errors="*{vehiculeStatus}">Erreur
+        du status du véhicule
+      </div>
+    </div>
+  </div>
+
+  <!-- fragment pour dossier form: les champs sont sous *{vehicule....} -->
+
+</div>
+

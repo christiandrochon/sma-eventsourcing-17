@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!-- Fragment véhicule dédié au formulaire dossier pour éviter les doublons d'id HTML -->
+<div xmlns:th="http://www.thymeleaf.org">
+
+  <div th:fragment="vehicle_dossier">
+    <div th:replace="fragments/immatField :: immat_dossier"></div>
+
+    <div class="col-md-6">
+      <label for="dateMiseEnCirculationVehiculeDossier" class="form-label">Date de mise en circulation</label>
+      <input id="dateMiseEnCirculationVehiculeDossier" class="form-control" type="date" th:field="*{vehicule.dateMiseEnCirculationVehicule}"
+             oninput="validationDeDate(this)" required>
+      <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.dateMiseEnCirculationVehicule')}"
+           th:errors="*{vehicule.dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
+      </div>
+    </div>
+
+    <div>
+      <label for="statusVehiculeDossier" class="form-label">Statut du véhicule</label>
+      <select id="statusVehiculeDossier" class="form-select" th:field="*{vehicule.vehiculeStatus}" required>
+        <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'EN_ATTENTE'}">
+          Status
+        </option>
+      </select>
+      <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.vehiculeStatus')}" th:errors="*{vehicule.vehiculeStatus}">
+        Erreur du statut du véhicule
+      </div>
+    </div>
+  </div>
+
+</div>
+

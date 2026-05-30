@@ -70,15 +70,19 @@ jobs:
         env:
           SONAR_HOST_URL: https://sonarcloud.io
         run: |
-          if [ -n "${{ secrets.SONAR_TOKEN }}" ]; then
-            echo "SONAR_TOKEN present — running mvn sonar:sonar"
+
+          # Run SonarCloud only when all required secrets are present
+          if [ -n "${{ secrets.SONAR_TOKEN }}" ] && [ -n "${{ secrets.SONAR_ORGANIZATION }}" ] && [ -n "${{ secrets.SONAR_PROJECT_KEY }}" ]; then
+            echo "Sonar secrets present — running mvn sonar:sonar"
             mvn -B -DskipTests \
               -Dsonar.host.url="$SONAR_HOST_URL" \
               -Dsonar.login="${{ secrets.SONAR_TOKEN }}" \
-              -Dsonar.projectKey="christiandrochon_sma-eventsourcing-17" \
+              -Dsonar.organization="${{ secrets.SONAR_ORGANIZATION }}" \
+              -Dsonar.projectKey="${{ secrets.SONAR_PROJECT_KEY }}" \
               sonar:sonar
           else
-            echo "SONAR_TOKEN not set — skipping SonarCloud analysis"
+            echo "Sonar secrets missing — skipping SonarCloud analysis"
+            echo "Set secrets: SONAR_TOKEN, SONAR_ORGANIZATION and SONAR_PROJECT_KEY to enable analysis"
           fi
 
       - name: Valider OpenAPI canonique (présence + format)
@@ -96,16 +100,21 @@ jobs:
           PY
 
       - name: Générer et comparer OpenAPI (mode doc-only)
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          SPRING_FLYWAY_ENABLED: "false"
+          AXON_AXONSERVER_ENABLED: "false"
+          APP_SECURITY_ENABLED: "false"
+          SPRING_DATASOURCE_URL: jdbc:h2:mem:sma_openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+          SPRING_DATASOURCE_USERNAME: sa
+          SPRING_DATASOURCE_PASSWORD: ""
+          SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.H2Dialect
         run: |
           set -euo pipefail
           nohup mvn -pl backend -DskipTests \
-            -Dspring.flyway.enabled=false \
-            -Daxon.axonserver.enabled=false \
-            -Dapp.security.enabled=false \
-            -Dspring.datasource.url=jdbc:h2:mem:ciopenapi \
-            -Dspring.datasource.username=sa \
-            -Dspring.datasource.password= \
-            -Dspring.main.allow-bean-definition-overriding=true \
+            -Dspring-boot.run.profiles=test \
+            -Dspring-boot.run.arguments="--spring.flyway.enabled=false --axon.axonserver.enabled=false --app.security.enabled=false --spring.main.allow-bean-definition-overriding=true --spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration,org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration" \
             spring-boot:run > backend-openapi.log 2>&1 &
           MVN_PID=$!
           echo "Backend démarré (PID=$MVN_PID), attente de /v3/api-docs..."

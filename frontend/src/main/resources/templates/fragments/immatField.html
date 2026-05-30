@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- Fragments réutilisables pour champ immatriculation -->
+<div xmlns:th="http://www.thymeleaf.org">
+
+  <!-- fragment pour les formulaires qui utilisent *{immatriculation} -->
+  <div th:fragment="immat_search">
+    <div class="w-100">
+      <label for="immatriculation_search" class="form-label">Immatriculation</label>
+      <input type="text" class="form-control" id="immatriculation_search" name="immatriculation" placeholder="AA-000-AA" th:field="*{immatriculation}"
+             th:classappend="${#fields.hasErrors('immatriculation')} ? 'validation-champ-surimpression'" oninput="formatImmatriculation(this); checkImmat(this); checkImmatExists(this)"
+             required>
+      <div class="immatriculationError is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('immatriculation')}">
+        Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
+      </div>
+    </div>
+  </div>
+
+  <!-- fragment pour createVehiculeForm: *{immatriculationVehicule} -->
+  <div th:fragment="immat_createVehicule">
+    <div class="w-100">
+      <label for="immatriculationVehicule_create" class="form-label">Immatriculation du véhicule</label>
+      <input type="text" class="form-control" id="immatriculationVehicule_create" th:field="*{immatriculationVehicule}" placeholder="AA-000-AA"
+             th:classappend="${T(fr.cdrochon.thymeleaffrontend.dtos.vehicule.create.ThymeleafImmatriculationUtils).getValidationCssClass(#fields.hasErrors('immatriculationVehicule'), immatriculationExisteError != null)}"
+             oninput="formatImmatriculation(this); checkImmat(this); checkImmatExists(this)" value="" required>
+      <div class="immatriculationError is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('immatriculationVehicule')}">
+        Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
+      </div>
+      <div class="immatriculationExisteError is-invalid validation-champ-incorrect" th:if="${immatriculationExisteError != null}">
+        <span th:text="${immatriculationExisteError}">L'immatriculation est déjà affectée à un véhicule existant.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- fragment pour dossier form: *{vehicule.immatriculationVehicule} -->
+  <div th:fragment="immat_dossier">
+    <div class="">
+      <label for="immatriculation_dossier" class="form-label">Immatriculation du véhicule</label>
+      <input id="immatriculation_dossier" class="form-control" type="text" th:field="*{vehicule.immatriculationVehicule}"
+             th:classappend="${T(fr.cdrochon.thymeleaffrontend.dtos.vehicule.create.ThymeleafImmatriculationUtils).getValidationCssClass(#fields.hasErrors('vehicule.immatriculationVehicule'), immatriculationExisteError != null)}"
+             placeholder="AA-123-AA" oninput="formatImmatriculation(this); checkImmat(this); checkImmatExists(this)" value="" required>
+      <div class="immatriculationError is-invalid validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}">
+        Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
+      </div>
+      <div class="immatriculationExisteError is-invalid validation-champ-incorrect" th:if="${immatriculationExisteError != null}">
+        <span th:text="${immatriculationExisteError}">Immat existante</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+

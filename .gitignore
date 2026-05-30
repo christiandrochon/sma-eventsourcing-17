@@ -35,8 +35,8 @@ audit-exports/
 **/src/main/resources/META-INF/
 **/src/test/resources/META-INF/
 
-# Test security files (generated)
-frontend/src/test/java/fr/cdrochon/thymeleaffrontend/security/
+# Test security files (generated) - REMOVED: this directory contains real test sources and must not be ignored
+# frontend/src/test/java/fr/cdrochon/thymeleaffrontend/security/  # previously ignored by mistake
 
 # Backup files
 *.bak
@@ -62,6 +62,8 @@ backend-openapi.pid
 .sonar/sonar-scanner-cli-*/bin/sonar-scanner.cmd
 .sonar/sonar-scanner-cli-*/bin/sonar-scanner.ps1
 .sonar/sonar-scanner-cli-*/bin/sonar-scanner.sh
+# Exports de logs CI locaux
+/ci_run_*_logs.txt
 **/target/
 **/logs/
 *.gz

@@ -51,62 +51,7 @@
                     <h4 class="mb-3">Client</h4>
 
                     <div class="row g-3">
-                        <div class="col-sm-6">
-                            <label for="nomClient" class="form-label">Nom du client</label>
-                            <input id="nomClient" class="form-control" type="text" th:field="*{client.nomClient}"
-                                   list="existingClientNames"
-                                   th:classappend="${#fields.hasErrors('client.nomClient')} ? 'validation-champ-surimpression'" required>
-                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.nomClient')}" th:errors="*{client.nomClient}">Erreur
-                                de nom client
-                            </div>
-                            <small class="text-body-secondary">Suggestions depuis les clients existants (saisie libre autorisée).</small>
-                            <datalist id="existingClientNames">
-                                <option th:each="existingClient : ${existingClients}" th:value="${existingClient.nomClient}"></option>
-                            </datalist>
-                        </div>
-                        <div class="col-sm-6">
-                            <label for="prenomClient" class="form-label">Prénom du client</label>
-                            <input id="prenomClient" class="form-control" type="text" th:field="*{client.prenomClient}"
-                                   list="existingClientFirstNames"
-                                   th:classappend="${#fields.hasErrors('client.prenomClient')} ? 'validation-champ-surimpression'" required>
-                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.prenomClient')}" th:errors="*{client.prenomClient}">
-                                Erreur
-                                de prenom client
-                            </div>
-                            <datalist id="existingClientFirstNames">
-                                <option th:each="existingClient : ${existingClients}" th:value="${existingClient.prenomClient}"></option>
-                            </datalist>
-                        </div>
-                        <div class="col-sm-5">
-                            <label for="mailClient" class="form-label">Email du client </label>
-                            <input id="mailClient" class="form-control" type="email" th:field="*{client.mailClient}" pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,4}$"
-                                   th:classappend="${#fields.hasErrors('client.mailClient')} ? 'validation-champ-surimpression'" placeholder="maël@gmail.com"
-                                   oninput="forcerminuscule(this)" required>
-                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.mailClient')}" th:errors="*{client.mailClient}">Entrez un
-                                email valide
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <label for="telClient" class="form-label">Téléphone du client</label>
-                            <input id="telClient" class="form-control" type="tel" th:field="*{client.telClient}"
-                                   th:classappend="${#fields.hasErrors('client.telClient')} ? 'validation-champ-surimpression'" oninput="formatTel(this)"
-                                   required>
-                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.telClient')}" th:errors="*{client.telClient}">Entrez un
-                                numéro de
-                                téléphone valide
-                            </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <label for="statusClient" class="form-label">Situation du client</label>
-                            <select id="statusClient" class="form-select" th:field="*{client.clientStatus}" required>
-                                <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'ACTIF'}">
-                                    Status
-                                </option>
-                            </select>
-                            <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.clientStatus')}" th:errors="*{client.clientStatus}">
-                                Erreur du statut du client
-                            </div>
-                        </div>
+                            <div th:replace="fragments/clientPersonal :: client_personal_embedded"></div>
 
                         <div class=" mt-4 text-body-tertiary">
                             <h5>Adresse du client</h5>
@@ -179,39 +124,7 @@
 
                     <hr class="my-4">
                     <h4 class="mb-3">Véhicule</h4>
-                    <div class="">
-                        <label for="immatriculation" class="form-label">Immatriculation du véhicule</label>
-                        <input id="immatriculation" class="form-control" type="text" th:field="*{vehicule.immatriculationVehicule}"
-                               th:classappend="${T(fr.cdrochon.thymeleaffrontend.dtos.vehicule.create.ThymeleafImmatriculationUtils).getValidationCssClass(#fields.hasErrors('vehicule.immatriculationVehicule'), immatriculationExisteError != null)}"
-                               placeholder="AA-123-AA" oninput="formatImmatriculation(this); checkImmat(this); checkImmatExists(this)" value="" required>
-                        <div id="immatriculationError" class="is-invalid validation-champ-incorrect"
-                             th:if="${#fields.hasErrors('vehicule.immatriculationVehicule')}">
-                            Le format requis doit être de type 'AA-123-AA'. <br> Merci de vérifier l'immatriculation saisie.
-                        </div>
-                        <div id="immatriculationExisteError" th:if="${immatriculationExisteError != null}" class="is-invalid validation-champ-incorrect">
-                            <span th:text="${immatriculationExisteError}">Immat existante</span>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="dateMiseEnCirculationVehicule" class="form-label">Date de mise en circulation</label>
-                        <input id="dateMiseEnCirculationVehicule" class="form-control" type="date" th:field="*{vehicule.dateMiseEnCirculationVehicule}"
-                               oninput="validationDeDate(this)" required>
-                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.dateMiseEnCirculationVehicule')}"
-                             th:errors="*{vehicule.dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
-                        </div>
-                    </div>
-                    <div>
-                        <label for="status" class="form-label">Statut du véhicule</label>
-                        <select id="status" class="form-select" th:field="*{vehicule.vehiculeStatus}" required>
-                            <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'EN_ATTENTE'}">
-                                Status
-                            </option>
-                        </select>
-                        <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.vehiculeStatus')}" th:errors="*{vehicule.vehiculeStatus}">
-                            Erreur du statut du document
-                        </div>
-                    </div>
+                    <div th:replace="fragments/vehicleDossierField :: vehicle_dossier"></div>
 
                     <hr class="my-4 mt-5">
 

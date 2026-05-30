@@ -1,4 +1,4 @@
-<!-- 
+<!--
 ═════════════════════════════════════════════════════════════════════════════
 📚 scripts/README.scripts.md
 ═════════════════════════════════════════════════════════════════════════════
@@ -25,6 +25,7 @@ Public : Tous (dev, QA, DevOps, auditeurs)
 | **Vérifier l'état d'audit** | `./scripts/audit-check.sh` | Diagnostic de la base audit |
 | **Exporter pour auditeur** | `./scripts/audit-export.sh` | Produit un dossier CSV |
 | **Campagne audit complète** | `./scripts/audit-external-40.sh` | Valide tout pour audit externe |
+| **Vérifier une PR Sonar** | `./scripts/sonar-pr-status.sh <project_key> <pr>` | Affiche Quality Gate + issues ouvertes |
 ---
 ## Principaux scripts
 ### `dev.sh`
@@ -49,11 +50,14 @@ Diagnostique la santé de la base d'audit.
 Exporte les preuves d'audit vers des CSV.
 ### `audit-external-40.sh`
 Lance la campagne complète d'audit externe en 40 cas.
+### `sonar-pr-status.sh`
+Vérifie le statut SonarCloud d'une PR (Quality Gate + issues ouvertes uniquement).
+Permet d'éviter de confondre les issues historiques et les issues réellement ouvertes.
 ---
 ## Règle simple
 - **`README.md` à la racine** = documentation principale du projet
 - **`scripts/README.scripts.md`** = documentation des scripts
 - **`docs/README.docs.md`** = documentation détaillée du projet
 ---
-**Dernière mise à jour** : 2026-05-18  
+**Dernière mise à jour** : 2026-05-18
 **Auteur** : GitHub Copilot

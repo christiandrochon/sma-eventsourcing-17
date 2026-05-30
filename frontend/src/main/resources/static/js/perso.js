@@ -1,66 +1,81 @@
-// formatte l'immatriculation en ajoutant des tirets en en mettant en majuscule, avec un format particulier
-function formatImmatriculation(input) {
-    let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (value.length > 2) {
-        value = value.slice(0, 2) + '-' + value.slice(2);
-    }
-    if (value.length > 6) {
-        value = value.slice(0, 6) + '-' + value.slice(6);
-    }
-    if (value.length > 8) {
-        value = value.slice(0, 9);
-    }
-    input.value = value;
+// Helper: normalise une immatriculation (MAJ, retire caractères non alphanumériques,
+// ajoute des tirets au bon endroit et tronque si trop longue)
+function normalizeImmatString(raw) {
+    let v = (raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (v.length > 2) v = v.slice(0, 2) + '-' + v.slice(2);
+    if (v.length > 6) v = v.slice(0, 6) + '-' + v.slice(6);
+    if (v.length > 8) v = v.slice(0, 9);
+    return v;
 }
 
-//verifie dynamiquement l'affichage d'erreur d'immatriculation et en empeche la saisie
+// formatte l'immatriculation en ajoutant des tirets en en mettant en majuscule
+function formatImmatriculation(input) {
+    input.value = normalizeImmatString(input.value);
+}
+
+// vérifie dynamiquement l'affichage d'erreur d'immatriculation et empêche la saisie
 function checkImmat(input) {
-    let value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    let value = normalizeImmatString(input.value);
     let isValid = true;
 
-    if (value.length > 2) {
-        value = value.slice(0, 2) + '-' + value.slice(2);
-    }
-    if (value.length > 6) {
-        value = value.slice(0, 6) + '-' + value.slice(6);
-    }
-    if (value.length > 8) {
-        value = value.slice(0, 9);
-    }
-//check erreur de lettre
     for (let i = 0; i < value.length; i++) {
         if (i < 2 || (i > 6 && i <= 9)) {
-            if (!/[A-Z]/.test(value[i])) {
-                isValid = false;
-                break;
-            }
-            //check erreur de chiffre
+            if (!/[A-Z]/.test(value[i])) { isValid = false; break; }
         } else if (i > 2 && i < 6) {
-            if (!/[0-9]/.test(value[i])) {
-                isValid = false;
-                break;
-            }
+            if (!/\d/.test(value[i])) { isValid = false; break; }
         }
     }
 
     if (isValid) {
         input.classList.remove('validation-champ-surimpression');
-        let errorElement = document.getElementById('immatriculationError');
-        if (errorElement) {
-            errorElement.remove();
-        }
+        let errorElement = input.parentNode.querySelector('.immatriculationError');
+        if (errorElement) { errorElement.remove(); }
     } else {
         input.classList.add('validation-champ-surimpression');
-        if (!document.getElementById('immatriculationError')) {
+        if (!input.parentNode.querySelector('.immatriculationError')) {
             let errorDiv = document.createElement('div');
-            errorDiv.id = 'immatriculationError';
-            errorDiv.className = 'is-invalid validation-champ-incorrect';
+            errorDiv.className = 'immatriculationError is-invalid validation-champ-incorrect';
             errorDiv.textContent = "Le format requis doit être de type 'AA-123-AA'. Merci de vérifier l'immatriculation saisie.";
             input.parentNode.appendChild(errorDiv);
         }
     }
 
     input.value = value;
+}
+
+// variante utilisée par le formulaire SIV: supprime l'affichage d'erreur si champ vide ou format ok
+function checkImmatError(input) {
+    let value = input.value || '';
+    const err = input.parentNode.querySelector('.immatriculationError');
+    if (value.length === 0) {
+        input.classList.remove('validation-champ-surimpression');
+        if (err) err.remove();
+        return;
+    }
+    if (/^[A-Z]{2}-\d{3}-[A-Z]{2}$/.test(value)) {
+        input.classList.remove('validation-champ-surimpression');
+        if (err) err.remove();
+    }
+}
+
+// grise le bouton de validation si l'immat existe
+function checkImmatExists(input) {
+    let immatriculation = input.value;
+    fetch(`/queries/vehiculeExists/${immatriculation}`)
+        .then(response => response.json())
+        .then(data => {
+            const existsEl = input.parentNode.querySelector('.immatriculationExisteError');
+            const form = input.closest('form');
+            const submitBtn = form ? form.querySelector('button[type=submit]') : null;
+            if (data) {
+                if (existsEl) existsEl.style.display = 'block';
+                if (submitBtn) submitBtn.disabled = true;
+            } else {
+                if (existsEl) existsEl.style.display = 'none';
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        })
+        .catch(error => { console.error('Error:', error); });
 }
 
 // formatte le numero de tel

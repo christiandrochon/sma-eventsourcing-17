@@ -30,21 +30,23 @@ class DocumentCommandDTOTest {
     }
 
     @Test
-    void shouldSupportAllArgsConstructor() {
-        DocumentCommandDTO dto = new DocumentCommandDTO(
-                "id-2",
-                "Nom",
-                "Titre",
-                "Emetteur",
-                DocumentTestDataFactory.sampleTypeDocument(),
-                DocumentTestDataFactory.creationInstant(),
-                DocumentTestDataFactory.modificationInstant(),
-                DocumentStatusDTO.ARCHIVED
-        );
+    void shouldSupportBuilder() {
+        DocumentCommandDTO dto = DocumentCommandDTO.builder()
+                .id("id-2")
+                .nomDocument("Nom")
+                .titreDocument("Titre")
+                .emetteurDuDocument("Emetteur")
+                .typeDocument(DocumentTestDataFactory.sampleTypeDocument())
+                .dateCreationDocument(DocumentTestDataFactory.creationInstant())
+                .dateModificationDocument(DocumentTestDataFactory.modificationInstant())
+                .documentStatus(DocumentStatusDTO.ARCHIVED)
+                .clientId("client-1")
+                .build();
 
         assertEquals("id-2", dto.getId());
         assertEquals("Titre", dto.getTitreDocument());
         assertEquals(DocumentStatusDTO.ARCHIVED, dto.getDocumentStatus());
+        assertEquals("client-1", dto.getClientId());
     }
 
     @Test
