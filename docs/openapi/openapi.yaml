@@ -6,13 +6,51 @@ servers:
 - url: http://localhost:8092
   description: Generated server url
 tags:
+- name: Documents - Event Sourcing
+  description: Accès aux événements stockés pour les documents
+- name: Vehicules - Commands
+  description: Commandes CQRS liées aux véhicules
+- name: Garages - Commands
+  description: Commandes CQRS liées aux garages
+- name: Clients - Event Sourcing
+  description: Accès aux événements dans l'event store pour les clients
+- name: Vehicules - Event Sourcing
+  description: Accès aux événements stockés pour les véhicules
+- name: Clients - Queries
+  description: Requêtes de lecture CQRS liées aux clients
+- name: Garages - Queries
+  description: Requêtes de lecture CQRS liées aux garages
+- name: Dossiers - Event Sourcing
+  description: Accès aux événements dans l'event store pour les dossiers
+- name: Garages - Event Sourcing
+  description: Accès aux événements stockés pour les garages
+- name: Documents - Events
+  description: Accès aux événements liés aux documents
+- name: Dossiers - Queries
+  description: Requêtes de lecture CQRS liées aux dossiers
 - name: Clients - Commands
   description: Commandes CQRS liées aux clients
+- name: Documents - Commands
+  description: Commandes CQRS liées aux documents
+- name: Vehicules - Search
+  description: Recherche avancée pour les véhicules
+- name: Dossiers - Commands
+  description: Commandes CQRS liées aux dossiers
+- name: Vehicules - Queries
+  description: Requêtes de lecture CQRS liées aux véhicules
+- name: Documents - Queries
+  description: Requêtes de lecture CQRS liées aux documents
+- name: Garages - Events
+  description: Accès aux événements liés aux garages
+- name: Vehicules - Events
+  description: Accès aux événements liés aux véhicules
 paths:
   /commands/{createGarage}:
     post:
       tags:
-      - garage-command-server-controller
+      - Garages - Commands
+      summary: Créer un garage
+      description: Crée un garage via une commande Axon.
       operationId: createGarage
       requestBody:
         content:
@@ -21,8 +59,14 @@ paths:
               $ref: "#/components/schemas/GarageCommandDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Garage créé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GarageCommandDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -30,7 +74,10 @@ paths:
   /commands/createVehicule:
     post:
       tags:
-      - vehicule-command-controller
+      - Vehicules - Commands
+      summary: Créer un véhicule
+      description: Crée un véhicule via une commande Axon. Accessible aux rôles ADMIN
+        et USER.
       operationId: createClientAsync
       requestBody:
         content:
@@ -39,8 +86,20 @@ paths:
               $ref: "#/components/schemas/VehiculeCommandDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Véhicule créé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VehiculeCommandDTO"
+        "403":
+          description: Accès refusé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VehiculeCommandDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -48,7 +107,10 @@ paths:
   /commands/createDossier:
     post:
       tags:
-      - dossier-command-controller
+      - Dossiers - Commands
+      summary: Créer un dossier
+      description: Crée un dossier via une commande Axon. Endpoint réservé au rôle
+        ADMIN.
       operationId: createClientAsync_1
       requestBody:
         content:
@@ -57,8 +119,20 @@ paths:
               $ref: "#/components/schemas/DossierCommandDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Dossier créé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DossierCommandDTO"
+        "403":
+          description: Accès refusé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DossierCommandDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -66,7 +140,10 @@ paths:
   /commands/createDocument:
     post:
       tags:
-      - document-command-controller
+      - Documents - Commands
+      summary: Créer un document
+      description: Crée un document via une commande Axon. Accessible aux rôles ADMIN
+        et USER.
       operationId: createClientAsync_2
       requestBody:
         content:
@@ -75,8 +152,20 @@ paths:
               $ref: "#/components/schemas/DocumentCommandDTO"
         required: true
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Document créé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DocumentCommandDTO"
+        "403":
+          description: Accès refusé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DocumentCommandDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -141,11 +230,28 @@ paths:
   /queries/vehicules:
     get:
       tags:
-      - vehicule-query-controller
+      - Vehicules - Queries
+      summary: Lister tous les véhicules
+      description: "Récupère la liste de tous les véhicules. Les utilisateurs USER\
+        \ ne voient que leurs propres véhicules, les ADMIN voient tous les véhicules."
       operationId: getDossiersAsync
       responses:
         "200":
-          description: OK
+          description: Liste des véhicules
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VehiculeQueryDTO_VehiculeView"
+        "403":
+          description: Accès refusé
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VehiculeQueryDTO_VehiculeView"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -155,7 +261,10 @@ paths:
   /queries/vehicules/{id}:
     get:
       tags:
-      - vehicule-query-controller
+      - Vehicules - Queries
+      summary: Récupérer un véhicule par ID
+      description: Récupère les informations d'un véhicule spécifique. Les utilisateurs
+        USER ne peuvent accéder qu'à leurs propres véhicules.
       operationId: getVehiculeByIdAsync
       parameters:
       - name: id
@@ -165,7 +274,25 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Véhicule trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VehiculeQueryDTO_VehiculeView"
+        "403":
+          description: Accès refusé - véhicule non autorisé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VehiculeQueryDTO_VehiculeView"
+        "404":
+          description: Véhicule non trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VehiculeQueryDTO_VehiculeView"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -173,7 +300,9 @@ paths:
   /queries/vehicules/immatriculation/{immatriculation}:
     get:
       tags:
-      - vehicule-search-query-controller
+      - Vehicules - Search
+      summary: Récupérer un véhicule par immatriculation
+      description: Retourne les informations d'un véhicule recherché via son immatriculation.
       operationId: getVehiculeByImmatriculationAsync
       parameters:
       - name: immatriculation
@@ -183,7 +312,19 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Véhicule trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VehiculeQueryDTO_VehiculeView"
+        "404":
+          description: Véhicule non trouvé
+          content:
+            '*/*':
+              schema:
+                type: object
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -191,7 +332,7 @@ paths:
   /queries/vehiculeExists/{immatriculation}:
     get:
       tags:
-      - vehicule-search-query-controller
+      - Vehicules - Search
       operationId: immatriculationExiste
       parameters:
       - name: immatriculation
@@ -209,11 +350,19 @@ paths:
   /queries/garages:
     get:
       tags:
-      - garage-query-server-controller
+      - Garages - Queries
+      summary: Lister tous les garages
+      description: Récupère la liste de tous les garages disponibles.
       operationId: getGaragesAsyncServer
       responses:
         "200":
-          description: OK
+          description: Liste des garages
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GarageQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -223,7 +372,9 @@ paths:
   /queries/garages/{id}:
     get:
       tags:
-      - garage-query-server-controller
+      - Garages - Queries
+      summary: Récupérer un garage par ID
+      description: Récupère les informations d'un garage spécifique.
       operationId: getGarageByIdAsync
       parameters:
       - name: id
@@ -233,7 +384,19 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Garage trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GarageQueryDTO"
+        "404":
+          description: Garage non trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/GarageQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -241,11 +404,28 @@ paths:
   /queries/dossiers:
     get:
       tags:
-      - dossier-query-controller
+      - Dossiers - Queries
+      summary: Lister tous les dossiers
+      description: "Récupère la liste de tous les dossiers. Les utilisateurs USER\
+        \ ne voient que les dossiers de leurs clients, les ADMIN voient tous les dossiers."
       operationId: getDossiersAsync_1
       responses:
         "200":
-          description: OK
+          description: Liste des dossiers
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DossierQueryDTO"
+        "403":
+          description: Accès refusé
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DossierQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -255,7 +435,10 @@ paths:
   /queries/dossiers/{id}:
     get:
       tags:
-      - dossier-query-controller
+      - Dossiers - Queries
+      summary: Récupérer un dossier par ID
+      description: Récupère les informations d'un dossier spécifique. Les utilisateurs
+        USER ne peuvent accéder qu'aux dossiers de leurs clients.
       operationId: getDossierByIdAsync
       parameters:
       - name: id
@@ -265,7 +448,25 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Dossier trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DossierQueryDTO"
+        "403":
+          description: Accès refusé - dossier non autorisé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DossierQueryDTO"
+        "404":
+          description: Dossier non trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DossierQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -273,7 +474,10 @@ paths:
   /queries/dossiers/{id}/wait-ready:
     get:
       tags:
-      - dossier-query-controller
+      - Dossiers - Queries
+      summary: Attendre que le dossier soit prêt
+      description: Attend que le dossier soit disponible dans la projection (read
+        model) après sa création. Utile pour la synchronisation de l'event sourcing.
       operationId: waitForDossierReady
       parameters:
       - name: id
@@ -283,7 +487,13 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Dossier prêt
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DossierQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -291,7 +501,10 @@ paths:
   /queries/dossier/{id}/watch:
     get:
       tags:
-      - dossier-query-controller
+      - Dossiers - Queries
+      summary: Regarder les mises à jour d'un dossier en temps réel
+      description: Retourne un flux d'événements en temps réel pour les mises à jour
+        d'un dossier via Server-Sent Events (SSE).
       operationId: watch
       parameters:
       - name: id
@@ -301,7 +514,13 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Flux de mises à jour du dossier
+          content:
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/DossierQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             text/event-stream:
               schema:
@@ -311,11 +530,28 @@ paths:
   /queries/documents:
     get:
       tags:
-      - document-query-controller
+      - Documents - Queries
+      summary: Lister tous les documents
+      description: "Récupère la liste de tous les documents. Les utilisateurs USER\
+        \ ne voient que leurs propres documents, les ADMIN voient tous les documents."
       operationId: getDocumentsAsync
       responses:
         "200":
-          description: OK
+          description: Liste des documents
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DocumentQueryDTO"
+        "403":
+          description: Accès refusé
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DocumentQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -325,7 +561,10 @@ paths:
   /queries/documents/{id}:
     get:
       tags:
-      - document-query-controller
+      - Documents - Queries
+      summary: Récupérer un document par ID
+      description: Récupère les informations d'un document spécifique. Les utilisateurs
+        USER ne peuvent accéder qu'à leurs propres documents.
       operationId: getDocumentByIdAsync
       parameters:
       - name: id
@@ -335,7 +574,25 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Document trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DocumentQueryDTO"
+        "403":
+          description: Accès refusé - document non autorisé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DocumentQueryDTO"
+        "404":
+          description: Document non trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DocumentQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -343,11 +600,28 @@ paths:
   /queries/clients:
     get:
       tags:
-      - client-query-controller
+      - Clients - Queries
+      summary: Lister tous les clients
+      description: "Récupère la liste de tous les clients. Les utilisateurs USER ne\
+        \ voient que leurs propres données, les ADMIN et AUDITOR voient tous les clients."
       operationId: getClientsAsync
       responses:
         "200":
-          description: OK
+          description: Liste des clients
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientQueryDTO_ClientView"
+        "403":
+          description: Accès refusé
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClientQueryDTO_ClientView"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -357,7 +631,10 @@ paths:
   /queries/clients/{id}:
     get:
       tags:
-      - client-query-controller
+      - Clients - Queries
+      summary: Récupérer un client par ID
+      description: Récupère les informations d'un client spécifique. Les utilisateurs
+        USER ne peuvent accéder qu'à leurs propres données.
       operationId: getClientByIdAsync
       parameters:
       - name: id
@@ -367,7 +644,25 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Client trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientQueryDTO_ClientView"
+        "403":
+          description: Accès refusé - client non autorisé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientQueryDTO_ClientView"
+        "404":
+          description: Client non trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ClientQueryDTO_ClientView"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -375,7 +670,10 @@ paths:
   /queries/client/{id}/watch:
     get:
       tags:
-      - client-query-controller
+      - Clients - Queries
+      summary: Regarder les mises à jour d'un client en temps réel
+      description: Retourne un flux d'événements en temps réel pour les mises à jour
+        d'un client via Server-Sent Events (SSE).
       operationId: watch_1
       parameters:
       - name: id
@@ -385,7 +683,13 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Flux de mises à jour du client
+          content:
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/ClientQueryDTO"
+        "500":
+          description: Erreur serveur
           content:
             text/event-stream:
               schema:
@@ -395,7 +699,10 @@ paths:
   /eventSourcing/vehiculeQueries/{id}:
     get:
       tags:
-      - vehicule-event-sourcing-rest-controller
+      - Vehicules - Event Sourcing
+      summary: Récupérer les événements d'un véhicule
+      description: Retourne les événements stockés dans l'EventStore Axon pour un
+        véhicule donné.
       operationId: eventsByAccountId
       parameters:
       - name: id
@@ -405,7 +712,16 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  parallel:
+                    type: boolean
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -416,7 +732,10 @@ paths:
   /eventSourcing/vehiculeEvents/{id}:
     get:
       tags:
-      - vehicule-event-controller
+      - Vehicules - Events
+      summary: Récupérer les événements d'un véhicule
+      description: Retourne les événements stockés dans l'EventStore Axon pour un
+        véhicule donné.
       operationId: eventsById
       parameters:
       - name: id
@@ -426,7 +745,13 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DomainEventStreamDomainEventMessageObject"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -434,7 +759,10 @@ paths:
   /eventSourcing/garageQueries/{id}:
     get:
       tags:
-      - garage-event-sourcing-rest-controller
+      - Garages - Event Sourcing
+      summary: Récupérer les événements d'un garage
+      description: Retourne les événements stockés dans l'EventStore Axon pour un
+        garage donné.
       operationId: eventsByAccountId_1
       parameters:
       - name: id
@@ -444,7 +772,16 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  parallel:
+                    type: boolean
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -455,7 +792,10 @@ paths:
   /eventSourcing/garageEvents/{id}:
     get:
       tags:
-      - garage-event-controller
+      - Garages - Events
+      summary: Récupérer les événements d'un garage
+      description: Retourne les événements stockés dans l'EventStore Axon pour un
+        garage donné.
       operationId: eventsById_1
       parameters:
       - name: id
@@ -465,7 +805,13 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DomainEventStreamDomainEventMessageObject"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -473,7 +819,9 @@ paths:
   /eventSourcing/dossierQueries/{id}:
     get:
       tags:
-      - dossier-event-sourcing-rest-controller
+      - Dossiers - Event Sourcing
+      summary: Récupérer les événements de requête d'un dossier
+      description: Retourne le flux des événements de requête pour un dossier spécifique.
       operationId: eventsByAccountId_2
       parameters:
       - name: id
@@ -483,7 +831,25 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  parallel:
+                    type: boolean
+        "404":
+          description: Dossier non trouvé
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  parallel:
+                    type: boolean
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -494,7 +860,10 @@ paths:
   /eventSourcing/dossierEvents/{id}:
     get:
       tags:
-      - dossier-event-controller
+      - Dossiers - Event Sourcing
+      summary: Récupérer les événements d'un dossier
+      description: Retourne tous les événements du domaine stockés pour un dossier
+        spécifique.
       operationId: eventsById_2
       parameters:
       - name: id
@@ -504,7 +873,19 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DomainEventStreamDomainEventMessageObject"
+        "404":
+          description: Dossier non trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DomainEventStreamDomainEventMessageObject"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -512,7 +893,10 @@ paths:
   /eventSourcing/documentQueries/{id}:
     get:
       tags:
-      - document-event-sourcing-rest-controller
+      - Documents - Event Sourcing
+      summary: Récupérer les événements d'un document
+      description: Retourne les événements stockés dans l'EventStore Axon pour un
+        document donné.
       operationId: eventsByDocumentId
       parameters:
       - name: id
@@ -522,7 +906,16 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  parallel:
+                    type: boolean
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -533,7 +926,10 @@ paths:
   /eventSourcing/documentEvents/{id}:
     get:
       tags:
-      - document-event-controller
+      - Documents - Events
+      summary: Récupérer les événements d'un document
+      description: Retourne les événements stockés dans l'EventStore Axon pour un
+        document donné.
       operationId: eventsById_3
       parameters:
       - name: id
@@ -543,7 +939,13 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DomainEventStreamDomainEventMessageObject"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -551,7 +953,9 @@ paths:
   /eventSourcing/clientQueries/{id}:
     get:
       tags:
-      - client-event-sourcing-rest-controller
+      - Clients - Event Sourcing
+      summary: Récupérer les événements de requête d'un client
+      description: Retourne le flux des événements de requête pour un client spécifique.
       operationId: eventsByAccountId_3
       parameters:
       - name: id
@@ -561,7 +965,25 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  parallel:
+                    type: boolean
+        "404":
+          description: Client non trouvé
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  parallel:
+                    type: boolean
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -572,7 +994,10 @@ paths:
   /eventSourcing/clientEvents/{id}:
     get:
       tags:
-      - client-event-controller
+      - Clients - Event Sourcing
+      summary: Récupérer les événements d'un client
+      description: Retourne tous les événements du domaine stockés pour un client
+        spécifique.
       operationId: eventsById_4
       parameters:
       - name: id
@@ -582,7 +1007,19 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DomainEventStreamDomainEventMessageObject"
+        "404":
+          description: Client non trouvé
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DomainEventStreamDomainEventMessageObject"
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -590,7 +1027,10 @@ paths:
   /commands/eventStoreDossier/{id}:
     get:
       tags:
-      - dossier-command-controller
+      - Dossiers - Commands
+      summary: Lire les événements d'un dossier
+      description: Retourne les événements stockés dans l'EventStore Axon pour un
+        dossier donné.
       operationId: readDossiersInEventStore
       parameters:
       - name: id
@@ -600,7 +1040,16 @@ paths:
           type: string
       responses:
         "200":
-          description: OK
+          description: Événements trouvés
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  parallel:
+                    type: boolean
+        "500":
+          description: Erreur serveur
           content:
             '*/*':
               schema:
@@ -611,7 +1060,7 @@ paths:
   /commands/eventStoreDocument/{id}:
     get:
       tags:
-      - document-command-controller
+      - Documents - Commands
       operationId: readDocumentsInEventStore
       parameters:
       - name: id
@@ -729,59 +1178,96 @@ components:
   schemas:
     GarageAdresseDTO:
       type: object
+      description: DTO représentant l'adresse d'un garage
       properties:
         numeroDeRue:
           type: string
+          description: Numéro de rue
+          example: 42
         rue:
           type: string
+          description: Nom de la rue
+          example: avenue de l'Opéra
         cp:
           type: string
+          description: Code postal
+          example: 75001
         ville:
           type: string
+          description: Ville
+          example: Paris
     GarageCommandDTO:
       type: object
+      description: DTO utilisé pour les commandes liées aux garages
       properties:
         id:
           type: string
+          description: Identifiant unique du garage
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomGarage:
           type: string
+          description: Nom du garage
+          example: Garage Central Paris
         mailResp:
           type: string
+          description: Email du responsable du garage
+          example: contact@garage-central.com
         adresse:
           $ref: "#/components/schemas/GarageAdresseDTO"
+          description: Adresse du garage
     VehiculeCommandDTO:
       type: object
+      description: DTO utilisé pour les commandes liées aux véhicules
       properties:
         id:
           type: string
+          description: Identifiant unique du véhicule
+          example: 550e8400-e29b-41d4-a716-446655440000
         immatriculationVehicule:
           type: string
+          description: Immatriculation du véhicule
+          example: AB-123-CD
         dateMiseEnCirculationVehicule:
           type: string
           format: date-time
+          description: Date de mise en circulation du véhicule
         vehiculeStatus:
           type: string
+          description: "Statut du véhicule (ACTIVE, INACTIVE)"
           enum:
           - EN_ATTENTE
           - EN_CIRCULATION
           - HORS_SERVICE
           - VENDU
           - VOLE
+          example: ACTIVE
     ClientAdresseDTO:
       type: object
+      description: DTO représentant l'adresse d'un client
       properties:
         numeroDeRue:
           type: string
+          description: Numéro de rue
+          example: 42
         rue:
           type: string
+          description: Nom de la rue
+          example: rue de la Paix
         complementAdresse:
           type: string
+          description: "Complément d'adresse (Appartement, Bâtiment, etc.)"
+          example: Appartement 5
         cp:
           type: string
+          description: Code postal
+          example: 75001
         ville:
           type: string
+          description: Ville
+          example: Paris
         pays:
           type: string
+          description: Pays
           enum:
           - AFGHANISTAN
           - ALBANIE
@@ -973,6 +1459,7 @@ components:
           - YEMEN
           - ZAMBIE
           - ZIMBABWE
+          example: FRANCE
     ClientCommandDTO:
       type: object
       description: DTO utilisé pour les commandes liées aux clients
@@ -1010,23 +1497,33 @@ components:
           example: ACTIVE
     DossierCommandDTO:
       type: object
+      description: DTO utilisé pour les commandes liées aux dossiers
       properties:
         id:
           type: string
+          description: Identifiant unique du dossier
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomDossier:
           type: string
+          description: Nom du dossier
+          example: Dossier de garantie véhicule
         dateCreationDossier:
           type: string
           format: date-time
+          description: Date de création du dossier
         dateModificationDossier:
           type: string
           format: date-time
+          description: Date de dernière modification du dossier
         client:
           $ref: "#/components/schemas/ClientCommandDTO"
+          description: Client associé au dossier
         vehicule:
           $ref: "#/components/schemas/VehiculeCommandDTO"
+          description: Véhicule associé au dossier
         dossierStatus:
           type: string
+          description: Statut du dossier
           enum:
           - OUVERT
           - CLOTURE
@@ -1046,29 +1543,45 @@ components:
           - SUPPRIME
           - RESTAURE
           - PURGE
+          example: OUVERT
         userId:
           type: string
+          description: Identifiant de l'utilisateur propriétaire du dossier
+          example: user123
     DocumentCommandDTO:
       type: object
+      description: DTO utilisé pour les commandes liées aux documents
       properties:
         id:
           type: string
+          description: Identifiant unique du document
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomDocument:
           type: string
+          description: Nom du document
+          example: facture_123.pdf
         titreDocument:
           type: string
+          description: Titre du document
+          example: Facture d'achat
         emetteurDuDocument:
           type: string
+          description: Émetteur du document
+          example: Garage ABC
         typeDocument:
           $ref: "#/components/schemas/TypeDocument"
+          description: Type de document
         dateCreationDocument:
           type: string
           format: date-time
+          description: Date de création du document
         dateModificationDocument:
           type: string
           format: date-time
+          description: Date de dernière modification du document
         documentStatus:
           type: string
+          description: Statut du document
           enum:
           - CREATED
           - SENT
@@ -1099,6 +1612,8 @@ components:
           - TO_BE_PAID_AND_SENT_AND_ACCEPTED_AND_COMPLETED_AND_ARCHIVED_AND_DELETED_AND_REFUSED
         clientId:
           type: string
+          description: Identifiant du client propriétaire du document
+          example: 550e8400-e29b-41d4-a716-446655440000
     TypeDocument:
       type: object
       properties:
@@ -1185,19 +1700,31 @@ components:
           type: string
     ClientAdresseDTO_VehiculeView:
       type: object
+      description: DTO représentant l'adresse d'un client
       properties:
         numeroDeRue:
           type: string
+          description: Numéro de rue
+          example: 42
         rue:
           type: string
+          description: Nom de la rue
+          example: rue de la Paix
         complementAdresse:
           type: string
+          description: "Complément d'adresse (Appartement, Bâtiment, etc.)"
+          example: Appartement 5
         cp:
           type: string
+          description: Code postal
+          example: 75001
         ville:
           type: string
+          description: Ville
+          example: Paris
         pays:
           type: string
+          description: Pays
           enum:
           - AFGHANISTAN
           - ALBANIE
@@ -1389,102 +1916,157 @@ components:
           - YEMEN
           - ZAMBIE
           - ZIMBABWE
+          example: FRANCE
     ClientQueryDTO_VehiculeView:
       type: object
+      description: DTO représentant un client dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du client
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomClient:
           type: string
+          description: Nom du client
+          example: Dupont
         prenomClient:
           type: string
+          description: Prénom du client
+          example: Jean
         mailClient:
           type: string
+          description: Adresse email du client
+          example: jean.dupont@gmail.com
         telClient:
           type: string
+          description: Numéro de téléphone du client
+          example: "+33612345678"
         adresse:
           $ref: "#/components/schemas/ClientAdresseDTO_VehiculeView"
+          description: Adresse complète du client
         clientStatus:
           type: string
-          description: Statut métier du client
+          description: "Statut du client (ACTIVE, INACTIVE, SUSPENDED)"
           enum:
           - ACTIF
           - HISTORISE
           - INACTIF
+          example: ACTIVE
     VehiculeQueryDTO_VehiculeView:
       type: object
+      description: DTO représentant un véhicule dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du véhicule
+          example: 550e8400-e29b-41d4-a716-446655440000
         immatriculationVehicule:
           type: string
+          description: Immatriculation du véhicule
+          example: AB-123-CD
         dateMiseEnCirculationVehicule:
           type: string
           format: date-time
+          description: Date de mise en circulation du véhicule
         vehiculeStatus:
           type: string
+          description: "Statut du véhicule (ACTIVE, INACTIVE)"
           enum:
           - EN_ATTENTE
           - EN_CIRCULATION
           - HORS_SERVICE
           - VENDU
           - VOLE
+          example: ACTIVE
         client:
           $ref: "#/components/schemas/ClientQueryDTO_VehiculeView"
+          description: Client propriétaire du véhicule
     GarageQueryDTO:
       type: object
+      description: DTO représentant un garage dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du garage
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomGarage:
           type: string
+          description: Nom du garage
+          example: Garage Central Paris
         mailResp:
           type: string
+          description: Email du responsable du garage
+          example: contact@garage-central.com
         adresse:
           $ref: "#/components/schemas/GarageAdresseDTO"
+          description: Adresse du garage
     ClientQueryDTO:
       type: object
+      description: DTO représentant un client dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du client
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomClient:
           type: string
+          description: Nom du client
+          example: Dupont
         prenomClient:
           type: string
+          description: Prénom du client
+          example: Jean
         mailClient:
           type: string
+          description: Adresse email du client
+          example: jean.dupont@gmail.com
         telClient:
           type: string
+          description: Numéro de téléphone du client
+          example: "+33612345678"
         adresse:
           $ref: "#/components/schemas/ClientAdresseDTO"
+          description: Adresse complète du client
         clientStatus:
           type: string
-          description: Statut métier du client
+          description: "Statut du client (ACTIVE, INACTIVE, SUSPENDED)"
           enum:
           - ACTIF
           - HISTORISE
           - INACTIF
+          example: ACTIVE
         vehicule:
           $ref: "#/components/schemas/VehiculeQueryDTO"
+          description: Véhicule associé au client
     DossierQueryDTO:
       type: object
+      description: DTO représentant un dossier dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du dossier
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomDossier:
           type: string
+          description: Nom du dossier
+          example: Dossier de garantie véhicule
         dateCreationDossier:
           type: string
           format: date-time
+          description: Date de création du dossier
         dateModificationDossier:
           type: string
           format: date-time
+          description: Date de dernière modification du dossier
         client:
           $ref: "#/components/schemas/ClientQueryDTO"
+          description: Client associé au dossier
         vehicule:
           $ref: "#/components/schemas/VehiculeQueryDTO"
+          description: Véhicule associé au dossier
         dossierStatus:
           type: string
+          description: "Statut du dossier (OUVERT, CLOTURE, ARCHIVE, etc.)"
           enum:
           - OUVERT
           - CLOTURE
@@ -1504,47 +2086,70 @@ components:
           - SUPPRIME
           - RESTAURE
           - PURGE
+          example: OUVERT
     VehiculeQueryDTO:
       type: object
+      description: DTO représentant un véhicule dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du véhicule
+          example: 550e8400-e29b-41d4-a716-446655440000
         immatriculationVehicule:
           type: string
+          description: Immatriculation du véhicule
+          example: AB-123-CD
         dateMiseEnCirculationVehicule:
           type: string
           format: date-time
+          description: Date de mise en circulation du véhicule
         vehiculeStatus:
           type: string
+          description: "Statut du véhicule (ACTIVE, INACTIVE)"
           enum:
           - EN_ATTENTE
           - EN_CIRCULATION
           - HORS_SERVICE
           - VENDU
           - VOLE
+          example: ACTIVE
         client:
           $ref: "#/components/schemas/ClientQueryDTO"
+          description: Client propriétaire du véhicule
     DocumentQueryDTO:
       type: object
+      description: DTO représentant un document dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du document
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomDocument:
           type: string
+          description: Nom du document
+          example: facture_123.pdf
         titreDocument:
           type: string
+          description: Titre du document
+          example: Facture d'achat
         emetteurDuDocument:
           type: string
+          description: Émetteur du document
+          example: Garage ABC
         typeDocument:
           $ref: "#/components/schemas/TypeDocument"
+          description: Type de document
         dateCreationDocument:
           type: string
           format: date-time
+          description: Date de création du document
         dateModificationDocument:
           type: string
           format: date-time
+          description: Date de dernière modification du document
         documentStatus:
           type: string
+          description: Statut du document
           enum:
           - CREATED
           - SENT
@@ -1575,19 +2180,31 @@ components:
           - TO_BE_PAID_AND_SENT_AND_ACCEPTED_AND_COMPLETED_AND_ARCHIVED_AND_DELETED_AND_REFUSED
     ClientAdresseDTO_ClientView:
       type: object
+      description: DTO représentant l'adresse d'un client
       properties:
         numeroDeRue:
           type: string
+          description: Numéro de rue
+          example: 42
         rue:
           type: string
+          description: Nom de la rue
+          example: rue de la Paix
         complementAdresse:
           type: string
+          description: "Complément d'adresse (Appartement, Bâtiment, etc.)"
+          example: Appartement 5
         cp:
           type: string
+          description: Code postal
+          example: 75001
         ville:
           type: string
+          description: Ville
+          example: Paris
         pays:
           type: string
+          description: Pays
           enum:
           - AFGHANISTAN
           - ALBANIE
@@ -1779,50 +2396,74 @@ components:
           - YEMEN
           - ZAMBIE
           - ZIMBABWE
+          example: FRANCE
     ClientQueryDTO_ClientView:
       type: object
+      description: DTO représentant un client dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du client
+          example: 550e8400-e29b-41d4-a716-446655440000
         nomClient:
           type: string
+          description: Nom du client
+          example: Dupont
         prenomClient:
           type: string
+          description: Prénom du client
+          example: Jean
         mailClient:
           type: string
+          description: Adresse email du client
+          example: jean.dupont@gmail.com
         telClient:
           type: string
+          description: Numéro de téléphone du client
+          example: "+33612345678"
         adresse:
           $ref: "#/components/schemas/ClientAdresseDTO_ClientView"
+          description: Adresse complète du client
         clientStatus:
           type: string
-          description: Statut métier du client
+          description: "Statut du client (ACTIVE, INACTIVE, SUSPENDED)"
           enum:
           - ACTIF
           - HISTORISE
           - INACTIF
+          example: ACTIVE
         vehicule:
           $ref: "#/components/schemas/VehiculeQueryDTO_ClientView"
+          description: Véhicule associé au client
     VehiculeQueryDTO_ClientView:
       type: object
+      description: DTO représentant un véhicule dans une requête de lecture
       properties:
         id:
           type: string
+          description: Identifiant unique du véhicule
+          example: 550e8400-e29b-41d4-a716-446655440000
         immatriculationVehicule:
           type: string
+          description: Immatriculation du véhicule
+          example: AB-123-CD
         dateMiseEnCirculationVehicule:
           type: string
           format: date-time
+          description: Date de mise en circulation du véhicule
         vehiculeStatus:
           type: string
+          description: "Statut du véhicule (ACTIVE, INACTIVE)"
           enum:
           - EN_ATTENTE
           - EN_CIRCULATION
           - HORS_SERVICE
           - VENDU
           - VOLE
+          example: ACTIVE
         client:
           $ref: "#/components/schemas/ClientQueryDTO_ClientView"
+          description: Client propriétaire du véhicule
     DomainEventStreamDomainEventMessageObject:
       type: object
       properties:
