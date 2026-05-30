@@ -139,6 +139,7 @@ SPRING_PROFILES_ACTIVE=prod
 - [5.1 Demarrage officiel via script](#51-demarrage-officiel-via-script)
 - [5.2 Demarrage local (sans conteneur app)](#52-demarrage-local-sans-conteneur-app)
 - [6. Build et tests](#6-build-et-tests)
+  - [6.1 Mise a jour Sonar PR 14](#61-mise-a-jour-sonar-pr-14)
   - [CI et SonarQube — guide pratique](#ci-et-sonarqube---guide-pratique-comment-faire-fonctionner-sonar-et-lancer-le-ci)
   - [Documentation CI détaillée (docs/CI.md)](docs/CI.md)
 - [7. Configuration et profils Spring](#7-configuration-et-profils-spring)
@@ -790,6 +791,72 @@ Tests cibles backend (log technique) :
 ```bash
 mvn -pl backend -Dtest=TechnicalRequestWebFilterTest,GlobalTechnicalExceptionHandlerTest,ClientWebConfigTest test
 ```
+
+### 6.1 Mise a jour Sonar PR 14
+
+Contexte : PR `#14` (`feat/vehicle-fragment-dto-refactor`), objectif = supprimer les issues de fiabilite/qualite remontees sur le nouveau code.
+
+Etat final verifie :
+
+- Quality Gate SonarCloud PR: `OK`
+- Issues ouvertes sur la PR: `0`
+- Bugs: `0`
+- Vulnerabilities: `0`
+- Code Smells: `0`
+
+Corrections appliquees (resume) :
+
+- Frontend:
+  - correction regex immatriculation (`[0-9]` -> `\d`) dans `frontend/src/main/resources/static/js/perso.js`
+  - correction accessibilite labels/champs dans:
+    - `frontend/src/main/resources/templates/fragments/addressField.html`
+    - `frontend/src/main/resources/templates/fragments/clientPersonal.html`
+    - `frontend/src/main/resources/templates/document/createDocumentForm.html`
+  - correction collisions d'identifiants HTML (duplicate id) sur le fragment vehicule:
+    - refactor `frontend/src/main/resources/templates/fragments/vehicleField.html`
+    - creation de `frontend/src/main/resources/templates/fragments/vehicleDossierField.html`
+    - adaptation de `frontend/src/main/resources/templates/dossier/createDossierForm.html`
+
+- Backend:
+  - refactor DTO document pour supprimer les signatures longues (S107) au profit de builders/factories adaptees:
+    - `backend/src/main/java/fr/cdrochon/smamonolithe/document/command/dtos/DocumentCommandDTO.java`
+    - `backend/src/main/java/fr/cdrochon/smamonolithe/document/query/dtos/DocumentQueryDTO.java`
+  - adaptation des usages:
+    - `backend/src/main/java/fr/cdrochon/smamonolithe/document/command/services/DocumentCommandService.java`
+    - `backend/src/main/java/fr/cdrochon/smamonolithe/document/events/DocumentEventHandler.java`
+  - adaptation des tests lies:
+    - `backend/src/test/java/fr/cdrochon/smamonolithe/document/DocumentTestDataFactory.java`
+    - `backend/src/test/java/fr/cdrochon/smamonolithe/document/command/dtos/DocumentCommandDTOTest.java`
+    - `backend/src/test/java/fr/cdrochon/smamonolithe/document/query/dtos/DocumentQueryDTOTest.java`
+
+Validations executees localement :
+
+```bash
+mvn -pl backend -DskipTests compile
+mvn -pl backend -Dtest=DocumentCommandDTOTest,DocumentQueryDTOTest,DocumentCommandServiceTest,DocumentQueryMapperTest test
+mvn -pl frontend -DskipTests compile
+```
+
+Toutes les commandes ci-dessus sont passees au vert sur l'environnement local de developpement.
+
+Outil ajoute pour verifier l'etat Sonar d'une PR :
+
+- Script: `scripts/sonar-pr-status.sh`
+- Documentation: `scripts/README.scripts.md`
+
+Exemple d'usage :
+
+```bash
+./scripts/sonar-pr-status.sh christiandrochon_sma-eventsourcing-17 14
+```
+
+Le script affiche:
+
+- le statut Quality Gate de la PR
+- le nombre de bugs/vulnerabilities/code smells
+- la liste des issues ouvertes uniquement (`OPEN`, `CONFIRMED`, `REOPENED`)
+
+et retourne un code d'erreur si la PR n'est pas conforme (gate non OK ou issues ouvertes > 0).
 
 ## 7. Configuration et profils Spring
 
