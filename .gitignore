@@ -62,6 +62,8 @@ backend-openapi.pid
 .sonar/sonar-scanner-cli-*/bin/sonar-scanner.cmd
 .sonar/sonar-scanner-cli-*/bin/sonar-scanner.ps1
 .sonar/sonar-scanner-cli-*/bin/sonar-scanner.sh
+# Exports de logs CI locaux
+/ci_run_*_logs.txt
 **/target/
 **/logs/
 *.gz
