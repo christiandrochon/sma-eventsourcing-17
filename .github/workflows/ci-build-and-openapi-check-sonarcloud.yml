@@ -100,13 +100,21 @@ jobs:
           PY
 
       - name: Générer et comparer OpenAPI (mode doc-only)
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          SPRING_FLYWAY_ENABLED: "false"
+          AXON_AXONSERVER_ENABLED: "false"
+          APP_SECURITY_ENABLED: "false"
+          SPRING_DATASOURCE_URL: jdbc:h2:mem:sma_openapi;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+          SPRING_DATASOURCE_USERNAME: sa
+          SPRING_DATASOURCE_PASSWORD: ""
+          SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.H2Dialect
         run: |
           set -euo pipefail
-          # Start the backend with the 'test' profile so it uses in-memory H2 and disables Flyway/JPA DB access
-          # Use the Spring Boot plugin property so the forked JVM receives the test profile
           nohup mvn -pl backend -DskipTests \
             -Dspring-boot.run.profiles=test \
-            -Dspring-boot.run.arguments="--axon.axonserver.enabled=false --app.security.enabled=false --spring.main.allow-bean-definition-overriding=true --spring.flyway.enabled=false" \
+            -Dspring-boot.run.arguments="--spring.flyway.enabled=false --axon.axonserver.enabled=false --app.security.enabled=false --spring.main.allow-bean-definition-overriding=true --spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration,org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration,org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration" \
             spring-boot:run > backend-openapi.log 2>&1 &
           MVN_PID=$!
           echo "Backend démarré (PID=$MVN_PID), attente de /v3/api-docs..."
