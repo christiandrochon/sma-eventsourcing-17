@@ -8,7 +8,7 @@
 
     <div class="w-100">
       <label for="dateMiseEnCirculationVehiculeCreate" class="form-label">Date de mise en circulation</label>
-      <input id="dateMiseEnCirculationVehiculeCreate" class="form-control" type="date" oninput="validationDeDate(this)"
+      <input th:id="'dateMiseEnCirculationVehiculeCreate'" class="form-control" type="date" oninput="validationDeDate(this)"
              th:field="*{dateMiseEnCirculationVehicule}" required>
       <div class="is-invalid" th:if="${#fields.hasErrors('dateMiseEnCirculationVehicule')}"
            th:errors="*{dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
@@ -17,7 +17,7 @@
 
     <div>
       <label for="statusVehiculeCreate" class="form-label">Statut du véhicule</label>
-      <select id="statusVehiculeCreate" class="form-select" th:field="*{vehiculeStatus}">
+      <select th:id="'statusVehiculeCreate'" class="form-select" th:field="*{vehiculeStatus}">
         <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}">Status</option>
       </select>
       <div class="is-invalid" th:if="${#fields.hasErrors('vehiculeStatus')}" th:errors="*{vehiculeStatus}">Erreur
@@ -27,30 +27,6 @@
   </div>
 
   <!-- fragment pour dossier form: les champs sont sous *{vehicule....} -->
-  <div th:fragment="vehicle_dossier">
-    <div th:replace="fragments/immatField :: immat_dossier"></div>
-
-    <div class="col-md-6">
-      <label for="dateMiseEnCirculationVehiculeDossier" class="form-label">Date de mise en circulation</label>
-      <input id="dateMiseEnCirculationVehiculeDossier" class="form-control" type="date" th:field="*{vehicule.dateMiseEnCirculationVehicule}"
-             oninput="validationDeDate(this)" required>
-      <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.dateMiseEnCirculationVehicule')}"
-           th:errors="*{vehicule.dateMiseEnCirculationVehicule}">Erreur de date de mise en circulation
-      </div>
-    </div>
-
-    <div>
-      <label for="statusVehiculeDossier" class="form-label">Statut du véhicule</label>
-      <select id="statusVehiculeDossier" class="form-select" th:field="*{vehicule.vehiculeStatus}" required>
-        <option th:each="status : ${vehiculeStatuses}" th:value="${status}" th:text="${status}" th:selected="${status == 'EN_ATTENTE'}">
-          Status
-        </option>
-      </select>
-      <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('vehicule.vehiculeStatus')}" th:errors="*{vehicule.vehiculeStatus}">
-        Erreur du statut du véhicule
-      </div>
-    </div>
-  </div>
 
 </div>
 

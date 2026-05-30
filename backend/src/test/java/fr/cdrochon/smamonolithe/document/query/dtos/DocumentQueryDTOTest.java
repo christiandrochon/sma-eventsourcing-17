@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class DocumentQueryDTOTest {
 
     @Test
-    void shouldConstructWithAllArgs() {
+    void shouldConstructWithBuilder() {
         DocumentQueryDTO dto = DocumentTestDataFactory.sampleQueryDTO();
 
         assertEquals("doc-1", dto.getId());

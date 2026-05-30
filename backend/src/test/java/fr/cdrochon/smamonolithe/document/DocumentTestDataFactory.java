@@ -81,16 +81,16 @@ public final class DocumentTestDataFactory {
     }
 
     public static DocumentQueryDTO sampleQueryDTO() {
-        return new DocumentQueryDTO(
-                "doc-1",
-                "DOC-FACTURE-2026",
-                "Facture Avril",
-                "Service Compta",
-                sampleTypeDocument(),
-                creationInstant(),
-                modificationInstant(),
-                DocumentStatusDTO.CREATED
-        );
+        return DocumentQueryDTO.builder()
+                .id("doc-1")
+                .nomDocument("DOC-FACTURE-2026")
+                .titreDocument("Facture Avril")
+                .emetteurDuDocument("Service Compta")
+                .typeDocument(sampleTypeDocument())
+                .dateCreationDocument(creationInstant())
+                .dateModificationDocument(modificationInstant())
+                .documentStatus(DocumentStatusDTO.CREATED)
+                .build();
     }
 
     public static GetDocumentDTO sampleGetDocumentDTO() {

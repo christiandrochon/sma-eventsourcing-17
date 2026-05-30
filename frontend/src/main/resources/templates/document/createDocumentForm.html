@@ -85,21 +85,17 @@
             </div>
 
             <div>
-                <label class="form-label">Titre du document</label>
-                <div class="control">
-                    <input id="titreDocument" class="form-control" type="text" th:field="*{titreDocument}"
-                           th:classappend="${#fields.hasErrors('titreDocument')} ? 'validation-champ-surimpression'"/>
-                </div>
+                <label for="titreDocument" class="form-label">Titre du document</label>
+                <input id="titreDocument" class="form-control" type="text" th:field="*{titreDocument}"
+                       th:classappend="${#fields.hasErrors('titreDocument')} ? 'validation-champ-surimpression'"/>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('titreDocument')}"
                      th:errors="*{titreDocument}">Erreur de titre du document
                 </div>
             </div>
             <div>
-                <label>Provenance du document</label>
-                <div class="form-label">
-                    <input type="text" id="emetteurDuDocument" class="form-control" th:field="*{emetteurDuDocument}"
-                           th:classappend="${#fields.hasErrors('emetteurDuDocument')} ? 'validation-champ-surimpression'"/>
-                </div>
+                <label for="emetteurDuDocument" class="form-label">Provenance du document</label>
+                <input type="text" id="emetteurDuDocument" class="form-control" th:field="*{emetteurDuDocument}"
+                       th:classappend="${#fields.hasErrors('emetteurDuDocument')} ? 'validation-champ-surimpression'"/>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('emetteurDuDocument')}" th:errors="*{emetteurDuDocument}">Erreur
                     dans l'emetteur du document
                 </div>
@@ -132,8 +128,8 @@
                 </div>
             </div>
             <div>
-                <label for="status" class="form-label">Statut du document</label>
-                <select id="status" class="form-select" th:field="*{documentStatus}">
+                <label for="documentStatus" class="form-label">Statut du document</label>
+                <select id="documentStatus" class="form-select" th:field="*{documentStatus}">
                     <option th:each="status : ${documentStatuses}" th:value="${status}" th:text="${status}">Statut</option>
                 </select>
                 <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('documentStatus')}" th:errors="*{documentStatus}">Erreur

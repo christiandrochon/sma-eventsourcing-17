@@ -7,39 +7,49 @@
       <h5>Adresse du client</h5>
     </div>
     <div>
-      <label class="form-label">N° de rue</label>
-      <input class="form-control numeroDeRue" type="text" th:field="*{adresse.numeroDeRue}"
-             th:classappend="${#fields.hasErrors('adresse.numeroDeRue')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="adresseNumeroRueSimple">
+        N° de rue
+        <input id="adresseNumeroRueSimple" class="form-control numeroDeRue" type="text" th:field="*{adresse.numeroDeRue}"
+               th:classappend="${#fields.hasErrors('adresse.numeroDeRue')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.numeroDeRue')}" th:errors="*{adresse.numeroDeRue}">Erreur de numéro de rue dans l'adresse</div>
     </div>
 
     <div>
-      <label class="form-label">Nom de la rue</label>
-      <input class="form-control rue" type="text" th:field="*{adresse.rue}"
-             th:classappend="${#fields.hasErrors('adresse.rue')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="adresseRueSimple">
+        Nom de la rue
+        <input id="adresseRueSimple" class="form-control rue" type="text" th:field="*{adresse.rue}"
+               th:classappend="${#fields.hasErrors('adresse.rue')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.rue')}" th:errors="*{adresse.rue}">Erreur du nom de la rue dans l'adresse</div>
     </div>
 
     <div>
-      <label class="form-label">Code postal</label>
-      <input class="form-control cp" type="text" th:field="*{adresse.cp}" placeholder="00000" pattern="[0-9]{5}"
-             th:classappend="${#fields.hasErrors('adresse.cp')} ? 'validation-champ-surimpression'" oninput="formatCp(this)" required>
+      <label class="form-label" for="adresseCpSimple">
+        Code postal
+        <input id="adresseCpSimple" class="form-control cp" type="text" th:field="*{adresse.cp}" placeholder="00000" pattern="[0-9]{5}"
+               th:classappend="${#fields.hasErrors('adresse.cp')} ? 'validation-champ-surimpression'" oninput="formatCp(this)" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.cp')}" th:errors="*{adresse.cp}">Erreur de code postal</div>
     </div>
 
     <div>
-      <label class="form-label">Ville</label>
-      <input class="form-control ville" type="text" th:field="*{adresse.ville}"
-             th:classappend="${#fields.hasErrors('adresse.ville')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="adresseVilleSimple">
+        Ville
+        <input id="adresseVilleSimple" class="form-control ville" type="text" th:field="*{adresse.ville}"
+               th:classappend="${#fields.hasErrors('adresse.ville')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('adresse.ville')}" th:errors="*{adresse.ville}">Ville inconnue</div>
     </div>
 
     <div class="col-md-5">
-      <label class="form-label">Pays</label>
-      <select class="form-select pays" th:field="*{adresse.pays}" required>
-        <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:if="${pays} == ${valeurPaysParDefaut}" selected="selected"></option>
-        <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:unless="${pays} == ${valeurPaysParDefaut}"></option>
-      </select>
+      <label class="form-label" for="adressePaysSimple">
+        Pays
+        <select id="adressePaysSimple" class="form-select pays" th:field="*{adresse.pays}" required>
+          <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:if="${pays} == ${valeurPaysParDefaut}" selected="selected"></option>
+          <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:unless="${pays} == ${valeurPaysParDefaut}"></option>
+        </select>
+      </label>
     </div>
   </div>
 
@@ -49,39 +59,49 @@
       <h5>Adresse du client</h5>
     </div>
     <div>
-      <label class="form-label">N° de rue</label>
-      <input class="form-control numeroDeRue" type="text" th:field="*{client.adresse.numeroDeRue}"
-             th:classappend="${#fields.hasErrors('client.adresse.numeroDeRue')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="clientAdresseNumeroRueEmbedded">
+        N° de rue
+        <input id="clientAdresseNumeroRueEmbedded" class="form-control numeroDeRue" type="text" th:field="*{client.adresse.numeroDeRue}"
+               th:classappend="${#fields.hasErrors('client.adresse.numeroDeRue')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.numeroDeRue')}" th:errors="*{client.adresse.numeroDeRue}">Erreur de numéro de rue dans l'adresse</div>
     </div>
 
     <div>
-      <label for="rue" class="form-label">Nom de la rue</label>
-      <input id="rue" class="form-control" type="text" th:field="*{client.adresse.rue}"
-             th:classappend="${#fields.hasErrors('client.adresse.rue')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="clientAdresseRueEmbedded">
+        Nom de la rue
+        <input id="clientAdresseRueEmbedded" class="form-control" type="text" th:field="*{client.adresse.rue}"
+               th:classappend="${#fields.hasErrors('client.adresse.rue')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.rue')}" th:errors="*{client.adresse.rue}">Erreur du nom de la rue dans l'adresse</div>
     </div>
 
     <div>
-      <label for="cp" class="form-label">Code postal</label>
-      <input id="cp" class="form-control" type="text" th:field="*{client.adresse.cp}" placeholder="00000" pattern="[0-9]{5}"
-             th:classappend="${#fields.hasErrors('client.adresse.cp')} ? 'validation-champ-surimpression'" oninput="formatCp(this)" required>
+      <label class="form-label" for="clientAdresseCpEmbedded">
+        Code postal
+        <input id="clientAdresseCpEmbedded" class="form-control" type="text" th:field="*{client.adresse.cp}" placeholder="00000" pattern="[0-9]{5}"
+               th:classappend="${#fields.hasErrors('client.adresse.cp')} ? 'validation-champ-surimpression'" oninput="formatCp(this)" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.cp')}" th:errors="*{client.adresse.cp}">Erreur de code postal</div>
     </div>
 
     <div>
-      <label for="ville" class="form-label">Ville</label>
-      <input id="ville" class="form-control" type="text" th:field="*{client.adresse.ville}"
-             th:classappend="${#fields.hasErrors('client.adresse.ville')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="clientAdresseVilleEmbedded">
+        Ville
+        <input id="clientAdresseVilleEmbedded" class="form-control" type="text" th:field="*{client.adresse.ville}"
+               th:classappend="${#fields.hasErrors('client.adresse.ville')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.adresse.ville')}" th:errors="*{client.adresse.ville}">Ville inconnue</div>
     </div>
 
     <div class="col-md-5">
-      <label for="pays" class="form-label">Pays</label>
-      <select class="form-select" id="pays" th:field="*{client.adresse.pays}" required>
-        <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:if="${pays} == ${valeurPaysParDefaut}" selected="selected"></option>
-        <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:unless="${pays} == ${valeurPaysParDefaut}"></option>
-      </select>
+      <label class="form-label" for="clientAdressePaysEmbedded">
+        Pays
+        <select class="form-select" id="clientAdressePaysEmbedded" th:field="*{client.adresse.pays}" required>
+          <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:if="${pays} == ${valeurPaysParDefaut}" selected="selected"></option>
+          <option th:each="pays : ${paysList}" th:value="${pays}" th:text="${pays}" th:unless="${pays} == ${valeurPaysParDefaut}"></option>
+        </select>
+      </label>
     </div>
   </div>
 

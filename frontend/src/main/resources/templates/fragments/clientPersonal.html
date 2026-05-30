@@ -4,30 +4,38 @@
   <!-- fragment pour la partie personnelle d'un client (formulaires top-level : *{nomClient} etc) -->
   <div th:fragment="client_personal_simple">
     <div>
-      <label class="form-label">Nom du client</label>
-      <input class="form-control nomClient" type="text" th:field="*{nomClient}"
-             th:classappend="${#fields.hasErrors('nomClient')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="nomClientSimple">
+        Nom du client
+        <input id="nomClientSimple" class="form-control nomClient" type="text" th:field="*{nomClient}"
+               th:classappend="${#fields.hasErrors('nomClient')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('nomClient')}" th:errors="*{nomClient}">Erreur de nom client</div>
     </div>
 
     <div>
-      <label class="form-label">Prénom du client</label>
-      <input class="form-control prenomClient" type="text" th:field="*{prenomClient}"
-             th:classappend="${#fields.hasErrors('prenomClient')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="prenomClientSimple">
+        Prénom du client
+        <input id="prenomClientSimple" class="form-control prenomClient" type="text" th:field="*{prenomClient}"
+               th:classappend="${#fields.hasErrors('prenomClient')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('prenomClient')}" th:errors="*{prenomClient}">Erreur de prenom client</div>
     </div>
 
     <div>
-      <label class="form-label">Mail du client</label>
-      <input class="form-control mailClient" type="email" pattern="[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,4}$" th:field="*{mailClient}"
-             th:classappend="${#fields.hasErrors('mailClient')} ? 'validation-champ-surimpression'" oninput="forcerminuscule(this)" required>
+      <label class="form-label" for="mailClientSimple">
+        Mail du client
+        <input id="mailClientSimple" class="form-control mailClient" type="email" pattern="[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,4}$" th:field="*{mailClient}"
+               th:classappend="${#fields.hasErrors('mailClient')} ? 'validation-champ-surimpression'" oninput="forcerminuscule(this)" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('mailClient')}" th:errors="*{mailClient}">Erreur de mail</div>
     </div>
 
     <div>
-      <label class="form-label">Téléphone du client</label>
-      <input class="form-control telClient" type="tel" th:field="*{telClient}"
-             th:classappend="${#fields.hasErrors('telClient')} ? 'validation-champ-surimpression'" oninput="formatTel(this)" required>
+      <label class="form-label" for="telClientSimple">
+        Téléphone du client
+        <input id="telClientSimple" class="form-control telClient" type="tel" th:field="*{telClient}"
+               th:classappend="${#fields.hasErrors('telClient')} ? 'validation-champ-surimpression'" oninput="formatTel(this)" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('telClient')}" th:errors="*{telClient}">Erreur de format de numéro de téléphone</div>
       <div class="telExisteError is-invalid validation-champ-incorrect" th:if="${telExisteError != null}">
         <span th:text="${telExisteError}"></span>
@@ -35,10 +43,12 @@
     </div>
 
     <div>
-      <label class="form-label">Statut du client</label>
-      <select class="form-select" th:field="*{clientStatus}">
-        <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}">Status</option>
-      </select>
+      <label class="form-label" for="clientStatusSimple">
+        Statut du client
+        <select id="clientStatusSimple" class="form-select" th:field="*{clientStatus}">
+          <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}">Status</option>
+        </select>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('clientStatus')}" th:errors="*{clientStatus}">Erreur du status du client</div>
     </div>
   </div>
@@ -46,38 +56,48 @@
   <!-- fragment pour client embedded (ex: dans dossier) : utilise *{client.nomClient} etc -->
   <div th:fragment="client_personal_embedded">
     <div class="col-sm-6">
-      <label class="form-label">Nom du client</label>
-      <input class="form-control nomClient" type="text" th:field="*{client.nomClient}"
-             th:classappend="${#fields.hasErrors('client.nomClient')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="clientNomEmbedded">
+        Nom du client
+        <input id="clientNomEmbedded" class="form-control nomClient" type="text" th:field="*{client.nomClient}"
+               th:classappend="${#fields.hasErrors('client.nomClient')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.nomClient')}" th:errors="*{client.nomClient}">Erreur de nom client</div>
     </div>
 
     <div class="col-sm-6">
-      <label class="form-label">Prénom du client</label>
-      <input class="form-control prenomClient" type="text" th:field="*{client.prenomClient}"
-             th:classappend="${#fields.hasErrors('client.prenomClient')} ? 'validation-champ-surimpression'" required>
+      <label class="form-label" for="clientPrenomEmbedded">
+        Prénom du client
+        <input id="clientPrenomEmbedded" class="form-control prenomClient" type="text" th:field="*{client.prenomClient}"
+               th:classappend="${#fields.hasErrors('client.prenomClient')} ? 'validation-champ-surimpression'" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.prenomClient')}" th:errors="*{client.prenomClient}">Erreur de prenom client</div>
     </div>
 
     <div class="col-sm-5">
-      <label class="form-label">Email du client </label>
-      <input class="form-control mailClient" type="email" th:field="*{client.mailClient}" pattern="[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,4}$"
-             th:classappend="${#fields.hasErrors('client.mailClient')} ? 'validation-champ-surimpression'" placeholder="maël@gmail.com" oninput="forcerminuscule(this)" required>
+      <label class="form-label" for="clientMailEmbedded">
+        Email du client
+        <input id="clientMailEmbedded" class="form-control mailClient" type="email" th:field="*{client.mailClient}" pattern="[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,4}$"
+               th:classappend="${#fields.hasErrors('client.mailClient')} ? 'validation-champ-surimpression'" placeholder="maël@gmail.com" oninput="forcerminuscule(this)" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.mailClient')}" th:errors="*{client.mailClient}">Entrez un email valide</div>
     </div>
 
     <div class="col-sm-4">
-      <label class="form-label">Téléphone du client</label>
-      <input class="form-control telClient" type="tel" th:field="*{client.telClient}"
-             th:classappend="${#fields.hasErrors('client.telClient')} ? 'validation-champ-surimpression'" oninput="formatTel(this)" required>
+      <label class="form-label" for="clientTelEmbedded">
+        Téléphone du client
+        <input id="clientTelEmbedded" class="form-control telClient" type="tel" th:field="*{client.telClient}"
+               th:classappend="${#fields.hasErrors('client.telClient')} ? 'validation-champ-surimpression'" oninput="formatTel(this)" required>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.telClient')}" th:errors="*{client.telClient}">Entrez un numéro de téléphone valide</div>
     </div>
 
     <div class="col-sm-3">
-      <label class="form-label">Situation du client</label>
-      <select class="form-select" th:field="*{client.clientStatus}" required>
-        <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}">Status</option>
-      </select>
+      <label class="form-label" for="clientStatusEmbedded">
+        Situation du client
+        <select id="clientStatusEmbedded" class="form-select" th:field="*{client.clientStatus}" required>
+          <option th:each="status : ${clientStatuses}" th:value="${status}" th:text="${status}">Status</option>
+        </select>
+      </label>
       <div class="validation-champ-incorrect" th:if="${#fields.hasErrors('client.clientStatus')}" th:errors="*{client.clientStatus}">Erreur du statut du client</div>
     </div>
   </div>

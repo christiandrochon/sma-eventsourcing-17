@@ -22,7 +22,7 @@ function checkImmat(input) {
         if (i < 2 || (i > 6 && i <= 9)) {
             if (!/[A-Z]/.test(value[i])) { isValid = false; break; }
         } else if (i > 2 && i < 6) {
-            if (!/[0-9]/.test(value[i])) { isValid = false; break; }
+            if (!/\d/.test(value[i])) { isValid = false; break; }
         }
     }
 
