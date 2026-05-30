@@ -132,8 +132,7 @@ jobs:
             kill $MVN_PID || true
             exit 1
           fi
-          # Temporaire: on valide seulement le canonical pour garder une CI stable.
-          ./scripts/openapi-verify.sh canonical-only
+          ./scripts/openapi-verify.sh compare-live
           echo "Arrêt du backend (PID=$MVN_PID)"
           kill $MVN_PID || true
           sleep 3 || true
