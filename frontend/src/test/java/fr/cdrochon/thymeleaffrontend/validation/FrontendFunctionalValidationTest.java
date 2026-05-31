@@ -20,17 +20,27 @@ class FrontendFunctionalValidationTest {
     private static Validator validator;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+    /**
+     * Execute une initialisation unique avant tous les tests de la classe.
+     */
     @BeforeAll
     static void setUp() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
 
+    /**
+     * Execute un nettoyage unique apres tous les tests de la classe.
+     */
     @AfterAll
     static void tearDown() {
         validatorFactory.close();
     }
 
+    /**
+     * Genere dynamiquement une serie de cas de test a partir de scenarios construits
+     * a l'execution.
+     */
     @TestFactory
     Stream<DynamicTest> shouldPass100FunctionalValidationCases() {
         return IntStream.range(0, 100)
@@ -47,7 +57,9 @@ class FrontendFunctionalValidationTest {
                             .as("Case %s should be valid", i)
                             .isEmpty();
 
-                    // Technical guard: serialization should stay stable for valid DTO payloads.
+                    /**
+                     * Technical guard: serialization should stay stable for valid DTO payloads.
+                     */
                     String json = OBJECT_MAPPER.writeValueAsString(dto);
                     assertThat(json).isNotBlank();
                 }));

@@ -16,6 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
 class ClientCommandServiceTest {
 
@@ -49,14 +53,18 @@ class ClientCommandServiceTest {
         ClientCommandDTO dto = sampleClientCommandDTO();
         service.completeClientCreation(dto);
 
-        // La future doit être complétée
-        // On recrée pas la future ici car elle est interne, on vérifie juste que ça ne throw pas
+        /**
+         * La future doit être complétée
+         * On recrée pas la future ici car elle est interne, on vérifie juste que ça ne throw pas
+         */
         assertDoesNotThrow(() -> service.completeClientCreation(dto));
     }
 
     @Test
     void shouldNotThrowWhenCompleteCalledBeforeCreateClient() {
-        // futureDTO est null au départ
+        /**
+         * futureDTO est null au départ
+         */
         assertDoesNotThrow(() -> service.completeClientCreation(sampleClientCommandDTO()));
     }
 
@@ -64,7 +72,9 @@ class ClientCommandServiceTest {
     void shouldGenerateRandomUUIDForCommand() {
         service.createClient(sampleClientCommandDTO());
         service.createClient(sampleClientCommandDTO());
-        // 2 appels → 2 commandes avec des UUIDs différents
+        /**
+         * 2 appels → 2 commandes avec des UUIDs différents
+         */
         verify(commandGateway, times(2)).send(any());
     }
 

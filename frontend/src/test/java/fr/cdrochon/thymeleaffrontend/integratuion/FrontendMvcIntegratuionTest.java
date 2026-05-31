@@ -46,13 +46,18 @@ class FrontendMvcIntegratuionTest {
     @Autowired
     private MockMvc mockMvc;
 
-    // Utiliser le bean mocké fourni par TestWebClientConfig au lieu de @MockBean afin
-    // d'éviter l'utilisation d'une annotation dépréciée dans l'IDE et pour
-    // centraliser les mocks des tests.
+    /**
+     * Utiliser le bean mocké fourni par TestWebClientConfig au lieu de @MockBean afin
+     * d'éviter l'utilisation d'une annotation dépréciée dans l'IDE et pour
+     * centraliser les mocks des tests.
+     */
     @org.springframework.beans.factory.annotation.Autowired
     @SuppressWarnings("unused")
     private FrontendTokenResolver frontendTokenResolver;
 
+    /**
+     * Execute une initialisation unique avant tous les tests de la classe.
+     */
     @BeforeAll
     static void startStubServer() throws IOException {
         backendStub = HttpServer.create(new InetSocketAddress(0), 0);
@@ -61,6 +66,9 @@ class FrontendMvcIntegratuionTest {
         backendStub.start();
     }
 
+    /**
+     * Execute un nettoyage unique apres tous les tests de la classe.
+     */
     @AfterAll
     static void stopStubServer() {
         backendStub.stop(0);
@@ -71,6 +79,9 @@ class FrontendMvcIntegratuionTest {
         registry.add("external.service.url", () -> "http://localhost:" + backendPort);
     }
 
+    /**
+     * Reinitialise l'etat necessaire avant chaque test de la classe.
+     */
     @BeforeEach
     void prepareDefaultRoutes() {
         ROUTES.clear();
