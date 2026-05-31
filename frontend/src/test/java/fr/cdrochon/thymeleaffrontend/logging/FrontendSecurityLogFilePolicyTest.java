@@ -24,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Couvre les cas d'erreur : méthodes suspectes, chemins suspects, accès refusés (401/403),
  * et vérifie l'absence de traces dans le log sécurité pour les requêtes normales.
  */
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class FrontendSecurityLogFilePolicyTest {
 
     @TempDir

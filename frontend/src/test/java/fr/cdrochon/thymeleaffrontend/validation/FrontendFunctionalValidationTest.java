@@ -14,6 +14,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class FrontendFunctionalValidationTest {
 
     private static ValidatorFactory validatorFactory;
