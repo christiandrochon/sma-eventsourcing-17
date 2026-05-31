@@ -38,23 +38,26 @@ class ClientEventHandlerServiceErrorCasesTest {
     void shouldThrowEntityNotFoundForUnknownId() {
         when(clientRepository.findById("ghost-id")).thenReturn(Optional.empty());
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
-        assertThrows(EntityNotFoundException.class, () -> service.on(new GetClientDTO("ghost-id")));
+        GetClientDTO query = new GetClientDTO("ghost-id");
+        assertThrows(EntityNotFoundException.class, () -> service.on(query));
     }
 
     @Test
     void shouldThrowEntityNotFoundForNullId() {
         when(clientRepository.findById(null)).thenReturn(Optional.empty());
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
-        assertThrows(EntityNotFoundException.class, () -> service.on(new GetClientDTO(null)));
+        GetClientDTO query = new GetClientDTO(null);
+        assertThrows(EntityNotFoundException.class, () -> service.on(query));
     }
 
     @Test
     void shouldHandleConstraintViolationOnDuplicateSave() {
         when(clientRepository.save(any(Client.class)))
-                .thenThrow(new org.springframework.dao.DataIntegrityViolationException("Duplicate entry"));
+            .thenThrow(new org.springframework.dao.DataIntegrityViolationException("Duplicate entry"));
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
+        ClientCreatedEvent event = sampleClientCreatedEvent();
         // Le catch interne avale → pas de throw
-        assertDoesNotThrow(() -> service.on(sampleClientCreatedEvent()));
+        assertDoesNotThrow(() -> service.on(event));
     }
 
     @Test

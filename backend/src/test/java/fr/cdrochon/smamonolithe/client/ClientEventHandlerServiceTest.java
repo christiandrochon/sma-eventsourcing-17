@@ -83,7 +83,8 @@ class ClientEventHandlerServiceTest {
     @Test
     void shouldThrowEntityNotFoundWhenClientNotFound() {
         when(clientRepository.findById("unknown")).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> service.on(new GetClientDTO("unknown")));
+        GetClientDTO query = new GetClientDTO("unknown");
+        assertThrows(EntityNotFoundException.class, () -> service.on(query));
     }
 
     @Test

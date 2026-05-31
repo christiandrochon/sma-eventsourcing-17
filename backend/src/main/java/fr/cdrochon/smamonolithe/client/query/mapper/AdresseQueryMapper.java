@@ -5,6 +5,8 @@ import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 
 public class AdresseQueryMapper {
 
+    private AdresseQueryMapper() {}
+
     public static ClientAdresseDTO convertAdresseToClientAdresseDTO(AdresseClient adresseClient) {
         if(adresseClient == null) {
             return null;

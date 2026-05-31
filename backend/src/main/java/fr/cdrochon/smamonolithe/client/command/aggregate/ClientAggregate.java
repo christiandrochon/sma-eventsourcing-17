@@ -19,7 +19,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 @Setter @Getter
 @Slf4j
 public class ClientAggregate {
-    
+
     @AggregateIdentifier
     private String id;
     private String nomClient;
@@ -28,11 +28,12 @@ public class ClientAggregate {
     private String telClient;
     private AdresseClient adresseClient;
     private ClientStatus clientStatus;
-    
-    public ClientAggregate() {
-        //requis par Axon);
-    }
-    
+
+    /**
+     * Requis par Axon. Vide.
+     */
+    public ClientAggregate() {}
+
     /**
      * FONCTION DE DECISION = regle metier
      * <p>
@@ -51,7 +52,7 @@ public class ClientAggregate {
      */
     @CommandHandler
     public ClientAggregate(ClientCreateCommand createClientCommand) {
-        
+
         //ici => fonction de decision = verifie regle metier
         if(createClientCommand.getNomClient() == null) {
             throw new CreatedGarageException("Le nom du client doit etre renseigné ! ");
@@ -71,7 +72,7 @@ public class ClientAggregate {
                                                         ClientStatus.ACTIF
         ));
     }
-    
+
     /**
      * FONCTION D'EVOLUTION = Muter l'etat de l'agregat
      * <p>

@@ -35,6 +35,12 @@ class FrontendSecurityLogFilePolicyTest {
 
     private static final AtomicInteger counter = new AtomicInteger(0);
 
+    /**
+     * Renvoi les traces 
+     * @param action
+     * @return
+     * @throws Exception
+     */
     private String captureSecurityLog(ThrowingRunnable action) throws Exception {
         Path logFile = tempDir.resolve("ui-security-" + counter.incrementAndGet() + ".log");
 
