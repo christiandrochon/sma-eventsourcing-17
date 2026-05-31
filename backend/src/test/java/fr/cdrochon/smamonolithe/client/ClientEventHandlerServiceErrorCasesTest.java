@@ -19,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
 class ClientEventHandlerServiceErrorCasesTest {
 
@@ -27,7 +31,9 @@ class ClientEventHandlerServiceErrorCasesTest {
 
     @Test
     void shouldNotPropagateExceptionWhenRepositorySaveThrows() {
-        // Le catch dans le service avale l'exception → ne doit pas throw vers l'appelant
+        /**
+         * Le catch dans le service avale l'exception → ne doit pas throw vers l'appelant
+         */
         when(clientRepository.save(any(Client.class))).thenThrow(new RuntimeException("DB down"));
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         ClientCreatedEvent event = sampleClientCreatedEvent();
@@ -56,7 +62,9 @@ class ClientEventHandlerServiceErrorCasesTest {
             .thenThrow(new org.springframework.dao.DataIntegrityViolationException("Duplicate entry"));
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         ClientCreatedEvent event = sampleClientCreatedEvent();
-        // Le catch interne avale → pas de throw
+        /**
+         * Le catch interne avale → pas de throw
+         */
         assertDoesNotThrow(() -> service.on(event));
     }
 

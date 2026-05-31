@@ -18,6 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
 class DocumentEventHandlerServiceErrorCasesTest {
 

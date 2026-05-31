@@ -23,6 +23,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
 class DocumentCommandServiceTest {
 
@@ -79,7 +83,10 @@ class DocumentCommandServiceTest {
 
     @Test
     void shouldStillCompleteSecondFutureAfterFirstReplaced() {
-        service.createDocument(DocumentTestDataFactory.sampleCommandDTO()); // première future remplacée
+        /**
+         * première future remplacée
+         */
+        service.createDocument(DocumentTestDataFactory.sampleCommandDTO());
         CompletableFuture<DocumentCommandDTO> secondFuture = service.createDocument(DocumentTestDataFactory.sampleCommandDTO());
         service.completeDocumentCreation(DocumentTestDataFactory.sampleCommandDTO());
         assertTrue(secondFuture.isDone());

@@ -11,6 +11,10 @@ import static fr.cdrochon.smamonolithe.dossier.DossierTestDataFactory.DOSSIER_ID
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
 class DossierEventSourcingServiceImplTest {
 
