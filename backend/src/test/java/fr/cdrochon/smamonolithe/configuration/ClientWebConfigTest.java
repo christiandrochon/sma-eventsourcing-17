@@ -7,6 +7,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class ClientWebConfigTest {
 
     @Test

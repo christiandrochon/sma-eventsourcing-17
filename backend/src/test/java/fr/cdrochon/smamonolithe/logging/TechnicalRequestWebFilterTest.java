@@ -9,6 +9,9 @@ import reactor.test.StepVerifier;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class TechnicalRequestWebFilterTest {
 
     @Test

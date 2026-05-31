@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DocumentCreateCommandTest {
 
     @Test

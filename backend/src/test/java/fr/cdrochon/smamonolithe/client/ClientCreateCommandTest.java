@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import static fr.cdrochon.smamonolithe.client.ClientTestDataFactory.sampleAdresseDTO;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class ClientCreateCommandTest {
 
     @Test

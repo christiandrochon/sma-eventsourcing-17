@@ -14,6 +14,9 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DocumentAggregateTest {
 
     private AggregateTestFixture<DocumentAggregate> fixture;

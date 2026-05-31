@@ -50,6 +50,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class RbacUserAdminMatrix50Test {
 
     /**

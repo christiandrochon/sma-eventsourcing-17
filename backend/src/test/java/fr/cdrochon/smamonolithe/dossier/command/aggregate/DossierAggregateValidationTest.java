@@ -15,6 +15,9 @@ import java.time.Instant;
 
 import static fr.cdrochon.smamonolithe.dossier.DossierTestDataFactory.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierAggregateValidationTest {
 
     private FixtureConfiguration<DossierAggregate> fixture;

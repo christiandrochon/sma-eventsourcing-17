@@ -18,6 +18,9 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class TechnicalRequestWebFilterSecurityAnomalyTest {
 
     private final Logger securityLogger = (Logger) LoggerFactory.getLogger("SECURITY");

@@ -20,6 +20,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierCommandServiceTest {
 
     @Mock

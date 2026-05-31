@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierBaseEventTest {
 
     @Test

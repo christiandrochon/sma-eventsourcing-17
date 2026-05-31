@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import static fr.cdrochon.smamonolithe.dossier.DossierTestDataFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierCreateCommandTest {
 
     @Test

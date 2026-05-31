@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DocumentQueryMapperTest {
 
     @Test

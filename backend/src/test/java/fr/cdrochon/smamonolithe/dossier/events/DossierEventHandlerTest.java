@@ -17,6 +17,9 @@ import static org.mockito.Mockito.verify;
  * les mocks utilises par ce test.
  */
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierEventHandlerTest {
 
     @Mock
