@@ -32,7 +32,7 @@ class ClientEventHandlerServiceErrorCasesTest {
     @Test
     void shouldNotPropagateExceptionWhenRepositorySaveThrows() {
         /**
-         * Le catch dans le service avale l'exception → ne doit pas throw vers l'appelant
+         * Le catch dans le service avale l'exception et ne doit pas remonter vers l'appelant.
          */
         when(clientRepository.save(any(Client.class))).thenThrow(new RuntimeException("DB down"));
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
@@ -57,13 +57,13 @@ class ClientEventHandlerServiceErrorCasesTest {
     }
 
     @Test
-    void shouldHandleConstraintViolationOnDuplicateSave() {
+    void shouldSwallowDataIntegrityViolationException() {
         when(clientRepository.save(any(Client.class)))
             .thenThrow(new org.springframework.dao.DataIntegrityViolationException("Duplicate entry"));
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         ClientCreatedEvent event = sampleClientCreatedEvent();
         /**
-         * Le catch interne avale → pas de throw
+         * Le catch interne avale aussi cette exception et ne doit pas throw.
          */
         assertDoesNotThrow(() -> service.on(event));
     }
