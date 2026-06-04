@@ -1,6 +1,6 @@
-<!-- 
+<!--
 ═════════════════════════════════════════════════════════════════════════════
-🚀 QUICK_START_LOGGING.md
+QUICK_START_LOGGING.md
 ═════════════════════════════════════════════════════════════════════════════
 Qu'il contient : Guide rapide pour afficher/suivre les logs métier
 Utilité : Cheat-sheet pour déboguer, chercher des traces en prod
@@ -12,12 +12,12 @@ Public : Tous (guide d'utilisation pratique)
 
 # Guide Rapide - Logging Métier SMA
 
-## 🎯 Objectif
+## Objectif
 Tracer toutes les opérations métier critiques (création, lecture) pour audit et débogage.
 
 ---
 
-## 📊 Afficher les Logs Métier
+## Afficher les Logs Métier
 
 ### Backend
 ```bash
@@ -51,9 +51,9 @@ grep "UI_.*FAILED\|VALIDATION_ERROR" frontend/logs/ui-error.log
 
 ---
 
-## 📝 Exemples de Logs
+## Exemples de Logs
 
-### ✅ Création Réussie d'un Client
+### Création Réussie d'un Client
 
 **Frontend** (ui-business.log) :
 ```
@@ -72,21 +72,21 @@ grep "UI_.*FAILED\|VALIDATION_ERROR" frontend/logs/ui-error.log
 2026-05-09 14:30:47.500 INFO  UI_CLIENT_CREATE_OK clientId=abc-123-def
 ```
 
-### ❌ Création Échouée d'un Client (Validation)
+### Création Échouée d'un Client (Validation)
 
 **Frontend** (ui-error.log) :
 ```
 2026-05-09 14:35:20.100 WARN  UI_CLIENT_CREATE_VALIDATION_ERROR field=Email invalide
 ```
 
-### ⏱️ Timeout de Création d'un Document
+### ⏱Timeout de Création d'un Document
 
 **Frontend** (ui-error.log) :
 ```
 2026-05-09 15:00:30.500 ERROR UI_DOCUMENT_CREATE_FAILED reason=timeout message=Request timeout after 3000ms
 ```
 
-### 📊 Consultation de Données
+### Consultation de Données
 
 **Frontend** (ui-business.log) :
 ```
@@ -100,7 +100,7 @@ grep "UI_.*FAILED\|VALIDATION_ERROR" frontend/logs/ui-error.log
 
 ---
 
-## 🔍 Recherches Utiles
+## Recherches Utiles
 
 ### Chercher toutes les opérations d'un client
 ```bash
@@ -137,20 +137,20 @@ tail -10 frontend/logs/ui-business.log
 
 ---
 
-## 🚀 Utiliser les Logs dans le Code
+## Utiliser les Logs dans le Code
 
 ### Backend
-```java
+```bash
 // Import
 import fr.cdrochon.smamonolithe.logging.BusinessLoggers;
 
 // Utilisation
-BusinessLoggers.business().info("BIZ_CLIENT_CREATE_REQUEST clientId={} nomClient={}", 
+BusinessLoggers.business().info("BIZ_CLIENT_CREATE_REQUEST clientId={} nomClient={}",
                                clientId, nomClient);
 ```
 
 ### Frontend
-```java
+```bash
 // Import
 import fr.cdrochon.thymeleaffrontend.logging.FrontendLoggers;
 
@@ -169,7 +169,7 @@ FrontendLoggers.tech().debug("Response time: {}ms", duration);
 
 ---
 
-## 📈 Monitorer les Performances
+## Monitorer les Performances
 
 ### Mesurer la latence
 ```bash
@@ -191,7 +191,7 @@ grep "UI_.*_FAILED status=" frontend/logs/ui-error.log | cut -d'=' -f2 | sort | 
 
 ---
 
-## 🔧 Dépannage
+## Dépannage
 
 ### Logs non visibles?
 ```bash
@@ -222,7 +222,7 @@ ls -lah backend/logs/business.*.log.gz
 
 ---
 
-## 📋 Checklist de Monitoring
+## Checklist de Monitoring
 
 - [ ] Vérifier que `business.log` se remplit (backend)
 - [ ] Vérifier que `ui-business.log` se remplit (frontend)
@@ -232,7 +232,7 @@ ls -lah backend/logs/business.*.log.gz
 
 ---
 
-## 📞 Support
+## Support
 
 **Problème de logs?**
 1. Vérifier les permissions des répertoires

@@ -1,6 +1,6 @@
-<!-- 
+<!--
 ═════════════════════════════════════════════════════════════════════════════
-📑 DOCS_STRUCTURE.md
+DOCS_STRUCTURE.md
 ═════════════════════════════════════════════════════════════════════════════
 Qu'il contient : Explication de l'organisation de la documentation du projet
 Utilité : Comprendre où lire quoi, et quel fichier ouvrir selon le besoin
@@ -9,14 +9,14 @@ Public : Tous (navigation de documentation)
 À archiver : Non (guide de navigation)
 ═════════════════════════════════════════════════════════════════════════════
 -->
-# 📑 Organisation de la Documentation
+# Organisation de la Documentation
 La documentation du projet est organisée autour d’un **point d’entrée unique** : [`README.docs.md`](./README.docs.md).
 ---
-## 🌐 Point d’entrée recommandé
+## Point d’entrée recommandé
 - **[`README.docs.md`](./README.docs.md)** → navigation principale du dossier `docs/`
 - **[`../README.md`](../README.md)** → documentation principale du projet à la racine
 ---
-## 📂 Catégories de documentation
+## Catégories de documentation
 ### Stratégique
 - [`LOGGING_STRATEGY.md`](./LOGGING_STRATEGY.md)
 - [`FEATURE_USERID_DOSSIER.md`](./FEATURE_USERID_DOSSIER.md)
@@ -30,7 +30,7 @@ La documentation du projet est organisée autour d’un **point d’entrée uniq
 ### Navigation
 - [`README.docs.md`](./README.docs.md) — entrée principale des docs détaillées
 ---
-## 🧭 Où aller selon le besoin ?
+## Où aller selon le besoin ?
 | Besoin | Fichier recommandé |
 |---|---|
 | Comprendre la documentation | [`README.docs.md`](./README.docs.md) |
@@ -41,9 +41,7 @@ La documentation du projet est organisée autour d’un **point d’entrée uniq
 | Voir l’historique d’un changement | [`CHANGELOG_LOGGING.md`](./CHANGELOG_LOGGING.md) |
 | Voir l’impact d’un changement | [`MODIFIED_FILES.md`](./MODIFIED_FILES.md) |
 ---
-## ✅ Règle simple
+## Règle simple
 - **`README.md` à la racine** = documentation principale du projet
 - **`docs/README.docs.md`** = entrée unique du dossier `docs/`
----
-**Dernière mise à jour** : 2026-05-18  
-**Auteur** : GitHub Copilot
+

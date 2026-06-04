@@ -1,6 +1,6 @@
-<!-- 
+<!--
 ═════════════════════════════════════════════════════════════════════════════
-🔐 FEATURE_USER_CLIENT_ACCESS.md
+FEATURE_USER_CLIENT_ACCESS.md
 ═════════════════════════════════════════════════════════════════════════════
 Qu'il contient : Spécification feature pour filtrage client par USER (RBAC)
 Utilité : Documentation des droits d'accès per rôle (USER voit ses clients, ADMIN voit tous)
@@ -12,10 +12,10 @@ Public : Développeurs, testeurs (documentation technique de feature)
 
 # Feature: Espace Personnel Client pour Utilisateurs
 
-## 📋 Description
+## Description
 Implémentation d'un espace personnel pour les utilisateurs (USER role) où ils peuvent consulter leurs clients personnels créés. Les utilisateurs ne voient que leurs propres clients, tandis que les administrateurs (ADMIN) et auditeurs (AUDITOR) voient tous les clients.
 
-## 🔧 Modifications Techniques
+## Modifications Techniques
 
 ### Backend (Contrôle d'Accès - RBAC)
 
@@ -49,7 +49,7 @@ Implémentation d'un espace personnel pour les utilisateurs (USER role) où ils 
   - Fallback sur `preferred_username`
   - Fallback sur `authentication.name`
 
-## 🎯 Cas d'Usage
+## Cas d'Usage
 
 ### Utilisateur (USER role)
 1. Se connecte via Keycloak
@@ -72,7 +72,7 @@ Implémentation d'un espace personnel pour les utilisateurs (USER role) où ils 
 4. Peut consulter les détails de n'importe quel client
 5. Son nom d'utilisateur s'affiche en haut à droite
 
-## 📊 Architecture RBAC
+## Architecture RBAC
 
 ```
 Routes:
@@ -85,15 +85,15 @@ Authorization:
   AUDITOR → Tous les clients (lecture seule)
 ```
 
-## 🔐 Sécurité
+## Sécurité
 
-- ✅ Vérification des rôles côté serveur avec `@PreAuthorize`
-- ✅ Récupération de l'ID utilisateur depuis le contexte de sécurité
-- ✅ Logging détaillé de tous les accès aux clients
-- ⚠️ TODO: Implémenter la vérification complète du `userId` dans le Client pour USER
-- ⚠️ TODO: Ajouter un champ `userId` au modèle `Client` pour le filtrage
+- Vérification des rôles côté serveur avec `@PreAuthorize`
+- Récupération de l'ID utilisateur depuis le contexte de sécurité
+- Logging détaillé de tous les accès aux clients
+- ⚠TODO: Implémenter la vérification complète du `userId` dans le Client pour USER
+- ⚠TODO: Ajouter un champ `userId` au modèle `Client` pour le filtrage
 
-## 🚀 Prochaines Étapes
+## Prochaines Étapes
 
 1. **Ajouter le champ `userId` au modèle Client**
    - Modifier l'entité `Client` pour inclure `userId`
@@ -112,12 +112,12 @@ Authorization:
    - Test unitaire pour vérifier le filtrage par userId
    - Test d'intégration pour vérifier les permissions RBAC
 
-## 📝 Commits Associés
+## Commits Associés
 
 - `feat(backend-client-rbac)` : Contrôle d'accès backend
 - `feat(frontend-client)` : Affichage du contexte utilisateur frontend
 
-## ✅ Status
+## Status
 
 - [x] Ajout de `@PreAuthorize` sur les endpoints clients
 - [x] Implémentation du filtrage par rôle
@@ -127,7 +127,7 @@ Authorization:
 - [ ] Vérification complète du userId pour USER
 - [ ] Interface utilisateur pour l'espace personnel
 
-## 🔗 Références
+## Références
 
 - **Keycloak Roles** : ADMIN, USER, AUDITOR (configurés dans le realm)
 - **Spring Security** : `@PreAuthorize`, `Authentication`, `SecurityContextHolder`

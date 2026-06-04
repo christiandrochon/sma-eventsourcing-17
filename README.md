@@ -1,6 +1,6 @@
 <!--
 ═════════════════════════════════════════════════════════════════════════════
-📖 README.md
+README.md
 ═════════════════════════════════════════════════════════════════════════════
 Qu'il contient : Documentation principale du projet (architecture, démarrage, tech stack)
 Utilité : Reference complète du projet (1600+ lignes détaillées)
@@ -8,7 +8,7 @@ Public : Tous (guide complet pour tous les profils)
 À consulter : Toujours commencer par là
 À archiver : Non (documentation vivante, mise à jour régulièrement)
 ═════════════════════════════════════════════════════════════════════════════
-📍 Documentation détaillée : Consultez le dossier docs/README.docs.md pour les guides complémentaires
+Documentation détaillée : Consultez le dossier docs/README.docs.md pour les guides complémentaires
 ═════════════════════════════════════════════════════════════════════════════
 -->
 
@@ -247,85 +247,115 @@ sma-eventsourcing-17/
 
 ```text
 +-----------------------------------------------------------------------------------+
-| NIVEAU 1 - UI                                                                      |
-|   [ Templates Thymeleaf ]                                                          |
+| NIVEAU 1 - INTERFACE UTILISATEUR                                                   |
+|   [ Pages Thymeleaf ]                                                              |
 +-----------------------------------------------------------------------------------+
           |
-          +--> Flux ecriture (COMMAND)
+          +--> Flux d'écriture (COMMANDES)
           |      |
           |      v
-          |   [ Controllers Command ]
+          |   [ Contrôleurs de commandes ]
           |      |
           |      v
-          |   [ Axon Command Bus / Event Store ]
+          |   [ Bus de commandes Axon ]
           |      |
           |      v
-          |   [ Event Handlers / Projection ]
+          |   [ Agrégats / Modèle d'écriture ]
           |      |
           |      v
-          |   [ Read Model PostgreSQL ]
+          |   [ Magasin d'événements (Event Store) ]
+          |      |
+          |      v
+          |   [ Gestionnaires d'événements / Projections ]
+          |      |
+          |      v
+          |   [ Modèle de lecture PostgreSQL ]
           |
-          `--> Flux lecture (QUERY)
+          `--> Flux de lecture (REQUÊTES)
                  |
                  v
-              [ Controllers Query ]
+              [ Contrôleurs de requêtes ]
                  |
                  v
-              [ Read Model PostgreSQL ]
+              [ Modèle de lecture PostgreSQL ]
 ```
 
 ### 2.4 Schema global unifie (ASCII)
 
 ```text
-                                   SMA-EVENTSOURCING-17
+                               SMA-EVENTSOURCING-17
 
              +-----------------------------------------------------------+
-             |                        RUNTIME                            |
+             |                         EXÉCUTION                         |
              +-----------------------------------------------------------+
 
  [ Utilisateur ]
        |
        | HTTP :8091
        v
- [ Frontend ]  Spring MVC + Thymeleaf
+ [ Frontend ]
+ Spring MVC + Thymeleaf
        |
        | REST :8092
        v
- [ Backend ]  Spring WebFlux + Axon
-    |  \
-    |   +--> Commandes/Evenements --> [ Axon Server ] (:8024/:8124)
-    |
-    +------> Projections / Read Model --> [ PostgreSQL ] (:5432)
-                                             ^
-                                             |
-                                        [ pgAdmin ] (:6002)
+ [ Backend ]
+ Spring WebFlux + Axon
+       |
+       +--> Commandes
+       |       |
+       |       v
+       |   [ Agrégats / Modèle d'écriture ]
+       |       |
+       |       v
+       |   Événements métier
+       |       |
+       |       v
+       |   [ Axon Server ]
+       |     Bus de commandes,
+       |     bus d'événements
+       |     et magasin d'événements
+       |
+       +--> Gestionnaires d'événements
+               |
+               v
+          [ PostgreSQL ]
+          Modèle de lecture
+               ^
+               |
+          [ pgAdmin ]
 
- IAM (mode secure)
- [ Keycloak ] (:8080) <--> [ postgres-keycloak ] (:5433)
+ IAM (mode sécurisé)
+
+ [ Keycloak ] (:8080)
+       ^
+       |
+       v
+ [ PostgreSQL Keycloak ] (:5433)
 
 
              +-----------------------------------------------------------+
-             |                    REPOSITORY                             |
+             |                         DÉPÔT GIT                         |
              +-----------------------------------------------------------+
 
  sma-eventsourcing-17/
    |
-   +-- README.md                    (guide principal)
-   +-- pom.xml                      (agregateur Maven)
+   +-- README.md                    (documentation principale)
+   +-- pom.xml                      (agrégateur Maven)
    +-- compose.yaml                 (orchestration locale)
    |
-   +-- backend/                     (coeur metier CQRS/Axon)
-   +-- frontend/                    (UI Thymeleaf)
-   +-- docker/                      (schema/init/compose annexes)
-   +-- komp-smb/                    (manifests Kubernetes)
+   +-- backend/                     (cœur métier CQRS et Event Sourcing)
+   +-- frontend/                    (interface utilisateur Thymeleaf)
+   +-- docker/                      (configuration Docker et bases)
+   +-- komp-smb/                    (manifestes Kubernetes)
    |
    +-- scripts/
-   |    +-- README.scripts.md       (guide scripts)
-   |    `-- *.sh                    (run, IAM, audit)
+   |    +-- README.scripts.md       (documentation des scripts)
+   |    `-- *.sh                    (démarrage, IAM, audit, maintenance)
    |
    `-- docs/
-        +-- README.docs.md          (guide doc detaillee)
-        `-- *.md                    (strategie, features, changelog)
+        +-- README.docs.md          (documentation détaillée)
+        `-- *.md                    (architecture, fonctionnalités,
+                                     stratégie, journal des évolutions)
 ```
 
 ## 3. Stack technique
@@ -845,7 +875,7 @@ backend/README.md
 
 Le backend expose la documentation API via `springdoc-openapi-starter-webflux-ui`.
 
-#### 📍 Accès à la documentation Swagger
+#### Accès à la documentation Swagger
 
 En local, la documentation est accessible via :
 
@@ -861,7 +891,7 @@ http://localhost:8092/swagger-ui.html
 
 Quand la securite backend est activee, la doc reste accessible sans token si `app.security.swagger-public=true` (valeur par defaut hors prod).
 
-#### 🏷️ Annotations Swagger/OpenAPI complètes
+#### 🏷Annotations Swagger/OpenAPI complètes
 
 L'API est documentée de façon exhaustive avec les annotations OpenAPI 3.0 :
 
@@ -882,9 +912,11 @@ L'API est documentée de façon exhaustive avec les annotations OpenAPI 3.0 :
 
 **Couverture :** 22 controllers et 24 DTOs annotés (100% des endpoints publics)
 
-#### 📝 Exemple d'annotation
+#### Exemple d'annotation
 
 ```java
+import java.util.Objects;
+
 @Tag(name = "Clients - Commands", description = "Commandes CQRS liées aux clients")
 @RestController
 public class ClientCommandController {
@@ -892,16 +924,17 @@ public class ClientCommandController {
     @Operation(summary = "Créer un client", description = "Crée un client...")
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "Client créé",
-            content = @Content(schema = @Schema(implementation = ClientCommandDTO.class))),
+                     content = @Content(schema = @Schema(implementation = ClientCommandDTO.class))),
         @ApiResponse(responseCode = "403", description = "Accès refusé"),
         @ApiResponse(responseCode = "500", description = "Erreur serveur")
     })
     @PostMapping("/createClient")
-    public Mono<ResponseEntity<ClientCommandDTO>> createClient(...) { }
+    public Mono<ResponseEntity<ClientCommandDTO>> createClient(Objects ... args) {
+    }
 }
 ```
 
-#### ⚙️ Configuration
+#### Configuration
 
 Points importants :
 
@@ -912,7 +945,7 @@ Points importants :
 - en securite activee, les routes `/swagger-ui.html`, `/swagger-ui/**` et `/v3/api-docs/**` sont publiques uniquement si `app.security.swagger-public=true`
 - en `prod`, la doc est desactivee par defaut (`springdoc.swagger-ui.enabled=false`, `springdoc.api-docs.enabled=false`)
 
-#### 📚 Accéder et générer la documentation
+#### Accéder et générer la documentation
 
 **Via Swagger UI (dynamique)**
 
@@ -1510,10 +1543,10 @@ Principes fondamentaux :
 
 | Ressource | ADMIN LIST | USER LIST (filtré) | ADMIN BY-ID | USER BY-ID (ownership) | CREATION | Propriété |
 |---|---|---|---|---|---|---|
-| Client | ✅ tous | ⚠️ filtre email | ✅ n'importe quel | ⚠️ email JWT | ❌ ADMIN seul | `mailClient` |
-| Véhicule | ✅ tous | ✅ `client.mailClient` | ✅ n'importe quel | ✅ `client.mailClient` | ✅ lié au JWT | `client.id` |
-| Document | ✅ tous | ✅ `client.mailClient` | ✅ n'importe quel | ✅ `client.mailClient` | ✅ lié au JWT | `client.id` |
-| Dossier | ✅ tous | ✅ `client.mailClient` | ✅ n'importe quel | ✅ `client.mailClient` | ✅ lié au JWT | `client.id` |
+| Client | tous |  filtre email | n'importe quel |️ email JWT | ADMIN seul | `mailClient` |
+| Véhicule | tous | `client.mailClient` | n'importe quel | `client.mailClient` | lié au JWT | `client.id` |
+| Document | tous | `client.mailClient` | n'importe quel | `client.mailClient` | lié au JWT | `client.id` |
+| Dossier | tous | `client.mailClient` | n'importe quel | `client.mailClient` | lié au JWT | `client.id` |
 
 ### 11.2 Implémentation IDOR (Insecure Direct Object Reference)
 
@@ -1727,7 +1760,7 @@ Exécution :
 mvn -pl backend -Dtest=RbacUserAdminMatrix50Test test
 ```
 
-Attendu : **50/50 passed** ✅
+Attendu : **50/50 passed**
 
 ---
 

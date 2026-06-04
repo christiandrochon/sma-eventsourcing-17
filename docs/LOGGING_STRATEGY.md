@@ -1,6 +1,6 @@
-<!-- 
+<!--
 ═════════════════════════════════════════════════════════════════════════════
-📊 LOGGING_STRATEGY.md
+LOGGING_STRATEGY.md
 ═════════════════════════════════════════════════════════════════════════════
 Qu'il contient : Guide stratégique complet du logging (métier + technique)
 Utilité : Architecture de logs, conventions de nommage, fichiers générés, configuration
@@ -278,11 +278,5 @@ FrontendLoggers.tech().info("Response time: {}ms", duration);
 - [ ] Corrélation ID distribuée (futur)
 - [ ] ELK Stack intégré (futur)
 
----
 
-## Contacts & Maintenance
-
-**Auteur** : GitHub Copilot  
-**Date de dernière mise à jour** : 2026-05-09  
-**Responsable** : Christian Drochon (cdrochon.fr)
 

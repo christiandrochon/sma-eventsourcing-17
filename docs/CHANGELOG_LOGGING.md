@@ -1,6 +1,6 @@
-<!-- 
+<!--
 ═════════════════════════════════════════════════════════════════════════════
-📋 CHANGELOG_LOGGING.md
+CHANGELOG_LOGGING.md
 ═════════════════════════════════════════════════════════════════════════════
 Qu'il contient : Rapport détaillé des changements pour implémenter le logging métier
 Utilité : Traçabilité des modifications (quelle version, quels fichiers, pourquoi)
@@ -23,17 +23,17 @@ Mise en place complète du **logging métier** pour l'application SMA Event Sour
 
 ### 1. BACKEND (Port 8092)
 
-#### 📝 Fichiers Modifiés
+#### Fichiers Modifiés
 
 | Fichier | Changement |
 |---------|-----------|
-| `ClientEventHandler.java` | ✅ Ajout du log métier `BIZ_CLIENT_CREATED` |
-| `DossierEventHandler.java` | ✅ Ajout du log métier `BIZ_DOSSIER_CREATED` |
-| `DocumentEventHandler.java` | ✅ Ajout du log métier `BIZ_DOCUMENT_CREATED` |
-| `GarageEventHandler.java` | ✅ Ajout du log métier `BIZ_GARAGE_CREATED` |
-| `VehiculeEventHandler.java` | ✅ Ajout du log métier `BIZ_VEHICULE_CREATED` |
+| `ClientEventHandler.java` | Ajout du log métier `BIZ_CLIENT_CREATED` |
+| `DossierEventHandler.java` | Ajout du log métier `BIZ_DOSSIER_CREATED` |
+| `DocumentEventHandler.java` | Ajout du log métier `BIZ_DOCUMENT_CREATED` |
+| `GarageEventHandler.java` | Ajout du log métier `BIZ_GARAGE_CREATED` |
+| `VehiculeEventHandler.java` | Ajout du log métier `BIZ_VEHICULE_CREATED` |
 
-#### 📊 Logs Métier Backend
+#### Logs Métier Backend
 
 Les logs de demande et confirmation de création étaient **déjà en place** dans :
 - `ClientCommandService` → BIZ_CLIENT_CREATE_REQUEST / CONFIRMED
@@ -49,7 +49,7 @@ Les logs de demande et confirmation de création étaient **déjà en place** da
 - `BIZ_DOCUMENT_CREATED` avec type et statut
 - `BIZ_GARAGE_CREATED` avec responsable
 
-#### 🔄 Flux de Logging
+#### Flux de Logging
 ```
 REQUEST → CREATED (EVENT) → CONFIRMED
 ```
@@ -58,18 +58,18 @@ REQUEST → CREATED (EVENT) → CONFIRMED
 
 ### 2. FRONTEND (Port 8091)
 
-#### 📝 Fichiers Modifiés
+#### Fichiers Modifiés
 
 | Fichier | Changement |
 |---------|-----------|
-| `FrontendLoggers.java` | ✅ Ajout de la méthode `business()` |
-| `CreateClientThymController.java` | ✅ Ajout de `UI_CLIENT_CREATE_REQUEST` |
-| `CreateDossierThymController.java` | ✅ Ajout de `UI_DOSSIER_CREATE_REQUEST` |
-| `CreateVehiculeThymController.java` | ✅ Ajout de `UI_VEHICULE_CREATE_REQUEST` |
-| `CreateDocumentThymController.java` | ✅ Amélioration du log REQUEST |
-| `ClientThymController.java` | ✅ Ajout de logs métier pour GET (consultation) |
+| `FrontendLoggers.java` | Ajout de la méthode `business()` |
+| `CreateClientThymController.java` | Ajout de `UI_CLIENT_CREATE_REQUEST` |
+| `CreateDossierThymController.java` | Ajout de `UI_DOSSIER_CREATE_REQUEST` |
+| `CreateVehiculeThymController.java` | Ajout de `UI_VEHICULE_CREATE_REQUEST` |
+| `CreateDocumentThymController.java` | Amélioration du log REQUEST |
+| `ClientThymController.java` | Ajout de logs métier pour GET (consultation) |
 
-#### 📊 Logs Métier Frontend - Création
+#### Logs Métier Frontend - Création
 
 Ajout de logs **AVANT** la requête au backend :
 - `UI_CLIENT_CREATE_REQUEST` avec détails du client
@@ -77,7 +77,7 @@ Ajout de logs **AVANT** la requête au backend :
 - `UI_VEHICULE_CREATE_REQUEST` avec immatriculation
 - `UI_DOCUMENT_CREATE_REQUEST` avec détails complets
 
-#### 📊 Logs Métier Frontend - Consultation
+#### Logs Métier Frontend - Consultation
 
 Ajout de logs pour les opérations de lecture :
 - `UI_CLIENT_QUERY` avant consultation
@@ -85,11 +85,11 @@ Ajout de logs pour les opérations de lecture :
 - `UI_CLIENTS_LIST_REQUEST` avant consultation liste
 - `UI_CLIENTS_LIST_RETRIEVED` après succès avec count
 
-#### 🔧 Configuration Logback
+#### Configuration Logback
 
 | Fichier | Changement |
 |---------|-----------|
-| `frontend/src/main/resources/logback-spring.xml` | ✅ Ajout du logger `UI_BUSINESS` + appender `UI_BUSINESS_FILE` |
+| `frontend/src/main/resources/logback-spring.xml` | Ajout du logger `UI_BUSINESS` + appender `UI_BUSINESS_FILE` |
 
 **Nouveau fichier de log** : `frontend/logs/ui-business.log`
 
@@ -97,11 +97,11 @@ Ajout de logs pour les opérations de lecture :
 
 ### 3. Documentation
 
-#### 📄 Fichier Créé
+#### Fichier Créé
 
 | Fichier | Contenu |
 |---------|---------|
-| `LOGGING_STRATEGY.md` | 📋 Guide complet du logging métier (conventions, format, accès, flux) |
+| `LOGGING_STRATEGY.md` | Guide complet du logging métier (conventions, format, accès, flux) |
 
 ---
 
@@ -109,8 +109,8 @@ Ajout de logs pour les opérations de lecture :
 
 ### Backend
 **Déjà présent**, aucune modification nécessaire.
-- ✅ Logger `BUSINESS` → `backend/logs/business.log`
-- ✅ Console + fichier avec rotation
+- Logger `BUSINESS` → `backend/logs/business.log`
+- Console + fichier avec rotation
 
 ### Frontend
 **Amélioré avec ajout du logger métier** :
@@ -163,17 +163,17 @@ BIZ_[MODULE]_[ACTION]_[STATE]
 ### Backend
 ```
 backend/logs/
-├── business.log          ✅ Événements métier
-└── technical.log         ✅ Erreurs techniques (existant)
+├── business.log          Événements métier
+└── technical.log         Erreurs techniques (existant)
 ```
 
 ### Frontend
 ```
 frontend/logs/
-├── ui-access.log         ✅ Actions utilisateur (existant)
-├── ui-error.log          ✅ Erreurs (existant)
-├── ui-technical.log      ✅ Traces techniques (existant)
-└── ui-business.log       ✅ Événements métier (NOUVEAU)
+├── ui-access.log         Actions utilisateur (existant)
+├── ui-error.log          Erreurs (existant)
+├── ui-technical.log      Traces techniques (existant)
+└── ui-business.log       Événements métier (NOUVEAU)
 ```
 
 ---
@@ -192,7 +192,7 @@ frontend/logs/
 
 ## Points Clés
 
-✅ **Ce qui a été fait** :
+**Ce qui a été fait** :
 1. Enrichissement des Event Handlers avec logs métier
 2. Ajout de logs REQUEST avant les opérations critiques
 3. Amélioration de FrontendLoggers avec méthode `business()`
@@ -200,7 +200,7 @@ frontend/logs/
 5. Standardisation de la convention de nommage
 6. Documentation complète (LOGGING_STRATEGY.md)
 
-✅ **Commandes de Visualisation** :
+**Commandes de Visualisation** :
 ```bash
 # Backend
 tail -f backend/logs/business.log
@@ -226,36 +226,36 @@ tail -f frontend/logs/ui-error.log
 ## Vérification & Tests
 
 ### Compilation
-✅ Tous les fichiers Java compilent sans erreur
+Tous les fichiers Java compilent sans erreur
 
 ### Logs
-- ✅ Backend : logs métier déjà fonctionnels
-- ✅ Frontend : logs métier maintenant actifs
-- ✅ Configuration : logback-spring.xml validée
+- Backend : logs métier déjà fonctionnels
+- Frontend : logs métier maintenant actifs
+- Configuration : logback-spring.xml validée
 
 ### Fichiers de Configuration
-- ✅ `backend/target/classes/logback-spring.xml` ✓
-- ✅ `frontend/src/main/resources/logback-spring.xml` ✓
+- `backend/target/classes/logback-spring.xml` ✓
+- `frontend/src/main/resources/logback-spring.xml` ✓
 
 ---
 
 ## Résumé des Changements Par Module
 
 ### Client
-- ✅ Logs REQUEST/CONFIRMED/CREATED
-- ✅ Logs QUERY/RETRIEVED côté frontend
+- Logs REQUEST/CONFIRMED/CREATED
+- Logs QUERY/RETRIEVED côté frontend
 
 ### Dossier
-- ✅ Logs REQUEST/CONFIRMED/CREATED avec contexte client+véhicule
+- Logs REQUEST/CONFIRMED/CREATED avec contexte client+véhicule
 
 ### Véhicule
-- ✅ Logs REQUEST/CONFIRMED/CREATED avec immatriculation
+- Logs REQUEST/CONFIRMED/CREATED avec immatriculation
 
 ### Document
-- ✅ Logs REQUEST/CONFIRMED/CREATED avec type
+- Logs REQUEST/CONFIRMED/CREATED avec type
 
 ### Garage
-- ✅ Logs REQUEST/CONFIRMED/CREATED avec responsable
+- Logs REQUEST/CONFIRMED/CREATED avec responsable
 
 ---
 
@@ -272,13 +272,9 @@ tail -f frontend/logs/ui-error.log
 
 ## Notes Importantes
 
-⚠️ Les avertissements du compilateur (méthode `business()` non utilisée pour l'instant) sont normaux et disparaîtront une fois les logs appelés dans d'autres contextes.
+Les avertissements du compilateur (méthode `business()` non utilisée pour l'instant) sont normaux et disparaîtront une fois les logs appelés dans d'autres contextes.
 
-✅ La stratégie de logging est maintenant **opérationnelle** et prête pour la **production**.
+La stratégie de logging est maintenant **opérationnelle** et prête pour la **production**.
 
----
 
-**Date** : 2026-05-09  
-**Auteur** : GitHub Copilot  
-**Responsable** : Christian Drochon
 

@@ -1,6 +1,6 @@
-<!-- 
+<!--
 ═════════════════════════════════════════════════════════════════════════════
-🔑 KEYCLOAK_ROLES_SETUP.md
+KEYCLOAK_ROLES_SETUP.md
 ═════════════════════════════════════════════════════════════════════════════
 Qu'il contient : Guide de configuration des rôles Keycloak (ADMIN, USER, AUDITOR)
 Utilité : Troubleshooting quand les users n'ont pas leurs rôles assignés
@@ -12,11 +12,11 @@ Public : Devops, développeurs (guide opérationnel d'IAM)
 
 # Configuration des Rôles Keycloak - SOLUTION RAPIDE
 
-## ⚠️ PROBLÈME
+## ⚠PROBLÈME
 
 L'utilisateur `user-test` n'a **pas accès au menu Clients** car il n'a **pas le rôle USER assigné dans Keycloak**.
 
-## ✅ SOLUTION - 2 APPROCHES
+## SOLUTION - 2 APPROCHES
 
 ### Approche 1 : Automatique (Recommandée) - Script Bash
 
@@ -70,7 +70,7 @@ Ce script va :
    - Chercher "AUDITOR"
    - Sélectionner et cliquer "Assign"
 
-## 🔐 Comment Ça Marche
+## Comment Ça Marche
 
 ### Flux de Sécurité
 
@@ -87,7 +87,7 @@ Ce script va :
    ↓
 6. @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'AUDITOR')") vérifie le rôle
    ↓
-7. User a accès au menu Clients ✅
+7. User a accès au menu Clients
 ```
 
 ### Mapping des Rôles
@@ -98,35 +98,35 @@ Ce script va :
 | USER          | ROLE_USER                |
 | AUDITOR       | ROLE_AUDITOR             |
 
-## 🎯 Résultat Attendu
+## Résultat Attendu
 
 Après assignation des rôles, les utilisateurs auront accès :
 
-- **user-test** : 
-  - ✅ Menu "Clients" visible
-  - ✅ Voir uniquement ses clients (ceux qu'il a créés)
-  - ✅ Consulter les détails de ses clients
-  - ✅ Affichage de "user-test" en en-tête
+- **user-test** :
+  - Menu "Clients" visible
+  - Voir uniquement ses clients (ceux qu'il a créés)
+  - Consulter les détails de ses clients
+  - Affichage de "user-test" en en-tête
 
 - **admin-test** :
-  - ✅ Menu "Clients" visible
-  - ✅ Voir TOUS les clients
-  - ✅ Gérer les clients des autres utilisateurs
-  - ✅ Affichage de "admin-test" en en-tête
+  - Menu "Clients" visible
+  - Voir TOUS les clients
+  - Gérer les clients des autres utilisateurs
+  - Affichage de "admin-test" en en-tête
 
 - **auditor-test** :
-  - ✅ Menu "Clients" visible
-  - ✅ Voir TOUS les clients (lecture seule)
-  - ✅ Consulter les détails de tous les clients
-  - ✅ Affichage de "auditor-test" en en-tête
+  - Menu "Clients" visible
+  - Voir TOUS les clients (lecture seule)
+  - Consulter les détails de tous les clients
+  - Affichage de "auditor-test" en en-tête
 
-## 🔍 Vérification
+## Vérification
 
 Pour vérifier que les rôles ont bien été assignés :
 
 ```bash
 # Dans Keycloak Admin Console :
-1. Users → user-test
+1. Users -> user-test
 2. Onglet "Role mapping"
 3. Voir la liste des rôles assignés (doit inclure "USER")
 
@@ -135,16 +135,16 @@ curl -X GET http://localhost:8080/admin/realms/sma-realm/users \
   -H "Authorization: Bearer <token>" | jq '.[] | {username, roles}'
 ```
 
-## 🚀 Prochaines Étapes
+## Prochaines Étapes
 
 1. **Exécuter le script** : `./scripts/assign-keycloak-roles.sh`
 2. **Se déconnecter et reconnecter** avec l'utilisateur `user-test`
-3. **Vérifier que le menu Clients apparaît** ✅
+3. **Vérifier que le menu Clients apparaît**
 4. **Tester la création de clients** et vérifier le filtrage par userId
 
-## 📝 Configuration Actuelle (Backend)
+## Configuration Actuelle (Backend)
 
-- **ClientQueryController.java** : 
+- **ClientQueryController.java** :
   - `@PreAuthorize("hasAnyRole('ADMIN', 'USER', 'AUDITOR')")` sur `/queries/clients` et `/queries/clients/{id}`
   - Filtrage par `userId` pour les USER
 
@@ -152,7 +152,7 @@ curl -X GET http://localhost:8080/admin/realms/sma-realm/users \
   - Extrait les rôles de `realm_access.roles`
   - Ajoute le préfixe `ROLE_` automatiquement
 
-## ⚡ Troubleshooting
+## Problèmes courants et solutions
 
 ### "user-test" n'a toujours pas accès au menu ?
 
@@ -172,11 +172,11 @@ curl -X GET http://localhost:8080/admin/realms/sma-realm/users \
    - Backend doit afficher : `BIZ_CLIENT_LIST_REQUEST`
    - Si 403 Forbidden : le rôle n'est pas dans le JWT
 
-## 💡 C'EST TOUT !
+## C'EST TOUT !
 
-Les rôles Keycloak ne s'assignent **que dans Keycloak**. 
+Les rôles Keycloak ne s'assignent **que dans Keycloak**.
 Spring Security lit juste les rôles du JWT que Keycloak génère.
 
-**Il n'y a RIEN à faire côté Spring** - la configuration est déjà en place ! 
+**Il n'y a RIEN à faire côté Spring** - la configuration est déjà en place !
 La solution était juste d'assigner les rôles dans Keycloak.
 

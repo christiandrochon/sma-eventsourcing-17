@@ -5,7 +5,7 @@ Ce dossier contient la specification OpenAPI canonique du projet quand on souhai
 ## Regle de projet
 
 - Exports locaux (racine): `openapi.json` / `openapi.yaml` -> ignores par Git.
-- Version canonique: `docs/openapi/openapi.json` (et optionnellement `docs/openapi/openapi.yaml`) -> versionnes.
+- Version canonique: `docs/openapi/openapi.json` (et optionnellement `docs/openapi/openapi.yaml`) -> versionnés.
 
 ## Generation
 
