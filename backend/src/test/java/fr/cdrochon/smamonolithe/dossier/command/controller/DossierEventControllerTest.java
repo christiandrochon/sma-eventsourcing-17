@@ -12,6 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierEventControllerTest {
 
     @Mock

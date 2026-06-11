@@ -19,7 +19,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class ClientEventHandlerServiceErrorCasesTest {
 
     @Mock
@@ -27,7 +34,9 @@ class ClientEventHandlerServiceErrorCasesTest {
 
     @Test
     void shouldNotPropagateExceptionWhenRepositorySaveThrows() {
-        // Le catch dans le service avale l'exception → ne doit pas throw vers l'appelant
+        /**
+         * Le catch dans le service avale l'exception et ne doit pas remonter vers l'appelant.
+         */
         when(clientRepository.save(any(Client.class))).thenThrow(new RuntimeException("DB down"));
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
         ClientCreatedEvent event = sampleClientCreatedEvent();
@@ -38,23 +47,28 @@ class ClientEventHandlerServiceErrorCasesTest {
     void shouldThrowEntityNotFoundForUnknownId() {
         when(clientRepository.findById("ghost-id")).thenReturn(Optional.empty());
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
-        assertThrows(EntityNotFoundException.class, () -> service.on(new GetClientDTO("ghost-id")));
+        GetClientDTO query = new GetClientDTO("ghost-id");
+        assertThrows(EntityNotFoundException.class, () -> service.on(query));
     }
 
     @Test
     void shouldThrowEntityNotFoundForNullId() {
         when(clientRepository.findById(null)).thenReturn(Optional.empty());
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
-        assertThrows(EntityNotFoundException.class, () -> service.on(new GetClientDTO(null)));
+        GetClientDTO query = new GetClientDTO(null);
+        assertThrows(EntityNotFoundException.class, () -> service.on(query));
     }
 
     @Test
-    void shouldHandleConstraintViolationOnDuplicateSave() {
+    void shouldSwallowDataIntegrityViolationException() {
         when(clientRepository.save(any(Client.class)))
-                .thenThrow(new org.springframework.dao.DataIntegrityViolationException("Duplicate entry"));
+            .thenThrow(new org.springframework.dao.DataIntegrityViolationException("Duplicate entry"));
         ClientEventHandlerService service = new ClientEventHandlerService(clientRepository, org.mockito.Mockito.mock(ApplicationEventPublisher.class));
-        // Le catch interne avale → pas de throw
-        assertDoesNotThrow(() -> service.on(sampleClientCreatedEvent()));
+        ClientCreatedEvent event = sampleClientCreatedEvent();
+        /**
+         * Le catch interne avale aussi cette exception et ne doit pas throw.
+         */
+        assertDoesNotThrow(() -> service.on(event));
     }
 
     @Test

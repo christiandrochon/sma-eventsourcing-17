@@ -11,7 +11,7 @@
 <div layout:fragment="content">
     <main class="container">
         <div th:if="${successMessage}" th:class="'alert ' + ${alertClass}">
-            <h1 class="fw-bold fs-6 text-center" th:text="${successMessage}"></h1>
+            <h1 class="fw-bold fs-6 text-center" th:text="${successMessage}">Operation reussie</h1>
         </div>
         <h4 class="text-center"><a th:href="${urlRedirection}">Retour aux dossiers</a></h4>
     </main>

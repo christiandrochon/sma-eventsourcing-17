@@ -1,12 +1,15 @@
 package fr.cdrochon.smamonolithe.client.command.dtos;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.cdrochon.smamonolithe.client.query.dtos.ClientAdresseDTO;
 import fr.cdrochon.smamonolithe.client.query.entities.AdresseClient;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AdresseCommandMapper {
-    
+
+    private AdresseCommandMapper() {}
+
     /**
      * Convertit le DTO d'une adresse d'un client en entité AdresseClient
      *
@@ -23,7 +26,7 @@ public class AdresseCommandMapper {
                             .pays(clientAdresseDTO.getPays())
                             .build();
     }
-    
+
     /**
      * Convertit une entité AdresseClient en DTO d'une adresse d'un client
      *
@@ -40,5 +43,5 @@ public class AdresseCommandMapper {
                                .pays(adresseClient.getPays())
                                .build();
     }
-    
+
 }

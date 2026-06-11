@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class KeycloakReactiveJwtAuthenticationConverterTest {
 
     private final KeycloakReactiveJwtAuthenticationConverter converter = new KeycloakReactiveJwtAuthenticationConverter();

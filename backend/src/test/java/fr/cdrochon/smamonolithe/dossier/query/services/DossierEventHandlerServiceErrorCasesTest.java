@@ -22,7 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierEventHandlerServiceErrorCasesTest {
 
     @Mock
@@ -53,7 +60,7 @@ class DossierEventHandlerServiceErrorCasesTest {
         when(dossierRepository.findById("non-existent-id")).thenReturn(Optional.empty());
 
         EntityNotFoundException ex = assertThrows(EntityNotFoundException.class,
-                () -> service.on(new GetDossierDTO("non-existent-id")));
+            () -> service.on(new GetDossierDTO("non-existent-id")));
         assertEquals("Dossier non trouvé", ex.getMessage());
     }
 
@@ -68,4 +75,3 @@ class DossierEventHandlerServiceErrorCasesTest {
         assertTrue(result.isEmpty());
     }
 }
-

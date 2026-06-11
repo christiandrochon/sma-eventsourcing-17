@@ -13,6 +13,9 @@ import static fr.cdrochon.smamonolithe.client.ClientTestDataFactory.sampleAdress
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class ClientAggregateTest {
 
     private AggregateTestFixture<ClientAggregate> fixture;

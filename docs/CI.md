@@ -133,6 +133,13 @@ done
 Contact
 -------
 Créer une PR — commandes utiles
+- Commande rapide (cas Sonar) :
+
+```bash
+git push -u origin fix/sonar-cleanup
+gh pr create --base main --head fix/sonar-cleanup --title "chore: apply sonar recommendations" --body "Corrections Sonar + nettoyage mineur."
+```
+
 - Depuis la ligne de commande (avec `gh` installé) :
 
 ```bash
@@ -151,6 +158,49 @@ gh pr create --title "titre de la PR" --body "description courte" --base main
   - ouvrir l'URL automatique : `https://github.com/<owner>/<repo>/pull/new/my-branch`
 
 - Depuis l'interface web : pousser la branche, ouvrir GitHub → votre repo → bouton "Compare & pull request" sur la branche poussée.
+
+Template PR recommande (corrections Sonar)
+------------------------------------------
+
+Titre suggere : `chore: apply sonar recommendations`
+
+Description PR (copier/coller) :
+
+```md
+## Contexte
+Cette PR applique plusieurs recommandations Sonar identifiees afin d'ameliorer la qualite du code et reduire la dette technique.
+
+## Changements effectues
+- Refactorings mineurs pour ameliorer lisibilite/maintenabilite
+- Nettoyage de code (imports, conditions, duplication, etc.)
+- Ajustements conformes aux regles Sonar ciblees
+- [Optionnel] Petites corrections non fonctionnelles associees
+
+## Impact fonctionnel
+- Pas de changement fonctionnel attendu
+- Aucun changement d'API attendu
+- Risque principal : regression locale sur les zones refactorees
+
+## Verifications realisees
+- Build local : `[OK/KO/non lance]`
+- Tests unitaires : `[OK/KO/non lances]`
+- Verification Sonar : `[OK/KO/en attente CI]`
+
+## Regles/Issues Sonar couvertes
+- `[SONAR-XXX]`
+- `[SONAR-YYY]`
+- `[SONAR-ZZZ]`
+
+## Points d'attention pour la review
+- Verifier la logique dans `[fichier/methode]`
+- Verifier l'absence de regression sur `[feature concernee]`
+
+## Checklist
+- [ ] Code compile localement
+- [ ] Tests pertinents executes
+- [ ] Pas de secrets/credentials ajoutes
+- [ ] Changelog/documentation mis a jour si necessaire
+```
 
 ---
 Fait le: 2026-05-29

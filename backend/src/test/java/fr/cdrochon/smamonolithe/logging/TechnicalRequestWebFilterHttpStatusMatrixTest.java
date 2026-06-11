@@ -22,6 +22,9 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class TechnicalRequestWebFilterHttpStatusMatrixTest {
 
     private final Logger technicalLogger = (Logger) LoggerFactory.getLogger(TechnicalRequestWebFilter.class);

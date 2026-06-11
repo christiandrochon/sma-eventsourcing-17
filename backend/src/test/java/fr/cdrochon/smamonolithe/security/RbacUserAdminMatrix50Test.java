@@ -50,15 +50,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class RbacUserAdminMatrix50Test {
 
+    /**
+     * Genere dynamiquement une serie de cas de test a partir de scenarios construits
+     * a l'execution.
+     */
     @TestFactory
     List<DynamicTest> rbacMatrix50() throws Exception {
         List<DynamicTest> tests = new ArrayList<>();
 
-        // ===========================
-        // 1) Document access (14)
-        // ===========================
+        /**
+         * ===========================
+         * 1) Document access (14)
+         * ===========================
+         */
         tests.add(DynamicTest.dynamicTest("DOC-01 admin voit toute la liste", () -> {
             DocumentRepository repo = mock(DocumentRepository.class);
             when(repo.findAll()).thenReturn(List.of(doc("d1", "u1@mail"), doc("d2", "u2@mail"), doc("d3", null)));
@@ -171,9 +180,11 @@ class RbacUserAdminMatrix50Test {
                     .verify();
         }));
 
-        // ===========================
-        // 2) Vehicule access (14)
-        // ===========================
+        /**
+         * ===========================
+         * 2) Vehicule access (14)
+         * ===========================
+         */
         tests.add(DynamicTest.dynamicTest("VEH-01 admin voit tous les véhicules", () -> {
             VehiculeRepository repo = mock(VehiculeRepository.class);
             when(repo.findAll()).thenReturn(List.of(veh("v1", "u1@mail"), veh("v2", "u2@mail"), veh("v3", null)));
@@ -288,9 +299,11 @@ class RbacUserAdminMatrix50Test {
                     .verifyComplete();
         }));
 
-        // ===========================
-        // 3) Dossier access (12)
-        // ===========================
+        /**
+         * ===========================
+         * 3) Dossier access (12)
+         * ===========================
+         */
         tests.add(DynamicTest.dynamicTest("DOS-01 admin voit toute la liste", () -> {
             QueryGateway gateway = mock(QueryGateway.class);
             stubDossierList(gateway, new DossierListResponse(List.of(
@@ -393,9 +406,11 @@ class RbacUserAdminMatrix50Test {
                     .verifyComplete();
         }));
 
-        // ===========================
-        // 4) Creation & annotations (10)
-        // ===========================
+        /**
+         * ===========================
+         * 4) Creation & annotations (10)
+         * ===========================
+         */
         tests.add(DynamicTest.dynamicTest("CRT-01 PreAuthorize client create = ADMIN", () ->
                 assertEquals("hasRole('ADMIN')", preAuth(ClientCommandController.class, "createClientAsync"))));
         tests.add(DynamicTest.dynamicTest("CRT-02 PreAuthorize vehicule create = ADMIN/USER", () ->

@@ -33,15 +33,24 @@ import static org.mockito.Mockito.*;
  * Couvre : ids vides, strings longues, status limite, null id query, TypeDocument custom,
  * double save, list partielle, mapper null partiel, etc.
  */
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DocumentEdgeCasesTest {
 
     @Mock
     private DocumentRepository documentRepository;
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // Command — identifiers limites
-    // ──────────────────────────────────────────────────────────────────────────
+    /**
+     * ──────────────────────────────────────────────────────────────────────────
+     * Command — identifiers limites
+     * ──────────────────────────────────────────────────────────────────────────
+     */
 
     @Test
     void shouldAcceptEmptyStringIdInBaseCommand() {
@@ -69,9 +78,11 @@ class DocumentEdgeCasesTest {
         assertEquals(longName, cmd.getNomDocument());
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // Events — payload immutabilité
-    // ──────────────────────────────────────────────────────────────────────────
+    /**
+     * ──────────────────────────────────────────────────────────────────────────
+     * Events — payload immutabilité
+     * ──────────────────────────────────────────────────────────────────────────
+     */
 
     @Test
     void documentCreatedEventShouldNotExposeInternalMutability() {
@@ -82,7 +93,10 @@ class DocumentEdgeCasesTest {
                 DocumentTestDataFactory.modificationInstant(),
                 DocumentStatusDTO.DRAFT
         );
-        assertSame(type, event.getTypeDocument()); // même référence, objet non muté par le constructeur
+        /**
+         * même référence, objet non muté par le constructeur
+         */
+        assertSame(type, event.getTypeDocument());
     }
 
     @Test
@@ -98,9 +112,11 @@ class DocumentEdgeCasesTest {
         assertEquals(precise.toEpochMilli(), event.getDateCreationDocument().toEpochMilli());
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // DTO — valeurs limites
-    // ──────────────────────────────────────────────────────────────────────────
+    /**
+     * ──────────────────────────────────────────────────────────────────────────
+     * DTO — valeurs limites
+     * ──────────────────────────────────────────────────────────────────────────
+     */
 
     @Test
     void documentCommandDTOShouldBeEqualWhenBuiltTwiceWithSameValues() {
@@ -125,9 +141,11 @@ class DocumentEdgeCasesTest {
         assertEquals("   ", dto.getId());
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // Mapper — cas partiels
-    // ──────────────────────────────────────────────────────────────────────────
+    /**
+     * ──────────────────────────────────────────────────────────────────────────
+     * Mapper — cas partiels
+     * ──────────────────────────────────────────────────────────────────────────
+     */
 
     @Test
     void shouldConvertEntityWithNullTypeToDtoGracefully() {
@@ -164,9 +182,11 @@ class DocumentEdgeCasesTest {
         assertEquals("BON_LIVRAISON", entity.getTypeDocument().getNomTypeDocument());
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // Service — comportements limites
-    // ──────────────────────────────────────────────────────────────────────────
+    /**
+     * ──────────────────────────────────────────────────────────────────────────
+     * Service — comportements limites
+     * ──────────────────────────────────────────────────────────────────────────
+     */
 
     @Test
     void shouldSaveCorrectlyWhenEventHasNullEmetteur() {
@@ -232,9 +252,11 @@ class DocumentEdgeCasesTest {
         assertEquals("Document not found", ex.getMessage());
     }
 
-    // ──────────────────────────────────────────────────────────────────────────
-    // TypeDocument — contrat embeddable
-    // ──────────────────────────────────────────────────────────────────────────
+    /**
+     * ──────────────────────────────────────────────────────────────────────────
+     * TypeDocument — contrat embeddable
+     * ──────────────────────────────────────────────────────────────────────────
+     */
 
     @Test
     void typeDocumentShouldAllowNullNomInDefaultConstructor() {

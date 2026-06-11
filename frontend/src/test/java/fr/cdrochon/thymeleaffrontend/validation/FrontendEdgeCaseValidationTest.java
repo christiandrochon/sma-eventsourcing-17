@@ -18,22 +18,35 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class FrontendEdgeCaseValidationTest {
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
 
+    /**
+     * Execute une initialisation unique avant tous les tests de la classe.
+     */
     @BeforeAll
     static void setUp() {
         validatorFactory = Validation.buildDefaultValidatorFactory();
         validator = validatorFactory.getValidator();
     }
 
+    /**
+     * Execute un nettoyage unique apres tous les tests de la classe.
+     */
     @AfterAll
     static void tearDown() {
         validatorFactory.close();
     }
 
+    /**
+     * Genere dynamiquement une serie de cas de test a partir de scenarios construits
+     * a l'execution.
+     */
     @TestFactory
     Stream<DynamicTest> shouldCatch100EdgeCases() {
         return IntStream.range(0, 100)

@@ -12,7 +12,7 @@ import lombok.*;
 @Embeddable
 @Builder @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class AdresseClient {
-    
+
     private String numeroDeRue;
     private String rue;
     private String complementAdresse;
@@ -20,14 +20,8 @@ public class AdresseClient {
     private String ville;
     @Enumerated
     private Pays pays;
-    
-//    public AdresseClient(AdresseClient adresseClient) {
-//        this.numeroDeRue = adresseClient.getNumeroDeRue();
-//        this.rue = adresseClient.getRue();
-//        this.cp = adresseClient.getCp();
-//        this.ville = adresseClient.getVille();
-//    }
-    
+
+
     /**
      * Copie de l'objet AdresseClient pour éviter l'exposition de la représentation interne
      * @param adresseClient AdresseClient

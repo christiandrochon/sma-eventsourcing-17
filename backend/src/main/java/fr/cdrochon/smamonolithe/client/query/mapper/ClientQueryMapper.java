@@ -8,7 +8,9 @@ import static fr.cdrochon.smamonolithe.vehicule.query.mapper.RecursiveConversion
 
 @Component
 public class ClientQueryMapper {
-    
+
+    private ClientQueryMapper() {}
+
     /**
      * Convertit une entité client en ClientQueryDTO. Pour eviter les appels recursifs, on etends la classes RecursiveConversionClientVehicule
      *

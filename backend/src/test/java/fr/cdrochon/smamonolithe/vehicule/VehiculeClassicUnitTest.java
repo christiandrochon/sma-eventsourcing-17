@@ -57,7 +57,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class VehiculeClassicUnitTest {
 
     @Mock
@@ -380,6 +387,10 @@ class VehiculeClassicUnitTest {
         assertTrue(new MarqueVehicule().getMarques().contains("RENAULT"));
     }
 
+    /**
+     * Genere dynamiquement une serie de cas de test a partir de scenarios construits
+     * a l'execution.
+     */
     @TestFactory
     Stream<DynamicTest> classic_dynamic_41_to_100() {
         Stream<DynamicTest> statusTests = IntStream.range(0, 20)

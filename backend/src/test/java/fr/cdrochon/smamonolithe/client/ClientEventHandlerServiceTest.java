@@ -25,7 +25,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class ClientEventHandlerServiceTest {
 
     @Mock
@@ -83,7 +90,8 @@ class ClientEventHandlerServiceTest {
     @Test
     void shouldThrowEntityNotFoundWhenClientNotFound() {
         when(clientRepository.findById("unknown")).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> service.on(new GetClientDTO("unknown")));
+        GetClientDTO query = new GetClientDTO("unknown");
+        assertThrows(EntityNotFoundException.class, () -> service.on(query));
     }
 
     @Test

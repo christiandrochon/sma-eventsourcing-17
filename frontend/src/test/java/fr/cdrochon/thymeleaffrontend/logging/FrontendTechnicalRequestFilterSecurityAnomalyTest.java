@@ -15,6 +15,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class FrontendTechnicalRequestFilterSecurityAnomalyTest {
 
     private final Logger securityLogger = (Logger) LoggerFactory.getLogger("UI_SECURITY");

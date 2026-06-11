@@ -14,6 +14,9 @@ import org.junit.jupiter.api.Test;
 import static fr.cdrochon.smamonolithe.dossier.DossierTestDataFactory.*;
 import static org.axonframework.test.matchers.Matchers.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierAggregateTest {
 
     private FixtureConfiguration<DossierAggregate> fixture;

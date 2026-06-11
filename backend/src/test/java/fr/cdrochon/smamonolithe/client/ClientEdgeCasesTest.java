@@ -30,10 +30,19 @@ import static org.mockito.Mockito.*;
 /**
  * 25 tests de cas limites pour la couche Client (événements, commandes, entités, service).
  */
+/**
+ * Active l'extension Mockito de JUnit 5 pour initialiser et injecter automatiquement
+ * les mocks utilises par ce test.
+ */
 @ExtendWith(MockitoExtension.class)
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class ClientEdgeCasesTest {
 
-    // ── Cas limites : ClientCreatedEvent ────────────────────────────────────────
+    /**
+     * ── Cas limites : ClientCreatedEvent ────────────────────────────────────────
+     */
 
     @Test
     @DisplayName("EC-01 : ClientCreatedEvent conserve l'id fourni")
@@ -88,7 +97,9 @@ class ClientEdgeCasesTest {
         assertEquals("Paris", sampleClientCreatedEvent().getAdresseClient().getVille());
     }
 
-    // ── Cas limites : AdresseClient ─────────────────────────────────────────────
+    /**
+     * ── Cas limites : AdresseClient ─────────────────────────────────────────────
+     */
 
     @Test
     @DisplayName("EC-09 : AdresseClient créé via builder conserve le pays FRANCE")
@@ -113,7 +124,9 @@ class ClientEdgeCasesTest {
         assertEquals(dto.getRue(), adresse.getRue());
     }
 
-    // ── Cas limites : Client (entité JPA) ───────────────────────────────────────
+    /**
+     * ── Cas limites : Client (entité JPA) ───────────────────────────────────────
+     */
 
     @Test
     @DisplayName("EC-12 : Client.toString() ne lève pas d'exception quand dossier est null")
@@ -145,7 +158,9 @@ class ClientEdgeCasesTest {
                 .build());
     }
 
-    // ── Cas limites : GetClientDTO ───────────────────────────────────────────────
+    /**
+     * ── Cas limites : GetClientDTO ───────────────────────────────────────────────
+     */
 
     @Test
     @DisplayName("EC-16 : GetClientDTO conserve l'id")
@@ -161,7 +176,9 @@ class ClientEdgeCasesTest {
         assertNull(dto.getId());
     }
 
-    // ── Cas limites : ClientEventHandlerService ──────────────────────────────────
+    /**
+     * ── Cas limites : ClientEventHandlerService ──────────────────────────────────
+     */
 
     @Mock
     private ClientRepository clientRepository;

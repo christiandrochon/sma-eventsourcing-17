@@ -203,6 +203,12 @@ public class ClientQueryController {
         }
     }
 
+    /**
+     * Définit si un role est contenu dans le jwt
+     * @param jwt token
+     * @param role role de l'user
+     * @return role contenu ou pas dans le jwt
+     */
     private boolean hasRole(Jwt jwt, String role) {
         try {
             java.util.Map<String, Object> realmAccess = jwt.getClaimAsMap("realm_access");
@@ -213,6 +219,7 @@ public class ClientQueryController {
                 }
             }
         } catch (Exception ignored) {
+            BusinessLoggers.business().info("BIZ_CLIENT_READ_STREAM_FAILED role={}", role);
         }
         return false;
     }

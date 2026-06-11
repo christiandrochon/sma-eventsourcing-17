@@ -14,6 +14,9 @@ import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Cette classe contient uniquement des tests unitaires.
+ */
 class DossierCommandMapperEdgeCasesTest {
 
     @Test

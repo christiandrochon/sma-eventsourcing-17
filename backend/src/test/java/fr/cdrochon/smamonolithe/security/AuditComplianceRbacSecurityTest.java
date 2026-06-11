@@ -8,12 +8,12 @@ import fr.cdrochon.smamonolithe.audit.infrastructure.AuditService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Instant;
@@ -21,11 +21,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 
-@WebFluxTest(controllers = AuditComplianceController.class)
-@Import({SecurityConfig.class, KeycloakReactiveJwtAuthenticationConverter.class})
-@TestPropertySource(properties = {
+/**
+ * Test "slice" WebFlux: on charge seulement le controller cible + la securite reactive, avec des proprietes inline pour valider les regles RBAC sans demarrer tout le contexte applicatif.
+ */
+@WebFluxTest(controllers = AuditComplianceController.class, properties = {
         "app.security.enabled=true",
         "app.security.require-authenticated-all=false",
         "app.security.audit-endpoints-authenticated=true",
@@ -33,16 +35,32 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
         "app.security.audit-writer-roles=ADMIN",
         "spring.security.oauth2.resourceserver.jwt.jwk-set-uri=http://localhost:18080/realms/sma-realm/protocol/openid-connect/certs"
 })
+/**
+ * @Import complete le slice @WebFluxTest avec la securite reactive JWT
+ * et les beans de test necessaires au contexte minimal.
+ */
+@Import({SecurityConfig.class, KeycloakReactiveJwtAuthenticationConverter.class, AuditComplianceRbacSecurityTest.TestBeansConfig.class})
 class AuditComplianceRbacSecurityTest {
 
     @Autowired
     private WebTestClient webTestClient;
 
-    @MockBean
+    @Autowired
     private AuditComplianceService auditComplianceService;
 
-    @MockBean
-    private AuditService auditService;
+    @TestConfiguration
+    static class TestBeansConfig {
+        @Bean
+        AuditComplianceService auditComplianceService() {
+            return mock(AuditComplianceService.class);
+        }
+
+        @Bean
+        AuditService auditService() {
+            return mock(AuditService.class);
+        }
+    }
+
 
     @Test
     void shouldReturn401WhenNoJwtOnAuditDashboard() {
